@@ -20,8 +20,8 @@ at the same time.
 
 | Value | Prototype value |
 | --- | --- |
-| Amazon | Each product is in stock on 45% of days, at 95% to 120% of market |
-| Hyped Reseller | Every product, every day, at 125% to 150% of market |
+| Amazon | Each product is in stock on 45% of days. The price is 100% to 125% of market, or 140% to 190% of market on 30% of days |
+| Hyped Reseller | Every product, every day, at 200% to 260% of market |
 | Pokemon Center | A drop is live on 15% of days. The attempt succeeds at 30% (from [12-acquiring-product.md](12-acquiring-product.md#pokemon-center-drops)) |
 | eBay | 8 listings each day: 4 sealed at 80% to 105% of market, 4 singles worth $3 or more at 75% to 105% of market. 20% ship from another country, with 10-day delivery and a lower price |
 | Facebook Marketplace | 5 sealed listings each day at 55% to 95% of market. Half are pickups that cost 1 hour today, and half ship |
@@ -48,7 +48,7 @@ values. Check them against real prices:
 | Local stores | Target, Walmart, Best Buy, GameStop, Barnes & Noble, and two game shops: Cardboard Castle and Top Deck Games |
 | Time for each stop | 40 minutes (from [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)) |
 | Stock chance | 12% for a big store, 45% for a game shop, new each day |
-| Shelf | 1 to 2 products at a big store, 1 to 3 at a game shop, at the estimated MSRP. Loose packs come 2 to 8 at a time, other products 1 to 2 |
+| Shelf | 1 to 2 products at a big store, at the estimated MSRP. 1 to 3 products at a game shop, at 90% to 105% of market. Loose packs come 2 to 8 at a time, other products 1 to 2 |
 | Bulk | The shop pays 50% of the bulk's market value, in store credit only |
 | Display case | 6 singles worth $5 or more, at 110% of market. The case changes each week |
 | Buylist and standing | From [12-acquiring-product.md](12-acquiring-product.md#standing-levels) |

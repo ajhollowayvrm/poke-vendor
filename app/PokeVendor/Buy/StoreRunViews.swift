@@ -22,7 +22,7 @@ struct StoreRunPlanner: View {
                                     .font(.title3)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(s.rawValue).font(.subheadline.weight(.medium))
-                                    Text(s.isGameShop ? "Game shop · \(store.standing(s).rawValue) · credit \(money(store.shop(s).credit))" : "Big store · MSRP · stock is rare")
+                                    Text(s.isGameShop ? "Game shop · near market · \(store.standing(s).rawValue) · credit \(money(store.shop(s).credit))" : "Big store · MSRP · stock is rare")
                                         .font(.caption.monospaced())
                                         .foregroundStyle(Theme.muted)
                                 }

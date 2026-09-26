@@ -20,11 +20,11 @@ in real life:
   drops (see "Pokemon Center drops" below). When no drop is live, the
   store has nothing to buy. A successful attempt gets the best
   possible price.
-- **Amazon**: broad availability, but pricing is inconsistent — ranges
-  from roughly MSRP to noticeably marked up, varying by set and moment.
-  The reliable middle ground.
+- **Amazon**: broad availability, but pricing is inconsistent. The
+  price is at or above market, and sometimes far above market. It
+  changes by set and by day. The reliable middle ground.
 - **Hyped Reseller**: always in stock, both current and older
-  out-of-print product, but always significantly overpriced. The
+  out-of-print product, but always at 2 times market or more. The
   fallback when you need product now, or need something no longer
   sold at retail at all. The reseller does not care if an item is
   fake, because it moves so much product (see
@@ -85,8 +85,9 @@ no product, consistent with the game's existing risk design.
 
 ### Local stores (store run, time-cost)
 
-Big retail stores and the local game shop sell sealed product at MSRP.
-Stock is rare: most visits find an empty shelf. The player learns what
+Big retail stores sell sealed product at MSRP. The local game shop
+prices sealed product near market, but it does not charge scalper
+prices. Stock is rare: most visits find an empty shelf. The player learns what
 a store has only on arrival. There is no advance information.
 
 The local stores are Target, Walmart, Best Buy, GameStop, Barnes &

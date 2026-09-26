@@ -82,7 +82,9 @@ extension Market {
             let p = options[r.int(0...(options.count - 1))]
             if out.contains(where: { $0.product.id == p.id }) { continue }
             let qty = p.packs == 1 ? r.int(2...8) : r.int(1...2)
-            out.append(ShelfItem(id: "\(day)-\(store.rawValue)-\(i)", product: p, price: p.msrp ?? p.market, quantity: qty))
+            // Big stores sell at MSRP. A game shop prices near market, but it does not scalp.
+            let price = store.isGameShop ? retail(p.market * r.double(0.9...1.05)) : (p.msrp ?? p.market)
+            out.append(ShelfItem(id: "\(day)-\(store.rawValue)-\(i)", product: p, price: price, quantity: qty))
         }
         return out
     }

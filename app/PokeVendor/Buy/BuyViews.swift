@@ -61,7 +61,7 @@ struct BuyView: View {
             guard store.isPokemonCenterDropLive, let o = offers.first else { return "No drop live" }
             return store.data.pokemonCenterAttempted ? "Drop live · you already tried" : "Drop live: \(o.title)"
         case .amazon: return "\(offers.count) items in stock · \(Balance.deliveryDays[s] ?? 0)-day delivery"
-        case .reseller: return "Always in stock · marked up"
+        case .reseller: return "Always in stock · 2x market or more"
         case .ebay: return "\(offers.count) listings today · sealed and singles"
         case .facebook: return "\(offers.count) listings nearby · pickup or shipped"
         }
@@ -122,8 +122,8 @@ struct StoreView: View {
     private var header: String {
         switch store_ {
         case .pokemonCenter: "MSRP · drops only · one attempt at \(Int(Balance.pokemonCenterSuccessChance * 100))% · 5-day delivery"
-        case .amazon: "Prices from about MSRP to marked up · 2-day delivery"
-        case .reseller: "Always in stock, always overpriced · 3-day delivery"
+        case .amazon: "At or over market, sometimes far over · 2-day delivery"
+        case .reseller: "Always in stock at 2x market or more · 3-day delivery"
         case .ebay: "Individual sellers · check the seller rating · 4-day delivery"
         case .facebook: "Local sellers · pickups cost 1 hour today"
         }

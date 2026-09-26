@@ -36,6 +36,7 @@ enum Balance {
     static let pokemonCenterDropChance = 0.15
     static let pokemonCenterSuccessChance = 0.30
     static let amazonStockChance = 0.45
+    static let amazonSpikeChance = 0.3
     static let deliveryDays: [Storefront: Int] = [
         .pokemonCenter: 5, .amazon: 2, .reseller: 3, .ebay: 4, .facebook: 4,
     ]

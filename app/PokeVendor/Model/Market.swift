@@ -80,13 +80,15 @@ enum Market {
         switch store {
         case .amazon:
             for (i, p) in products.enumerated() where r.double(0...1) < Balance.amazonStockChance {
+                // Usually a little over market, and on some days far over it.
+                let markup = r.double(0...1) < Balance.amazonSpikeChance ? r.double(1.4...1.9) : r.double(1.0...1.25)
                 out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug),
-                                      price: retail(p.market * r.double(0.95...1.2)), shipping: 0, deliveryDays: delivery))
+                                      price: retail(p.market * markup), shipping: 0, deliveryDays: delivery))
             }
         case .reseller:
             for (i, p) in products.enumerated() {
                 out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug),
-                                      price: retail(p.market * r.double(1.25...1.5)), shipping: 0, deliveryDays: delivery))
+                                      price: retail(p.market * r.double(2.0...2.6)), shipping: 0, deliveryDays: delivery))
             }
         case .pokemonCenter:
             let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) }

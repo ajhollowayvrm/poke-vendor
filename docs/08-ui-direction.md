@@ -140,6 +140,10 @@ player buys sealed product online here (see
   example a live Pokemon Center drop. A tap on a row opens that
   store's own screen. The screen does not use tabs, because the
   stores do not share one layout.
+- **Prices by store.** Big box stores and Pokemon Center drops sell at
+  MSRP. A game shop prices near market, with no scalper prices. Amazon
+  is at or above market, and sometimes far above it. The Hyped
+  Reseller is at 2 times market or more.
 - **Locked channels do not show.** Distributor/wholesale and case
   splits appear only after the player unlocks them. The screen shows
   no locked rows.
