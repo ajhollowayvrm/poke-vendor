@@ -209,6 +209,28 @@ final class GameStore {
         save()
     }
 
+    /// Moves raw cards into bulk. A pulled card joins the bulk group of its rip. A bought card keeps its
+    /// amount paid in the portfolio header.
+    func moveToBulk(_ ids: Set<UUID>) {
+        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.keep }
+        guard !cards.isEmpty else { return }
+        for card in cards {
+            data.openedPaid += card.paid ?? 0
+            if let rip = card.ripID, let i = data.bulk.firstIndex(where: { $0.ripID == rip }) {
+                data.bulk[i].cards.append(card.print)
+            } else if let i = data.bulk.firstIndex(where: { $0.moved && $0.day == data.day && $0.setSlug == card.setSlug }) {
+                data.bulk[i].cards.append(card.print)
+            } else {
+                data.bulk.append(BulkGroup(ripID: UUID(), setSlug: card.setSlug, date: .now,
+                                           cards: [card.print], day: data.day, moved: true))
+            }
+        }
+        let moved = Set(cards.map(\.id))
+        data.raw.removeAll { moved.contains($0.id) }
+        log("Moved \(cards.count) card\(cards.count == 1 ? "" : "s") to bulk.")
+        save()
+    }
+
     // MARK: - Runs
 
     func startRun() {

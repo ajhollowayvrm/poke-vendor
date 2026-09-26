@@ -126,7 +126,7 @@ struct HubView: View {
 
     private var freeActions: some View {
         HStack(spacing: 8) {
-            ActionTile(title: "Packs", icon: "shippingbox") { nav.path.append(.inventory(.sealed)) }
+            ActionTile(title: "Inventory", icon: "shippingbox") { nav.path.append(.inventory(.sealed)) }
             ActionTile(title: "Grade", icon: "seal") { nav.path.append(.inventory(.raw)) }
             ActionTile(title: "Buy", icon: "cart") { nav.path.append(.buy) }
             if store.hasAccount {
@@ -263,6 +263,12 @@ struct HubView: View {
             }
             store.report = nil
             nav.path = [.social]
+        }
+        if args.contains("-bulk") {
+            store.startRun()
+            for print in SetLibrary.set(Market.slug).prints.filter({ ($0.market ?? 0) > 1 }).prefix(3) { store.addTestCard(print) }
+            store.moveToBulk(Set(store.data.raw.prefix(2).map(\.id)))
+            nav.path = [.inventory(.bulk)]
         }
         if args.contains("-demo") {
             if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }

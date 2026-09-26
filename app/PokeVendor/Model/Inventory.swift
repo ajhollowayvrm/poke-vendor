@@ -161,6 +161,8 @@ struct BulkGroup: Codable, Identifiable, Hashable {
     let date: Date
     var cards: [CardPrint]
     var day = 0
+    /// True for a group of cards that the player moved from Raw, not from a rip.
+    var moved = false
 
     var value: Double { cards.reduce(0) { $0 + ($1.market ?? 0) } }
 }

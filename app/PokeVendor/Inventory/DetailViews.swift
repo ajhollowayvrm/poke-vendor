@@ -131,6 +131,11 @@ struct CardDetailView: View {
                             .foregroundStyle(.black)
                     }
                     .controlSize(.large)
+                    if card.grade == nil {
+                        Button("Move to bulk") { store.moveToBulk([card.id]) }
+                            .buttonStyle(.bordered)
+                            .disabled(!free || card.keep)
+                    }
                     if store.hasAccount {
                         HStack(spacing: 10) {
                             Button("Post: collection flex") { post = request(.collectionFlex, card) }
@@ -277,7 +282,7 @@ struct BulkDetailView: View {
                 .sorted { $0.count > $1.count }
             ScrollView {
                 VStack(spacing: 14) {
-                    DetailBox(title: "The rip") {
+                    DetailBox(title: group.moved ? "Moved from Raw" : "The rip") {
                         Text("\(SetLibrary.set(group.setSlug).name) · day \(group.day + 1)")
                             .font(.subheadline)
                         HStack(spacing: 0) {

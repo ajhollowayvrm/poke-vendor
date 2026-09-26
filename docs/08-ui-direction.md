@@ -253,10 +253,14 @@ here, and the rip-or-hold decision happens here.
   | Tab | Actions |
   | --- | --- |
   | Sealed | Rip, Keep |
-  | Raw | Sell, Grade, Keep |
+  | Raw | Sell, Grade, Move to bulk, Keep |
   | Slabs | Sell, Keep |
   | Bulk | Add to store run |
 
+  "Move to bulk" moves raw cards into a bulk group. A pulled card goes
+  back to the bulk group of its rip. A card with no rip goes to a group
+  of the cards that the player moved that day. The detail screen for a
+  raw card also has "Move to bulk".
   "Rip" sends the selection to the rip queue (see
   [18-ripping.md](18-ripping.md#the-rip-queue)). "Grade" puts all the
   selected cards in one grading submission. "Add to store run" puts

@@ -178,6 +178,12 @@ struct InventoryView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(chosen.isEmpty || blocked)
+                Button("Bulk") {
+                    store.moveToBulk(chosen)
+                    finishSelecting()
+                }
+                .buttonStyle(.bordered)
+                .disabled(chosen.isEmpty || blocked)
             case .slabs:
                 sellButton(chosen, disabled: blocked)
             case .bulk:
@@ -402,7 +408,7 @@ struct BulkRow: View {
                 .frame(width: 43, height: 60)
             VStack(alignment: .leading, spacing: 3) {
                 Text("Bulk · \(SetLibrary.set(group.setSlug).name)").font(.subheadline.weight(.medium))
-                Text("\(group.cards.count) cards · rip on day \(group.day + 1)")
+                Text("\(group.cards.count) card\(group.cards.count == 1 ? "" : "s") · \(group.moved ? "moved" : "rip") on day \(group.day + 1)")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
                     .lineLimit(1)
