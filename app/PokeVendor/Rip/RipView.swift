@@ -47,6 +47,13 @@ struct RipView: View {
     @State private var peekTask: Task<Void, Never>?
     @State private var burst: HitBurst?
     @State private var popID: UUID?
+    /// The turn of the whole stack during a flip, in degrees.
+    @State private var stackTurn: Double = 0
+    @State private var flipping = false
+    /// The info panel, the pile label, and the glow wait until a card has turned face up.
+    @State private var infoCard: RipCard?
+    @State private var pileTop: RipCard?
+    @State private var settledTopID: UUID?
 
     var body: some View {
         GeometryReader { geo in
@@ -74,6 +81,7 @@ struct RipView: View {
                             .frame(width: layout.cardW, height: layout.cardH)
                             .shadow(color: .black.opacity(0.45), radius: 6, y: 4)
                             .scaleEffect(p.scale)
+                            .rotation3DEffect(.degrees(inStack(card) ? stackTurn : 0), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
                             .rotationEffect(.degrees(p.rotation))
                             .position(p.point)
                             .zIndex(p.z)
@@ -165,7 +173,16 @@ struct RipView: View {
         }
         .onChange(of: model.lastReveal) { _, reveal in
             guard let card = reveal?.card, card.hitTier >= .medium else { return }
-            celebrate(card)
+            Task {
+                try? await Task.sleep(for: .milliseconds(Self.revealDelay))
+                celebrate(card)
+            }
+        }
+        .onChange(of: revealKey) { _, _ in
+            Task {
+                try? await Task.sleep(for: .milliseconds(Self.revealDelay))
+                settleReveal()
+            }
         }
         .onChange(of: model.phase) { _, phase in
             guard phase == .done else { return }
@@ -180,10 +197,29 @@ struct RipView: View {
 
     // MARK: - Pieces
 
+    /// About half of a card's flip. A face shows only after it turns past edge-on.
+    static let revealDelay = 260
+
+    /// Changes whenever a card might turn face up.
+    private var revealKey: String {
+        "\(model.focusCard?.id.uuidString ?? "")|\(model.pile.last?.id.uuidString ?? "")|\(model.stack.first?.id.uuidString ?? "")|\(model.faceUp)|\(model.showcaseID?.uuidString ?? "")"
+    }
+
+    private func settleReveal() {
+        infoCard = model.focusCard
+        pileTop = model.pile.last
+        settledTopID = model.stack.first.flatMap { model.isShownFaceUp($0) ? $0.id : nil }
+    }
+
+    private func inStack(_ card: RipCard) -> Bool {
+        model.stack.contains { $0.id == card.id }
+    }
+
     /// The top card, when it shows face up and is a medium or big hit.
     private var glowCard: RipCard? {
-        guard model.phase == .open || model.phase == .done, model.tuckingID == nil,
-              let front = model.stack.first, model.isShownFaceUp(front), front.hitTier >= .medium else { return nil }
+        guard model.phase == .open || model.phase == .done, model.tuckingID == nil, !flipping,
+              let front = model.stack.first, front.id == settledTopID, model.isShownFaceUp(front),
+              front.hitTier >= .medium else { return nil }
         return front
     }
 
@@ -204,7 +240,7 @@ struct RipView: View {
 
     private func pileSlot(_ layout: TableLayout) -> some View {
         ZStack {
-            if let top = model.pile.last {
+            if let top = pileTop, model.pile.contains(where: { $0.id == top.id }) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("\(model.pile.count) of \(model.allCards.count)")
                         .font(.caption2.monospaced())
@@ -240,15 +276,22 @@ struct RipView: View {
                     .foregroundStyle(Theme.muted)
                     .frame(maxWidth: .infinity, minHeight: 82)
             } else {
-                CardInfo(card: model.focusCard)
+                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
             }
             HStack(spacing: 10) {
-                Picker("Facing", selection: faceBinding) {
-                    Text("Face down").tag(false)
-                    Text("Face up").tag(true)
+                Button(action: flipStack) {
+                    VStack(spacing: 1) {
+                        Label("Flip", systemImage: "arrow.triangle.2.circlepath")
+                            .font(.subheadline.weight(.semibold))
+                        Text(model.faceUp ? "face up" : "face down")
+                            .font(.caption2.monospaced())
+                            .foregroundStyle(Theme.muted)
+                    }
+                    .frame(width: 120)
                 }
-                .pickerStyle(.segmented)
-                .frame(width: 180)
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(flipping || model.tuckingID != nil)
                 Button(action: moveToBack) {
                     Label("Move to back", systemImage: "arrow.uturn.down")
                         .font(.subheadline.weight(.semibold))
@@ -265,10 +308,25 @@ struct RipView: View {
         .padding(.bottom, 8)
     }
 
-    private var faceBinding: Binding<Bool> {
-        Binding(get: { model.faceUp }, set: { value in
-            withAnimation(.easeInOut(duration: 0.35)) { model.setFaceUp(value) }
-        })
+    /// Turns the whole stack over. The order reverses while the stack is edge-on, so no card jumps.
+    private func flipStack() {
+        guard !flipping, model.tuckingID == nil else { return }
+        guard model.phase == .open || model.phase == .done else {
+            model.setFaceUp(!model.faceUp)
+            return
+        }
+        flipping = true
+        Haptics.tap()
+        withAnimation(.easeIn(duration: 0.16)) { stackTurn = 90 }
+        Task {
+            try? await Task.sleep(for: .milliseconds(160))
+            var still = Transaction()
+            still.disablesAnimations = true
+            withTransaction(still) { model.setFaceUp(!model.faceUp) }
+            withAnimation(.easeOut(duration: 0.2)) { stackTurn = 0 }
+            try? await Task.sleep(for: .milliseconds(200))
+            flipping = false
+        }
     }
 
     private func placement(for card: RipCard, layout: TableLayout) -> Placement {
@@ -421,6 +479,7 @@ struct RipView: View {
                 sendFront()
                 try? await Task.sleep(for: .milliseconds(600))
             }
+            if args.contains("flip") { flipStack() }
             if args.contains("peek") { withAnimation { peeking = true } }
             if args.contains("close") {
                 try? await Task.sleep(for: .seconds(1))

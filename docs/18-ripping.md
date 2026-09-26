@@ -143,13 +143,18 @@ Normal is a manual rip. The player holds the cards like a real pack:
    same as looking at the top edges of a real Prismatic Evolutions
    pack. The peek closes when the player lifts the finger.
 
-**Face down or face up.** A toggle on the rip screen sets how the
-stack shows. The game keeps the choice for the next rip.
+**Face down or face up.** A **Flip** button on the rip screen turns
+the whole stack over. The stack turns as one piece, and its order
+reverses while it is edge-on, so no card jumps. The game keeps the
+choice for the next rip.
+
+**No early reveal.** The info panel, the pile label, the glow, and the
+hit effects wait until a card turns past edge-on. The player never sees
+a card's name or price before its face shows.
 
 - Face down: the player sees the card backs. A face-down stack is the
   pack turned over, so its order is reversed: the last card (the rare
-  slot) is on top. Turning the stack over at any time reverses
-  the order again. Move to back is blind. A tap flips the top card as
+  slot) is on top. Move to back is blind. A tap flips the top card as
   it goes to the pile. A medium or big hit (see
   [Hit effects](#hit-effects)) flips in place first, and the next tap
   sends it to the pile.
