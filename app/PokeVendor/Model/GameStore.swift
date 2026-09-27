@@ -272,12 +272,15 @@ final class GameStore {
         save()
     }
 
-    /// A free sealed product for testing, at its market price.
-    func addTestProduct(_ id: String) {
-        guard let p = SetLibrary.product(id) else { return }
-        data.sealed.append(SealedItem(setSlug: p.homeSlug, name: p.name, packs: p.packs, paid: p.market, acquired: .now,
-                                      source: "Test product", productID: p.id, acquiredDay: data.day))
+    /// A free sealed product for testing, at its market price. It does not touch cash.
+    @discardableResult
+    func addTestProduct(_ id: String) -> SealedItem? {
+        guard let p = SetLibrary.product(id) else { return nil }
+        let item = SealedItem(setSlug: p.homeSlug, name: p.name, packs: p.packs, paid: p.market, acquired: .now,
+                              source: "Test product", productID: p.id, acquiredDay: data.day)
+        data.sealed.append(item)
         save()
+        return item
     }
 
     func addTestCard(_ print: CardPrint, slug: String = "prismatic-evolutions") {

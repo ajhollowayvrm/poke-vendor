@@ -190,10 +190,46 @@ struct HubView: View {
         .background(Theme.background)
     }
 
+    /// The products to test: collection boxes and packs with each era's pack trick.
+    private static let testProducts: [(section: String, items: [(label: String, id: String)])] = [
+        ("Collection boxes", [
+            ("Ogerpon ex Premium Collection · 4 sets", "576482"),
+            ("Houndstone ex Box · 2 sets", "561521"),
+            ("Prismatic Surprise Box · 1 random promo", "593466"),
+            ("Prismatic ETB · 9 packs + promo", "593355"),
+            ("Prismatic Super-Premium · 15 packs", "622770"),
+        ]),
+        ("Pack tricks", [
+            ("Prismatic pack · trick 1", "593294"),
+            ("Evolving Skies pack · trick 4", "244337"),
+            ("Cosmic Eclipse pack · trick 4", "199263"),
+            ("Base Set pack · trick 3", "138130"),
+            ("Evolving Skies ETB · 8 packs", "242434"),
+        ]),
+    ]
+
     private var testMenu: some View {
         Menu {
+            ForEach(Self.testProducts, id: \.section) { group in
+                Menu("Rip now: \(group.section.lowercased())") {
+                    ForEach(group.items, id: \.id) { item in
+                        Button(item.label) {
+                            if let added = store.addTestProduct(item.id) { nav.startRip([added]) }
+                        }
+                    }
+                }
+            }
+            Menu("Add to Inventory") {
+                ForEach(Self.testProducts, id: \.section) { group in
+                    Section(group.section) {
+                        ForEach(group.items, id: \.id) { item in
+                            Button(item.label) { store.addTestProduct(item.id) }
+                        }
+                    }
+                }
+            }
+            Divider()
             Button("Add $500 test cash") { store.addTestCash(500) }
-            Button("Add a test pack") { store.addTestPack() }
             Button("Start a new run", role: .destructive) { store.startRun() }
         } label: {
             Label("Test", systemImage: "hammer")
