@@ -91,7 +91,8 @@ struct RipView: View {
                 }
 
                 if model.phase == .sealed || model.phase == .opening {
-                    PackView(setName: model.cardSet.name, slug: model.cardSet.slug, tearProgress: tearProgress, torn: torn)
+                    PackView(setName: model.cardSet.name, slug: model.cardSet.slug, series: model.cardSet.series,
+                             label: model.cardSet.packLabel, tearProgress: tearProgress, torn: torn)
                         .frame(width: layout.packW, height: layout.packH)
                         .position(x: layout.stackCenter.x,
                                   y: layout.stackCenter.y + (packGone ? geo.size.height : 0))
@@ -301,7 +302,7 @@ struct RipView: View {
                     VStack(spacing: 1) {
                         Label("Pack trick", systemImage: "arrow.uturn.down")
                             .font(.subheadline.weight(.semibold))
-                        Text(model.trickDone ? "done" : model.faceUp ? "back → front" : "top → bottom")
+                        Text(model.trickDone ? "done" : "\(model.trickCount) · \(model.faceUp ? "back → front" : "top → bottom")")
                             .font(.caption2.monospaced())
                     }
                     .frame(maxWidth: .infinity)
@@ -464,13 +465,18 @@ struct RipView: View {
         }
     }
 
+    /// The set's pack trick: it moves its number of cards one by one, then the stack turns face up.
     private func moveToBack() {
-        guard model.phase == .open, model.stack.count > 1, model.tuckingID == nil, !model.trickDone else { return }
-        Haptics.tap()
-        withAnimation(.easeOut(duration: 0.16)) { model.startTuck() }
+        let moves = model.trickCount
+        guard model.beginTrick() else { return }
         Task {
-            try? await Task.sleep(for: .milliseconds(170))
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { model.finishTuck() }
+            for _ in 0..<moves {
+                Haptics.tap()
+                withAnimation(.easeOut(duration: 0.14)) { model.startTuck() }
+                try? await Task.sleep(for: .milliseconds(150))
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) { model.finishTuck() }
+                try? await Task.sleep(for: .milliseconds(260))
+            }
             if !model.faceUp {
                 try? await Task.sleep(for: .milliseconds(380))
                 flipStack(force: true)

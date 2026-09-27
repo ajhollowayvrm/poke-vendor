@@ -12,9 +12,12 @@ The app is in `app/`. XcodeGen makes the Xcode project from
 `app/project.yml`. The app opens on the home hub. It has days and a clock, End Day, the
 day job and the paycheck, rent (and game over when the player cannot
 pay it), the Wallet ledger, and the Activity log. The player buys
-Prismatic Evolutions product, and collections that mix packs from
-Surging Sparks, Stellar Crown, Twilight Masquerade, and Paradox Rift,
-online from five storefronts, rips it in
+product from eight sets online from five storefronts: Prismatic
+Evolutions, Surging Sparks, Stellar Crown, Twilight Masquerade, and
+Paradox Rift (in print), and Evolving Skies, Cosmic Eclipse, and Base
+Set (out of print). Amazon, Pokemon Center drops, and local shelves
+sell only in-print product. Each era rips with its own pack order and
+pack trick, rips it in
 Inventory, lists cards on TCGplayer or eBay, and grades cards at PSA,
 CGC, or BGS. A store run visits big stores and two game shops, where the
 player buys at MSRP, sells singles on the buylist, and sells bulk for

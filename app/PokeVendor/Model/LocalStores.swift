@@ -73,6 +73,7 @@ extension Market {
         let kinds = store.isGameShop ? ["Booster pack", "Booster bundle", "Elite Trainer Box"]
                                      : ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection"]
         let options = SetLibrary.catalog.filter {
+            ($0.inPrint ?? true) &&
             kinds.contains($0.kind) && $0.msrp != nil && !$0.isClubExclusive && $0.packs <= 11
         }
         guard !options.isEmpty else { return [] }

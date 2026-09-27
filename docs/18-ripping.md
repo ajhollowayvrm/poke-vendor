@@ -215,6 +215,22 @@ last.
   [Where the hit sits](#where-the-hit-sits)). Each set's trick moves
   the correct cards for that set.
 
+### Pack tricks by era
+
+Each era has its own physical pack order and its own pack trick. The
+Pack trick button moves the era's number of cards, one by one, from the
+back to the front (or from the top to the bottom when face down).
+
+| Era | Physical order, front card first | Pack trick | Source |
+| --- | --- | --- | --- |
+| Scarlet & Violet | 4 commons, 3 uncommons, reverse holo 1, reverse holo 2, rare slot, Basic Energy | 1 card | [sets/eras/scarlet-violet.md](sets/eras/scarlet-violet.md#conflicts-in-the-template) |
+| Sword & Shield, Sun & Moon | 5 commons, reverse holo, rare slot, Basic Energy, 3 uncommons | 4 cards | [sets/eras/sun-moon.md](sets/eras/sun-moon.md#pack-order) |
+| Wizards of the Coast | 5 commons, 2 Energy, rare slot, 3 uncommons | 3 cards | [sets/eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md#pack-order) (low confidence) |
+
+After the trick, the rare slot is the last card in every era. In
+Sword & Shield, most cards have a yellow border, so the peek gives
+less away than in Prismatic Evolutions.
+
 ### Where the hit sits
 
 The stack starts in the physical pack order, with the Basic Energy

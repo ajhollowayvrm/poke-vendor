@@ -1,8 +1,10 @@
 {
  "slug": "surging-sparks",
  "name": "Surging Sparks",
- "packCost": 12.12,
- "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/565602_in_800x800.jpg",
+ "era": "scarlet-violet",
+ "series": "Scarlet & Violet",
+ "packCost": 7.91,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/565604_in_800x800.jpg",
  "slots": [
   {
    "name": "Common",
@@ -694,6 +696,20 @@
    ]
   }
  ],
+ "order": [
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon",
+  "Reverse holo slot 1",
+  "Reverse holo slot 2",
+  "Rare slot",
+  "ENERGY"
+ ],
+ "trick": 1,
  "prints": [
   {
    "num": "001/191",

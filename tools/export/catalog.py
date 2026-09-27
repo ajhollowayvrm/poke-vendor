@@ -11,8 +11,7 @@ Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game
 - the market price (tools/ppt/cache/sealed/), an estimated MSRP, and the image.
 
 A product is in the catalog when its pack mix is exact, every pack comes from a set the app has, and it has a
-price. The catalog holds each product with a Prismatic Evolutions pack, and each product that mixes packs from
-two or more sets.
+price. "inPrint" is true when every pack is from a Scarlet & Violet set. Only in-print product sells at retail.
 """
 import glob, json, os, re, sys
 
@@ -106,10 +105,12 @@ def main():
             continue
         if not mix or sum(mix.values()) != packs or any(slug not in sets for slug in mix):
             continue
-        if HOME not in mix and len(mix) < 2:
-            continue
+        # Every product of the app's sets is in the catalog.
         p = prices.get(str(it["id"]))
         if not p or not p.get("unopenedPrice") or "Dollar General" in it["name"]:
+            continue
+        # The set files rip Unlimited prints only, so 1st Edition and Shadowless product stays out.
+        if re.search(r"1st Edition|Shadowless", it["name"]):
             continue
         promos = [resolve_promo(t, sets, svp) for t in it.get("promos", [])]
         if any(x is None for x in promos):
@@ -124,7 +125,9 @@ def main():
         msrp = next((v for k, v in MSRP_BY_NAME if k in name), MSRP_BY_KIND.get(it["kind"]))
         # The mix lists the home set first, then the rest by count.
         order = sorted(mix.items(), key=lambda kv: (kv[0] != HOME, -kv[1], kv[0]))
-        out.append({"id": str(it["id"]), "name": name, "kind": it["kind"], "packs": packs,
+        # Only Scarlet & Violet product is still in print, so only it sells at retail.
+        in_print = all(sets[s].get("era") == "scarlet-violet" for s in mix)
+        out.append({"id": str(it["id"]), "name": name, "kind": it["kind"], "packs": packs, "inPrint": in_print,
                     "mix": [{"slug": s, "packs": n} for s, n in order],
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,
                     "market": p["unopenedPrice"], "msrp": msrp,

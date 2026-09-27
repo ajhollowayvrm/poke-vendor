@@ -47,6 +47,16 @@ values. Check them against real prices:
 Warehouse-club products (Costco, Sam's Club) are not in Pokemon Center
 drops or on local shelves.
 
+**In print.** Only Scarlet & Violet product counts as in print. Amazon,
+Pokemon Center drops, and local shelves sell only in-print product. The
+Hyped Reseller, eBay, and Facebook Marketplace also sell older sets.
+
+**Print runs.** A Base Set pack rips from the Unlimited print run only.
+1st Edition and Shadowless product is not in the catalog.
+
+**Loose pack price.** The cheapest plain booster pack of the set, not
+a sleeved pack, a 1st Edition pack, a blister, or a bundle.
+
 ## Store run and game shops
 
 | Value | Prototype value |

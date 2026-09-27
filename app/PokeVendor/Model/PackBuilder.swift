@@ -1,12 +1,12 @@
 import Foundation
 
-/// Builds one pack from the slot map, in the physical pack order: the front card first. The Basic Energy sits
-/// last (docs/sets/eras/scarlet-violet.md, Conflicts in the template). The player moves it with the pack trick.
+/// Builds one pack from the slot map, in the set's physical pack order: the front card first
+/// (tools/export/rip_set.py, ERA_PACKS). The player moves the back cards with the pack trick.
 struct PackBuilder {
     let cardSet: SetData
 
     func build() -> [RipCard] {
-        var cards: [RipCard] = []
+        var bySlot: [String: [RipCard]] = [:]
         for slot in cardSet.slots {
             // A pack does not repeat a card inside one slot.
             var used = Set<Int>()
@@ -16,10 +16,22 @@ struct PackBuilder {
                 if candidates.isEmpty { candidates = outcome.prints }
                 guard let index = candidates.randomElement() else { continue }
                 used.insert(index)
-                cards.append(RipCard(print: cardSet.prints[index], energy: nil))
+                bySlot[slot.name, default: []].append(RipCard(print: cardSet.prints[index], energy: nil))
             }
         }
-        cards.append(RipCard(print: nil, energy: EnergyType.allCases.randomElement()))
+        let energy = { RipCard(print: nil, energy: EnergyType.allCases.randomElement()) }
+        guard let order = cardSet.order else {
+            return cardSet.slots.flatMap { bySlot[$0.name] ?? [] } + [energy()]
+        }
+        var cards: [RipCard] = []
+        for name in order {
+            if name == "ENERGY" {
+                cards.append(energy())
+            } else if let card = bySlot[name]?.first {
+                cards.append(card)
+                bySlot[name]?.removeFirst()
+            }
+        }
         return cards
     }
 

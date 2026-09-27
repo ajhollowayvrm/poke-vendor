@@ -1,8 +1,10 @@
 {
  "slug": "stellar-crown",
  "name": "Stellar Crown",
- "packCost": 10.82,
- "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/557352_in_800x800.jpg",
+ "era": "scarlet-violet",
+ "series": "Scarlet & Violet",
+ "packCost": 10.6,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/557331_in_800x800.jpg",
  "slots": [
   {
    "name": "Common",
@@ -537,6 +539,20 @@
    ]
   }
  ],
+ "order": [
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon",
+  "Reverse holo slot 1",
+  "Reverse holo slot 2",
+  "Rare slot",
+  "ENERGY"
+ ],
+ "trick": 1,
  "prints": [
   {
    "num": "002/142",

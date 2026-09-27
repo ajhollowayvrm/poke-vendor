@@ -4,6 +4,7 @@
   "name": "Prismatic Evolutions 2-Pack Blister [Eevee]",
   "kind": "Blister",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -21,6 +22,7 @@
   "name": "Costco Pokemon Prismatic Evolutions 2-Pack Trainer Box and Booster Bundle",
   "kind": "Booster bundle",
   "packs": 15,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -38,6 +40,7 @@
   "name": "Prismatic Evolutions Booster Bundle",
   "kind": "Booster bundle",
   "packs": 6,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -55,6 +58,7 @@
   "name": "Prismatic Evolutions Booster Pack",
   "kind": "Booster pack",
   "packs": 1,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -72,6 +76,7 @@
   "name": "Prismatic Evolutions Booster Pack Art Bundle [Set of 4]",
   "kind": "Booster pack",
   "packs": 4,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -89,6 +94,7 @@
   "name": "Prismatic Evolutions Lucario ex & Tyranitar ex Premium Collection (Sam's Club)",
   "kind": "Collection",
   "packs": 14,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -106,6 +112,7 @@
   "name": "Prismatic Evolutions Poster Collection",
   "kind": "Collection",
   "packs": 3,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -154,6 +161,7 @@
   "name": "Prismatic Evolutions Premium Figure Collection",
   "kind": "Collection",
   "packs": 11,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -182,6 +190,7 @@
   "name": "Prismatic Evolutions Super-Premium Collection",
   "kind": "Collection",
   "packs": 15,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -210,6 +219,7 @@
   "name": "Prismatic Evolutions Surprise Box",
   "kind": "Collection",
   "packs": 4,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -462,6 +472,7 @@
   "name": "Prismatic Evolutions Tech Sticker Collection [Glaceon]",
   "kind": "Collection",
   "packs": 3,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -490,6 +501,7 @@
   "name": "Prismatic Evolutions Tech Sticker Collection [Leafeon]",
   "kind": "Collection",
   "packs": 3,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -518,6 +530,7 @@
   "name": "Prismatic Evolutions Tech Sticker Collection [Set of 3]",
   "kind": "Collection",
   "packs": 9,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -566,6 +579,7 @@
   "name": "Prismatic Evolutions Tech Sticker Collection [Sylveon]",
   "kind": "Collection",
   "packs": 3,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -594,6 +608,7 @@
   "name": "Prismatic Evolutions Elite Trainer Box",
   "kind": "Elite Trainer Box",
   "packs": 9,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -622,6 +637,7 @@
   "name": "Costco Prismatic Evolutions 8-Pack Mini Tins",
   "kind": "Tin",
   "packs": 16,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -639,6 +655,7 @@
   "name": "Prismatic Evolutions Mini Tin [Espeon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -656,6 +673,7 @@
   "name": "Prismatic Evolutions Mini Tin [Flareon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -673,6 +691,7 @@
   "name": "Prismatic Evolutions Mini Tin [Glaceon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -690,6 +709,7 @@
   "name": "Prismatic Evolutions Mini Tin [Jolteon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -707,6 +727,7 @@
   "name": "Prismatic Evolutions Mini Tin [Leafeon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -724,6 +745,7 @@
   "name": "Prismatic Evolutions Mini Tin [Sylveon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -741,6 +763,7 @@
   "name": "Prismatic Evolutions Mini Tin [Umbreon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -758,6 +781,7 @@
   "name": "Prismatic Evolutions Mini Tin [Vaporeon]",
   "kind": "Tin",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "prismatic-evolutions",
@@ -771,10 +795,3508 @@
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/593455_in_800x800.jpg"
  },
  {
+  "id": "199767",
+  "name": "Cosmic Eclipse 3 Pack Blister [Celebi]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 349.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199767_in_800x800.jpg"
+ },
+ {
+  "id": "199766",
+  "name": "Cosmic Eclipse 3 Pack Blister [Victini]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 170,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199766_in_800x800.jpg"
+ },
+ {
+  "id": "199768",
+  "name": "Cosmic Eclipse Single Pack Blister [Mismagius]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 99.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199768_in_800x800.jpg"
+ },
+ {
+  "id": "199769",
+  "name": "Cosmic Eclipse Single Pack Blister [Terrakion]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 130.49,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199769_in_800x800.jpg"
+ },
+ {
+  "id": "242435",
+  "name": "Evolving Skies 3 Pack Blister [Eiscue]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 212.15,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242435_in_800x800.jpg"
+ },
+ {
+  "id": "242444",
+  "name": "Evolving Skies 3 Pack Blister [Umbreon]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 244.24,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242444_in_800x800.jpg"
+ },
+ {
+  "id": "242445",
+  "name": "Evolving Skies Premium Checklane Blister [Emboar]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 54.95,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242445_in_800x800.jpg"
+ },
+ {
+  "id": "247603",
+  "name": "Evolving Skies Premium Checklane Blister [Houndoom]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 102.98,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247603_in_800x800.jpg"
+ },
+ {
+  "id": "242437",
+  "name": "Evolving Skies Premium Checklane Blister [Luxray]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 49.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242437_in_800x800.jpg"
+ },
+ {
+  "id": "242447",
+  "name": "Evolving Skies Single Pack Blister [Eevee]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 78.28,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242447_in_800x800.jpg"
+ },
+ {
+  "id": "242448",
+  "name": "Evolving Skies Single Pack Blister [Galarian Slowpoke]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 75.34,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242448_in_800x800.jpg"
+ },
+ {
+  "id": "247604",
+  "name": "Evolving Skies Single Pack Blister [Octillery]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 59,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247604_in_800x800.jpg"
+ },
+ {
+  "id": "247675",
+  "name": "Fusion Strike Premium Checklane Blister [Cinderace]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 24.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247675_in_800x800.jpg"
+ },
+ {
+  "id": "247676",
+  "name": "Fusion Strike Premium Checklane Blister [Rillaboom]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 24.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247676_in_800x800.jpg"
+ },
+ {
+  "id": "513433",
+  "name": "Paradox Rift 3 Pack Blister [Arctibax]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 30.78,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/513433_in_800x800.jpg"
+ },
+ {
+  "id": "513434",
+  "name": "Paradox Rift 3 Pack Blister [Cetitan]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 29.61,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/513434_in_800x800.jpg"
+ },
+ {
+  "id": "513437",
+  "name": "Paradox Rift 3 Pack Blister [Set of 2]",
+  "kind": "Blister",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 6
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   },
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   },
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   },
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 52.05,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/513437_in_800x800.jpg"
+ },
+ {
+  "id": "546605",
+  "name": "Paradox Rift Premium Checklane Blister [Hydreigon]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   },
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   },
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   },
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 27.5,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/546605_in_800x800.jpg"
+ },
+ {
+  "id": "546606",
+  "name": "Paradox Rift Premium Checklane Blister [Tinkaton]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   },
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   },
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   },
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 10,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/546606_in_800x800.jpg"
+ },
+ {
+  "id": "625582",
+  "name": "Paradox Rift Single Pack Blister [Ceruledge]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   },
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   },
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   },
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 42,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/625582_in_800x800.jpg"
+ },
+ {
+  "id": "625581",
+  "name": "Paradox Rift Single Pack Blister [Glimmora]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   },
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   },
+   {
+    "name": "Cetitan",
+    "num": "SVP 063",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526640_in_800x800.jpg"
+   },
+   {
+    "name": "Arctibax",
+    "num": "SVP 064",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.02,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526646_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 12,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/625581_in_800x800.jpg"
+ },
+ {
+  "id": "514224",
+  "name": "Paradox Rift Single Pack Blister [Pineco]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pineco",
+    "num": "SVP 061",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526634_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 11.21,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/514224_in_800x800.jpg"
+ },
+ {
+  "id": "514223",
+  "name": "Paradox Rift Single Pack Blister [Sinistea]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Sinistea",
+    "num": "SVP 062",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.4,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526638_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 10.69,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/514223_in_800x800.jpg"
+ },
+ {
+  "id": "557334",
+  "name": "Stellar Crown 3 Pack Blisters [Latias]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Latias",
+    "num": "SVP 139",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585579_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 35.81,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557334_in_800x800.jpg"
+ },
+ {
+  "id": "557337",
+  "name": "Stellar Crown 3 Pack Blisters [Tinkaton]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Tinkaton",
+    "num": "SVP 140",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.44,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 35.94,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557337_in_800x800.jpg"
+ },
+ {
+  "id": "599943",
+  "name": "Stellar Crown Premium Checklane Blister [Iron Thorns]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "SVP 137",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.66,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585578_in_800x800.jpg"
+   },
+   {
+    "name": "Porygon2",
+    "num": "SVP 138",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.28,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585577_in_800x800.jpg"
+   },
+   {
+    "name": "Latias",
+    "num": "SVP 139",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585579_in_800x800.jpg"
+   },
+   {
+    "name": "Tinkaton",
+    "num": "SVP 140",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.44,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 15.9,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/599943_in_800x800.jpg"
+ },
+ {
+  "id": "616948",
+  "name": "Stellar Crown Premium Checklane Blister [Koraidon]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "SVP 137",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.66,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585578_in_800x800.jpg"
+   },
+   {
+    "name": "Porygon2",
+    "num": "SVP 138",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.28,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585577_in_800x800.jpg"
+   },
+   {
+    "name": "Latias",
+    "num": "SVP 139",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585579_in_800x800.jpg"
+   },
+   {
+    "name": "Tinkaton",
+    "num": "SVP 140",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.44,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 18.5,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/616948_in_800x800.jpg"
+ },
+ {
+  "id": "616947",
+  "name": "Stellar Crown Premium Checklane Blister [Miraidon]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "SVP 137",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.66,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585578_in_800x800.jpg"
+   },
+   {
+    "name": "Porygon2",
+    "num": "SVP 138",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.28,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585577_in_800x800.jpg"
+   },
+   {
+    "name": "Latias",
+    "num": "SVP 139",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585579_in_800x800.jpg"
+   },
+   {
+    "name": "Tinkaton",
+    "num": "SVP 140",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.44,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 17.5,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/616947_in_800x800.jpg"
+ },
+ {
+  "id": "599942",
+  "name": "Stellar Crown Premium Checklane Blister [Roaring Moon]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "SVP 137",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.66,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585578_in_800x800.jpg"
+   },
+   {
+    "name": "Porygon2",
+    "num": "SVP 138",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.28,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585577_in_800x800.jpg"
+   },
+   {
+    "name": "Latias",
+    "num": "SVP 139",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585579_in_800x800.jpg"
+   },
+   {
+    "name": "Tinkaton",
+    "num": "SVP 140",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.44,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 13.95,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/599942_in_800x800.jpg"
+ },
+ {
+  "id": "557338",
+  "name": "Stellar Crown Single Pack Blister [Horsea]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "SVP 137",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.66,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585578_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 12.16,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557338_in_800x800.jpg"
+ },
+ {
+  "id": "557341",
+  "name": "Stellar Crown Single Pack Blister [Porygon2]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Porygon2",
+    "num": "SVP 138",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.28,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/585577_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 12.06,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557341_in_800x800.jpg"
+ },
+ {
+  "id": "565635",
+  "name": "Surging Sparks 3 Pack Blisters [Quagsire]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Quagsire",
+    "num": "SVP 156",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.78,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594403_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 42.04,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565635_in_800x800.jpg"
+ },
+ {
+  "id": "565634",
+  "name": "Surging Sparks 3 Pack Blisters [Zapdos]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Zapdos",
+    "num": "SVP 157",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.45,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594405_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 46.77,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565634_in_800x800.jpg"
+ },
+ {
+  "id": "565638",
+  "name": "Surging Sparks Premium Checklane Blister [Alakazam]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Alakazam",
+    "num": "082/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.29,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550126_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 31.22,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565638_in_800x800.jpg"
+ },
+ {
+  "id": "565639",
+  "name": "Surging Sparks Premium Checklane Blister [Chandelure]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Chandelure",
+    "num": "038/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.19,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550082_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 38.25,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565639_in_800x800.jpg"
+ },
+ {
+  "id": "606613",
+  "name": "Surging Sparks Single Pack Blister [Hisuian Arcanine]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Hisuian Arcanine",
+    "num": "100/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.18,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550144_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 21.82,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/606613_in_800x800.jpg"
+ },
+ {
+  "id": "565637",
+  "name": "Surging Sparks Single Pack Blister [Pachirisu]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pachirisu",
+    "num": "SVP 158",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.76,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594410_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 11.42,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565637_in_800x800.jpg"
+ },
+ {
+  "id": "606614",
+  "name": "Surging Sparks Single Pack Blister [Sinistcha]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Sinistcha",
+    "num": "022/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.17,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550066_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 15.12,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/606614_in_800x800.jpg"
+ },
+ {
+  "id": "565636",
+  "name": "Surging Sparks Single Pack Blister [Wooper]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Wooper",
+    "num": "SVP 155",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.47,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594389_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 12.81,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565636_in_800x800.jpg"
+ },
+ {
+  "id": "544172",
+  "name": "Twilight Masquerade 3 Pack Blister [Revavroom]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Revavroom",
+    "num": "SVP 121",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.63,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/554296_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 34.66,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544172_in_800x800.jpg"
+ },
+ {
+  "id": "544171",
+  "name": "Twilight Masquerade 3 Pack Blister [Snorlax]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Snorlax",
+    "num": "SVP 122",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 10.68,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/554297_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 43.75,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544171_in_800x800.jpg"
+ },
+ {
+  "id": "544182",
+  "name": "Twilight Masquerade Premium Checklane Blister [Horsea]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Horsea",
+    "num": "030/182",
+    "setName": "Paradox Rift",
+    "rarity": "Common",
+    "variant": "Normal",
+    "market": 0.13,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523639_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 25,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544182_in_800x800.jpg"
+ },
+ {
+  "id": "617190",
+  "name": "Twilight Masquerade Premium Checklane Blister [Lokix]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Lokix",
+    "num": "122/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.14,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523797_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 23.22,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/617190_in_800x800.jpg"
+ },
+ {
+  "id": "544180",
+  "name": "Twilight Masquerade Premium Checklane Blister [Porygon]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Porygon",
+    "num": "142/182",
+    "setName": "Paradox Rift",
+    "rarity": "Common",
+    "variant": "Normal",
+    "market": 0.19,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523823_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 24.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544180_in_800x800.jpg"
+ },
+ {
+  "id": "617189",
+  "name": "Twilight Masquerade Premium Checklane Blister [Steelix]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Steelix",
+    "num": "125/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.23,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523801_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 30.33,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/617189_in_800x800.jpg"
+ },
+ {
+  "id": "544177",
+  "name": "Twilight Masquerade Single Pack Blister [Pupitar]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Pupitar",
+    "num": "SVP 120",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.43,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/554189_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 10.6,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544177_in_800x800.jpg"
+ },
+ {
+  "id": "544179",
+  "name": "Twilight Masquerade Single Pack Blister [Toxel]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Toxel",
+    "num": "SVP 119",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.5,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/554293_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 9.69,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544179_in_800x800.jpg"
+ },
+ {
+  "id": "185731",
+  "name": "Base Set Booster Box [Revised Unlimited Edition]",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "base-set",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 499.99,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/185731_in_800x800.jpg"
+ },
+ {
+  "id": "199261",
+  "name": "Cosmic Eclipse Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4216.67,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199261_in_800x800.jpg"
+ },
+ {
+  "id": "242436",
+  "name": "Evolving Skies Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 2458.04,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242436_in_800x800.jpg"
+ },
+ {
+  "id": "641794",
+  "name": "Evolving Skies Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1595,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/641794_in_800x800.jpg"
+ },
+ {
+  "id": "512821",
+  "name": "Paradox Rift Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 276.77,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512821_in_800x800.jpg"
+ },
+ {
+  "id": "557354",
+  "name": "Stellar Crown Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 309.02,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557354_in_800x800.jpg"
+ },
+ {
+  "id": "649420",
+  "name": "Stellar Crown Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 246.17,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/649420_in_800x800.jpg"
+ },
+ {
+  "id": "565606",
+  "name": "Surging Sparks Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 302.91,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565606_in_800x800.jpg"
+ },
+ {
+  "id": "646039",
+  "name": "Surging Sparks Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 196.13,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/646039_in_800x800.jpg"
+ },
+ {
+  "id": "649421",
+  "name": "Twilight Masqueade Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 196.88,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/649421_in_800x800.jpg"
+ },
+ {
+  "id": "543846",
+  "name": "Twilight Masquerade Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 353.97,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/543846_in_800x800.jpg"
+ },
+ {
+  "id": "650397",
+  "name": "Costco Pokemon Surging Sparks 2-Pack Trainer Box and Booster Bundle",
+  "kind": "Booster bundle",
+  "packs": 15,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 15
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 183.15,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/650397_in_800x800.jpg"
+ },
+ {
+  "id": "512820",
+  "name": "Paradox Rift Booster Bundle",
+  "kind": "Booster bundle",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 6
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 88.18,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512820_in_800x800.jpg"
+ },
+ {
+  "id": "557345",
+  "name": "Stellar Crown Booster Bundle",
+  "kind": "Booster bundle",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 6
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 72.23,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557345_in_800x800.jpg"
+ },
+ {
+  "id": "565629",
+  "name": "Surging Sparks Booster Bundle (LGS)",
+  "kind": "Booster bundle",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 6
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 64.53,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565629_in_800x800.jpg"
+ },
+ {
+  "id": "679564",
+  "name": "Surging Sparks Booster Bundle (Retail)",
+  "kind": "Booster bundle",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 6
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 62.02,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/679564_in_800x800.jpg"
+ },
+ {
+  "id": "543852",
+  "name": "Twilight Masquerade Booster Bundle",
+  "kind": "Booster bundle",
+  "packs": 6,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 6
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 73.25,
+  "msrp": 26.94,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/543852_in_800x800.jpg"
+ },
+ {
+  "id": "138130",
+  "name": "Base Set Booster Pack [Revised Unlimited Edition]",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "base-set",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 865.18,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/138130_in_800x800.jpg"
+ },
+ {
+  "id": "199263",
+  "name": "Cosmic Eclipse Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 74.29,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199263_in_800x800.jpg"
+ },
+ {
+  "id": "267047",
+  "name": "Cosmic Eclipse Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 299.97,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/267047_in_800x800.jpg"
+ },
+ {
+  "id": "276587",
+  "name": "Cosmic Eclipse Sleeved Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 457.65,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/276587_in_800x800.jpg"
+ },
+ {
+  "id": "244337",
+  "name": "Evolving Skies Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 44.85,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/244337_in_800x800.jpg"
+ },
+ {
+  "id": "247497",
+  "name": "Evolving Skies Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 175.47,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247497_in_800x800.jpg"
+ },
+ {
+  "id": "242438",
+  "name": "Evolving Skies Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 60.83,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242438_in_800x800.jpg"
+ },
+ {
+  "id": "247498",
+  "name": "Evolving Skies Sleeved Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 245.61,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/247498_in_800x800.jpg"
+ },
+ {
+  "id": "246274",
+  "name": "Evolving Skies Sleeved Booster Pack Bundle [Set of 8]",
+  "kind": "Booster pack",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 538.66,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/246274_in_800x800.jpg"
+ },
+ {
+  "id": "512822",
+  "name": "Paradox Rift Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8.41,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512822_in_800x800.jpg"
+ },
+ {
+  "id": "512831",
+  "name": "Paradox Rift Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 40.56,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512831_in_800x800.jpg"
+ },
+ {
+  "id": "607504",
+  "name": "Paradox Rift Fun Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 13.31,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/607504_in_800x800.jpg"
+ },
+ {
+  "id": "517210",
+  "name": "Paradox Rift Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 11.65,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/517210_in_800x800.jpg"
+ },
+ {
+  "id": "526674",
+  "name": "Paradox Rift Sleeved Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 41.21,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/526674_in_800x800.jpg"
+ },
+ {
+  "id": "546609",
+  "name": "SM - Cosmic Eclipse Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 125.32,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/546609_in_800x800.jpg"
+ },
+ {
+  "id": "557331",
+  "name": "Stellar Crown Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 10.6,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557331_in_800x800.jpg"
+ },
+ {
+  "id": "557357",
+  "name": "Stellar Crown Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 45.32,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557357_in_800x800.jpg"
+ },
+ {
+  "id": "559530",
+  "name": "Stellar Crown Sleeved Booster Master Carton",
+  "kind": "Booster pack",
+  "packs": 144,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 144
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1152.29,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/559530_in_800x800.jpg"
+ },
+ {
+  "id": "557352",
+  "name": "Stellar Crown Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 10.82,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557352_in_800x800.jpg"
+ },
+ {
+  "id": "557361",
+  "name": "Stellar Crown Sleeved Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 42.47,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557361_in_800x800.jpg"
+ },
+ {
+  "id": "565604",
+  "name": "Surging Sparks Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 7.91,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565604_in_800x800.jpg"
+ },
+ {
+  "id": "565605",
+  "name": "Surging Sparks Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 34.31,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565605_in_800x800.jpg"
+ },
+ {
+  "id": "565602",
+  "name": "Surging Sparks Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 12.12,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565602_in_800x800.jpg"
+ },
+ {
+  "id": "565603",
+  "name": "Surging Sparks Sleeved Booster Pack Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 43.62,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565603_in_800x800.jpg"
+ },
+ {
+  "id": "543843",
+  "name": "Twilight Masquerade Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 9.12,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/543843_in_800x800.jpg"
+ },
+ {
+  "id": "549487",
+  "name": "Twilight Masquerade Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 36.98,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/549487_in_800x800.jpg"
+ },
+ {
+  "id": "607501",
+  "name": "Twilight Masquerade Fun Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 9.43,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/607501_in_800x800.jpg"
+ },
+ {
+  "id": "544170",
+  "name": "Twilight Masquerade Sleeved Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 10.31,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544170_in_800x800.jpg"
+ },
+ {
+  "id": "549494",
+  "name": "Twilight Masquerade Sleeved Booster Pack Art Bundle [Set of 4]",
+  "kind": "Booster pack",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 44.5,
+  "msrp": 17.96,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/549494_in_800x800.jpg"
+ },
+ {
+  "id": "199310",
+  "name": "Cosmic Eclipse Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Sawsbuck",
+    "num": "16/236",
+    "setName": "Cosmic Eclipse",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 2.24,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/201925_in_800x800.jpg"
+   },
+   {
+    "name": "Dusknoir",
+    "num": "85/236",
+    "setName": "Cosmic Eclipse",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.47,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/201928_in_800x800.jpg"
+   },
+   {
+    "name": "Rosa",
+    "num": "204/236",
+    "setName": "Cosmic Eclipse",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 3.61,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/201650_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 444.99,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199310_in_800x800.jpg"
+ },
+ {
+  "id": "242449",
+  "name": "Evolving Skies Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Eldegoss",
+    "num": "16/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.34,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246831_in_800x800.jpg"
+   },
+   {
+    "name": "Regieleki",
+    "num": "60/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.24,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246902_in_800x800.jpg"
+   },
+   {
+    "name": "Zoroark",
+    "num": "103/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246901_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 328.25,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242449_in_800x800.jpg"
+ },
+ {
+  "id": "243425",
+  "name": "Evolving Skies Build & Battle Stadium",
+  "kind": "Build & Battle",
+  "packs": 12,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 12
+   }
+  ],
+  "promos": [
+   {
+    "name": "Eldegoss",
+    "num": "16/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.34,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246831_in_800x800.jpg"
+   },
+   {
+    "name": "Regieleki",
+    "num": "60/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.24,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246902_in_800x800.jpg"
+   },
+   {
+    "name": "Zoroark",
+    "num": "103/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.31,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246901_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 636.77,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/243425_in_800x800.jpg"
+ },
+ {
+  "id": "514068",
+  "name": "Paradox Rift Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Chi-Yu",
+    "num": "SVP 057",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.41,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526574_in_800x800.jpg"
+   },
+   {
+    "name": "Iron Bundle",
+    "num": "SVP 058",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.07,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526586_in_800x800.jpg"
+   },
+   {
+    "name": "Xatu",
+    "num": "SVP 059",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.93,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526590_in_800x800.jpg"
+   },
+   {
+    "name": "Aegislash",
+    "num": "SVP 060",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.38,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526610_in_800x800.jpg"
+   },
+   {
+    "name": "Iron Moth",
+    "num": "028/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.17,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523637_in_800x800.jpg"
+   },
+   {
+    "name": "Chi-Yu",
+    "num": "029/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.16,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523638_in_800x800.jpg"
+   },
+   {
+    "name": "Golisopod",
+    "num": "049/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.23,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523659_in_800x800.jpg"
+   },
+   {
+    "name": "Xatu",
+    "num": "072/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.22,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523725_in_800x800.jpg"
+   },
+   {
+    "name": "Espathra",
+    "num": "081/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.13,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523747_in_800x800.jpg"
+   },
+   {
+    "name": "Aegislash",
+    "num": "134/182",
+    "setName": "Paradox Rift",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.29,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/523813_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 42.95,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/514068_in_800x800.jpg"
+ },
+ {
+  "id": "557330",
+  "name": "Stellar Crown Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Ledian",
+    "num": "SVP 133",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.76,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576970_in_800x800.jpg"
+   },
+   {
+    "name": "Drifblim",
+    "num": "SVP 135",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.03,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576974_in_800x800.jpg"
+   },
+   {
+    "name": "Bouffalant",
+    "num": "SVP 136",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 5.03,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576976_in_800x800.jpg"
+   },
+   {
+    "name": "Ledian",
+    "num": "003/142",
+    "setName": "Stellar Crown",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.18,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/567229_in_800x800.jpg"
+   },
+   {
+    "name": "Bouffalant",
+    "num": "119/142",
+    "setName": "Stellar Crown",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.22,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/567345_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 49.26,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557330_in_800x800.jpg"
+ },
+ {
+  "id": "557366",
+  "name": "Stellar Crown Build & Battle Box [Set of 10]",
+  "kind": "Build & Battle",
+  "packs": 40,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 40
+   }
+  ],
+  "promos": [
+   {
+    "name": "Ledian",
+    "num": "SVP 133",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.76,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576970_in_800x800.jpg"
+   },
+   {
+    "name": "Drifblim",
+    "num": "SVP 135",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.03,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576974_in_800x800.jpg"
+   },
+   {
+    "name": "Bouffalant",
+    "num": "SVP 136",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 5.03,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/576976_in_800x800.jpg"
+   },
+   {
+    "name": "Ledian",
+    "num": "003/142",
+    "setName": "Stellar Crown",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.18,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/567229_in_800x800.jpg"
+   },
+   {
+    "name": "Bouffalant",
+    "num": "119/142",
+    "setName": "Stellar Crown",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.22,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/567345_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 397.49,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557366_in_800x800.jpg"
+ },
+ {
+  "id": "565599",
+  "name": "Surging Sparks Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Gouging Fire",
+    "num": "SVP 151",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 4.97,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594382_in_800x800.jpg"
+   },
+   {
+    "name": "Chien-Pao",
+    "num": "SVP 152",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 10.03,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594383_in_800x800.jpg"
+   },
+   {
+    "name": "Magneton",
+    "num": "SVP 153",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.37,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594385_in_800x800.jpg"
+   },
+   {
+    "name": "Indeedee",
+    "num": "SVP 154",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.85,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594388_in_800x800.jpg"
+   },
+   {
+    "name": "Rabsca",
+    "num": "014/191",
+    "setName": "Surging Sparks",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.16,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/590033_in_800x800.jpg"
+   },
+   {
+    "name": "Gouging Fire",
+    "num": "038/191",
+    "setName": "Surging Sparks",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.18,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/589958_in_800x800.jpg"
+   },
+   {
+    "name": "Tapu Koko",
+    "num": "065/191",
+    "setName": "Surging Sparks",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.16,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/590071_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 61.6,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565599_in_800x800.jpg"
+ },
+ {
+  "id": "544386",
+  "name": "Twilight Masquerade Build & Battle Box",
+  "kind": "Build & Battle",
+  "packs": 4,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 4
+   }
+  ],
+  "promos": [
+   {
+    "name": "Picnicker",
+    "num": "SVP 114",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.41,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/551687_in_800x800.jpg"
+   },
+   {
+    "name": "Thwackey",
+    "num": "SVP 115",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 12.7,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/551688_in_800x800.jpg"
+   },
+   {
+    "name": "Infernape",
+    "num": "SVP 116",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 5.33,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/551689_in_800x800.jpg"
+   },
+   {
+    "name": "Froslass",
+    "num": "SVP 117",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.95,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/551691_in_800x800.jpg"
+   },
+   {
+    "name": "Tatsugiri",
+    "num": "SVP 118",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.73,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/551692_in_800x800.jpg"
+   },
+   {
+    "name": "Infernape",
+    "num": "033/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.18,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550077_in_800x800.jpg"
+   },
+   {
+    "name": "Froslass",
+    "num": "053/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.26,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550097_in_800x800.jpg"
+   },
+   {
+    "name": "Munkidori",
+    "num": "095/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.28,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550139_in_800x800.jpg"
+   },
+   {
+    "name": "Fezandipiti",
+    "num": "096/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.16,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550140_in_800x800.jpg"
+   },
+   {
+    "name": "Okidogi",
+    "num": "111/167",
+    "setName": "Twilight Masquerade",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 0.17,
+    "graded": {
+     "cgc10": null,
+     "cgc9_5": null,
+     "cgc9": null,
+     "cgc8_5": null,
+     "cgc8": null,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
+     "bgs10": null,
+     "bgs9_5": null,
+     "bgs9": null,
+     "bgs8_5": null,
+     "bgs8": null
+    },
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/550155_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 62.47,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/544386_in_800x800.jpg"
+ },
+ {
+  "id": "650863",
+  "name": "Evolving Skies 3 Pack Hanger Box",
+  "kind": "Collection",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 166.22,
+  "msrp": 24.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/650863_in_800x800.jpg"
+ },
+ {
   "id": "561521",
   "name": "Houndstone ex Box",
   "kind": "Collection",
   "packs": 4,
+  "inPrint": true,
   "mix": [
    {
     "slug": "stellar-crown",
@@ -807,6 +4329,7 @@
   "name": "Knock Out Collection [Kyogre]",
   "kind": "Collection",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "surging-sparks",
@@ -828,6 +4351,7 @@
   "name": "Knock Out Collection [Suicune]",
   "kind": "Collection",
   "packs": 2,
+  "inPrint": true,
   "mix": [
    {
     "slug": "surging-sparks",
@@ -849,6 +4373,7 @@
   "name": "Ogerpon ex Premium Collection",
   "kind": "Collection",
   "packs": 6,
+  "inPrint": true,
   "mix": [
    {
     "slug": "stellar-crown",
@@ -935,5 +4460,328 @@
   "market": 59.44,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/576482_in_800x800.jpg"
+ },
+ {
+  "id": "199308",
+  "name": "Cosmic Eclipse Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "cosmic-eclipse",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1874.5,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/199308_in_800x800.jpg"
+ },
+ {
+  "id": "610741",
+  "name": "Costco Pokemon Evolving Skies Elite Trainer Box and Tin",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 596.66,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/610741_in_800x800.jpg"
+ },
+ {
+  "id": "242434",
+  "name": "Evolving Skies Elite Trainer Box [Flareon/Jolteon/Umbreon/Leafeon]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 570.59,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242434_in_800x800.jpg"
+ },
+ {
+  "id": "242443",
+  "name": "Evolving Skies Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 506.78,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/242443_in_800x800.jpg"
+ },
+ {
+  "id": "243721",
+  "name": "Evolving Skies Elite Trainer Box [Set of 2]",
+  "kind": "Elite Trainer Box",
+  "packs": 16,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 16
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1078.11,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/243721_in_800x800.jpg"
+ },
+ {
+  "id": "512813",
+  "name": "Paradox Rift Elite Trainer Box [Iron Valiant]",
+  "kind": "Elite Trainer Box",
+  "packs": 9,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 9
+   }
+  ],
+  "promos": [
+   {
+    "name": "Scream Tail",
+    "num": "SVP 065",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.88,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526649_in_800x800.jpg"
+   },
+   {
+    "name": "Iron Bundle",
+    "num": "SVP 066",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.49,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526656_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 134.82,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512813_in_800x800.jpg"
+ },
+ {
+  "id": "512815",
+  "name": "Paradox Rift Elite Trainer Box [Roaring Moon]",
+  "kind": "Elite Trainer Box",
+  "packs": 9,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 9
+   }
+  ],
+  "promos": [
+   {
+    "name": "Scream Tail",
+    "num": "SVP 065",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.88,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526649_in_800x800.jpg"
+   },
+   {
+    "name": "Iron Bundle",
+    "num": "SVP 066",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.49,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526656_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 144.05,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512815_in_800x800.jpg"
+ },
+ {
+  "id": "557350",
+  "name": "Stellar Crown Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 9,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "stellar-crown",
+    "packs": 9
+   }
+  ],
+  "promos": [
+   {
+    "name": "Noctowl",
+    "num": "SVP 141",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.94,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/578811_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 155.43,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/557350_in_800x800.jpg"
+ },
+ {
+  "id": "565630",
+  "name": "Surging Sparks Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 9,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 9
+   }
+  ],
+  "promos": [
+   {
+    "name": "Magneton",
+    "num": "SVP 159",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.95,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594386_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 123.07,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565630_in_800x800.jpg"
+ },
+ {
+  "id": "565632",
+  "name": "Surging Sparks Pokemon Center Elite Trainer Box (Exclusive)",
+  "kind": "Elite Trainer Box",
+  "packs": 11,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 11
+   }
+  ],
+  "promos": [
+   {
+    "name": "Magneton",
+    "num": "SVP 159",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.95,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/594386_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 270.51,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/565632_in_800x800.jpg"
+ },
+ {
+  "id": "543845",
+  "name": "Twilight Masquerade Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 9,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "twilight-masquerade",
+    "packs": 9
+   }
+  ],
+  "promos": [
+   {
+    "name": "Teal Mask Ogerpon",
+    "num": "SVP 123",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 1.34,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/552785_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 103.99,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/543845_in_800x800.jpg"
+ },
+ {
+  "id": "512834",
+  "name": "Paradox Rift Elite Trainer Boxes [Set of 2]",
+  "kind": "Other",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 18
+   }
+  ],
+  "promos": [
+   {
+    "name": "Scream Tail",
+    "num": "SVP 065",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 6.88,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526649_in_800x800.jpg"
+   },
+   {
+    "name": "Iron Bundle",
+    "num": "SVP 066",
+    "setName": "SVP Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 2.49,
+    "graded": {},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/526656_in_800x800.jpg"
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 314.19,
+  "msrp": null,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/512834_in_800x800.jpg"
  }
 ]

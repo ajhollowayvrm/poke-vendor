@@ -51,6 +51,8 @@ struct Product: Codable, Hashable, Identifiable {
     let market: Double
     let msrp: Double?
     let image: String?
+    /// Still sold at retail (a Scarlet & Violet product).
+    let inPrint: Bool?
 
     /// The set of each pack, in order.
     var packSlugs: [String] { mix.flatMap { Array(repeating: $0.slug, count: $0.packs) } }
@@ -79,6 +81,20 @@ struct SetData: Codable {
     let packImage: String?
     let slots: [PackSlot]
     let prints: [CardPrint]
+    let era: String?
+    /// The series name on the wrapper, for example "Sword & Shield".
+    let series: String?
+    /// The physical card order, front card first: slot names, and "ENERGY" for the extra Basic Energy.
+    let order: [String]?
+    /// How many cards the pack trick moves from the back to the front.
+    let trick: Int?
+
+    /// For the wrapper, for example "10 CARDS + 1 ENERGY".
+    var packLabel: String {
+        guard let order else { return "10 CARDS + 1 ENERGY" }
+        let energy = order.filter { $0 == "ENERGY" }.count
+        return energy > 0 ? "\(order.count - energy) CARDS + \(energy) ENERGY" : "\(order.count) CARDS"
+    }
 
     static func load(_ slug: String) -> SetData {
         guard let url = Bundle.main.url(forResource: slug, withExtension: "json"),

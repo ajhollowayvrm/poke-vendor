@@ -24,6 +24,37 @@ import odds as O  # noqa: E402
 import join as J  # noqa: E402
 
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
+
+# The physical card order of a pack, front card first, and the pack trick: how many cards the player moves
+# from the back to the front so the hits come last. "ENERGY" is the extra Basic Energy card.
+# Sources: docs/sets/eras/scarlet-violet.md (Conflicts in the template), docs/sets/eras/sun-moon.md (Pack order,
+# which also covers Sword & Shield), and docs/sets/eras/wizards-of-the-coast.md (Pack order, low confidence).
+SM_SWSH = (["Common"] * 5 + ["Reverse holo", "Rare slot", "ENERGY"] + ["Uncommon"] * 3, 4)
+ERA_PACKS = {
+    "scarlet-violet": (["Common"] * 4 + ["Uncommon"] * 3 + ["Reverse holo slot 1", "Reverse holo slot 2", "Rare slot", "ENERGY"], 1,
+                       "Scarlet & Violet"),
+    "sword-shield": SM_SWSH + ("Sword & Shield",),
+    "sun-moon": SM_SWSH + ("Sun & Moon",),
+    "wizards-of-the-coast": (["Common"] * 5 + ["Energy"] * 2 + ["Rare slot"] + ["Uncommon"] * 3, 3, "Wizards of the Coast"),
+}
+
+
+def pack_order(era, slots, has_energy_row):
+    """Return (order, trick, series). The order must use each slot exactly as often as the slot map says."""
+    order, trick, series = ERA_PACKS.get(era, (None, 1, era.replace("-", " ").title() if era else ""))
+    want = {}
+    for s in slots:
+        want[s["name"]] = s["count"]
+    if order:
+        got = {}
+        for name in order:
+            if name != "ENERGY":
+                got[name] = got.get(name, 0) + 1
+        if got == want and (("ENERGY" in order) == has_energy_row):
+            return order, trick, series
+        print(f"  pack order of era {era} does not fit the slot map {want}; using the slot map order")
+    order = [s["name"] for s in slots for _ in range(s["count"])] + (["ENERGY"] if has_energy_row else [])
+    return order, 1, series
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 GRADES = ("cgc10", "cgc9_5", "cgc9", "cgc8_5", "cgc8", "psa10", "psa9", "psa8", "psa7", "psa6",
           "bgs10", "bgs9_5", "bgs9", "bgs8_5", "bgs8")
@@ -81,15 +112,20 @@ def price_print(matches, variant):
 
 
 def pack_cost(slug):
+    """The market price of a plain loose booster pack: the cheapest one that is not sleeved, 1st Edition, or a bundle."""
     groups = {str(g) for g in J.TCGCSV_MAP.get(slug, [])}
+    skip = re.compile(r"Sleeved|Art Bundle|Blister|1st Edition|Bundle|Box|Case|Set of|Display", re.I)
+    best = None
     for f in glob.glob(os.path.join(SEALED, "*.json")):
         if os.path.basename(f)[:-5] not in groups:
             continue
         data = json.load(open(f))
         for p in (data.get("data", []) if isinstance(data, dict) else data):
-            if re.search(r"Booster Pack$", p.get("name", "")):
-                return p.get("unopenedPrice"), p.get("imageCdnUrl800") or p.get("imageUrl")
-    return None, None
+            name = p.get("name", "")
+            if "Booster Pack" in name and not skip.search(name) and p.get("unopenedPrice"):
+                if best is None or p["unopenedPrice"] < best[0]:
+                    best = (p["unopenedPrice"], p.get("imageCdnUrl800") or p.get("imageUrl"))
+    return best or (None, None)
 
 
 def export(slug):
@@ -98,10 +134,14 @@ def export(slug):
     t = open(os.path.join(ROOT, "docs", "sets", f"{slug}.md")).read()
     name = re.match(r"^# (.+?)(?: \(\d{4}\))?$", t.splitlines()[0]).group(1)
     matches = ppt_matches(slug, s["cards"])
+    # A pack holds one print run. The app rips the first run that the set file lists (for Base Set, Unlimited).
+    runs = s["runs"][:1]
     prints, index, slots = [], {}, []
+    has_energy_row = False
     for slot, res in O.final_odds(slug, s, O.era_pool(sets, eras), eras).items():
         rows = [(r, p) for r, p, _ in res if r[4] != "—"]
         if not rows:
+            has_energy_row = has_energy_row or slot == "Basic Energy"
             continue
         outcomes = []
         for r, p in rows:
@@ -112,7 +152,7 @@ def export(slug):
                 if c["rarity"] not in names or not V.in_filter(c, r[6]):
                     continue
                 for option in options:
-                    hits = [v for v in c["variants"] if V.variant_matches(v, option, s["runs"])]
+                    hits = [v for v in c["variants"] if V.variant_matches(v, option, runs)]
                     if not hits:
                         continue
                     for v in hits:
@@ -128,11 +168,14 @@ def export(slug):
         slots.append({"name": slot, "count": int(rows[0][0][1]), "outcomes": outcomes})
     cost, pack_image = pack_cost(slug)
     os.makedirs(OUT, exist_ok=True)
-    out = {"slug": slug, "name": name, "packCost": cost, "packImage": pack_image, "slots": slots, "prints": prints}
+    order, trick, series = pack_order(eras.get(slug), slots, has_energy_row)
+    out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": pack_image,
+           "slots": slots, "order": order, "trick": trick, "prints": prints}
     path = os.path.join(OUT, f"{slug}.json")
     json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
     unpriced = sum(1 for p in prints if p["market"] is None)
-    print(f"{slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), pack cost {cost} -> {os.path.relpath(path, ROOT)}")
+    print(f"{slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), pack cost {cost}, "
+          f"trick {trick}, order {order} -> {os.path.relpath(path, ROOT)}")
 
 
 if __name__ == "__main__":

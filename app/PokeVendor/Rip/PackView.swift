@@ -4,6 +4,8 @@ import SwiftUI
 struct PackView: View {
     let setName: String
     var slug: String?
+    var series: String?
+    var label: String?
     /// How far the finger has moved across the top, from 0 to 1.
     var tearProgress: Double
     var torn: Bool
@@ -18,9 +20,9 @@ struct PackView: View {
             GeometryReader { geo in
                 let size = geo.size
                 ZStack {
-                    PackArt(setName: setName, sheen: sheen, slug: slug)
+                    PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
                         .mask(TearSplit(top: false, fraction: Self.tearLine))
-                    PackArt(setName: setName, sheen: sheen, slug: slug)
+                    PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
                         .mask(TearSplit(top: true, fraction: Self.tearLine))
                         .rotationEffect(.degrees(torn ? 32 : tearProgress * 7), anchor: .bottomLeading)
                         .offset(x: torn ? size.width * 0.7 : tearProgress * 6,
@@ -45,6 +47,8 @@ struct PackArt: View {
     let setName: String
     var sheen: Double
     var slug: String?
+    var series: String?
+    var label: String?
 
     /// Each set gets its own wrapper colors.
     static func colors(_ slug: String?) -> [Color] {
@@ -58,6 +62,15 @@ struct PackArt: View {
         case "twilight-masquerade":
             [Color(red: 0.08, green: 0.22, blue: 0.12), Color(red: 0.25, green: 0.60, blue: 0.35),
              Color(red: 0.60, green: 0.35, blue: 0.70), Color(red: 0.20, green: 0.45, blue: 0.40), Color(red: 0.10, green: 0.08, blue: 0.20)]
+        case "evolving-skies":
+            [Color(red: 0.03, green: 0.15, blue: 0.30), Color(red: 0.10, green: 0.45, blue: 0.70),
+             Color(red: 0.35, green: 0.80, blue: 0.75), Color(red: 0.10, green: 0.55, blue: 0.35), Color(red: 0.03, green: 0.10, blue: 0.20)]
+        case "cosmic-eclipse":
+            [Color(red: 0.15, green: 0.05, blue: 0.25), Color(red: 0.70, green: 0.25, blue: 0.60),
+             Color(red: 0.95, green: 0.75, blue: 0.35), Color(red: 0.35, green: 0.20, blue: 0.70), Color(red: 0.08, green: 0.05, blue: 0.15)]
+        case "base-set":
+            [Color(red: 0.10, green: 0.15, blue: 0.45), Color(red: 0.90, green: 0.40, blue: 0.10),
+             Color(red: 1.0, green: 0.80, blue: 0.20), Color(red: 0.80, green: 0.15, blue: 0.10), Color(red: 0.10, green: 0.10, blue: 0.35)]
         case "paradox-rift":
             [Color(red: 0.12, green: 0.05, blue: 0.25), Color(red: 0.45, green: 0.20, blue: 0.70),
              Color(red: 0.20, green: 0.55, blue: 0.85), Color(red: 0.70, green: 0.25, blue: 0.55), Color(red: 0.06, green: 0.05, blue: 0.18)]
@@ -94,11 +107,11 @@ struct PackArt: View {
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.white)
                         .shadow(color: .purple.opacity(0.9), radius: 6)
-                    Text("SCARLET & VIOLET")
+                    Text((series ?? "Scarlet & Violet").uppercased())
                         .font(.system(size: w * 0.04, weight: .semibold))
                         .kerning(1.5)
                         .foregroundStyle(.white.opacity(0.85))
-                    Text("10 CARDS + 1 ENERGY")
+                    Text(label ?? "10 CARDS + 1 ENERGY")
                         .font(.system(size: w * 0.035, weight: .medium, design: .monospaced))
                         .foregroundStyle(.white.opacity(0.7))
                         .padding(.top, h * 0.01)

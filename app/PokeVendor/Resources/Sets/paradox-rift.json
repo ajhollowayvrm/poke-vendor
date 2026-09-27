@@ -1,8 +1,10 @@
 {
  "slug": "paradox-rift",
  "name": "Paradox Rift",
- "packCost": 11.65,
- "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/517210_in_800x800.jpg",
+ "era": "scarlet-violet",
+ "series": "Scarlet & Violet",
+ "packCost": 8.41,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/512822_in_800x800.jpg",
  "slots": [
   {
    "name": "Common",
@@ -695,6 +697,20 @@
    ]
   }
  ],
+ "order": [
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon",
+  "Reverse holo slot 1",
+  "Reverse holo slot 2",
+  "Rare slot",
+  "ENERGY"
+ ],
+ "trick": 1,
  "prints": [
   {
    "num": "001/182",

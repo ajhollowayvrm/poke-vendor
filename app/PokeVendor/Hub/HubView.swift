@@ -294,6 +294,10 @@ struct HubView: View {
             nav.startRip(store.data.sealed)
         }
         if args.contains("-demo") && !args.contains("-collrip") {
+            if let i = args.firstIndex(of: "-set"), i + 1 < args.count {
+                store.startRun()
+                store.addTestPack(slug: args[i + 1])
+            }
             if store.data.sealed.filter({ $0.status == nil }).isEmpty { store.addTestPack() }
             nav.startRip(Array(store.data.sealed.filter { $0.status == nil }.prefix(1)))
         }

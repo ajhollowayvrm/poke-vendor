@@ -180,11 +180,20 @@ final class RipModel {
         phase = .open
     }
 
-    /// The pack trick moves one card around the stack. Face up, the back card comes to the front.
+    /// How many cards this set's pack trick moves.
+    var trickCount: Int { max(1, min(cardSet.trick ?? 1, stack.count - 1)) }
+
+    /// Starts the pack trick. It works once for each pack.
+    func beginTrick() -> Bool {
+        guard phase == .open, stack.count > 1, tuckingID == nil, !trickDone else { return false }
+        trickDone = true
+        return true
+    }
+
+    /// One move of the pack trick. Face up, the back card comes to the front.
     /// Face down, the top card goes to the bottom. Both are the same move on the physical pack.
     func startTuck() {
-        guard phase == .open, stack.count > 1, tuckingID == nil, !trickDone else { return }
-        trickDone = true
+        guard phase == .open, stack.count > 1, tuckingID == nil else { return }
         showcaseID = nil
         tuckFromBack = faceUp
         tuckingID = faceUp ? stack.last?.id : stack.first?.id
