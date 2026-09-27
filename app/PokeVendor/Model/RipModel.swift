@@ -31,7 +31,7 @@ final class RipModel {
     /// The promo cards that came out when this pack broke its product's seal.
     private(set) var packExtras: [CardPrint] = []
     /// The rip queue. The whole queue is one rip (docs/18-ripping.md, The rip queue).
-    let queue: [QueuedPack]
+    private(set) var queue: [QueuedPack]
     let ripID = UUID()
     private(set) var packIndex = 0
     private let store: GameStore?
@@ -94,8 +94,20 @@ final class RipModel {
         return packExtras
     }
 
-    func startPacks() {
+    /// Goes from the opened product to its packs. The pack at `index` of the product's packs rips first.
+    func startPacks(at index: Int = 0) {
         guard phase == .unbox else { return }
+        let target = packIndex + index
+        if index > 0, queue.indices.contains(target), queue[target].sourceID == currentPack?.sourceID {
+            // The stack in hand was built for the first pack. A pack from another set needs its own cards.
+            let rebuild = queue[target].setSlug != queue[packIndex].setSlug
+            queue.swapAt(packIndex, target)
+            if rebuild {
+                let extras = packExtras
+                loadPack()
+                packExtras = extras
+            }
+        }
         unboxing = nil
         phase = .sealed
     }

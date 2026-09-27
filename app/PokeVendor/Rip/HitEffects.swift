@@ -188,3 +188,48 @@ extension Haptics {
         }
     }
 }
+
+/// A few flecks of foil that come off the tear and fall.
+struct FleckBurst: Identifiable {
+    let id = UUID()
+    let point: CGPoint
+    let count: Int
+    let colors: [Color]
+    /// The side the flecks drift to: -1 left, 1 right.
+    var drift: CGFloat = 0
+    let start = Date()
+    let seed = UInt64.random(in: 1...1_000_000)
+}
+
+struct TearFlecks: View {
+    let bursts: [FleckBurst]
+    static let life = 1.1
+
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            let now = timeline.date
+            Canvas { context, _ in
+                for burst in bursts {
+                    let t = now.timeIntervalSince(burst.start)
+                    guard t >= 0, t < Self.life, !burst.colors.isEmpty else { continue }
+                    var random = SeededRandom(seed: burst.seed)
+                    for _ in 0..<burst.count {
+                        let vx = (random.next() - 0.5) * 170 + burst.drift * 70
+                        let vy = -random.next() * 200 - 40
+                        let spin = (random.next() - 0.5) * 24
+                        let size = 2 + random.next() * 4
+                        let color = burst.colors[Int(random.next() * CGFloat(burst.colors.count)) % burst.colors.count]
+                        var fleck = context
+                        fleck.opacity = 1 - t / Self.life
+                        fleck.translateBy(x: burst.point.x + vx * t, y: burst.point.y + vy * t + 560 * t * t)
+                        fleck.rotate(by: .radians(spin * t))
+                        // The width changes as the fleck turns over.
+                        let turn = abs(cos(spin * t * 1.5)) * size + 0.5
+                        fleck.fill(Path(CGRect(x: -turn / 2, y: -size / 2, width: turn, height: size)), with: .color(color))
+                    }
+                }
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}

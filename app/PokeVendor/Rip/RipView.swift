@@ -38,6 +38,12 @@ struct RipView: View {
 
     @State private var tearProgress: Double = 0
     @State private var torn = false
+    @State private var tearFromLeft = true
+    @State private var tearTicks = 0
+    @State private var flecks: [FleckBurst] = []
+    /// The light out of the top of the pack, the moment it opens.
+    @State private var openFlash = 0.0
+    @State private var lastLayout: TableLayout?
     @State private var cardsRise = false
     @State private var cardsOut = false
     @State private var packGone = false
@@ -92,13 +98,30 @@ struct RipView: View {
 
                 if model.phase == .sealed || model.phase == .opening {
                     PackView(setName: model.cardSet.name, slug: model.cardSet.slug, series: model.cardSet.series,
-                             label: model.cardSet.packLabel, tearProgress: tearProgress, torn: torn)
+                             label: model.cardSet.packLabel, tearProgress: tearProgress, torn: torn,
+                             fromLeft: tearFromLeft)
                         .frame(width: layout.packW, height: layout.packH)
+                        .rotationEffect(.degrees(packGone ? 14 : 0))
                         .position(x: layout.stackCenter.x,
                                   y: layout.stackCenter.y + (packGone ? geo.size.height : 0))
                         .zIndex(300)
-                        .transition(.scale(scale: 0.9).combined(with: .opacity))
+                        .transition(.asymmetric(insertion: .offset(y: 140).combined(with: .scale(scale: 0.85)).combined(with: .opacity),
+                                                removal: .opacity))
                 }
+
+                if openFlash > 0 {
+                    RadialGradient(colors: [.white.opacity(0.9), Color(red: 1.0, green: 0.9, blue: 0.6).opacity(0.35), .clear],
+                                   center: .center, startRadius: 0, endRadius: layout.packW * 0.8)
+                        .frame(width: layout.packW * 1.8, height: layout.packW * 1.1)
+                        .blendMode(.plusLighter)
+                        .opacity(openFlash)
+                        .position(x: layout.stackCenter.x, y: tearY(layout))
+                        .allowsHitTesting(false)
+                        .zIndex(302)
+                }
+
+                TearFlecks(bursts: flecks)
+                    .zIndex(305)
 
                 if model.phase == .sealed {
                     Color.clear
@@ -122,7 +145,9 @@ struct RipView: View {
                 if model.phase == .unbox, let product = model.unboxing {
                     UnboxView(product: product, packSlugs: model.unboxPackSlugs,
                               onOpen: { model.openProduct() },
-                              onRip: { withAnimation(.easeInOut(duration: 0.3)) { model.startPacks() } },
+                              onRip: { index in
+                                  withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { model.startPacks(at: index) }
+                              },
                               onDone: onClose)
                         .padding(.top, 96)
                         .transition(.opacity)
@@ -172,6 +197,13 @@ struct RipView: View {
                 }
             }
         }
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { lastLayout = TableLayout(size: geo.size) }
+                    .onChange(of: geo.size) { _, size in lastLayout = TableLayout(size: size) }
+            }
+        )
         .background(
             LinearGradient(colors: [Theme.background, Color(red: 0.07, green: 0.10, blue: 0.14)],
                            startPoint: .top, endPoint: .bottom)
@@ -379,13 +411,24 @@ struct RipView: View {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 guard model.phase == .sealed else { return }
+                if tearProgress == 0, abs(value.translation.width) > 2 {
+                    tearFromLeft = value.translation.width > 0
+                }
                 tearProgress = min(1, abs(value.translation.width) / (layout.packW * 0.8))
+                // The foil clicks and sheds flecks as the tear moves.
+                let step = Int(tearProgress * 14)
+                if step > tearTicks {
+                    tearTicks = step
+                    Haptics.tick(0.3 + 0.5 * tearProgress)
+                    addFlecks(layout, count: 5)
+                }
             }
             .onEnded { value in
                 let moved = abs(value.translation.width)
                 if moved < 8 || tearProgress > 0.45 || abs(value.predictedEndTranslation.width) > layout.packW * 0.8 {
                     tear()
                 } else {
+                    tearTicks = 0
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { tearProgress = 0 }
                 }
             }
@@ -422,12 +465,35 @@ struct RipView: View {
 
     // MARK: - Actions
 
+    /// The height of the tear line on the screen.
+    private func tearY(_ layout: TableLayout) -> CGFloat {
+        layout.stackCenter.y - layout.packH / 2 + layout.packH * PackView.tearLine
+    }
+
+    private func addFlecks(_ layout: TableLayout, count: Int, across: Bool = false) {
+        let left = layout.stackCenter.x - layout.packW / 2
+        let x = across ? layout.stackCenter.x
+            : left + layout.packW * (tearFromLeft ? tearProgress : 1 - tearProgress)
+        let colors = PackArt.colors(model.cardSet.slug) + [.white, Color(white: 0.85)]
+        let now = Date()
+        flecks.removeAll { now.timeIntervalSince($0.start) > TearFlecks.life }
+        flecks.append(FleckBurst(point: CGPoint(x: x, y: tearY(layout)), count: count, colors: colors,
+                                 drift: across ? 0 : (tearFromLeft ? 1 : -1)))
+    }
+
     private func tear() {
         guard model.phase == .sealed else { return }
         Haptics.tap(.medium)
-        withAnimation(.easeOut(duration: 0.4)) { torn = true }
         model.startOpening()
+        // The tear runs to the far edge, then the strip flies off and light comes out of the pack.
+        withAnimation(.easeOut(duration: 0.12)) { tearProgress = 1 }
         Task {
+            try? await Task.sleep(for: .milliseconds(110))
+            Haptics.tap(.heavy)
+            if let layout = lastLayout { addFlecks(layout, count: 26, across: true) }
+            withAnimation(.easeOut(duration: 0.45)) { torn = true }
+            withAnimation(.easeOut(duration: 0.12)) { openFlash = 1 }
+            withAnimation(.easeIn(duration: 0.6).delay(0.15)) { openFlash = 0.001 }
             try? await Task.sleep(for: .milliseconds(300))
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { cardsRise = true }
             try? await Task.sleep(for: .milliseconds(500))
@@ -528,6 +594,10 @@ struct RipView: View {
             }
         }
         let args = ProcessInfo.processInfo.arguments
+        // Screenshot aid: `-tear <fraction>` holds the pack part of the way torn.
+        if let i = args.firstIndex(of: "-tear"), i + 1 < args.count, let f = Double(args[i + 1]) {
+            tearProgress = f
+        }
         guard let i = args.firstIndex(of: "-demo"), i + 1 < args.count, let taps = Int(args[i + 1]) else { return }
         Task {
             try? await Task.sleep(for: .seconds(1.5))
@@ -561,6 +631,10 @@ struct RipView: View {
         burst = nil
         withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
         torn = false
+        tearFromLeft = true
+        tearTicks = 0
+        flecks = []
+        openFlash = 0
         skipAfterOpen = false
         cardsRise = false
         cardsOut = false

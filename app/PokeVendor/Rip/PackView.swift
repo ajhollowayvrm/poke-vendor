@@ -1,14 +1,16 @@
 import SwiftUI
 
-/// The sealed booster pack. The top strip tears off along the tear line.
+/// The sealed booster pack. The top strip tears along the tear line under the finger, then flies off.
 struct PackView: View {
     let setName: String
     var slug: String?
     var series: String?
     var label: String?
-    /// How far the finger has moved across the top, from 0 to 1.
+    /// How far the tear has gone across the top, from 0 to 1.
     var tearProgress: Double
     var torn: Bool
+    /// True when the tear starts at the left edge.
+    var fromLeft = true
 
     static let tearLine: CGFloat = 0.11
 
@@ -19,15 +21,31 @@ struct PackView: View {
             let sheen = sin(t * 0.7) * 0.25 + motion.roll * 0.7
             GeometryReader { geo in
                 let size = geo.size
+                let cut = CGFloat(torn ? 1 : tearProgress)
+                let side: CGFloat = fromLeft ? 1 : -1
+                // The torn part of the strip runs from the start edge to the cut.
+                let tornFrom = fromLeft ? 0 : 1 - cut
+                let tornTo = fromLeft ? cut : 1
                 ZStack {
-                    PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
-                        .mask(TearSplit(top: false, fraction: Self.tearLine))
-                    PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
+                    art(sheen).mask(TearSplit(top: false, fraction: Self.tearLine))
+                    art(sheen)
                         .mask(TearSplit(top: true, fraction: Self.tearLine))
-                        .rotationEffect(.degrees(torn ? 32 : tearProgress * 7), anchor: .bottomLeading)
-                        .offset(x: torn ? size.width * 0.7 : tearProgress * 6,
-                                y: torn ? -size.height * 0.45 : -tearProgress * 5)
+                        .mask(Stripe(from: fromLeft ? cut : 0, to: fromLeft ? 1 : 1 - cut))
                         .opacity(torn ? 0 : 1)
+                    art(sheen)
+                        .mask(TearSplit(top: true, fraction: Self.tearLine))
+                        .mask(Stripe(from: tornFrom, to: tornTo))
+                        .shadow(color: .black.opacity(cut > 0 ? 0.35 : 0), radius: 3, y: 2)
+                        .rotationEffect(.degrees(torn ? side * 38 : -side * Double(cut) * 16),
+                                        anchor: UnitPoint(x: fromLeft ? cut : 1 - cut, y: Self.tearLine))
+                        .offset(x: torn ? side * size.width * 0.75 : 0,
+                                y: torn ? -size.height * 0.5 : -cut * 4)
+                        .opacity(torn ? 0 : 1)
+                    // The white torn edge of the foil, where the strip came away.
+                    TearEdge(fraction: Self.tearLine, from: tornFrom, to: tornTo)
+                        .stroke(.white.opacity(0.85), style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
+                        .opacity(cut > 0 ? 1 : 0)
+                        .allowsHitTesting(false)
                     if !torn && tearProgress == 0 {
                         TearHint()
                             .frame(height: size.height * Self.tearLine * 2)
@@ -39,6 +57,64 @@ struct PackView: View {
             .rotation3DEffect(.degrees(-motion.pitch * 6), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
         }
         .shadow(color: .black.opacity(0.6), radius: 18, y: 12)
+    }
+
+    private func art(_ sheen: Double) -> some View {
+        PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
+    }
+}
+
+/// A vertical band of the view, from a fraction of its width to another.
+struct Stripe: Shape {
+    var from: CGFloat
+    var to: CGFloat
+
+    var animatableData: AnimatablePair<CGFloat, CGFloat> {
+        get { AnimatablePair(from, to) }
+        set {
+            from = newValue.first
+            to = newValue.second
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        Path(CGRect(x: rect.width * from, y: -rect.height, width: max(0, rect.width * (to - from)), height: rect.height * 3))
+    }
+}
+
+/// The jagged tear line between two fractions of the width. It matches the teeth of `TearSplit`.
+struct TearEdge: Shape {
+    var fraction: CGFloat
+    var from: CGFloat
+    var to: CGFloat
+
+    var animatableData: AnimatablePair<CGFloat, CGFloat> {
+        get { AnimatablePair(from, to) }
+        set {
+            from = newValue.first
+            to = newValue.second
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let y = rect.height * fraction
+        let start = rect.width * from
+        let end = rect.width * to
+        var path = Path()
+        guard end > start else { return path }
+        var x: CGFloat = 0
+        var index = 0
+        var first = true
+        while x <= rect.width {
+            if x >= start && x <= end {
+                let point = CGPoint(x: x, y: y + (index.isMultiple(of: 2) ? -2.5 : 2.5))
+                if first { path.move(to: point) } else { path.addLine(to: point) }
+                first = false
+            }
+            x += 7
+            index += 1
+        }
+        return path
     }
 }
 

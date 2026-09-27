@@ -27,6 +27,11 @@ enum Haptics {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
 
+    /// A small, sharp tick while a tear or a peel moves under the finger.
+    static func tick(_ intensity: CGFloat = 0.55) {
+        UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: intensity)
+    }
+
     static func hit() {
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }

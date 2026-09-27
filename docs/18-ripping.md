@@ -129,8 +129,12 @@ Normal is a manual rip. The player holds the cards like a real pack:
 
 1. The sealed pack shows, with a moving reflection.
 2. The player taps the top of the pack, or swipes across the top, to
-   tear it open.
-3. The cards come out as a stack.
+   tear it open. A swipe can start at either edge. The strip tears
+   under the finger: the torn part lifts, the torn foil edge shows
+   white, flecks of foil fall, and the phone clicks as the tear moves.
+   When the tear gets to the far edge, the strip flies off and a light
+   comes out of the top of the pack.
+3. The cards come out as a stack, and the empty pack falls away.
 4. **Pack trick** moves one card around the stack. Face up, it takes
    the back card to the front. Face down, it takes the top card to the
    bottom. Both are the same move on the physical pack. This is how the
@@ -274,14 +278,26 @@ The cards that the player already saw go to a **pile**.
 A sealed product that is not a loose pack opens in its own step before
 its first pack:
 
-1. The product shows closed, with a moving reflection.
-2. The player taps it to open it. The opening depends on the product:
-   a blister peels apart, a box, ETB, collection, or bundle lifts its
-   lid, and a tin pops its lid.
+1. The product shows closed, with a moving reflection. It tilts a
+   little with the phone.
+2. The player opens it. The opening depends on the product:
+   - A blister: the player pulls its top corner, or taps it. The card
+     peels back from the corner, curls, and shows its back. Under the
+     card, the pack and the promo lie in the tray. A short pull springs
+     back. A long pull or a fling peels the card off.
+   - A box, ETB, collection, or bundle: a tap lifts the lid. The lid
+     tilts back, a light comes out of the box, and the base drops away.
+   - A tin: a tap rattles the tin, then the lid pops off.
 3. The contents show: first the promo cards, one by one with their
    prices, then one small wrapper for each pack, in its set's colors.
-4. **Rip packs** goes to the first pack. **Done for now** closes the
-   rip, and the packs stay in Inventory as loose packs.
+   The promo cards from a box or a tin come out face down and flip
+   over.
+4. A tap on a promo card shows its details: the card, which tilts
+   under the finger, its set, rarity, and number, its raw price, and
+   its graded prices.
+5. A tap on a pack wrapper goes to that pack first. **Rip packs** goes
+   to the first pack. **Done for now** closes the rip, and the packs
+   stay in Inventory as loose packs.
 
 Opening the product breaks its seal. Its promo cards go to Raw, and its
 packs become loose packs at that moment.
