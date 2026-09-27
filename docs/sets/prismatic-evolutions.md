@@ -205,7 +205,7 @@ Bolt and White Flare report for the same pattern (see
 | Pokémon Center Elite Trainer Box | 11 | Promo, accessories | January 17, 2025 | pokemon.com, Pokémon Center |
 | Booster Bundle | 6 | — | Unknown | pokemon.com (search extract) |
 | Super-Premium Collection | 15 | Eevee ex promo, playmat, sleeves, deck box | May 16 (year not stated in source) | pokemon.com (search extract), Midwest Collectables |
-| Surprise Box | 4 | Storage box, random etched promo | February 7, 2025 | pokemon.com (search extract) |
+| Surprise Box | 4 | Storage box, 1 of 9 random foil promos with a Prismatic Evolutions stamp: Eevee ex or an Eeveelution ex, 006/131 to 075/131 | February 7, 2025 | pokemon.com (search extract), TCGplayer (TCGCSV group 2374) |
 | Tech Sticker Collection | 3 | Leafeon, Glaceon, or Sylveon foil promo; stickers | Unknown | tcg.pokemon.com |
 | Mini Tin | 2 | Art card, Eevee coin | February 7, 2025 | pokemon.com (search extract) |
 | Binder Collection | Unknown | Binder | Unknown | tcg.pokemon.com lists the product |

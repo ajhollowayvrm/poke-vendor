@@ -318,6 +318,11 @@ blister, holds the promo that its name shows in brackets.
   summary under "Also in the box". A product that holds one random
   promo from a list, for example the Prismatic Evolutions Surprise Box,
   gives one promo from that list.
+- A Surprise Box promo is one of the nine Eevee and Eeveelution ex
+  cards, 006/131 to 075/131, with a Prismatic Evolutions stamp. The
+  stamped print is a different card from the print in the packs. It has
+  its own image and market price (TCGplayer "Miscellaneous Cards &
+  Products", TCGCSV group 2374). The data has no graded prices for it.
 - A product can mix packs from several sets, for example the Ogerpon ex
   Premium Collection. Each pack rips with its own set's slot map and
   odds, and each set has its own wrapper colors. The unopened packs of

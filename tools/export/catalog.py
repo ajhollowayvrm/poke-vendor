@@ -7,7 +7,9 @@ Run tools/export/rip_set.py for each set first, and tools/ppt/sealed_contents.py
 Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game sells, with
 - the pack mix by set (only sets that the app has, see SETS);
 - the promo cards, with the market price, the graded prices, and the image. An SVP promo gets its price from
-  TCGCSV group 22872 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set;
+  TCGCSV group 22872 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
+  Surprise Box promo has a Prismatic Evolutions stamp, so it gets the stamped print from TCGCSV group 2374
+  (Miscellaneous Cards & Products), with its own price and image, and no graded prices;
 - the market price (tools/ppt/cache/sealed/), an estimated MSRP, and the image.
 
 A product is in the catalog when its pack mix is exact, every pack comes from a set the app has, and it has a
@@ -23,6 +25,8 @@ CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 TCGCSV = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv")
 SVP_GROUP = "22872"
+MISC_GROUP = "2374"
+STAMP = "Prismatic Evolutions Stamp"
 HOME = "prismatic-evolutions"
 
 # Estimated MSRP. The first name match wins, so the longer names come first. Starting values for balancing.
@@ -70,7 +74,24 @@ def svp_promos():
     return out
 
 
-def resolve_promo(text, sets, svp):
+def stamped_promos():
+    """The prints with a Prismatic Evolutions stamp, by name and number, for example ("Umbreon ex", 60)."""
+    products = json.load(open(os.path.join(TCGCSV, f"{MISC_GROUP}-products.json")))
+    prices = json.load(open(os.path.join(TCGCSV, f"{MISC_GROUP}-prices.json")))
+    products = products.get("results", products) if isinstance(products, dict) else products
+    prices = prices.get("results", prices) if isinstance(prices, dict) else prices
+    price = {p["productId"]: p.get("marketPrice") for p in prices}
+    out = {}
+    for p in products:
+        m = re.match(r"^(.*) - (\d+)/\d+ \(" + STAMP + r"\)$", p["name"])
+        if m:
+            out[(m.group(1), int(m.group(2)))] = {
+                "market": price.get(p["productId"]),
+                "image": f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg"}
+    return out
+
+
+def resolve_promo(text, sets, svp, stamped=None):
     m = re.match(r"^(.*) \((.+) (\d+)\)$", text)
     if not m:
         return None
@@ -88,6 +109,12 @@ def resolve_promo(text, sets, svp):
         prints.sort(key=lambda p: (p["variant"] not in ("Holo", "Normal"), p["variant"]))
         if prints:
             p = prints[0]
+            if stamped is not None:
+                s = stamped.get((name, num))
+                if not s or s["market"] is None:
+                    return None
+                return {"name": name, "num": p["num"], "setName": source, "rarity": p["rarity"],
+                        "variant": f"{p['variant']} · {STAMP}", "market": s["market"], "graded": {}, "image": s["image"]}
             return {"name": name, "num": p["num"], "setName": source, "rarity": p["rarity"], "variant": p["variant"],
                     "market": p["market"], "graded": p["graded"], "image": p["image"]}
     return None
@@ -97,6 +124,7 @@ def main():
     sets = load_sets()
     prices = sealed_prices()
     svp = svp_promos()
+    stamped = stamped_promos()
     out, skipped = [], []
     for it in json.load(open(CONTENTS)):
         mix = it.get("mix") or {}
@@ -119,7 +147,9 @@ def main():
         if bracket:
             named = [t for t in raw_promos if t.split(" (")[0] == bracket.group(1)]
             raw_promos = named or raw_promos
-        promos = [resolve_promo(t, sets, svp) for t in raw_promos]
+        # A Surprise Box promo has a Prismatic Evolutions stamp.
+        stamp = stamped if "Surprise Box" in it["name"] else None
+        promos = [resolve_promo(t, sets, svp, stamp) for t in raw_promos]
         if any(x is None for x in promos):
             skipped.append(f"{it['name']}: promo not found in {raw_promos}")
             promos = [x for x in promos if x]
