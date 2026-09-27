@@ -233,3 +233,142 @@ struct TearFlecks: View {
         .allowsHitTesting(false)
     }
 }
+
+/// The moment the player sees that a pack is a demigod pack or a god pack: the screen darkens, light rays turn,
+/// the title slams in and shakes, and confetti falls. A god pack is in full rainbow, a demigod pack in gold.
+struct SpecialPackCelebration: View {
+    let special: SpecialPack
+    let onDone: () -> Void
+
+    @State private var start = Date()
+    @State private var slam = false
+    @State private var confetti: [Confetti] = []
+
+    private struct Confetti {
+        let x: CGFloat
+        let delay: Double
+        let speed: CGFloat
+        let sway: CGFloat
+        let spin: Double
+        let hue: Double
+        let size: CGSize
+    }
+
+    private var god: Bool { special.isGod }
+
+    private func palette(_ t: Double) -> [Color] {
+        if god {
+            return (0..<7).map { Color(hue: (Double($0) / 7 + t * 0.3).truncatingRemainder(dividingBy: 1), saturation: 0.75, brightness: 1) }
+        }
+        let gold = Color(red: 1.0, green: 0.84, blue: 0.30)
+        let amber = Color(red: 1.0, green: 0.62, blue: 0.20)
+        let pale = Color(red: 1.0, green: 0.95, blue: 0.75)
+        let shift = Int(t * 4) % 3
+        return Array(([gold, amber, pale, gold, amber, pale] + [gold]).dropFirst(shift)) + [gold]
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            TimelineView(.animation) { timeline in
+                let t = timeline.date.timeIntervalSince(start)
+                let fade = min(1, t / 0.3)
+                let colors = palette(t)
+                // The title shakes for a moment after it lands.
+                let hit = max(0, 1 - max(0, t - 0.55) * 3.5)
+                let shake = t > 0.55 ? sin(t * 70) * 9 * hit : 0
+                ZStack {
+                    Color.black.opacity(0.62 * fade)
+                    AngularGradient(colors: (0..<32).map { $0.isMultiple(of: 2) ? colors[($0 / 2) % colors.count] : .clear },
+                                    center: .center)
+                        .rotationEffect(.degrees(t * 26))
+                        .mask(RadialGradient(colors: [.white, .white.opacity(0)], center: .center, startRadius: 30, endRadius: 520))
+                        .frame(width: 1200, height: 1200)
+                        .blendMode(.plusLighter)
+                        .opacity(0.55 * fade)
+                    RadialGradient(colors: [colors[0].opacity(0.7), .clear], center: .center, startRadius: 0, endRadius: 260)
+                        .scaleEffect(1 + sin(t * 5) * 0.08)
+                        .blendMode(.plusLighter)
+                        .opacity(fade)
+                    Canvas { context, size in
+                        for piece in confetti {
+                            let age = t - piece.delay
+                            guard age > 0 else { continue }
+                            let y = -30 + piece.speed * age
+                            guard y < size.height + 30 else { continue }
+                            var c = context
+                            c.translateBy(x: piece.x * size.width + sin(age * 3 + piece.spin) * piece.sway, y: y)
+                            c.rotate(by: .radians(age * piece.spin))
+                            let turn = max(0.15, abs(cos(age * piece.spin * 1.3)))
+                            let color = god ? Color(hue: (piece.hue + t * 0.2).truncatingRemainder(dividingBy: 1), saturation: 0.7, brightness: 1)
+                                            : colors[Int(piece.hue * 6) % colors.count]
+                            c.fill(Path(CGRect(x: -piece.size.width * turn / 2, y: -piece.size.height / 2,
+                                               width: piece.size.width * turn, height: piece.size.height)),
+                                   with: .color(color))
+                        }
+                    }
+                    VStack(spacing: 10) {
+                        Text(special.title)
+                            .font(.system(size: god ? 62 : 40, weight: .black, design: .rounded))
+                            .kerning(2)
+                            .foregroundStyle(LinearGradient(colors: colors, startPoint: .leading, endPoint: .trailing))
+                            .shadow(color: .white.opacity(0.9), radius: 2)
+                            .shadow(color: colors[0].opacity(0.9), radius: 18)
+                            .overlay(
+                                LinearGradient(stops: [.init(color: .clear, location: 0.4), .init(color: .white.opacity(0.85), location: 0.5),
+                                                       .init(color: .clear, location: 0.6)],
+                                               startPoint: UnitPoint(x: -1 + (t * 0.8).truncatingRemainder(dividingBy: 2.5), y: 0),
+                                               endPoint: UnitPoint(x: (t * 0.8).truncatingRemainder(dividingBy: 2.5), y: 1))
+                                    .blendMode(.plusLighter)
+                                    .mask(Text(special.title).font(.system(size: god ? 62 : 40, weight: .black, design: .rounded)).kerning(2))
+                            )
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
+                        Text(god ? "Every card is a hit" : "Three Special Illustration Rares")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .opacity(slam ? 1 : 0)
+                        Text("Tap to keep going")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.7))
+                            .opacity(t > 1.6 ? 1 : 0)
+                    }
+                    .padding(.horizontal, 20)
+                    .scaleEffect(slam ? 1 : 3.2)
+                    .opacity(slam ? 1 : 0)
+                    .offset(x: shake, y: shake * 0.4)
+                }
+                .frame(width: geo.size.width, height: geo.size.height)
+            }
+            .onAppear {
+                confetti = (0..<(god ? 180 : 120)).map { _ in
+                    Confetti(x: .random(in: 0...1), delay: 0.35 + .random(in: 0...1.4), speed: .random(in: 220...460),
+                             sway: .random(in: 8...36), spin: .random(in: -9...9), hue: .random(in: 0..<1),
+                             size: CGSize(width: .random(in: 6...10), height: .random(in: 9...15)))
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onDone)
+        .task {
+            // A build-up of clicks, then the slam.
+            for i in 0..<10 {
+                Haptics.tick(0.3 + Double(i) * 0.07)
+                try? await Task.sleep(for: .milliseconds(max(20, 60 - i * 5)))
+            }
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.55)) { slam = true }
+            Haptics.tap(.heavy)
+            try? await Task.sleep(for: .milliseconds(90))
+            Haptics.tap(.heavy)
+            try? await Task.sleep(for: .milliseconds(90))
+            Haptics.hit()
+            if god {
+                try? await Task.sleep(for: .milliseconds(400))
+                Haptics.celebrate(.big)
+            }
+            try? await Task.sleep(for: .seconds(god ? 4.5 : 3.5))
+            onDone()
+        }
+    }
+}

@@ -191,6 +191,33 @@ Other hits, for example a holo Rare, play no effect.
 
 The glow stays while the hit is the top card.
 
+### Demigod packs and god packs
+
+A set can have rare special packs that replace the slot map
+(tools/export/rip_set.py, SPECIAL_PACKS). Prismatic Evolutions has two
+(see [sets/prismatic-evolutions.md](sets/prismatic-evolutions.md#pack-order)):
+
+| Pack | Cards | Odds (placeholder) |
+|---|---|---|
+| Demigod pack | Three different Special Illustration Rares at positions 8, 9, and 10. The other cards are normal. | 1 in 1,500 |
+| God pack | Master Ball Eevee first, then the eight Eeveelution Special Illustration Rare ex cards in a random order, then Special Illustration Rare Eevee ex last. | 1 in 2,500 |
+
+- No source gives the odds of a demigod pack. tcgtalk estimates a god
+  pack at 1 in 1,500 to 1 in 4,000 packs. The values are for
+  balancing.
+- A god pack gives a small sign when it opens: the light out of the
+  pack and the foil flecks are in rainbow colors.
+- The player sees what the pack is when the second special card turns
+  face up: a Special Illustration Rare in a demigod pack, or any card
+  in a god pack. Then the special pack moment plays: the screen
+  darkens, light rays turn, the title ("DEMIGOD PACK" in gold, or "GOD
+  PACK" in rainbow colors) slams in and shakes, confetti falls, and the
+  phone builds up clicks to a strong hit. A tap ends it early.
+- The summary shows the pack's title, and it waits for the moment to
+  end.
+- **Skip pack** plays no moment.
+- The Test menu has **Rip now: special packs** to open one of each.
+
 ### Fast and Sift
 
 In Fast:

@@ -149,8 +149,8 @@ Where an ex can be (research of September 27, 2026):
   one of each SIR Eeveelution", which is 10 cards. So every card is a
   hit. TheGamer reports eight Special Illustration Rares. The two
   reports can describe different packs. Confidence: community report.
-- **The game** does not have demigod packs or god packs yet (see Open
-  topics).
+- **The game** builds demigod packs and god packs with placeholder
+  odds (see [../18-ripping.md](../18-ripping.md#demigod-packs-and-god-packs)).
 
 Exceptions and conflicts:
 - **Hyper Rare slot:** PokeBeach (March 2023, before the release of
@@ -626,10 +626,11 @@ Rares.
 - **Rarity list order:** CardDeckr's about 1 in 3 rate for the Poké Ball
   pattern places it above Double Rare (1 in 5). This uses the TCGplayer
   1,200-pack study, the same source as the other odds in this file.
-- **Demigod and god packs:** the game does not build them. A demigod
-  pack puts three Special Illustration Rares at 8, 9, and 10. A god pack
-  is 10 hits. No source gives the odds of a demigod pack. tcgtalk
-  estimates a god pack at 1 in 1,500 to 1 in 4,000 packs.
+- **Demigod and god pack odds:** the game uses 1 in 1,500 for a
+  demigod pack and 1 in 2,500 for a god pack. No source gives the odds
+  of a demigod pack. tcgtalk estimates a god pack at 1 in 1,500 to 1 in
+  4,000 packs. The demigod pool is every Special Illustration Rare,
+  Supporters too, because TCGplayer says "any three SIRs".
 - **Two ex cards in one pack:** the slot names permit a Special
   Illustration Rare or Hyper Rare at 9 and a Double Rare at 10. No
   source shows an opened pack with both.

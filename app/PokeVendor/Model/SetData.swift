@@ -74,6 +74,27 @@ struct PackSlot: Codable {
     let outcomes: [SlotOutcome]
 }
 
+/// A rare pack type that replaces the slot map (tools/export/rip_set.py, SPECIAL_PACKS).
+struct SpecialPack: Codable, Equatable {
+    /// "demigod" or "god".
+    let kind: String
+    /// The chance for one pack.
+    let odds: Double
+    /// A demigod pack: the slots that each get a different card from the pool.
+    let slots: [String]?
+    let pool: [Int]?
+    /// A god pack: every card, front card first.
+    let cards: [Int]?
+
+    var isGod: Bool { kind == "god" }
+    var title: String { isGod ? "GOD PACK" : "DEMIGOD PACK" }
+    /// Only the cards that make the pack special count toward the moment the player sees it.
+    func isSpecialHit(_ card: RipCard) -> Bool {
+        guard let print = card.print else { return false }
+        return isGod || print.rarity == "Special illustration rare"
+    }
+}
+
 struct SetData: Codable {
     let slug: String
     let name: String
@@ -88,6 +109,8 @@ struct SetData: Codable {
     let order: [String]?
     /// How many cards the pack trick moves from the back to the front.
     let trick: Int?
+    /// Rare pack types that replace the slot map, for example a god pack.
+    let specialPacks: [SpecialPack]?
 
     /// For the wrapper, for example "10 CARDS + 1 ENERGY".
     var packLabel: String {

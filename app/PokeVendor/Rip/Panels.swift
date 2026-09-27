@@ -195,7 +195,21 @@ struct SummaryView: View {
         let hits = cards.filter(\.isHit).sorted { $0.market > $1.market }
         let bulk = cards.filter { $0.print != nil && !$0.isHit }.count
         VStack(alignment: .leading, spacing: 14) {
-            Text("Pack summary").font(.title2.bold())
+            HStack {
+                Text("Pack summary").font(.title2.bold())
+                Spacer()
+                if let special = model.special {
+                    Text(special.title)
+                        .font(.caption.weight(.black))
+                        .kerning(1)
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(LinearGradient(colors: special.isGod ? [.pink, .yellow, .cyan, .purple]
+                                                   : [Color(red: 1.0, green: 0.84, blue: 0.3), Color(red: 1.0, green: 0.62, blue: 0.2)],
+                                                   startPoint: .leading, endPoint: .trailing), in: Capsule())
+                }
+            }
             HStack(spacing: 0) {
                 StatCell(label: "Value", value: money(model.valueSoFar))
                 StatCell(label: "Paid", value: money(model.packCost))

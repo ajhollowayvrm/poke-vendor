@@ -54,6 +54,13 @@ final class RipModel {
     private(set) var faceUp: Bool
     private(set) var lastReveal: Reveal?
     private var seen: Set<UUID> = []
+    /// A demigod pack or a god pack, when this pack is one.
+    private(set) var special: SpecialPack?
+    /// Changes once for each special pack, when the player has seen two of its special hits.
+    private(set) var specialMoment: UUID?
+    private var specialSeen = 0
+    /// Tests only: the next pack is this special pack kind.
+    static var forcedSpecial: String?
 
     init(items: [SealedItem], store: GameStore?) {
         queue = items.flatMap { item in
@@ -66,6 +73,11 @@ final class RipModel {
         }
         self.store = store
         faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
+        #if DEBUG
+        // Screenshot aid: `-special god` or `-special demigod` makes the first pack special.
+        let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-special"), i + 1 < args.count { Self.forcedSpecial = args[i + 1] }
+        #endif
         loadPack()
     }
 
@@ -147,7 +159,12 @@ final class RipModel {
     private func loadPack() {
         // The builder gives the physical pack order, front card first. A face-down stack is the same cards
         // turned over, so the back card (the Energy) is on top.
-        var cards = PackBuilder(cardSet: cardSet).build()
+        let pack = PackBuilder(cardSet: cardSet, forced: Self.forcedSpecial).build()
+        Self.forcedSpecial = nil
+        special = pack.special
+        specialMoment = nil
+        specialSeen = 0
+        var cards = pack.cards
         #if DEBUG
         // Screenshot aid: `-sir` puts a Special Illustration Rare in the rare slot.
         if ProcessInfo.processInfo.arguments.contains("-sir"),
@@ -263,6 +280,10 @@ final class RipModel {
     private func reveal(_ card: RipCard) {
         if seen.insert(card.id).inserted {
             lastReveal = Reveal(card: card)
+            if let special, special.isSpecialHit(card) {
+                specialSeen += 1
+                if specialSeen == 2 { specialMoment = UUID() }
+            }
         }
     }
 }

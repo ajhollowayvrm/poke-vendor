@@ -44,6 +44,8 @@ struct RipView: View {
     /// The light out of the top of the pack, the moment it opens.
     @State private var openFlash = 0.0
     @State private var lastLayout: TableLayout?
+    /// The demigod or god pack moment, while it shows.
+    @State private var celebration: SpecialPack?
     @State private var cardsRise = false
     @State private var cardsOut = false
     @State private var packGone = false
@@ -110,8 +112,11 @@ struct RipView: View {
                 }
 
                 if openFlash > 0 {
-                    RadialGradient(colors: [.white.opacity(0.9), Color(red: 1.0, green: 0.9, blue: 0.6).opacity(0.35), .clear],
-                                   center: .center, startRadius: 0, endRadius: layout.packW * 0.8)
+                    // A god pack gives itself away with a rainbow light.
+                    RadialGradient(colors: model.special?.isGod == true
+                                       ? [.white.opacity(0.95), .pink.opacity(0.6), .yellow.opacity(0.5), .cyan.opacity(0.4), .purple.opacity(0.3), .clear]
+                                       : [.white.opacity(0.9), Color(red: 1.0, green: 0.9, blue: 0.6).opacity(0.35), .clear],
+                                   center: .center, startRadius: 0, endRadius: layout.packW * (model.special?.isGod == true ? 1.1 : 0.8))
                         .frame(width: layout.packW * 1.8, height: layout.packW * 1.1)
                         .blendMode(.plusLighter)
                         .opacity(openFlash)
@@ -179,6 +184,14 @@ struct RipView: View {
                     }
                 }
 
+                if let celebration {
+                    SpecialPackCelebration(special: celebration) {
+                        withAnimation(.easeOut(duration: 0.4)) { self.celebration = nil }
+                    }
+                    .transition(.opacity)
+                    .zIndex(480)
+                }
+
                 if peeking {
                     PeekView(cards: model.stack, size: geo.size)
                         .transition(.opacity)
@@ -222,6 +235,13 @@ struct RipView: View {
                 celebrate(card)
             }
         }
+        .onChange(of: model.specialMoment) { _, moment in
+            guard moment != nil, let special = model.special else { return }
+            Task {
+                try? await Task.sleep(for: .milliseconds(Self.revealDelay + 350))
+                withAnimation(.easeIn(duration: 0.25)) { celebration = special }
+            }
+        }
         .onChange(of: revealKey) { _, _ in
             Task {
                 try? await Task.sleep(for: .milliseconds(Self.revealDelay))
@@ -236,6 +256,8 @@ struct RipView: View {
             guard phase == .done else { return }
             Task {
                 try? await Task.sleep(for: .milliseconds(700))
+                // The summary waits for the demigod or god pack moment to end.
+                while celebration != nil { try? await Task.sleep(for: .milliseconds(200)) }
                 if model.phase == .done {
                     withAnimation(.easeInOut(duration: 0.3)) { showSummary = true }
                 }
@@ -474,7 +496,9 @@ struct RipView: View {
         let left = layout.stackCenter.x - layout.packW / 2
         let x = across ? layout.stackCenter.x
             : left + layout.packW * (tearFromLeft ? tearProgress : 1 - tearProgress)
-        let colors = PackArt.colors(model.cardSet.slug) + [.white, Color(white: 0.85)]
+        let colors = model.special?.isGod == true
+            ? [.pink, .yellow, .green, .cyan, .purple, .white]
+            : PackArt.colors(model.cardSet.slug) + [.white, Color(white: 0.85)]
         let now = Date()
         flecks.removeAll { now.timeIntervalSince($0.start) > TearFlecks.life }
         flecks.append(FleckBurst(point: CGPoint(x: x, y: tearY(layout)), count: count, colors: colors,
@@ -629,6 +653,7 @@ struct RipView: View {
         peekTask?.cancel()
         peeking = false
         burst = nil
+        celebration = nil
         withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
         torn = false
         tearFromLeft = true

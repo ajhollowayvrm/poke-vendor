@@ -39,6 +39,39 @@ ERA_PACKS = {
 }
 
 
+# Rare pack types that replace the slot map. Sources and confidence: docs/sets/<set>.md (Where an ex can be).
+# - A demigod pack puts a card from the pool at each slot in "slots". No card comes twice.
+# - A god pack is "cards", front card first. The app shuffles the cards between the first card and the last card.
+# The odds are placeholders for balancing. No source gives the odds of a demigod pack, and tcgtalk estimates a
+# god pack at 1 in 1,500 to 1 in 4,000 packs.
+EEVEELUTION_SIRS = ["144/131", "146/131", "149/131", "150/131", "153/131", "155/131", "156/131", "161/131"]
+SPECIAL_PACKS = {
+    "prismatic-evolutions": [
+        {"kind": "demigod", "odds": 1 / 1500, "slots": ["Reverse holo slot 1", "Reverse holo slot 2", "Rare slot"],
+         "rarity": "Special illustration rare"},
+        {"kind": "god", "odds": 1 / 2500,
+         "cards": [("074/131", "Reverse holo (Master Ball pattern)")] + [(n, "Holo") for n in EEVEELUTION_SIRS]
+                  + [("167/131", "Holo")]},
+    ],
+}
+
+
+def special_packs(slug, prints, index):
+    out = []
+    for rule in SPECIAL_PACKS.get(slug, []):
+        pack = {"kind": rule["kind"], "odds": round(rule["odds"], 8)}
+        if "rarity" in rule:
+            pack["slots"] = rule["slots"]
+            pack["pool"] = [i for i, p in enumerate(prints) if p["rarity"] == rule["rarity"]]
+        else:
+            missing = [key for key in rule["cards"] if key not in index]
+            if missing:
+                sys.exit(f"{slug}: the {rule['kind']} pack names prints that no slot produces: {missing}")
+            pack["cards"] = [index[key] for key in rule["cards"]]
+        out.append(pack)
+    return out
+
+
 def pack_order(era, slots, has_energy_row):
     """Return (order, trick, series). The order must use each slot exactly as often as the slot map says."""
     order, trick, series = ERA_PACKS.get(era, (None, 1, era.replace("-", " ").title() if era else ""))
@@ -171,6 +204,9 @@ def export(slug):
     order, trick, series = pack_order(eras.get(slug), slots, has_energy_row)
     out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": pack_image,
            "slots": slots, "order": order, "trick": trick, "prints": prints}
+    specials = special_packs(slug, prints, index)
+    if specials:
+        out["specialPacks"] = specials
     path = os.path.join(OUT, f"{slug}.json")
     json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
     unpriced = sum(1 for p in prints if p["market"] is None)

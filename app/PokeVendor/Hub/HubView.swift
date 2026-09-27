@@ -221,6 +221,10 @@ struct HubView: View {
                     }
                 }
             }
+            Menu("Rip now: special packs") {
+                Button("Prismatic demigod pack · 3 SIRs") { ripSpecial("demigod") }
+                Button("Prismatic god pack · 10 hits") { ripSpecial("god") }
+            }
             Menu("Add to Inventory") {
                 ForEach(Self.testProducts, id: \.section) { group in
                     Section(group.section) {
@@ -236,6 +240,12 @@ struct HubView: View {
         } label: {
             Label("Test", systemImage: "hammer")
         }
+    }
+
+    /// Rips one Prismatic Evolutions pack that is sure to be this special pack kind.
+    private func ripSpecial(_ kind: String) {
+        RipModel.forcedSpecial = kind
+        if let added = store.addTestProduct("593294") { nav.startRip([added]) }
     }
 
     #if DEBUG
