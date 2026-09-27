@@ -193,6 +193,8 @@ struct HubView: View {
     /// The products to test: collection boxes and packs with each era's pack trick.
     private static let testProducts: [(section: String, items: [(label: String, id: String)])] = [
         ("Collection boxes", [
+            ("Surging Sparks Checklane Blister · pack + promo", "565638"),
+            ("Prismatic Mini Tin [Umbreon] · 2 packs", "593459"),
             ("Ogerpon ex Premium Collection · 4 sets", "576482"),
             ("Houndstone ex Box · 2 sets", "561521"),
             ("Prismatic Surprise Box · 1 random promo", "593466"),
@@ -318,6 +320,10 @@ struct HubView: View {
             if args.contains("-autosell"), let pack = store.data.sealed.first(where: { $0.packs == 1 }) {
                 nav.path.append(.sealed(pack.id))
             }
+        }
+        if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {
+            store.startRun()
+            if let item = store.addTestProduct(args[i + 1]) { nav.startRip([item]) }
         }
         if args.contains("-coll") {
             store.startRun()

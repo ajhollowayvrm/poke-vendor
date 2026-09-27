@@ -2,6 +2,8 @@ import SwiftUI
 import Observation
 
 enum RipPhase {
+    /// The sealed product, before its packs (a blister, a box, a tin).
+    case unbox
     case sealed, opening, open, done
 }
 
@@ -11,6 +13,9 @@ struct QueuedPack: Hashable {
     let setSlug: String
     let paidPerPack: Double
     let productName: String
+    var productID: String?
+    /// True when the product opens in its own step before its first pack.
+    var unbox = false
 }
 
 /// The moment a card is seen for the first time.
@@ -52,8 +57,11 @@ final class RipModel {
 
     init(items: [SealedItem], store: GameStore?) {
         queue = items.flatMap { item in
-            (store?.packSlugs(of: item) ?? Array(repeating: item.setSlug, count: item.packs)).map { slug in
-                QueuedPack(sourceID: item.id, setSlug: slug, paidPerPack: item.paidPerPack, productName: item.name)
+            let product = item.brokenFrom == nil ? SetLibrary.product(item.productID) : nil
+            let unbox = product.map { $0.kind != "Booster pack" || $0.packs > 1 } ?? false
+            return (store?.packSlugs(of: item) ?? Array(repeating: item.setSlug, count: item.packs)).map { slug in
+                QueuedPack(sourceID: item.id, setSlug: slug, paidPerPack: item.paidPerPack, productName: item.name,
+                           productID: item.productID, unbox: unbox)
             }
         }
         self.store = store
@@ -64,7 +72,33 @@ final class RipModel {
     var currentPack: QueuedPack? { queue.indices.contains(packIndex) ? queue[packIndex] : nil }
     var hasNextPack: Bool { packIndex + 1 < queue.count }
     var ripValue: Double { doneValue + valueSoFar }
-    var ripPaid: Double { donePaid + (phase == .sealed ? 0 : packCost) }
+    var ripPaid: Double { donePaid + (phase == .sealed || phase == .unbox ? 0 : packCost) }
+
+    private var unboxed: Set<UUID> = []
+    /// The product on the unbox screen. It stays until the player moves on to the packs.
+    private(set) var unboxing: Product?
+
+    /// The product to open before this pack, if it is still closed.
+    var unboxProduct: Product? {
+        guard let pack = currentPack, pack.unbox, !unboxed.contains(pack.sourceID) else { return nil }
+        return SetLibrary.product(pack.productID)
+    }
+
+    /// The set of each pack in the product that is opening.
+    var unboxPackSlugs: [String] { queue.filter { $0.sourceID == currentPack?.sourceID }.map(\.setSlug) }
+
+    func openProduct() -> [CardPrint] {
+        guard let pack = currentPack else { return [] }
+        unboxed.insert(pack.sourceID)
+        packExtras = store?.openProduct(pack.sourceID, ripID: ripID) ?? []
+        return packExtras
+    }
+
+    func startPacks() {
+        guard phase == .unbox else { return }
+        unboxing = nil
+        phase = .sealed
+    }
 
     var allCards: [RipCard] { pile + stack }
     var packCost: Double { currentPack?.paidPerPack ?? 0 }
@@ -117,7 +151,8 @@ final class RipModel {
         packExtras = []
         showcaseID = nil
         lastReveal = nil
-        phase = .sealed
+        unboxing = unboxProduct
+        phase = unboxing == nil ? .sealed : .unbox
         ImageStore.shared.prefetch(stack.compactMap(\.imageURL))
     }
 
@@ -135,8 +170,9 @@ final class RipModel {
         guard phase == .sealed else { return }
         phase = .opening
         if let pack = currentPack {
-            packExtras = store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
+            let extras = store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
                                            ripID: ripID, cards: stack) ?? []
+            if !extras.isEmpty { packExtras = extras }
         }
     }
 

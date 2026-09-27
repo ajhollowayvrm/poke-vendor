@@ -112,16 +112,18 @@ def main():
         # The set files rip Unlimited prints only, so 1st Edition and Shadowless product stays out.
         if re.search(r"1st Edition|Shadowless", it["name"]):
             continue
-        promos = [resolve_promo(t, sets, svp) for t in it.get("promos", [])]
+        raw_promos = it.get("promos", [])
+        # A single variant, for example "[Glaceon]", holds only the promo that matches its name. The source often
+        # lists every promo of the product wave.
+        bracket = re.search(r"\[([^\]]+)\]", it["name"])
+        if bracket:
+            named = [t for t in raw_promos if t.split(" (")[0] == bracket.group(1)]
+            raw_promos = named or raw_promos
+        promos = [resolve_promo(t, sets, svp) for t in raw_promos]
         if any(x is None for x in promos):
-            skipped.append(f"{it['name']}: promo not found in {it.get('promos')}")
+            skipped.append(f"{it['name']}: promo not found in {raw_promos}")
             promos = [x for x in promos if x]
         name = re.sub(r"\s+", " ", it["name"])
-        # A single variant, for example "[Glaceon]", holds only the promo that matches its name.
-        bracket = re.search(r"\[([^\]]+)\]", name)
-        if bracket and len(promos) > 1:
-            match = [x for x in promos if x["name"] == bracket.group(1)]
-            promos = match or promos
         msrp = next((v for k, v in MSRP_BY_NAME if k in name), MSRP_BY_KIND.get(it["kind"]))
         # The mix lists the home set first, then the rest by count.
         order = sorted(mix.items(), key=lambda kv: (kv[0] != HOME, -kv[1], kv[0]))

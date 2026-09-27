@@ -303,6 +303,32 @@ final class GameStore {
         return Array(repeating: item.setSlug, count: item.packs)
     }
 
+    /// Opens a sealed product before its packs: the seal breaks, every pack goes back as a loose pack, and the
+    /// promo cards go to Raw. Returns the promo cards.
+    @discardableResult
+    func openProduct(_ sourceID: UUID, ripID: UUID) -> [CardPrint] {
+        guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
+        let item = data.sealed.remove(at: i)
+        for slug in packSlugs(of: item) {
+            data.sealed.append(SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
+                                          paid: item.paidPerPack, acquired: item.acquired,
+                                          source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
+                                          brokenFrom: item.id, acquiredDay: data.day))
+        }
+        var extras: [CardPrint] = []
+        if let product = SetLibrary.product(item.productID) {
+            let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
+            for promo in promos {
+                data.raw.append(OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil,
+                                          ripID: ripID, acquiredDay: data.day))
+                extras.append(promo.print)
+            }
+        }
+        log("Opened \(item.name).")
+        save()
+        return extras
+    }
+
     /// Called when the rip tears a pack. The seal is broken, so the cards belong to the player at once.
     /// When the tear breaks a product's seal, its other packs go back as loose packs, and its promo cards go
     /// to Raw (docs/18-ripping.md, Sealed products in the rip). Returns those promo cards.

@@ -75,7 +75,7 @@ struct RipView: View {
                         .zIndex(30)
                 }
 
-                if model.phase != .sealed {
+                if model.phase != .sealed && model.phase != .unbox {
                     ForEach(model.allCards) { card in
                         let p = placement(for: card, layout: layout)
                         CardView(card: card, faceUp: p.faceUp)
@@ -119,9 +119,19 @@ struct RipView: View {
                         .zIndex(400)
                 }
 
-                bottomPanel
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    .zIndex(350)
+                if model.phase == .unbox, let product = model.unboxing {
+                    UnboxView(product: product, packSlugs: model.unboxPackSlugs,
+                              onOpen: { model.openProduct() },
+                              onRip: { withAnimation(.easeInOut(duration: 0.3)) { model.startPacks() } },
+                              onDone: onClose)
+                        .padding(.top, 96)
+                        .transition(.opacity)
+                        .zIndex(340)
+                } else {
+                    bottomPanel
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .zIndex(350)
+                }
 
                 if let burst {
                     let inPile = model.pile.contains { $0.id == burst.card.id }
@@ -510,6 +520,13 @@ struct RipView: View {
     #if DEBUG
     /// Screenshot aid: `-demo <cards to pile> [peek]` opens the pack and plays it by itself.
     private func runDemo() {
+        if ProcessInfo.processInfo.arguments.contains("-autorip") {
+            Task {
+                while model.phase != .sealed { try? await Task.sleep(for: .milliseconds(200)) }
+                try? await Task.sleep(for: .seconds(1))
+                skipPack()
+            }
+        }
         let args = ProcessInfo.processInfo.arguments
         guard let i = args.firstIndex(of: "-demo"), i + 1 < args.count, let taps = Int(args[i + 1]) else { return }
         Task {

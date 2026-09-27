@@ -18,6 +18,7 @@
 		484DB0AF7BC480439CDBAACC /* Social.swift in Sources */ = {isa = PBXBuildFile; fileRef = D894A52F7AE73A7EAF8DF6D3 /* Social.swift */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
+		55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */; };
 		57856FEC663D96592E925B4F /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38152100E3F21C13B7C61E1B /* GameStore.swift */; };
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
@@ -60,6 +61,7 @@
 		3BE8F9A509ED85647311ACD5 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
+		49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboxView.swift; sourceTree = "<group>"; };
 		50F97256E10C06386BD90E19 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		523EE1F5C13F88A7FDA88127 /* HitEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitEffects.swift; sourceTree = "<group>"; };
 		544120DEF70C6BCBC2EF918A /* DetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViews.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				11814C73AA917A111DD8EC6A /* PackView.swift */,
 				367966CB515F1D60E1380F07 /* Panels.swift */,
 				7DB2E7EA020C2D7260109C7E /* RipView.swift */,
+				49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */,
 			);
 			path = Rip;
 			sourceTree = "<group>";
@@ -328,6 +331,7 @@
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,
+				55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */,
 				7D71A92431332B26D0BA9ED7 /* WalletView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

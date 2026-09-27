@@ -269,6 +269,26 @@ The cards that the player already saw go to a **pile**.
 
 ## Sealed products in the rip
 
+### Opening a product
+
+A sealed product that is not a loose pack opens in its own step before
+its first pack:
+
+1. The product shows closed, with a moving reflection.
+2. The player taps it to open it. The opening depends on the product:
+   a blister peels apart, a box, ETB, collection, or bundle lifts its
+   lid, and a tin pops its lid.
+3. The contents show: first the promo cards, one by one with their
+   prices, then one small wrapper for each pack, in its set's colors.
+4. **Rip packs** goes to the first pack. **Done for now** closes the
+   rip, and the packs stay in Inventory as loose packs.
+
+Opening the product breaks its seal. Its promo cards go to Raw, and its
+packs become loose packs at that moment.
+
+A product that holds one promo from a wave, for example a checklane
+blister, holds the promo that its name shows in brackets.
+
 - A product's seal breaks when the rip reaches its first pack. The
   product then loses its sealed premium (see
   [05-pricing-and-market.md](05-pricing-and-market.md#sealed-product--separate-pricing-logic)).
