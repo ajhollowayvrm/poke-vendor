@@ -117,7 +117,47 @@ Where the hit sits:
   the three hit slots the last three cards. The rip screen shows no
   code card.
 
+Where an ex can be (research of September 27, 2026):
+
+| Ex type | 8 (Reverse holo 1) | 9 (Reverse holo 2) | 10 (Rare slot) |
+|---|---|---|---|
+| Double Rare ex | No | No | Yes |
+| Special Illustration Rare ex | No | Yes | No |
+| Hyper Rare ex (gold) | No | Yes | No |
+| Special Illustration Rare in a demigod pack | Yes | Yes | Yes |
+
+- **A normal pack** can hold an ex at 9 and at 10, but never at 8. It
+  can hold two ex cards: a Special Illustration Rare or Hyper Rare at 9,
+  and a Double Rare at 10. No source shows an opened pack with two ex
+  cards.
+- **Double Rare ex cards have only a Holo print** (TCGdex, all 25
+  cards). No Double Rare has a reverse holo, Poké Ball, or Master Ball
+  print, so a Double Rare cannot be in a reverse holo slot. PokeBeach:
+  "Only the regular Pokemon in the main set, excluding Pokemon ex, are
+  available in Master Ball reverse holos." Confidence: official card
+  data, and a community report.
+- **The TCGplayer 1,200-pack study names the slots.** It is the
+  strongest source: Double Rare and Ultra Rare "in the Rare slot",
+  Special Illustration Rare and Hyper Rare "in the second Reverse Holo
+  slot", ACE SPEC and Poké Ball "in the first Reverse Holo slot".
+  Confidence: empirical study.
+- **Demigod pack:** "three high rarity cards in the final three slots"
+  (Dot Esports). TCGplayer: "three SIR cards, which may be any three
+  SIRs". Then an ex can be at 8, 9, and 10. No source gives the odds.
+  Confidence: community report.
+- **God pack:** TCGplayer lists "Eevee (Master Ball), SIR Eevee ex, and
+  one of each SIR Eeveelution", which is 10 cards. So every card is a
+  hit. TheGamer reports eight Special Illustration Rares. The two
+  reports can describe different packs. Confidence: community report.
+- **The game** does not have demigod packs or god packs yet (see Open
+  topics).
+
 Exceptions and conflicts:
+- **Hyper Rare slot:** PokeBeach (March 2023, before the release of
+  Scarlet & Violet) says "The holo slot can either contain ... a Hyper
+  Rare Holo". The TCGplayer studies of 151 and of this set put the Hyper
+  Rare "in the second Reverse Holo slot". The studies come from opened
+  packs, so this file uses them.
 - **Energy and code card position:** the same conflict as the base
   Scarlet & Violet template. One extract puts the code card last.
   Another extract says the code card is the first card the player
@@ -549,6 +589,11 @@ Rares.
 - [tcgtalk — Prismatic Evolutions Pull Rates and God Pack Odds](https://tcgtalk.com/guides/prismatic-evolutions-pull-rates-god-pack)
 - [PokeBeach — Scarlet & Violet Booster Pack Configuration Finally Revealed](https://www.pokebeach.com/2023/03/scarlet-violet-booster-pack-configuration-finally-revealed-major-exciting-changes) (search extract only)
 - [Pokémon Support — What can I expect in a booster pack](https://support.pokemon.com/hc/en-us/articles/360000981613-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-booster-pack)
+- [TCGplayer — Prismatic Evolutions Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Prismatic-Evolutions-Pull-Rates/d94889ea-f76a-4a13-b74d-5b0b071220a7/)
+- [TCGplayer — Scarlet & Violet—151 Pull Rates](https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Scarlet-Violet%E2%80%94151-Pull-Rates/b237df74-fbb0-40d0-9e13-d69ee6e804d9/)
+- [TCGdex API — Prismatic Evolutions](https://api.tcgdex.net/v2/en/sets/sv08.5)
+- [Dot Esports — Prismatic Evolutions demigod packs](https://dotesports.com/pokemon/news/pokemon-tcg-prismatic-evolutions-seemingly-contains-elusive-demi-god-packs)
+- [TheGamer — Prismatic Evolutions god packs](https://www.thegamer.com/it-looks-like-prismatic-evolutions-has-god-packs/)
 - [CardDeckr — Prismatic Evolutions: The Complete Guide to the Most Sought After Pokemon TCG Set of 2025](https://carddeckr.com/blog/prismatic-evolutions-the-complete-guide-to-the-most-sought-after-pokemon-tcg-set-of-2025/)
 
 ## Open topics
@@ -581,3 +626,10 @@ Rares.
 - **Rarity list order:** CardDeckr's about 1 in 3 rate for the Poké Ball
   pattern places it above Double Rare (1 in 5). This uses the TCGplayer
   1,200-pack study, the same source as the other odds in this file.
+- **Demigod and god packs:** the game does not build them. A demigod
+  pack puts three Special Illustration Rares at 8, 9, and 10. A god pack
+  is 10 hits. No source gives the odds of a demigod pack. tcgtalk
+  estimates a god pack at 1 in 1,500 to 1 in 4,000 packs.
+- **Two ex cards in one pack:** the slot names permit a Special
+  Illustration Rare or Hyper Rare at 9 and a Double Rare at 10. No
+  source shows an opened pack with both.
