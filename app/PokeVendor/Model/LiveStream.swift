@@ -387,7 +387,8 @@ extension GameStore {
     func startStream(hours: Double, itemIDs: [UUID], scheduled: Bool) -> StreamSession? {
         guard streamBlock(hours: hours) == nil, let start = slot(for: hours) else { return nil }
         data.hour = start
-        if scheduled { data.streams.removeAll { $0.day == data.day } }
+        let today = data.day
+        if scheduled { data.streams.removeAll { $0.day == today } }
         let ids = Set(itemIDs)
         let items = streamStock.filter { ids.contains($0.id) }
         log("Went live for \(formatHours(hours)).")
@@ -467,7 +468,8 @@ extension GameStore {
             data.social.authenticity = max(0, data.social.authenticity - Balance.missedStreamAuthenticityCost)
             lines.append("You missed your scheduled stream. \(lost) followers left, and it cost you authenticity.")
         }
-        data.streams.removeAll { $0.day < data.day }
+        let today = data.day
+        data.streams.removeAll { $0.day < today }
         if let plan = streamToday {
             lines.append("Your stream is scheduled for \(GameStore.clock(plan.startHour)) today.")
         }

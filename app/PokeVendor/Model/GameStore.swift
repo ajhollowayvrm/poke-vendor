@@ -892,12 +892,17 @@ final class GameStore {
     private func advanceSealed() -> [String] {
         var lines: [String] = []
         var keepItems: [SealedItem] = []
+        // A case is many boxes. One line for each product, not one for each box.
+        var arrived: [(key: String, count: Int)] = []
+        func note(_ key: String) {
+            if let i = arrived.firstIndex(where: { $0.key == key }) { arrived[i].count += 1 } else { arrived.append((key, 1)) }
+        }
         for var item in data.sealed {
             switch item.status {
             case .onTheWay(let days, let store):
                 if days <= 1 {
                     item.status = nil
-                    lines.append("Delivered from \(store.rawValue): \(item.name).")
+                    note("Delivered from \(store.rawValue): \(item.name)")
                 } else {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
@@ -913,7 +918,7 @@ final class GameStore {
             case .arriving(let days, let from):
                 if days <= 1 {
                     item.status = nil
-                    lines.append("Arrived from \(from): \(item.name).")
+                    note("Arrived from \(from): \(item.name)")
                 } else {
                     item.status = .arriving(daysLeft: days - 1, from: from)
                 }
@@ -923,6 +928,7 @@ final class GameStore {
             keepItems.append(item)
         }
         data.sealed = keepItems
+        lines += arrived.map { $0.count > 1 ? "\($0.key) ×\($0.count)." : "\($0.key)." }
         return lines
     }
 

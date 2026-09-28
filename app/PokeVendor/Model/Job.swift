@@ -138,8 +138,9 @@ extension GameStore {
         guard isWorkDay, worksToday, data.hour < Balance.workStart, let job else { return nil }
         data.jobState.skippedToday = true
         data.jobState.unpaidDays += 1
-        data.jobState.unexcused.append(data.day)
-        data.jobState.unexcused.removeAll { $0 < data.day - Balance.unexcusedResetDays }
+        let today = data.day
+        data.jobState.unexcused.append(today)
+        data.jobState.unexcused.removeAll { $0 < today - Balance.unexcusedResetDays }
         let count = data.jobState.unexcused.count
         let chance = Balance.firedChances[min(count, Balance.firedChances.count) - 1]
         var line = "You skipped work. The day is unpaid."

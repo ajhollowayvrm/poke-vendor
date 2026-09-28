@@ -89,7 +89,8 @@ extension GameStore {
 
     /// Rolls for a new opportunity at End Day. Notice is 0 or 1 day.
     func opportunitiesEndDay() -> [String] {
-        data.opportunities.removeAll { $0.day < data.day - 7 }
+        let today = data.day
+        data.opportunities.removeAll { $0.day < today - 7 }
         var lines: [String] = []
         for o in data.opportunities where !o.answered && o.day == data.day && o.postedDay < data.day {
             lines.append("Today: \(o.title). Answer it from the hub.")

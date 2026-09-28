@@ -295,7 +295,7 @@ extension GameStore {
                 state.lastVisitDay = data.day
                 data.shops[shop.rawValue] = state
             }
-            log("League night at \(venue.name): \(deals). Standing +\(Balance.leagueStandingPoints).")
+            log("\(venue.name): \(deals). Standing +\(Balance.leagueStandingPoints).")
         case .garageSale, .estateSale:
             // Travel is inside the hours, so the visit always takes them all.
             data.hour = min(Balance.dayEnd, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))

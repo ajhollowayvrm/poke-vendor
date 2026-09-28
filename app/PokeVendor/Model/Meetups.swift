@@ -55,12 +55,13 @@ extension GameStore {
     /// Offers on Facebook listings, and meetups that the player missed (docs/15, Facebook Marketplace).
     func meetupsEndDay() -> [String] {
         var lines: [String] = []
-        data.fbOffers.removeAll { $0.day + Balance.fbOfferDays < data.day }
+        let today = data.day
+        data.fbOffers.removeAll { $0.day + Balance.fbOfferDays < today }
         // A missed meetup: the buyer moves on, and the listing stays up.
         for m in data.meetups where m.day < data.day && !m.done && !m.isPickup {
             lines.append("\(m.who) waited for you with the \(m.name) and left. The listing is still up.")
         }
-        data.meetups.removeAll { $0.day < data.day && !$0.isPickup }
+        data.meetups.removeAll { $0.day < today && !$0.isPickup }
         // A pickup the player did not make comes home the next day anyway: the seller drops it off.
         for i in data.meetups.indices where data.meetups[i].day < data.day && !data.meetups[i].done && data.meetups[i].isPickup {
             data.meetups[i].done = true

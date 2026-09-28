@@ -128,7 +128,8 @@ extension GameStore {
 
     /// New invites on Monday, by reputation tier, and a Friend vendor's offer now and then (docs/04, docs/21).
     func splitsEndDay() -> [String] {
-        data.splits.removeAll { $0.arrivesDay < data.day - 1 || ($0.closesDay < data.day && $0.mine == 0) }
+        let today = data.day
+        data.splits.removeAll { $0.arrivesDay < today - 1 || ($0.closesDay < today && $0.mine == 0) }
         var lines: [String] = []
         var invites = weekday == 0 ? Balance.splitInvitesPerWeek[reputationTier] : 0
         var friendOffer: Contact?

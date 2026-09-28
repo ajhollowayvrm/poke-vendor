@@ -355,7 +355,8 @@ extension GameStore {
             }
             lines.append(line)
         }
-        data.badSales.removeAll { $0.dayFound <= data.day }
+        let today = data.day
+        data.badSales.removeAll { $0.dayFound <= today }
         return lines
     }
 

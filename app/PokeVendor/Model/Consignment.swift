@@ -27,17 +27,21 @@ extension GameStore {
     func consign(_ ids: Set<UUID>, at shop: LocalStore, percent: Double) {
         guard canConsign(at: shop) else { return }
         let cut = consignCut(at: shop)
+        let today = data.day
         var count = 0
-        func place(_ card: inout OwnedCard) {
-            guard ids.contains(card.id), card.status == nil, !card.keep else { return }
+        // `card` is a copy: the write to `data` happens after, so no two accesses overlap.
+        func placed(_ card: OwnedCard) -> OwnedCard? {
+            guard ids.contains(card.id), card.status == nil, !card.keep else { return nil }
             let price = max(0.5, (card.realMarket * percent / 100 * 100).rounded() / 100)
             let chance = Balance.consignSaleBase * exp(-(percent / 100 - 1) * 4)
-            let sellDay: Int? = Double.random(in: 0..<1) < chance ? data.day + Int.random(in: 2...Balance.consignDays) : nil
-            card.status = .consigned(Consignment(shop: shop, price: price, cut: cut, dayListed: data.day, sellDay: sellDay))
+            let sellDay: Int? = Double.random(in: 0..<1) < chance ? today + Int.random(in: 2...Balance.consignDays) : nil
+            var out = card
+            out.status = .consigned(Consignment(shop: shop, price: price, cut: cut, dayListed: today, sellDay: sellDay))
             count += 1
+            return out
         }
-        for i in data.raw.indices { place(&data.raw[i]) }
-        for i in data.slabs.indices { place(&data.slabs[i]) }
+        for i in data.raw.indices { if let c = placed(data.raw[i]) { data.raw[i] = c } }
+        for i in data.slabs.indices { if let c = placed(data.slabs[i]) { data.slabs[i] = c } }
         guard count > 0 else { return }
         log("Put \(count) card\(count == 1 ? "" : "s") on consignment at \(shop.rawValue). The shop takes \(Int(cut * 100))%.")
         save()

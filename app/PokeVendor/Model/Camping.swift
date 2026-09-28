@@ -78,8 +78,9 @@ extension GameStore {
         guard campBlock(store) == nil, let start = slot(for: Balance.campHours) else { return nil }
         let arrive = max(start, Balance.campStart)
         data.hour = arrive + Balance.campHours
-        data.campedDays.append("\(store.rawValue)-\(data.day)")
-        data.campedDays.removeAll { !$0.hasSuffix("-\(data.day)") }
+        let suffix = "-\(data.day)"
+        data.campedDays.append("\(store.rawValue)\(suffix)")
+        data.campedDays.removeAll { !$0.hasSuffix(suffix) }
         let late = max(0, arrive - Balance.campStart)
         let chance = Balance.campSuccess * pow(Balance.arrivalKeep, late) + restockBotBonus
         guard Double.random(in: 0..<1) < chance else {
@@ -104,8 +105,9 @@ extension GameStore {
 
     /// Test tool: a restock at this store today, with the clock at the doors.
     func testRestockToday(_ store: LocalStore) {
-        data.testRestocks.append("\(store.rawValue)-\(data.day)")
-        data.campedDays.removeAll { $0 == "\(store.rawValue)-\(data.day)" }
+        let key = "\(store.rawValue)-\(data.day)"
+        data.testRestocks.append(key)
+        data.campedDays.removeAll { $0 == key }
         if data.hour > Balance.campStart { data.hour = Balance.dayStart }
         if worksToday { callInSick() }
         save()

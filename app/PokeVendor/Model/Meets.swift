@@ -147,13 +147,15 @@ extension GameStore {
         let kind: MeetKind? = venue.kind == .leagueNight ? .leagueNight
             : MeetKind.allCases.first { $0.label == venue.name && $0 != .leagueNight }
         guard let kind else { return }
-        data.meetsAttended.append(MeetRecord(kind: kind, day: data.day))
-        data.meetsAttended.removeAll { $0.day < data.day - 14 }
+        let today = data.day
+        data.meetsAttended.append(MeetRecord(kind: kind, day: today))
+        data.meetsAttended.removeAll { $0.day < today - 14 }
     }
 
     /// Test tool: a meet right now, on any weekday.
     func testStartMeet(_ kind: MeetKind) -> ShowSession? {
-        data.meetsAttended.removeAll { $0.kind == kind && $0.day == data.day }
+        let today = data.day
+        data.meetsAttended.removeAll { $0.kind == kind && $0.day == today }
         if data.hour > kind.close - 1 { data.hour = max(Balance.dayStart, kind.open - 0.5) }
         seedContacts()
         let league = kind == .leagueNight

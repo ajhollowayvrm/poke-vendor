@@ -512,7 +512,8 @@ extension GameStore {
             lines.append("\(scam.sellerName) found out what the \(scam.itemName) was worth. Word is getting around.")
             if hasAccount { data.social.authenticity = max(0, data.social.authenticity - 0.1) }
         }
-        data.scams.removeAll { $0.dayFound <= data.day }
+        let today = data.day
+        data.scams.removeAll { $0.dayFound <= today }
         // A relationship with no deal for 8 weeks fades a little each week.
         for i in data.contacts.indices where data.contacts[i].shop == nil && data.contacts[i].points > 0 {
             let quiet = data.day - data.contacts[i].lastDealDay

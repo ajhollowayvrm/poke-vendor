@@ -514,9 +514,114 @@ struct HubView: View {
     }
 
     #if DEBUG
+    /// Test aid: `-soak <days>` plays that many days by itself and prints what happened. It touches every system,
+    /// so a crash shows up in the console.
+    private func soak(days: Int) {
+        store.startRun()
+        store.addTestCash(6000)
+        store.testFollowers(1_200)
+        store.data.vendorKit = true
+        store.addReputation(400)
+        store.testMakeRegular()
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 10 }).prefix(6) { store.addTestCard(print) }
+        for _ in 0..<4 { store.addTestPack() }
+        store.addTestFake(.bootleg)
+        store.addTestResealed()
+        var log: [String] = []
+        func play(_ session: ShowSession) {
+            if session.phase == .setup { session.openTable() }
+            var steps = 0
+            while session.phase != .summary, steps < 80 {
+                steps += 1
+                if let v = session.current {
+                    switch v.intent {
+                    case .buy: session.accept()
+                    case .trade: session.proposeTrade(valuing: 90)
+                    case .sell: if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.6) }
+                    }
+                } else if session.phase == .table {
+                    session.nextVisitor()
+                } else if session.phase == .floor {
+                    if let vendor = session.vendors.first(where: { !$0.visited }) {
+                        session.visit(vendor)
+                        if let item = vendor.items.first(where: { $0.price < 60 }) { session.buy(item, from: vendor) }
+                        session.closeVendor()
+                    } else {
+                        session.packUp()
+                    }
+                } else {
+                    break
+                }
+            }
+            store.finishEncounter(session)
+            log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought")
+        }
+        for _ in 0..<days {
+            store.report = nil
+            if store.data.lateHours > 0 { store.chooseMorning(sleepIn: Bool.random()) }
+            for o in store.activeOpportunities where o.day == store.day {
+                if case .encounter(let s) = store.acceptOpportunity(o.id) { play(s) }
+            }
+            for kind in store.meetsToday { if let s = store.startMeet(kind) { play(s) } }
+            for sale in store.salesToday { if let s = store.startSale(sale) { play(s) } }
+            for r in store.restocksNow {
+                if store.worksToday { store.callInSick() }
+                if let haul = store.camp(r.store) {
+                    for item in haul.items { store.buyShelf(item, at: r.store, credit: false) }
+                    log.append("Camp \(r.store.rawValue): \(haul.success ? "got in" : "sold out")")
+                }
+            }
+            if let show = store.showToday, store.canGoToShowToday, let started = store.startShowDay() {
+                play(ShowSession(show: started, store: store))
+                _ = show
+            } else if store.day % 5 == 0, let s = store.startStream(hours: 2, itemIDs: store.streamStock.prefix(3).map(\.id), scheduled: false) {
+                for _ in 0..<130 { s.tick() }
+                if let item = s.items.first { s.startAuction(item, startShare: 0.5) }
+                for _ in 0..<20 { s.tick() }
+                s.end()
+                log.append("Stream: \(s.peakViewers) peak, \(money(s.tips)) tips")
+            }
+            for m in store.meetupsToday { _ = store.doMeetup(m.id) }
+            for o in store.pendingFBOffers { store.acceptFBOffer(o.id) }
+            if store.day % 3 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) {
+                store.list([card.id], channel: [.tcgplayer, .ebay, .facebook].randomElement() ?? .ebay, price: { _ in card.realMarket }, auctionDays: nil, insured: false)
+            }
+            if store.day % 4 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) { store.authenticate([card.id]) }
+            if store.day % 7 == 1, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) { store.consign([card.id], at: .castle, percent: 110) }
+            for split in store.openSplits where split.mine == 0 { _ = store.joinSplit(split.id, boxes: 1) }
+            if let offer = store.wholesaleOffers.first, store.canAfford(offer.casePrice) { _ = store.buyWholesale(offer, cases: 1) }
+            if store.data.sealed.contains(where: { $0.status == nil && !$0.keep }) {
+                let items = Array(store.data.sealed.filter { $0.status == nil && !$0.keep }.prefix(2))
+                let model = RipModel(items: items, store: store)
+                model.mode = .sift
+                var guardCount = 0
+                while model.phase != .done || model.hasNextPack, guardCount < 40 {
+                    guardCount += 1
+                    if model.phase == .done { model.nextPack() } else { _ = model.sift(); model.resume() }
+                }
+            }
+            if store.data.day % 6 == 0 { store.post(.hotTake, subject: nil, value: 0) }
+            if store.day % 9 == 0 { _ = store.apply(min(Job.ladder.count - 1, (store.data.jobIndex ?? 0) + 1)) }
+            if store.day % 11 == 0 { store.bookTimeOff(store.day + 2) }
+            if store.day % 13 == 5 { _ = store.skipWork() }
+            // A late night every 8 days: the hours past 11 PM come out of sleep.
+            if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
+            store.endDay()
+        }
+        print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
+        for line in log.suffix(12) { print("SOAK", line) }
+        for line in store.data.activity.suffix(30) { print("SOAK D\(line.day + 1)", line.text) }
+        // The console is a pipe, so stdout is buffered. Push the report out now.
+        fflush(stdout)
+    }
+
     /// Screenshot aid: `-demo` rips a pack at launch.
     private func runDemo() {
         let args = ProcessInfo.processInfo.arguments
+        if let i = args.firstIndex(of: "-soak"), i + 1 < args.count, let days = Int(args[i + 1]) {
+            soak(days: days)
+            return
+        }
         // Screenshot aid: `-regular` makes every contact Regular first.
         if args.contains("-regular") { store.testMakeRegular() }
         if let i = args.firstIndex(of: "-route"), i + 1 < args.count {
@@ -535,6 +640,11 @@ struct HubView: View {
             case "contacts": nav.path = [.contacts]
             case "nextshow": nav.path = [.calendar] + (store.upcomingShows.first(where: { $0.startDay > store.day }).map { [.show($0.id)] } ?? [])
             case "sealed": nav.path = [.inventory(.sealed)]
+            case "settings": nav.path = [.settings]
+            case "job": nav.path = [.job]
+            case "upgrades": nav.path = [.upgrades]
+            case "wholesale": store.addReputation(400); nav.path = [.buy, .wholesale]
+            case "splits": store.addReputation(400); store.testSplitInvite(); nav.path = [.buy, .caseSplits]
             default: break
             }
         }
