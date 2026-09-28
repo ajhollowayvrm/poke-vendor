@@ -218,6 +218,14 @@ A set can have rare special packs that replace the slot map
 - **Skip pack** plays no moment.
 - The Test menu has **Rip now: special packs** to open one of each.
 
+### Condition on the reveal
+
+The card's wear (NM, LP, or MP) and its front cut show in three places
+on the rip screen: in the panel for the card in hand, on the hit banner
+of a medium or big hit, and next to each hit in the summary. The cut is
+as sharp as the player's centering tool can read it (see
+[10-grading.md](10-grading.md#cut-and-wear)).
+
 ### Fast and Sift
 
 In Fast:

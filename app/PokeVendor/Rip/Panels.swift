@@ -256,8 +256,12 @@ struct SummaryView: View {
                 ForEach(hits) { card in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(card.name).font(.subheadline.weight(.medium))
+                            HStack(spacing: 6) {
+                                Text(card.name).font(.subheadline.weight(.medium))
+                                WearPill(wear: card.condition.wear)
+                            }
                             Text(card.print?.variant ?? "").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            CutLine(reading: .front(card.condition.cut, tool: model.centeringTool))
                         }
                         Spacer()
                         Text(money(card.market)).font(.subheadline.monospaced())

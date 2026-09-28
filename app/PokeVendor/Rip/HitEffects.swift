@@ -126,6 +126,8 @@ struct SparkleBurst: View {
 /// The rarity and the raw price, for medium and big hits.
 struct HitBanner: View {
     let card: RipCard
+    /// The player's centering tool, for the cut reading.
+    var tool = 0
     @State private var on = false
 
     var body: some View {
@@ -139,6 +141,11 @@ struct HitBanner: View {
             Text(money(card.market))
                 .font(.system(size: big ? 18 : 14, weight: .bold, design: .monospaced))
                 .foregroundStyle(.white)
+            HStack(spacing: 6) {
+                WearPill(wear: card.condition.wear)
+                CutLine(reading: .front(card.condition.cut, tool: tool))
+            }
+            .padding(.top, 2)
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 8)

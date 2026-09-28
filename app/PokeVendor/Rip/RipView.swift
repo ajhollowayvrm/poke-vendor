@@ -171,8 +171,8 @@ struct RipView: View {
                         .id(burst.id)
                         .zIndex(360)
                     if burst.card.hitTier >= .medium && !inPile {
-                        HitBanner(card: burst.card)
-                            .position(x: layout.stackCenter.x, y: layout.stackCenter.y + layout.cardH / 2 - 8)
+                        HitBanner(card: burst.card, tool: model.centeringTool)
+                            .position(x: layout.stackCenter.x, y: layout.stackCenter.y + layout.cardH / 2 - 60)
                             .id(burst.id)
                             .transition(.opacity)
                             .zIndex(370)
