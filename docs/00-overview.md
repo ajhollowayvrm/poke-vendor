@@ -43,5 +43,5 @@ tracks four separate currencies, and any one of them can be your route there.
 - The rest of the upgrades system beyond the grading-reveal examples.
 - Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress; Wallet / cash ledger done, 10 remaining.
 - PokemonPriceTracker data-pull cadence: one-time pull vs. periodic re-pulls.
-- Real pull-rate data for sets beyond Base Set, added under `docs/sets/` as each is needed (see [13-sets.md](13-sets.md)); Base Set itself is done (see [sets/base-set.md](sets/base-set.md)).
+- Sets: all 131 English booster sets are in the game (see [13-sets.md](13-sets.md#sets-in-the-game)). Open: the Prize Pack Series, Trick or Trade 2022, and the POP Series, and the 1st Edition images in the Wizards of the Coast sets.
 - Base Set's own two remaining question marks: the common/energy split, and whether the 16 rares are equally weighted (see [sets/base-set.md](sets/base-set.md#open-topics)).

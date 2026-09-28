@@ -7,95 +7,343 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0191A177B9D9F22F7729EA6B /* noble-victories.json in Resources */ = {isa = PBXBuildFile; fileRef = E6189A16D1D0CA7A824D0A89 /* noble-victories.json */; };
+		01B52477A653B94A932BC9D1 /* great-encounters.json in Resources */ = {isa = PBXBuildFile; fileRef = F704E86B4D99E71629CF9403 /* great-encounters.json */; };
+		03C5FD12045AE513A1988157 /* pitch-black.json in Resources */ = {isa = PBXBuildFile; fileRef = 6867FD072F0DC5CEAE46690F /* pitch-black.json */; };
+		049E20C9365F83E7B52D85D0 /* breakthrough.json in Resources */ = {isa = PBXBuildFile; fileRef = EEEB387BE91E6437D08702D6 /* breakthrough.json */; };
 		05753AF2B42F7F6B87B95C1E /* twilight-masquerade.json in Resources */ = {isa = PBXBuildFile; fileRef = A9F4C9816D29FE5052461E66 /* twilight-masquerade.json */; };
+		058F38F720A52D2D38C56CD1 /* champions-path.json in Resources */ = {isa = PBXBuildFile; fileRef = 9B2447127F65338C5A35C8B0 /* champions-path.json */; };
+		064CBF3B931AFC76F493CED8 /* perfect-order.json in Resources */ = {isa = PBXBuildFile; fileRef = DB6AC5DEAC545E0CC2CCF008 /* perfect-order.json */; };
 		0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7653D159E767B267752F265 /* StoreRunViews.swift */; };
+		085A46C44F6F4811EA21DE23 /* crown-zenith.json in Resources */ = {isa = PBXBuildFile; fileRef = C54A7EE716D8B3165068669F /* crown-zenith.json */; };
+		0C4343AE15D1C4DD4B064E5F /* dragon.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F522C90FE86AD311AB076F5 /* dragon.json */; };
 		0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20845FB5280BA69E0BC46DC /* ShowDayView.swift */; };
+		0EAD72506FECFE0B97BAFCC7 /* dragon-frontiers.json in Resources */ = {isa = PBXBuildFile; fileRef = FB443286D950ABAD944C7A64 /* dragon-frontiers.json */; };
+		0F46ACEE22C0AAA0B36F7E53 /* lost-thunder.json in Resources */ = {isa = PBXBuildFile; fileRef = 4654062AD9C27065757208C9 /* lost-thunder.json */; };
+		1051F2429A3F6B076CCF41FF /* stormfront.json in Resources */ = {isa = PBXBuildFile; fileRef = 56EE5582CFBBA45162D5DFFC /* stormfront.json */; };
+		11FAB08F8FB8CBC9E40A5676 /* platinum.json in Resources */ = {isa = PBXBuildFile; fileRef = BC815F3A92A7F2CFF7E7BF36 /* platinum.json */; };
 		147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F38B7B3DE47AF76DF106787 /* stellar-crown.json */; };
+		1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB5E54A48F045F4D8D408CD /* plasma-storm.json */; };
+		1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */ = {isa = PBXBuildFile; fileRef = C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */; };
+		1AB42439306A09CF7C214382 /* phantasmal-flames.json in Resources */ = {isa = PBXBuildFile; fileRef = C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */; };
+		1B02016F771A2BDFE0D3A2B2 /* undaunted.json in Resources */ = {isa = PBXBuildFile; fileRef = CBAAA70DD15AB8D85C728652 /* undaunted.json */; };
+		1B0E9BD23A43FA287BC42EA1 /* triumphant.json in Resources */ = {isa = PBXBuildFile; fileRef = 773A4B023E31815EEDF2527B /* triumphant.json */; };
+		1BEEE0D8FED92269AC01E9DF /* paldea-evolved.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DE952F8C0F15F72F0C42913 /* paldea-evolved.json */; };
+		1D16BBCABB4082705F1ECA89 /* next-destinies.json in Resources */ = {isa = PBXBuildFile; fileRef = D24E9F46D8D0F6804E3A974E /* next-destinies.json */; };
+		20ACDC2AD6EFF4506C4CFB33 /* journey-together.json in Resources */ = {isa = PBXBuildFile; fileRef = A54CEBF267C5CF60E282DE79 /* journey-together.json */; };
+		2219F859C69DE0AD1A553DB2 /* unified-minds.json in Resources */ = {isa = PBXBuildFile; fileRef = 523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */; };
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
+		26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E94D7F70903BA100DDFBA0F /* burning-shadows.json */; };
 		2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */ = {isa = PBXBuildFile; fileRef = E389E8E864F1F2802B2B9E76 /* surging-sparks.json */; };
+		2AF9A223A3257CE3B7510D1B /* hidden-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 8FC50C93732086290DFAC1F5 /* hidden-legends.json */; };
+		2C4D39E63CD069D24D99D501 /* roaring-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = BCFB88631EA718ED0E77E2CE /* roaring-skies.json */; };
+		2C680DA90FA527CB6B61BBDF /* breakpoint.json in Resources */ = {isa = PBXBuildFile; fileRef = E7E9769BEE2452CE9114E599 /* breakpoint.json */; };
+		2EBE8E85A966DED3B4517E5F /* shining-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 074AD82C95C34EEF99B9381E /* shining-legends.json */; };
+		31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */ = {isa = PBXBuildFile; fileRef = 71BFAA4A10360362D9BE2E1C /* base-set-2.json */; };
+		33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */ = {isa = PBXBuildFile; fileRef = 3300530D0D241B426A6EF827 /* supreme-victors.json */; };
+		351DC793C3969007906440D0 /* neo-genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */; };
+		36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */ = {isa = PBXBuildFile; fileRef = F608F1C0EB11E6D8282E4752 /* 151.json */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
+		3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */ = {isa = PBXBuildFile; fileRef = 917BD5729F252442572920DA /* white-flare.json */; };
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
 		470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */; };
 		484DB0AF7BC480439CDBAACC /* Social.swift in Sources */ = {isa = PBXBuildFile; fileRef = D894A52F7AE73A7EAF8DF6D3 /* Social.swift */; };
+		499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */ = {isa = PBXBuildFile; fileRef = FB1006AA43D16FB5FB572A8A /* legend-maker.json */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
+		4D9FB8FB76885393BDADF1FE /* silver-tempest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A358D246B4A0E231698B762 /* silver-tempest.json */; };
+		4E14652814D639209494DB7F /* lost-origin.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B54A884DC3FCF4D498BA581 /* lost-origin.json */; };
+		4E2A75B7C80B790FD05DD90E /* skyridge.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B48285729B6638BC44FA869 /* skyridge.json */; };
+		4FEBC49138517374635D5204 /* mcdonalds-collection-2021.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */; };
+		5054B1A8694974DC21257E9F /* rising-rivals.json in Resources */ = {isa = PBXBuildFile; fileRef = 617D61638A31A85F3BE630D9 /* rising-rivals.json */; };
+		512687D15CB634EBCB49407A /* battle-styles.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */; };
+		51B39009255482C3B2DB9E7D /* emerging-powers.json in Resources */ = {isa = PBXBuildFile; fileRef = 678B02909309694DEE98F244 /* emerging-powers.json */; };
+		51B49AA4701423DA8AE58344 /* shrouded-fable.json in Resources */ = {isa = PBXBuildFile; fileRef = 3739377E784083CCC3233A37 /* shrouded-fable.json */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
 		55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */; };
+		5644339FA3071C555DC255FD /* xy.json in Resources */ = {isa = PBXBuildFile; fileRef = B9400ABD48A2925CE3BE6865 /* xy.json */; };
+		576BFD27E55C3D579DE64F2D /* steam-siege.json in Resources */ = {isa = PBXBuildFile; fileRef = E8745504DED211BC08CC284A /* steam-siege.json */; };
 		57856FEC663D96592E925B4F /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38152100E3F21C13B7C61E1B /* GameStore.swift */; };
+		58F14D4B8C8F7DF0C1A92E75 /* emerald.json in Resources */ = {isa = PBXBuildFile; fileRef = DD8D77A5A8E706D88E3DF2B6 /* emerald.json */; };
+		595AF2FB8E4318BE5F5847E6 /* dragon-majesty.json in Resources */ = {isa = PBXBuildFile; fileRef = B2840DA5C56C9D6F33D5790A /* dragon-majesty.json */; };
+		59E4448191D4B6B1C30434C9 /* arceus.json in Resources */ = {isa = PBXBuildFile; fileRef = 96C7926C1973DA524FFEA029 /* arceus.json */; };
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
+		5C495FB58BD39174F59911D7 /* majestic-dawn.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
+		6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */ = {isa = PBXBuildFile; fileRef = A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */; };
+		66F84AAE77B66E974C6B2FE9 /* unbroken-bonds.json in Resources */ = {isa = PBXBuildFile; fileRef = 12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */; };
+		687AA6D24FCF3B0F9C82C980 /* furious-fists.json in Resources */ = {isa = PBXBuildFile; fileRef = 687D38A7B84E86024E927A14 /* furious-fists.json */; };
+		698B4217C58A357D7D697A6F /* double-crisis.json in Resources */ = {isa = PBXBuildFile; fileRef = 1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */; };
+		6D1B44A2BAF21D26EF791583 /* expedition-base-set.json in Resources */ = {isa = PBXBuildFile; fileRef = 17793FF1EF0947404D07714D /* expedition-base-set.json */; };
+		70DF3A3E570528BDFD6AA2D0 /* gym-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = DEFF895D495560C72743EFB4 /* gym-heroes.json */; };
+		72C182746A4405977ED499E5 /* unseen-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = A0F8FE73178F1D0515A4ECD8 /* unseen-forces.json */; };
+		76CC8A08745C4BCD5D0BF58F /* ruby-sapphire.json in Resources */ = {isa = PBXBuildFile; fileRef = D9887FEE4EB6935793366540 /* ruby-sapphire.json */; };
+		76DA8D89B34C2DE62DE99897 /* ascended-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F83F25627755699228CC982 /* ascended-heroes.json */; };
+		7A3F4E4177605B7802A0D612 /* evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = CC0E8783F786B72E1D0FF385 /* evolutions.json */; };
 		7ACC1B39815CB76022632456 /* Shows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C938A56BB535142EA1BE4B /* Shows.swift */; };
+		7C5A3938AD7C39E9F648D624 /* hidden-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = A7B821E5FBD06698D7A362DE /* hidden-fates.json */; };
 		7C714401A1C5DB31FFCD79E6 /* LocalStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA05E48B4793E422BDD8455 /* LocalStores.swift */; };
 		7D71A92431332B26D0BA9ED7 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F97256E10C06386BD90E19 /* WalletView.swift */; };
 		7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE8F9A509ED85647311ACD5 /* Balance.swift */; };
+		8016D9B3919FBD6BA8715381 /* team-rocket.json in Resources */ = {isa = PBXBuildFile; fileRef = F52ED77C7307D16459401032 /* team-rocket.json */; };
+		8170A734DC38CC0A00EDD338 /* chilling-reign.json in Resources */ = {isa = PBXBuildFile; fileRef = B93519BCFCB8D5128925352A /* chilling-reign.json */; };
+		824EA645F9A06C258FCB1B29 /* legendary-treasures.json in Resources */ = {isa = PBXBuildFile; fileRef = EE31EB72099822D32FC17548 /* legendary-treasures.json */; };
+		82A33877EA510DCB157F0C0A /* team-rocket-returns.json in Resources */ = {isa = PBXBuildFile; fileRef = E0EB54699B33908D30FBF375 /* team-rocket-returns.json */; };
+		83140D1748C71EC3F62D0ECE /* legends-awakened.json in Resources */ = {isa = PBXBuildFile; fileRef = D3C180A062FEB64E1EB184FD /* legends-awakened.json */; };
 		85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297BD4F44B83A77E160F288F /* CardViews.swift */; };
 		8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */; };
+		8A5EBAA0C3FD3D657C581694 /* generations.json in Resources */ = {isa = PBXBuildFile; fileRef = 66B77CF9FA79C477304765CF /* generations.json */; };
+		8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */ = {isa = PBXBuildFile; fileRef = 40AFA031CD12EA2F8CAF859A /* ultra-prism.json */; };
+		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
+		918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8331C960F48E73F49D7795EA /* flashfire.json */; };
 		94D4D216B5171391265B5753 /* Vendors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E045FCAD07023E23A8B677B4 /* Vendors.swift */; };
+		99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */ = {isa = PBXBuildFile; fileRef = 514263C9681529DF5523A095 /* astral-radiance.json */; };
+		9E137F2DE0EED4CCFDA16759 /* sandstorm.json in Resources */ = {isa = PBXBuildFile; fileRef = FE24D22F379B1A8349AED4A6 /* sandstorm.json */; };
+		9E264DB7991475D250875154 /* crystal-guardians.json in Resources */ = {isa = PBXBuildFile; fileRef = 51D032B98E3876431FC5F38E /* crystal-guardians.json */; };
+		A03A2647A68562243044C49B /* secret-wonders.json in Resources */ = {isa = PBXBuildFile; fileRef = BCBC0A3F8F99FFC559E3BBC3 /* secret-wonders.json */; };
+		A07A114ABDEBAD8A2DAF8EB4 /* black-white.json in Resources */ = {isa = PBXBuildFile; fileRef = CE9178C1573E5068893700E2 /* black-white.json */; };
+		A19D67979C8CAF529E1CFB48 /* sword-shield.json in Resources */ = {isa = PBXBuildFile; fileRef = 3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */; };
 		A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */; };
+		A23959C53D96A6BA2D1002CF /* chaos-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 4DD5E1F23E40B91260779107 /* chaos-rising.json */; };
 		A2ABE55803E391A9A17B15FA /* cosmic-eclipse.json in Resources */ = {isa = PBXBuildFile; fileRef = 7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */; };
+		A2BAE1FE55F4408A11D999E0 /* brilliant-stars.json in Resources */ = {isa = PBXBuildFile; fileRef = DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */; };
 		A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */ = {isa = PBXBuildFile; fileRef = 77CD37AEDEDAD5767A419067 /* Effects.metal */; };
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
+		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
+		ACF5B660614980C8BD8B47D3 /* firered-leafgreen.json in Resources */ = {isa = PBXBuildFile; fileRef = 38930186931A1B4CDBBF0541 /* firered-leafgreen.json */; };
+		ADDD53369B7CDB8821600F1A /* set-index.json in Resources */ = {isa = PBXBuildFile; fileRef = 383520ADD17820B56C2198FB /* set-index.json */; };
+		AF6680EF1C075F13F5988FB8 /* mcdonalds-collection-2022.json in Resources */ = {isa = PBXBuildFile; fileRef = 68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */; };
+		AFED4EABA2FB778C699E07F1 /* dark-explorers.json in Resources */ = {isa = PBXBuildFile; fileRef = 262D18A3BB73313344D87826 /* dark-explorers.json */; };
+		B113E9810C556F46D4350158 /* neo-destiny.json in Resources */ = {isa = PBXBuildFile; fileRef = C7D7A80674367593A62BDC34 /* neo-destiny.json */; };
+		B117636776B873FA508360EC /* mysterious-treasures.json in Resources */ = {isa = PBXBuildFile; fileRef = F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */; };
+		B13BD14DDCFB7DEE1B4A5AEF /* forbidden-light.json in Resources */ = {isa = PBXBuildFile; fileRef = 6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */; };
+		B1E24BEF5012F0DB86EE9ECC /* boundaries-crossed.json in Resources */ = {isa = PBXBuildFile; fileRef = ED0896EF12DEC3FBF199791C /* boundaries-crossed.json */; };
 		B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DF97D530EE9737F37D11A /* BuyViews.swift */; };
+		B2628B0567788334F46A6907 /* crimson-invasion.json in Resources */ = {isa = PBXBuildFile; fileRef = 4DB852494E5092892E066499 /* crimson-invasion.json */; };
+		B3C2C938CCDDCE663A45170D /* neo-discovery.json in Resources */ = {isa = PBXBuildFile; fileRef = FAF0483A8B75F89A628B7214 /* neo-discovery.json */; };
+		B3E96DBC625CE0339D0C6A71 /* deoxys.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F6EF496DC38B97131F0BBF /* deoxys.json */; };
+		B61765C7106375126BC3C120 /* destined-rivals.json in Resources */ = {isa = PBXBuildFile; fileRef = 292D3A115C43F52F2750F722 /* destined-rivals.json */; };
+		B61E9D4F56F6B53C0FAE5B8D /* shining-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = BEE883B7CE36E2F72E9892DA /* shining-fates.json */; };
+		BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6187C2CFFD057E0E448F0CC8 /* jungle.json */; };
+		BD5A2FACC5DD80A8909BFF55 /* black-bolt.json in Resources */ = {isa = PBXBuildFile; fileRef = F78F3275EFDE7F3E896A5E91 /* black-bolt.json */; };
+		BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A569E4A6BF6ADE917EC538F /* delta-species.json */; };
 		BF40EF0C7B89584AA1DB15F8 /* base-set.json in Resources */ = {isa = PBXBuildFile; fileRef = 05ED658C6E7349BE468EC9FE /* base-set.json */; };
 		BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */; };
+		C13E4D86A349AC573D8646EC /* phantom-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = 754F7D2C37FC137EEECF52E0 /* phantom-forces.json */; };
+		C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */ = {isa = PBXBuildFile; fileRef = 7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */; };
+		C7F13CF3236CA8E43886D612 /* celestial-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 61E68EE2207FCE8AD0A066C8 /* celestial-storm.json */; };
+		C9F245EC988EC93EC1037DB3 /* paldean-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = 201CF0C8665BF1729BF4B106 /* paldean-fates.json */; };
+		CA12F46151423814D55751CF /* southern-islands.json in Resources */ = {isa = PBXBuildFile; fileRef = 3DAA9319761EC5C721BCC199 /* southern-islands.json */; };
 		CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */; };
+		CB079E91CC1C7523A92B2F88 /* rebel-clash.json in Resources */ = {isa = PBXBuildFile; fileRef = EC719A5C459CB908DDE8EBAB /* rebel-clash.json */; };
+		CCD94901C0FAFE8579F3CD57 /* temporal-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = FE044E20B20FB2490087A1C9 /* temporal-forces.json */; };
+		CE1998E35759637232B010E7 /* power-keepers.json in Resources */ = {isa = PBXBuildFile; fileRef = 75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */; };
+		CEEF4E3A6CDCEFF858C2C41E /* obsidian-flames.json in Resources */ = {isa = PBXBuildFile; fileRef = 7C47B50B9FFDCF815C603661 /* obsidian-flames.json */; };
+		D110EAA94F1CC7FA2125A4A7 /* detective-pikachu.json in Resources */ = {isa = PBXBuildFile; fileRef = 9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */; };
+		D1C8BBE2F185A0AC1B985FB5 /* sun-moon.json in Resources */ = {isa = PBXBuildFile; fileRef = FFB84E50DD5B533FE4BD8643 /* sun-moon.json */; };
+		D3B93B18BEA7DF8E26B5B8C3 /* dragons-exalted.json in Resources */ = {isa = PBXBuildFile; fileRef = 946CC77705EA5072E1E4B4B2 /* dragons-exalted.json */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
+		D889A9F9ED8A2AC4D22CCD94 /* vivid-voltage.json in Resources */ = {isa = PBXBuildFile; fileRef = B20617D3991981E63F15727B /* vivid-voltage.json */; };
+		D90544EAF24F5CD54A7CFBAE /* fates-collide.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */; };
 		D9AA152721D08C2AD1ED0B0E /* evolving-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */; };
+		DA07C0C29E594ADB19D89E5D /* diamond-and-pearl.json in Resources */ = {isa = PBXBuildFile; fileRef = 634BF1320448E09607C34E92 /* diamond-and-pearl.json */; };
 		DA4F133419BB03A1679C5705 /* Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642F08591A3569F0A27BA0D1 /* Market.swift */; };
+		DB212A7D96AAEC02B3230909 /* plasma-freeze.json in Resources */ = {isa = PBXBuildFile; fileRef = ABEC49B92B688FF0FB93A7E6 /* plasma-freeze.json */; };
+		DBFC167DB548632A66CAD0CC /* team-up.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E647BE8C027106C56398C6 /* team-up.json */; };
+		DCAB7F71458A848ECE4C2955 /* call-of-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 9585374A5165787745D53792 /* call-of-legends.json */; };
+		DE127BF53B694C9C1ADE6494 /* pokemon-go.json in Resources */ = {isa = PBXBuildFile; fileRef = 26D896AE01B12460672CC225 /* pokemon-go.json */; };
 		E2DE7F1C1A266CD5F832269C /* paradox-rift.json in Resources */ = {isa = PBXBuildFile; fileRef = DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */; };
+		E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */ = {isa = PBXBuildFile; fileRef = 5430A1321F8CBDA7347D1045 /* fusion-strike.json */; };
+		E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */ = {isa = PBXBuildFile; fileRef = 47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */; };
+		E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */ = {isa = PBXBuildFile; fileRef = B2AC5F4521315B8D910BC433 /* holon-phantoms.json */; };
 		E773086037F13A9C2D65807E /* DetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544120DEF70C6BCBC2EF918A /* DetailViews.swift */; };
+		E987F761094EC1E109A698C6 /* mega-evolution.json in Resources */ = {isa = PBXBuildFile; fileRef = 16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */; };
+		EB3B2F38020CF5410186DF4C /* primal-clash.json in Resources */ = {isa = PBXBuildFile; fileRef = D79C5589F2211F09E31C1FB2 /* primal-clash.json */; };
+		EB8909CB01F64B491A346EF4 /* unleashed.json in Resources */ = {isa = PBXBuildFile; fileRef = 69B3B59FEFA22014368E0146 /* unleashed.json */; };
+		EDCA9A39313247058C6D12F7 /* gym-challenge.json in Resources */ = {isa = PBXBuildFile; fileRef = 6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */; };
+		EDD8C4793FF75C17DC34588C /* neo-revelation.json in Resources */ = {isa = PBXBuildFile; fileRef = DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */; };
+		EDDCCCC55DD1BF8A2178A352 /* scarlet-violet.json in Resources */ = {isa = PBXBuildFile; fileRef = D918370ED77643B50651E40E /* scarlet-violet.json */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
+		EFB2115EA9D920286DEF9A6D /* plasma-blast.json in Resources */ = {isa = PBXBuildFile; fileRef = EF7FFEBF9985028B8340B74E /* plasma-blast.json */; };
+		EFFE245540550F3FE1FB6701 /* celebrations.json in Resources */ = {isa = PBXBuildFile; fileRef = FDDB3709D7BFD861D4F66368 /* celebrations.json */; };
 		F0032B8697D4063D2F6E8907 /* InventoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28FE1FAED611C80FC163221 /* InventoryView.swift */; };
+		F09B202F10B17C0F80F2A3B5 /* darkness-ablaze.json in Resources */ = {isa = PBXBuildFile; fileRef = A0DE4A3A88218162B90C004E /* darkness-ablaze.json */; };
+		F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */ = {isa = PBXBuildFile; fileRef = 99D48054DE8D081D34F8C24C /* fossil.json */; };
+		F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */ = {isa = PBXBuildFile; fileRef = 649C90774494AA3AF98125AC /* legendary-collection.json */; };
 		F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820C299F6D8FD690239ED0CC /* SocialViews.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		05ED658C6E7349BE468EC9FE /* base-set.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "base-set.json"; sourceTree = "<group>"; };
+		074AD82C95C34EEF99B9381E /* shining-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "shining-legends.json"; sourceTree = "<group>"; };
+		0F522C90FE86AD311AB076F5 /* dragon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dragon.json; sourceTree = "<group>"; };
 		11814C73AA917A111DD8EC6A /* PackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackView.swift; sourceTree = "<group>"; };
+		12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unbroken-bonds.json"; sourceTree = "<group>"; };
 		15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackBuilder.swift; sourceTree = "<group>"; };
+		16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mega-evolution.json"; sourceTree = "<group>"; };
+		1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "double-crisis.json"; sourceTree = "<group>"; };
+		17793FF1EF0947404D07714D /* expedition-base-set.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "expedition-base-set.json"; sourceTree = "<group>"; };
 		1B3A5E9B134DA765470B7666 /* Inventory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inventory.swift; sourceTree = "<group>"; };
+		1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "majestic-dawn.json"; sourceTree = "<group>"; };
+		1DE952F8C0F15F72F0C42913 /* paldea-evolved.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paldea-evolved.json"; sourceTree = "<group>"; };
+		201CF0C8665BF1729BF4B106 /* paldean-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paldean-fates.json"; sourceTree = "<group>"; };
 		22DCF071A80BA4398E968082 /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
+		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
+		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
+		292D3A115C43F52F2750F722 /* destined-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "destined-rivals.json"; sourceTree = "<group>"; };
 		297BD4F44B83A77E160F288F /* CardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViews.swift; sourceTree = "<group>"; };
+		2BB5E54A48F045F4D8D408CD /* plasma-storm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-storm.json"; sourceTree = "<group>"; };
 		2E04FD006DB8B88A9342A378 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
+		3300530D0D241B426A6EF827 /* supreme-victors.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "supreme-victors.json"; sourceTree = "<group>"; };
 		33CED089D9AD4D92AB2AAA7C /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellGradeSheets.swift; sourceTree = "<group>"; };
 		367966CB515F1D60E1380F07 /* Panels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panels.swift; sourceTree = "<group>"; };
 		36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNav.swift; sourceTree = "<group>"; };
+		3739377E784083CCC3233A37 /* shrouded-fable.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "shrouded-fable.json"; sourceTree = "<group>"; };
 		38152100E3F21C13B7C61E1B /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
+		383520ADD17820B56C2198FB /* set-index.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "set-index.json"; sourceTree = "<group>"; };
+		38930186931A1B4CDBBF0541 /* firered-leafgreen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "firered-leafgreen.json"; sourceTree = "<group>"; };
+		3A569E4A6BF6ADE917EC538F /* delta-species.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "delta-species.json"; sourceTree = "<group>"; };
+		3B54A884DC3FCF4D498BA581 /* lost-origin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-origin.json"; sourceTree = "<group>"; };
 		3BE8F9A509ED85647311ACD5 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
+		3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sword-shield.json"; sourceTree = "<group>"; };
+		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
+		3F83F25627755699228CC982 /* ascended-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ascended-heroes.json"; sourceTree = "<group>"; };
+		40AFA031CD12EA2F8CAF859A /* ultra-prism.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ultra-prism.json"; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
+		42F6EF496DC38B97131F0BBF /* deoxys.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = deoxys.json; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
+		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
+		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
 		49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboxView.swift; sourceTree = "<group>"; };
+		4DB852494E5092892E066499 /* crimson-invasion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crimson-invasion.json"; sourceTree = "<group>"; };
+		4DD5E1F23E40B91260779107 /* chaos-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "chaos-rising.json"; sourceTree = "<group>"; };
 		50F97256E10C06386BD90E19 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
+		514263C9681529DF5523A095 /* astral-radiance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "astral-radiance.json"; sourceTree = "<group>"; };
+		51D032B98E3876431FC5F38E /* crystal-guardians.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crystal-guardians.json"; sourceTree = "<group>"; };
 		523EE1F5C13F88A7FDA88127 /* HitEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitEffects.swift; sourceTree = "<group>"; };
+		523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unified-minds.json"; sourceTree = "<group>"; };
+		5430A1321F8CBDA7347D1045 /* fusion-strike.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fusion-strike.json"; sourceTree = "<group>"; };
 		544120DEF70C6BCBC2EF918A /* DetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViews.swift; sourceTree = "<group>"; };
+		56E647BE8C027106C56398C6 /* team-up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-up.json"; sourceTree = "<group>"; };
+		56EE5582CFBBA45162D5DFFC /* stormfront.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stormfront.json; sourceTree = "<group>"; };
 		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
+		5B48285729B6638BC44FA869 /* skyridge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = skyridge.json; sourceTree = "<group>"; };
 		5F38B7B3DE47AF76DF106787 /* stellar-crown.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stellar-crown.json"; sourceTree = "<group>"; };
+		5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fates-collide.json"; sourceTree = "<group>"; };
+		617D61638A31A85F3BE630D9 /* rising-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "rising-rivals.json"; sourceTree = "<group>"; };
+		6187C2CFFD057E0E448F0CC8 /* jungle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = jungle.json; sourceTree = "<group>"; };
+		61E68EE2207FCE8AD0A066C8 /* celestial-storm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "celestial-storm.json"; sourceTree = "<group>"; };
+		634BF1320448E09607C34E92 /* diamond-and-pearl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "diamond-and-pearl.json"; sourceTree = "<group>"; };
 		642F08591A3569F0A27BA0D1 /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
+		649C90774494AA3AF98125AC /* legendary-collection.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legendary-collection.json"; sourceTree = "<group>"; };
+		66B77CF9FA79C477304765CF /* generations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = generations.json; sourceTree = "<group>"; };
+		678B02909309694DEE98F244 /* emerging-powers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "emerging-powers.json"; sourceTree = "<group>"; };
+		6867FD072F0DC5CEAE46690F /* pitch-black.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pitch-black.json"; sourceTree = "<group>"; };
+		687D38A7B84E86024E927A14 /* furious-fists.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "furious-fists.json"; sourceTree = "<group>"; };
+		68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2022.json"; sourceTree = "<group>"; };
+		69B3B59FEFA22014368E0146 /* unleashed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = unleashed.json; sourceTree = "<group>"; };
+		6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "forbidden-light.json"; sourceTree = "<group>"; };
+		6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge.json"; sourceTree = "<group>"; };
+		6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2021.json"; sourceTree = "<group>"; };
 		7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "cosmic-eclipse.json"; sourceTree = "<group>"; };
+		71BFAA4A10360362D9BE2E1C /* base-set-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "base-set-2.json"; sourceTree = "<group>"; };
+		754F7D2C37FC137EEECF52E0 /* phantom-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantom-forces.json"; sourceTree = "<group>"; };
+		75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "power-keepers.json"; sourceTree = "<group>"; };
+		773A4B023E31815EEDF2527B /* triumphant.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = triumphant.json; sourceTree = "<group>"; };
 		77CD37AEDEDAD5767A419067 /* Effects.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Effects.metal; sourceTree = "<group>"; };
 		781DF97D530EE9737F37D11A /* BuyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyViews.swift; sourceTree = "<group>"; };
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
+		7C47B50B9FFDCF815C603661 /* obsidian-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "obsidian-flames.json"; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
+		7E94D7F70903BA100DDFBA0F /* burning-shadows.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "burning-shadows.json"; sourceTree = "<group>"; };
+		7F23F60653C3E9407ECEFD30 /* guardians-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "guardians-rising.json"; sourceTree = "<group>"; };
 		7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionViews.swift; sourceTree = "<group>"; };
+		7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ancient-origins.json"; sourceTree = "<group>"; };
 		820C299F6D8FD690239ED0CC /* SocialViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialViews.swift; sourceTree = "<group>"; };
+		8331C960F48E73F49D7795EA /* flashfire.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flashfire.json; sourceTree = "<group>"; };
+		8A358D246B4A0E231698B762 /* silver-tempest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "silver-tempest.json"; sourceTree = "<group>"; };
+		8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "battle-styles.json"; sourceTree = "<group>"; };
+		8FC50C93732086290DFAC1F5 /* hidden-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-legends.json"; sourceTree = "<group>"; };
+		917BD5729F252442572920DA /* white-flare.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "white-flare.json"; sourceTree = "<group>"; };
+		946CC77705EA5072E1E4B4B2 /* dragons-exalted.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragons-exalted.json"; sourceTree = "<group>"; };
+		9585374A5165787745D53792 /* call-of-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "call-of-legends.json"; sourceTree = "<group>"; };
+		96C7926C1973DA524FFEA029 /* arceus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = arceus.json; sourceTree = "<group>"; };
+		99D48054DE8D081D34F8C24C /* fossil.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fossil.json; sourceTree = "<group>"; };
+		9B2447127F65338C5A35C8B0 /* champions-path.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "champions-path.json"; sourceTree = "<group>"; };
+		9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "detective-pikachu.json"; sourceTree = "<group>"; };
 		9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A0DE4A3A88218162B90C004E /* darkness-ablaze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "darkness-ablaze.json"; sourceTree = "<group>"; };
+		A0F8FE73178F1D0515A4ECD8 /* unseen-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unseen-forces.json"; sourceTree = "<group>"; };
 		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
+		A54CEBF267C5CF60E282DE79 /* journey-together.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "journey-together.json"; sourceTree = "<group>"; };
+		A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-magma-vs-team-aqua.json"; sourceTree = "<group>"; };
+		A7B821E5FBD06698D7A362DE /* hidden-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-fates.json"; sourceTree = "<group>"; };
 		A9F4C9816D29FE5052461E66 /* twilight-masquerade.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "twilight-masquerade.json"; sourceTree = "<group>"; };
+		ABEC49B92B688FF0FB93A7E6 /* plasma-freeze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-freeze.json"; sourceTree = "<group>"; };
+		B20617D3991981E63F15727B /* vivid-voltage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "vivid-voltage.json"; sourceTree = "<group>"; };
+		B2840DA5C56C9D6F33D5790A /* dragon-majesty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-majesty.json"; sourceTree = "<group>"; };
+		B2AC5F4521315B8D910BC433 /* holon-phantoms.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "holon-phantoms.json"; sourceTree = "<group>"; };
 		B5511559E1A3A95108659987 /* prismatic-evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "prismatic-evolutions.json"; sourceTree = "<group>"; };
+		B93519BCFCB8D5128925352A /* chilling-reign.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "chilling-reign.json"; sourceTree = "<group>"; };
+		B9400ABD48A2925CE3BE6865 /* xy.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = xy.json; sourceTree = "<group>"; };
+		BC815F3A92A7F2CFF7E7BF36 /* platinum.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = platinum.json; sourceTree = "<group>"; };
+		BCBC0A3F8F99FFC559E3BBC3 /* secret-wonders.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "secret-wonders.json"; sourceTree = "<group>"; };
+		BCFB88631EA718ED0E77E2CE /* roaring-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "roaring-skies.json"; sourceTree = "<group>"; };
+		BD567FF6A1AB5571EA47AA26 /* aquapolis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = aquapolis.json; sourceTree = "<group>"; };
+		BEE883B7CE36E2F72E9892DA /* shining-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "shining-fates.json"; sourceTree = "<group>"; };
+		C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantasmal-flames.json"; sourceTree = "<group>"; };
+		C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-vault.json"; sourceTree = "<group>"; };
+		C54A7EE716D8B3165068669F /* crown-zenith.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crown-zenith.json"; sourceTree = "<group>"; };
+		C7D7A80674367593A62BDC34 /* neo-destiny.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-destiny.json"; sourceTree = "<group>"; };
+		CBAAA70DD15AB8D85C728652 /* undaunted.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = undaunted.json; sourceTree = "<group>"; };
+		CC0E8783F786B72E1D0FF385 /* evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = evolutions.json; sourceTree = "<group>"; };
 		CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "evolving-skies.json"; sourceTree = "<group>"; };
+		CE9178C1573E5068893700E2 /* black-white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-white.json"; sourceTree = "<group>"; };
+		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
+		D3C180A062FEB64E1EB184FD /* legends-awakened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legends-awakened.json"; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
+		D79C5589F2211F09E31C1FB2 /* primal-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "primal-clash.json"; sourceTree = "<group>"; };
 		D894A52F7AE73A7EAF8DF6D3 /* Social.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Social.swift; sourceTree = "<group>"; };
+		D918370ED77643B50651E40E /* scarlet-violet.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "scarlet-violet.json"; sourceTree = "<group>"; };
+		D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-genesis.json"; sourceTree = "<group>"; };
+		D9887FEE4EB6935793366540 /* ruby-sapphire.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ruby-sapphire.json"; sourceTree = "<group>"; };
+		DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "brilliant-stars.json"; sourceTree = "<group>"; };
+		DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-revelation.json"; sourceTree = "<group>"; };
+		DB6AC5DEAC545E0CC2CCF008 /* perfect-order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "perfect-order.json"; sourceTree = "<group>"; };
+		DD8D77A5A8E706D88E3DF2B6 /* emerald.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emerald.json; sourceTree = "<group>"; };
 		DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paradox-rift.json"; sourceTree = "<group>"; };
+		DEFF895D495560C72743EFB4 /* gym-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-heroes.json"; sourceTree = "<group>"; };
 		DFA05E48B4793E422BDD8455 /* LocalStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStores.swift; sourceTree = "<group>"; };
 		E045FCAD07023E23A8B677B4 /* Vendors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendors.swift; sourceTree = "<group>"; };
+		E0EB54699B33908D30FBF375 /* team-rocket-returns.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-rocket-returns.json"; sourceTree = "<group>"; };
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20845FB5280BA69E0BC46DC /* ShowDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowDayView.swift; sourceTree = "<group>"; };
 		E389E8E864F1F2802B2B9E76 /* surging-sparks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "surging-sparks.json"; sourceTree = "<group>"; };
+		E6189A16D1D0CA7A824D0A89 /* noble-victories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "noble-victories.json"; sourceTree = "<group>"; };
+		E7E9769BEE2452CE9114E599 /* breakpoint.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = breakpoint.json; sourceTree = "<group>"; };
+		E8745504DED211BC08CC284A /* steam-siege.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "steam-siege.json"; sourceTree = "<group>"; };
+		EC719A5C459CB908DDE8EBAB /* rebel-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "rebel-clash.json"; sourceTree = "<group>"; };
+		ED0896EF12DEC3FBF199791C /* boundaries-crossed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "boundaries-crossed.json"; sourceTree = "<group>"; };
+		EE31EB72099822D32FC17548 /* legendary-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legendary-treasures.json"; sourceTree = "<group>"; };
+		EEEB387BE91E6437D08702D6 /* breakthrough.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = breakthrough.json; sourceTree = "<group>"; };
+		EF7FFEBF9985028B8340B74E /* plasma-blast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-blast.json"; sourceTree = "<group>"; };
 		EFEB00B5E3B98AFB182E5118 /* RipModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipModel.swift; sourceTree = "<group>"; };
 		F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		F52ED77C7307D16459401032 /* team-rocket.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-rocket.json"; sourceTree = "<group>"; };
+		F608F1C0EB11E6D8282E4752 /* 151.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 151.json; sourceTree = "<group>"; };
+		F704E86B4D99E71629CF9403 /* great-encounters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "great-encounters.json"; sourceTree = "<group>"; };
+		F78F3275EFDE7F3E896A5E91 /* black-bolt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-bolt.json"; sourceTree = "<group>"; };
+		F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mysterious-treasures.json"; sourceTree = "<group>"; };
+		FAF0483A8B75F89A628B7214 /* neo-discovery.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery.json"; sourceTree = "<group>"; };
+		FB1006AA43D16FB5FB572A8A /* legend-maker.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legend-maker.json"; sourceTree = "<group>"; };
+		FB443286D950ABAD944C7A64 /* dragon-frontiers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-frontiers.json"; sourceTree = "<group>"; };
+		FDDB3709D7BFD861D4F66368 /* celebrations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = celebrations.json; sourceTree = "<group>"; };
+		FE044E20B20FB2490087A1C9 /* temporal-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "temporal-forces.json"; sourceTree = "<group>"; };
+		FE24D22F379B1A8349AED4A6 /* sandstorm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sandstorm.json; sourceTree = "<group>"; };
+		FFB84E50DD5B533FE4BD8643 /* sun-moon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sun-moon.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -137,14 +385,137 @@
 		7A7341C8A80847AE81A54F71 /* Sets */ = {
 			isa = PBXGroup;
 			children = (
+				F608F1C0EB11E6D8282E4752 /* 151.json */,
+				7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */,
+				BD567FF6A1AB5571EA47AA26 /* aquapolis.json */,
+				96C7926C1973DA524FFEA029 /* arceus.json */,
+				3F83F25627755699228CC982 /* ascended-heroes.json */,
+				514263C9681529DF5523A095 /* astral-radiance.json */,
+				71BFAA4A10360362D9BE2E1C /* base-set-2.json */,
 				05ED658C6E7349BE468EC9FE /* base-set.json */,
+				8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */,
+				F78F3275EFDE7F3E896A5E91 /* black-bolt.json */,
+				CE9178C1573E5068893700E2 /* black-white.json */,
+				ED0896EF12DEC3FBF199791C /* boundaries-crossed.json */,
+				E7E9769BEE2452CE9114E599 /* breakpoint.json */,
+				EEEB387BE91E6437D08702D6 /* breakthrough.json */,
+				DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */,
+				7E94D7F70903BA100DDFBA0F /* burning-shadows.json */,
+				9585374A5165787745D53792 /* call-of-legends.json */,
+				FDDB3709D7BFD861D4F66368 /* celebrations.json */,
+				61E68EE2207FCE8AD0A066C8 /* celestial-storm.json */,
+				9B2447127F65338C5A35C8B0 /* champions-path.json */,
+				4DD5E1F23E40B91260779107 /* chaos-rising.json */,
+				B93519BCFCB8D5128925352A /* chilling-reign.json */,
 				7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */,
+				4DB852494E5092892E066499 /* crimson-invasion.json */,
+				C54A7EE716D8B3165068669F /* crown-zenith.json */,
+				51D032B98E3876431FC5F38E /* crystal-guardians.json */,
+				262D18A3BB73313344D87826 /* dark-explorers.json */,
+				A0DE4A3A88218162B90C004E /* darkness-ablaze.json */,
+				3A569E4A6BF6ADE917EC538F /* delta-species.json */,
+				42F6EF496DC38B97131F0BBF /* deoxys.json */,
+				292D3A115C43F52F2750F722 /* destined-rivals.json */,
+				9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */,
+				634BF1320448E09607C34E92 /* diamond-and-pearl.json */,
+				1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */,
+				FB443286D950ABAD944C7A64 /* dragon-frontiers.json */,
+				B2840DA5C56C9D6F33D5790A /* dragon-majesty.json */,
+				C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */,
+				0F522C90FE86AD311AB076F5 /* dragon.json */,
+				946CC77705EA5072E1E4B4B2 /* dragons-exalted.json */,
+				DD8D77A5A8E706D88E3DF2B6 /* emerald.json */,
+				678B02909309694DEE98F244 /* emerging-powers.json */,
+				CC0E8783F786B72E1D0FF385 /* evolutions.json */,
 				CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */,
+				17793FF1EF0947404D07714D /* expedition-base-set.json */,
+				5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */,
+				38930186931A1B4CDBBF0541 /* firered-leafgreen.json */,
+				8331C960F48E73F49D7795EA /* flashfire.json */,
+				6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */,
+				99D48054DE8D081D34F8C24C /* fossil.json */,
+				687D38A7B84E86024E927A14 /* furious-fists.json */,
+				5430A1321F8CBDA7347D1045 /* fusion-strike.json */,
+				66B77CF9FA79C477304765CF /* generations.json */,
+				F704E86B4D99E71629CF9403 /* great-encounters.json */,
+				7F23F60653C3E9407ECEFD30 /* guardians-rising.json */,
+				6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */,
+				DEFF895D495560C72743EFB4 /* gym-heroes.json */,
+				47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */,
+				A7B821E5FBD06698D7A362DE /* hidden-fates.json */,
+				8FC50C93732086290DFAC1F5 /* hidden-legends.json */,
+				B2AC5F4521315B8D910BC433 /* holon-phantoms.json */,
+				A54CEBF267C5CF60E282DE79 /* journey-together.json */,
+				6187C2CFFD057E0E448F0CC8 /* jungle.json */,
+				FB1006AA43D16FB5FB572A8A /* legend-maker.json */,
+				649C90774494AA3AF98125AC /* legendary-collection.json */,
+				EE31EB72099822D32FC17548 /* legendary-treasures.json */,
+				D3C180A062FEB64E1EB184FD /* legends-awakened.json */,
+				3B54A884DC3FCF4D498BA581 /* lost-origin.json */,
+				4654062AD9C27065757208C9 /* lost-thunder.json */,
+				1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */,
+				6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */,
+				68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */,
+				16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */,
+				F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */,
+				C7D7A80674367593A62BDC34 /* neo-destiny.json */,
+				FAF0483A8B75F89A628B7214 /* neo-discovery.json */,
+				D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */,
+				DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */,
+				D24E9F46D8D0F6804E3A974E /* next-destinies.json */,
+				E6189A16D1D0CA7A824D0A89 /* noble-victories.json */,
+				7C47B50B9FFDCF815C603661 /* obsidian-flames.json */,
+				1DE952F8C0F15F72F0C42913 /* paldea-evolved.json */,
+				201CF0C8665BF1729BF4B106 /* paldean-fates.json */,
 				DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */,
+				DB6AC5DEAC545E0CC2CCF008 /* perfect-order.json */,
+				C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */,
+				754F7D2C37FC137EEECF52E0 /* phantom-forces.json */,
+				6867FD072F0DC5CEAE46690F /* pitch-black.json */,
+				EF7FFEBF9985028B8340B74E /* plasma-blast.json */,
+				ABEC49B92B688FF0FB93A7E6 /* plasma-freeze.json */,
+				2BB5E54A48F045F4D8D408CD /* plasma-storm.json */,
+				BC815F3A92A7F2CFF7E7BF36 /* platinum.json */,
+				26D896AE01B12460672CC225 /* pokemon-go.json */,
+				75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */,
+				D79C5589F2211F09E31C1FB2 /* primal-clash.json */,
 				B5511559E1A3A95108659987 /* prismatic-evolutions.json */,
+				EC719A5C459CB908DDE8EBAB /* rebel-clash.json */,
+				617D61638A31A85F3BE630D9 /* rising-rivals.json */,
+				BCFB88631EA718ED0E77E2CE /* roaring-skies.json */,
+				D9887FEE4EB6935793366540 /* ruby-sapphire.json */,
+				FE24D22F379B1A8349AED4A6 /* sandstorm.json */,
+				D918370ED77643B50651E40E /* scarlet-violet.json */,
+				BCBC0A3F8F99FFC559E3BBC3 /* secret-wonders.json */,
+				BEE883B7CE36E2F72E9892DA /* shining-fates.json */,
+				074AD82C95C34EEF99B9381E /* shining-legends.json */,
+				3739377E784083CCC3233A37 /* shrouded-fable.json */,
+				8A358D246B4A0E231698B762 /* silver-tempest.json */,
+				5B48285729B6638BC44FA869 /* skyridge.json */,
+				3DAA9319761EC5C721BCC199 /* southern-islands.json */,
+				E8745504DED211BC08CC284A /* steam-siege.json */,
 				5F38B7B3DE47AF76DF106787 /* stellar-crown.json */,
+				56EE5582CFBBA45162D5DFFC /* stormfront.json */,
+				FFB84E50DD5B533FE4BD8643 /* sun-moon.json */,
+				3300530D0D241B426A6EF827 /* supreme-victors.json */,
 				E389E8E864F1F2802B2B9E76 /* surging-sparks.json */,
+				3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */,
+				A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */,
+				E0EB54699B33908D30FBF375 /* team-rocket-returns.json */,
+				F52ED77C7307D16459401032 /* team-rocket.json */,
+				56E647BE8C027106C56398C6 /* team-up.json */,
+				FE044E20B20FB2490087A1C9 /* temporal-forces.json */,
+				773A4B023E31815EEDF2527B /* triumphant.json */,
 				A9F4C9816D29FE5052461E66 /* twilight-masquerade.json */,
+				40AFA031CD12EA2F8CAF859A /* ultra-prism.json */,
+				12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */,
+				CBAAA70DD15AB8D85C728652 /* undaunted.json */,
+				523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */,
+				69B3B59FEFA22014368E0146 /* unleashed.json */,
+				A0F8FE73178F1D0515A4ECD8 /* unseen-forces.json */,
+				B20617D3991981E63F15727B /* vivid-voltage.json */,
+				917BD5729F252442572920DA /* white-flare.json */,
+				B9400ABD48A2925CE3BE6865 /* xy.json */,
 			);
 			path = Sets;
 			sourceTree = "<group>";
@@ -188,6 +559,7 @@
 			isa = PBXGroup;
 			children = (
 				33CED089D9AD4D92AB2AAA7C /* catalog.json */,
+				383520ADD17820B56C2198FB /* set-index.json */,
 				7A7341C8A80847AE81A54F71 /* Sets */,
 			);
 			path = Resources;
@@ -313,15 +685,139 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */,
+				C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */,
+				A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */,
+				59E4448191D4B6B1C30434C9 /* arceus.json in Resources */,
+				76DA8D89B34C2DE62DE99897 /* ascended-heroes.json in Resources */,
+				99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */,
+				31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */,
 				BF40EF0C7B89584AA1DB15F8 /* base-set.json in Resources */,
+				512687D15CB634EBCB49407A /* battle-styles.json in Resources */,
+				BD5A2FACC5DD80A8909BFF55 /* black-bolt.json in Resources */,
+				A07A114ABDEBAD8A2DAF8EB4 /* black-white.json in Resources */,
+				B1E24BEF5012F0DB86EE9ECC /* boundaries-crossed.json in Resources */,
+				2C680DA90FA527CB6B61BBDF /* breakpoint.json in Resources */,
+				049E20C9365F83E7B52D85D0 /* breakthrough.json in Resources */,
+				A2BAE1FE55F4408A11D999E0 /* brilliant-stars.json in Resources */,
+				26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */,
+				DCAB7F71458A848ECE4C2955 /* call-of-legends.json in Resources */,
 				3E9EC0E13D52E88235067DDA /* catalog.json in Resources */,
+				EFFE245540550F3FE1FB6701 /* celebrations.json in Resources */,
+				C7F13CF3236CA8E43886D612 /* celestial-storm.json in Resources */,
+				058F38F720A52D2D38C56CD1 /* champions-path.json in Resources */,
+				A23959C53D96A6BA2D1002CF /* chaos-rising.json in Resources */,
+				8170A734DC38CC0A00EDD338 /* chilling-reign.json in Resources */,
 				A2ABE55803E391A9A17B15FA /* cosmic-eclipse.json in Resources */,
+				B2628B0567788334F46A6907 /* crimson-invasion.json in Resources */,
+				085A46C44F6F4811EA21DE23 /* crown-zenith.json in Resources */,
+				9E264DB7991475D250875154 /* crystal-guardians.json in Resources */,
+				AFED4EABA2FB778C699E07F1 /* dark-explorers.json in Resources */,
+				F09B202F10B17C0F80F2A3B5 /* darkness-ablaze.json in Resources */,
+				BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */,
+				B3E96DBC625CE0339D0C6A71 /* deoxys.json in Resources */,
+				B61765C7106375126BC3C120 /* destined-rivals.json in Resources */,
+				D110EAA94F1CC7FA2125A4A7 /* detective-pikachu.json in Resources */,
+				DA07C0C29E594ADB19D89E5D /* diamond-and-pearl.json in Resources */,
+				698B4217C58A357D7D697A6F /* double-crisis.json in Resources */,
+				0EAD72506FECFE0B97BAFCC7 /* dragon-frontiers.json in Resources */,
+				595AF2FB8E4318BE5F5847E6 /* dragon-majesty.json in Resources */,
+				1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */,
+				0C4343AE15D1C4DD4B064E5F /* dragon.json in Resources */,
+				D3B93B18BEA7DF8E26B5B8C3 /* dragons-exalted.json in Resources */,
+				58F14D4B8C8F7DF0C1A92E75 /* emerald.json in Resources */,
+				51B39009255482C3B2DB9E7D /* emerging-powers.json in Resources */,
+				7A3F4E4177605B7802A0D612 /* evolutions.json in Resources */,
 				D9AA152721D08C2AD1ED0B0E /* evolving-skies.json in Resources */,
+				6D1B44A2BAF21D26EF791583 /* expedition-base-set.json in Resources */,
+				D90544EAF24F5CD54A7CFBAE /* fates-collide.json in Resources */,
+				ACF5B660614980C8BD8B47D3 /* firered-leafgreen.json in Resources */,
+				918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */,
+				B13BD14DDCFB7DEE1B4A5AEF /* forbidden-light.json in Resources */,
+				F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */,
+				687AA6D24FCF3B0F9C82C980 /* furious-fists.json in Resources */,
+				E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */,
+				8A5EBAA0C3FD3D657C581694 /* generations.json in Resources */,
+				01B52477A653B94A932BC9D1 /* great-encounters.json in Resources */,
+				8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */,
+				EDCA9A39313247058C6D12F7 /* gym-challenge.json in Resources */,
+				70DF3A3E570528BDFD6AA2D0 /* gym-heroes.json in Resources */,
+				E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */,
+				7C5A3938AD7C39E9F648D624 /* hidden-fates.json in Resources */,
+				2AF9A223A3257CE3B7510D1B /* hidden-legends.json in Resources */,
+				E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */,
+				20ACDC2AD6EFF4506C4CFB33 /* journey-together.json in Resources */,
+				BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */,
+				499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */,
+				F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */,
+				824EA645F9A06C258FCB1B29 /* legendary-treasures.json in Resources */,
+				83140D1748C71EC3F62D0ECE /* legends-awakened.json in Resources */,
+				4E14652814D639209494DB7F /* lost-origin.json in Resources */,
+				0F46ACEE22C0AAA0B36F7E53 /* lost-thunder.json in Resources */,
+				5C495FB58BD39174F59911D7 /* majestic-dawn.json in Resources */,
+				4FEBC49138517374635D5204 /* mcdonalds-collection-2021.json in Resources */,
+				AF6680EF1C075F13F5988FB8 /* mcdonalds-collection-2022.json in Resources */,
+				E987F761094EC1E109A698C6 /* mega-evolution.json in Resources */,
+				B117636776B873FA508360EC /* mysterious-treasures.json in Resources */,
+				B113E9810C556F46D4350158 /* neo-destiny.json in Resources */,
+				B3C2C938CCDDCE663A45170D /* neo-discovery.json in Resources */,
+				351DC793C3969007906440D0 /* neo-genesis.json in Resources */,
+				EDD8C4793FF75C17DC34588C /* neo-revelation.json in Resources */,
+				1D16BBCABB4082705F1ECA89 /* next-destinies.json in Resources */,
+				0191A177B9D9F22F7729EA6B /* noble-victories.json in Resources */,
+				CEEF4E3A6CDCEFF858C2C41E /* obsidian-flames.json in Resources */,
+				1BEEE0D8FED92269AC01E9DF /* paldea-evolved.json in Resources */,
+				C9F245EC988EC93EC1037DB3 /* paldean-fates.json in Resources */,
 				E2DE7F1C1A266CD5F832269C /* paradox-rift.json in Resources */,
+				064CBF3B931AFC76F493CED8 /* perfect-order.json in Resources */,
+				1AB42439306A09CF7C214382 /* phantasmal-flames.json in Resources */,
+				C13E4D86A349AC573D8646EC /* phantom-forces.json in Resources */,
+				03C5FD12045AE513A1988157 /* pitch-black.json in Resources */,
+				EFB2115EA9D920286DEF9A6D /* plasma-blast.json in Resources */,
+				DB212A7D96AAEC02B3230909 /* plasma-freeze.json in Resources */,
+				1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */,
+				11FAB08F8FB8CBC9E40A5676 /* platinum.json in Resources */,
+				DE127BF53B694C9C1ADE6494 /* pokemon-go.json in Resources */,
+				CE1998E35759637232B010E7 /* power-keepers.json in Resources */,
+				EB3B2F38020CF5410186DF4C /* primal-clash.json in Resources */,
 				D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */,
+				CB079E91CC1C7523A92B2F88 /* rebel-clash.json in Resources */,
+				5054B1A8694974DC21257E9F /* rising-rivals.json in Resources */,
+				2C4D39E63CD069D24D99D501 /* roaring-skies.json in Resources */,
+				76CC8A08745C4BCD5D0BF58F /* ruby-sapphire.json in Resources */,
+				9E137F2DE0EED4CCFDA16759 /* sandstorm.json in Resources */,
+				EDDCCCC55DD1BF8A2178A352 /* scarlet-violet.json in Resources */,
+				A03A2647A68562243044C49B /* secret-wonders.json in Resources */,
+				ADDD53369B7CDB8821600F1A /* set-index.json in Resources */,
+				B61E9D4F56F6B53C0FAE5B8D /* shining-fates.json in Resources */,
+				2EBE8E85A966DED3B4517E5F /* shining-legends.json in Resources */,
+				51B49AA4701423DA8AE58344 /* shrouded-fable.json in Resources */,
+				4D9FB8FB76885393BDADF1FE /* silver-tempest.json in Resources */,
+				4E2A75B7C80B790FD05DD90E /* skyridge.json in Resources */,
+				CA12F46151423814D55751CF /* southern-islands.json in Resources */,
+				576BFD27E55C3D579DE64F2D /* steam-siege.json in Resources */,
 				147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */,
+				1051F2429A3F6B076CCF41FF /* stormfront.json in Resources */,
+				D1C8BBE2F185A0AC1B985FB5 /* sun-moon.json in Resources */,
+				33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */,
 				2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */,
+				A19D67979C8CAF529E1CFB48 /* sword-shield.json in Resources */,
+				6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */,
+				82A33877EA510DCB157F0C0A /* team-rocket-returns.json in Resources */,
+				8016D9B3919FBD6BA8715381 /* team-rocket.json in Resources */,
+				DBFC167DB548632A66CAD0CC /* team-up.json in Resources */,
+				CCD94901C0FAFE8579F3CD57 /* temporal-forces.json in Resources */,
+				1B0E9BD23A43FA287BC42EA1 /* triumphant.json in Resources */,
 				05753AF2B42F7F6B87B95C1E /* twilight-masquerade.json in Resources */,
+				8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */,
+				66F84AAE77B66E974C6B2FE9 /* unbroken-bonds.json in Resources */,
+				1B02016F771A2BDFE0D3A2B2 /* undaunted.json in Resources */,
+				2219F859C69DE0AD1A553DB2 /* unified-minds.json in Resources */,
+				EB8909CB01F64B491A346EF4 /* unleashed.json in Resources */,
+				72C182746A4405977ED499E5 /* unseen-forces.json in Resources */,
+				D889A9F9ED8A2AC4D22CCD94 /* vivid-voltage.json in Resources */,
+				3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */,
+				5644339FA3071C555DC255FD /* xy.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

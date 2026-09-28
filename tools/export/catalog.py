@@ -28,6 +28,8 @@ SVP_GROUP = "22872"
 MISC_GROUP = "2374"
 STAMP = "Prismatic Evolutions Stamp"
 HOME = "prismatic-evolutions"
+# Only product from these eras is still in print, so only it sells at retail.
+IN_PRINT_ERAS = {"scarlet-violet", "mega-evolution"}
 
 # Estimated MSRP. The first name match wins, so the longer names come first. Starting values for balancing.
 MSRP_BY_NAME = [("Super-Premium Collection", 119.99), ("Premium Figure Collection", 59.99), ("Premium Collection", 39.99),
@@ -105,7 +107,8 @@ def resolve_promo(text, sets, svp, stamped=None):
     for s in sets.values():
         if s["name"] != source:
             continue
-        prints = [p for p in s["prints"] if int(p["num"].split("/")[0]) == num]
+        # Subset numbers such as "TG01" or "SV001" are not the plain number that the promo text gives.
+        prints = [p for p in s["prints"] if p["num"].split("/")[0].isdigit() and int(p["num"].split("/")[0]) == num]
         prints.sort(key=lambda p: (p["variant"] not in ("Holo", "Normal"), p["variant"]))
         if prints:
             p = prints[0]
@@ -157,8 +160,7 @@ def main():
         msrp = next((v for k, v in MSRP_BY_NAME if k in name), MSRP_BY_KIND.get(it["kind"]))
         # The mix lists the home set first, then the rest by count.
         order = sorted(mix.items(), key=lambda kv: (kv[0] != HOME, -kv[1], kv[0]))
-        # Only Scarlet & Violet product is still in print, so only it sells at retail.
-        in_print = all(sets[s].get("era") == "scarlet-violet" for s in mix)
+        in_print = all(sets[s].get("era") in IN_PRINT_ERAS for s in mix)
         out.append({"id": str(it["id"]), "name": name, "kind": it["kind"], "packs": packs, "inPrint": in_print,
                     "mix": [{"slug": s, "packs": n} for s, n in order],
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,

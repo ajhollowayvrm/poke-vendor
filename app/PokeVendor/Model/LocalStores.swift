@@ -23,6 +23,7 @@ struct ShelfItem: Identifiable, Hashable {
 struct CaseSingle: Identifiable, Hashable {
     let id: String
     let print: CardPrint
+    let setSlug: String
     let price: Double
 }
 
@@ -94,11 +95,15 @@ extension Market {
         guard store.isGameShop else { return [] }
         // The case changes once a week.
         var r = SeededRandom(seed: UInt64(day / 7 + 1) &* 32_452_843 &+ (store == .castle ? 1 : 2))
-        let singles = SetLibrary.set(slug).prints.filter { ($0.market ?? 0) >= 5 }
-        guard !singles.isEmpty else { return [] }
-        return (0..<6).map { i in
+        // Mostly new sets, with some older and vintage cards.
+        return (0..<6).compactMap { i in
+            let pool = r.double(0...1) < 0.7 ? Balance.modernSets : Balance.olderSets + Balance.vintageSets
+            guard !pool.isEmpty else { return nil }
+            let slug = pool[r.int(0...(pool.count - 1))]
+            let singles = SetLibrary.set(slug).prints.filter { ($0.market ?? 0) >= 5 }
+            guard !singles.isEmpty else { return nil }
             let c = singles[r.int(0...(singles.count - 1))]
-            return CaseSingle(id: "\(day / 7)-\(store.rawValue)-case-\(i)", print: c,
+            return CaseSingle(id: "\(day / 7)-\(store.rawValue)-case-\(i)", print: c, setSlug: slug,
                               price: retail((c.market ?? 0) * Balance.displayCaseMarkup))
         }
     }

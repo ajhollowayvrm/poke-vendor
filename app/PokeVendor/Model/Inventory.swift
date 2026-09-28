@@ -2,8 +2,32 @@ import Foundation
 
 /// Set files load once and stay in memory.
 @MainActor
+/// One set that the app has (Resources/set-index.json, tools/export/set_index.py).
+struct SetInfo: Codable, Hashable {
+    let slug: String
+    let name: String
+    let era: String
+    let series: String
+    let prints: Int
+}
+
 enum SetLibrary {
     private static var cache: [String: SetData] = [:]
+
+    /// Every set in the game, oldest era first.
+    static let index: [SetInfo] = {
+        guard let url = Bundle.main.url(forResource: "set-index", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let sets = try? JSONDecoder().decode([SetInfo].self, from: data) else {
+            fatalError("set-index.json is missing or not valid")
+        }
+        return sets
+    }()
+
+    /// The slugs of the sets from these eras.
+    static func slugs(eras: Set<String>) -> [String] {
+        index.filter { eras.contains($0.era) }.map(\.slug)
+    }
 
     static func set(_ slug: String) -> SetData {
         if let set = cache[slug] { return set }

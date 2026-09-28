@@ -29,10 +29,15 @@ enum Balance {
     static let showHorizonDays = 42
     static let showOpen = 9.0
     static let showClose = 17.0
-    /// The sets at a show: vintage (the Wizards of the Coast era), older out-of-print sets, and new sets.
-    static let vintageSets = ["base-set"]
-    static let olderSets = ["evolving-skies", "cosmic-eclipse"]
-    static let modernSets = ["prismatic-evolutions", "surging-sparks", "stellar-crown", "twilight-masquerade", "paradox-rift"]
+    /// The sets at a show, by era: vintage (Wizards of the Coast and e-Card), older out-of-print sets (EX to Sword &
+    /// Shield), and new sets (Scarlet & Violet and Mega Evolution).
+    static let vintageEras: Set<String> = ["wizards-of-the-coast", "e-card"]
+    static let olderEras: Set<String> = ["ex", "diamond-pearl-platinum", "heartgold-soulsilver", "black-white", "xy", "sun-moon",
+                                         "sword-shield"]
+    static let modernEras: Set<String> = ["scarlet-violet", "mega-evolution"]
+    static let vintageSets = SetLibrary.slugs(eras: vintageEras)
+    static let olderSets = SetLibrary.slugs(eras: olderEras)
+    static let modernSets = SetLibrary.slugs(eras: modernEras)
     static var showSets: [String] { vintageSets + olderSets + modernSets }
     /// Minutes to look over one vendor table.
     static let vendorVisitMinutes = 15.0
@@ -62,6 +67,8 @@ enum Balance {
     static let pokemonCenterDropChance = 0.15
     static let pokemonCenterSuccessChance = 0.30
     static let amazonStockChance = 0.45
+    /// The most products that one online store lists in a day.
+    static let storeListingCap = 40
     static let amazonSpikeChance = 0.3
     static let deliveryDays: [Storefront: Int] = [
         .pokemonCenter: 5, .amazon: 2, .reseller: 3, .ebay: 4, .facebook: 4,

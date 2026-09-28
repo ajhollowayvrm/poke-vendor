@@ -305,7 +305,7 @@ struct HubView: View {
             store.startRun()
             store.addTestCash(2000)
             for offer in Market.offers(for: .reseller, day: 0).prefix(2) { _ = store.buy(offer) }
-            let hits = SetLibrary.set(Market.slug).prints.filter { ($0.market ?? 0) > 20 }.shuffled().prefix(5)
+            let hits = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 20 }.shuffled().prefix(5)
             for print in hits { store.addTestCard(print) }
             let ids = store.data.raw.map(\.id)
             store.list(Set(ids.prefix(2)), channel: .tcgplayer, price: { id in GameStore.tcgLowest(for: store.card(id)!.print) }, auctionDays: nil, insured: false)
@@ -316,7 +316,7 @@ struct HubView: View {
         }
         if args.contains("-run") {
             store.startRun()
-            for print in SetLibrary.set(Market.slug).prints.filter({ ($0.market ?? 0) > 10 }).prefix(2) { store.addTestCard(print) }
+            for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 10 }).prefix(2) { store.addTestCard(print) }
             // Find a day when the first game shop has stock.
             while Market.shelf(.castle, day: store.day).isEmpty { store.endDay() }
             store.report = nil
@@ -328,7 +328,7 @@ struct HubView: View {
             store.createAccount("ajrips")
             store.data.social.followers = 1_150
             store.buyAnalytics()
-            let prints = SetLibrary.set(Market.slug).prints.filter { ($0.market ?? 0) > 15 }.shuffled()
+            let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 15 }.shuffled()
             for print in prints.prefix(3) { store.addTestCard(print) }
             for day in 0..<10 {
                 if let card = store.data.raw.first, day == 0 {
@@ -348,7 +348,7 @@ struct HubView: View {
         }
         if args.contains("-bulk") {
             store.startRun()
-            for print in SetLibrary.set(Market.slug).prints.filter({ ($0.market ?? 0) > 1 }).prefix(3) { store.addTestCard(print) }
+            for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 1 }).prefix(3) { store.addTestCard(print) }
             store.moveToBulk(Set(store.data.raw.prefix(2).map(\.id)))
             nav.path = [.inventory(.bulk)]
         }
@@ -356,7 +356,7 @@ struct HubView: View {
             store.startRun()
             for _ in 0..<3 { store.addTestPack() }
             store.addTestProduct("576482")
-            if let print = SetLibrary.set(Market.slug).prints.first(where: { ($0.market ?? 0) > 5 }) {
+            if let print = SetLibrary.set("prismatic-evolutions").prints.first(where: { ($0.market ?? 0) > 5 }) {
                 store.addTestCard(print)
                 store.addTestCard(print)
             }

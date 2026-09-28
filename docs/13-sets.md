@@ -55,6 +55,35 @@ Each era file holds the pack template that the sets of that era share:
 the slot structure, the pack order, and the rarity system. A set file
 records only its set data and its exceptions to the template.
 
+## Sets in the game
+
+The game has 131 English sets: every English booster expansion from
+Base Set to the current Mega Evolution sets, plus the McDonald's
+Collection 2021 and 2022. `tools/export/rip_set.py` exports each set
+file to `app/PokeVendor/Resources/Sets/`, `tools/export/set_index.py`
+writes the list of sets, and `tools/export/catalog.py` writes 1,255
+sealed products from them.
+
+- The game groups the sets by era. **Vintage** is the Wizards of the
+  Coast and e-Card eras. **Older** is EX through Sword & Shield.
+  **Modern** is Scarlet & Violet and Mega Evolution. Card show tables,
+  traders, sellers, eBay singles, and game shop display cases draw from
+  these groups.
+- Only Scarlet & Violet and Mega Evolution product is in print, so only
+  it sells at retail.
+- An EX-era count of "4 or 5" commons is a conflict between sources.
+  The export uses 5 commons and 2 uncommons (see
+  [sets/eras/ex.md](sets/eras/ex.md#conflicts-in-the-template)).
+- **Not in the game yet:** the Prize Pack Series and Trick or Trade
+  2022 (their cards have no prices in the data), and the POP Series
+  (its set file puts nine POP packs in one pack, so it needs a set file
+  for each POP pack).
+- **Known data fault:** some card images in the Wizards of the Coast
+  sets show the 1st Edition stamp, but the set files use Unlimited
+  prints and prices.
+- 12 older sets have no sealed product in the catalog, and no loose
+  pack price. Their cards still show up as singles.
+
 ## Sets done so far
 
 142 set files: 133 in 11 eras, and 9 Play! Pokémon Prize Pack series. Every English

@@ -72,9 +72,25 @@ def special_packs(slug, prints, index):
     return out
 
 
+def slot_count(slot, text):
+    """The number of cards in a slot. A count like "4 or 5" is a conflict between sources (docs/sets/eras/ex.md,
+    Conflicts in the template). The only source that names a set gives 5 commons and 2 uncommons, so the common
+    slot takes the larger number and every other slot takes the smaller one. The pack total stays the same."""
+    nums = [int(n) for n in re.findall(r"\d+", text)]
+    if not nums:
+        sys.exit(f"slot {slot}: count {text!r} is not a number")
+    return max(nums) if slot == "Common" else min(nums)
+
+
+# The series name on the wrapper, for each era.
+SERIES = {"wizards-of-the-coast": "Wizards of the Coast", "e-card": "e-Card", "ex": "EX", "diamond-pearl-platinum": "Diamond & Pearl",
+          "heartgold-soulsilver": "HeartGold & SoulSilver", "black-white": "Black & White", "xy": "XY", "sun-moon": "Sun & Moon",
+          "sword-shield": "Sword & Shield", "scarlet-violet": "Scarlet & Violet", "mega-evolution": "Mega Evolution"}
+
+
 def pack_order(era, slots, has_energy_row):
     """Return (order, trick, series). The order must use each slot exactly as often as the slot map says."""
-    order, trick, series = ERA_PACKS.get(era, (None, 1, era.replace("-", " ").title() if era else ""))
+    order, trick, series = ERA_PACKS.get(era, (None, 1, SERIES.get(era, era.replace("-", " ").title() if era else "")))
     want = {}
     for s in slots:
         want[s["name"]] = s["count"]
@@ -198,7 +214,7 @@ def export(slug):
                         ids.append(index[key])
                     break
             outcomes.append({"name": r[2], "entry": r[3], "odds": round(p / 100, 6), "prints": ids})
-        slots.append({"name": slot, "count": int(rows[0][0][1]), "outcomes": outcomes})
+        slots.append({"name": slot, "count": slot_count(slot, rows[0][0][1]), "outcomes": outcomes})
     cost, pack_image = pack_cost(slug)
     os.makedirs(OUT, exist_ok=True)
     order, trick, series = pack_order(eras.get(slug), slots, has_energy_row)

@@ -500,7 +500,7 @@ final class GameStore {
     func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
         guard shelfLeft(item) > 0, pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
         data.shelfBought[item.id, default: 0] += 1
-        data.sealed.append(SealedItem(setSlug: Market.slug, name: item.product.name, packs: item.product.packs, paid: item.price,
+        data.sealed.append(SealedItem(setSlug: item.product.homeSlug, name: item.product.name, packs: item.product.packs, paid: item.price,
                                       acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
                                       acquiredDay: data.day))
         log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
@@ -514,7 +514,7 @@ final class GameStore {
         guard !data.boughtToday.contains(single.id),
               pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
         data.boughtToday.append(single.id)
-        data.raw.append(OwnedCard(print: single.print, setSlug: Market.slug, acquired: .now, paid: single.price, ripID: nil,
+        data.raw.append(OwnedCard(print: single.print, setSlug: single.setSlug, acquired: .now, paid: single.price, ripID: nil,
                                   condition: .secondHand(), acquiredDay: data.day))
         log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
             cash: credit ? nil : -single.price)

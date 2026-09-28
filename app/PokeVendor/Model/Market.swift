@@ -58,7 +58,11 @@ extension SeededRandom {
 /// Today's stock and prices for each storefront. The same day always gives the same stock.
 @MainActor
 enum Market {
-    static let slug = "prismatic-evolutions"
+    /// The set that the online singles come from on a given day: a new set most days, and an older one on some.
+    private static func singlesSlug(_ r: inout SeededRandom) -> String {
+        let pool = r.double(0...1) < 0.7 ? Balance.modernSets : Balance.olderSets + Balance.vintageSets
+        return pool.isEmpty ? "prismatic-evolutions" : pool[r.int(0...(pool.count - 1))]
+    }
 
     static func retail(_ x: Double) -> Double {
         x >= 5 ? x.rounded(.down) + 0.99 : (x * 100).rounded() / 100
@@ -70,7 +74,6 @@ enum Market {
     }
 
     static func offers(for store: Storefront, day: Int) -> [StoreOffer] {
-        let set = SetLibrary.set(slug)
         // Retail sells only in-print product. The reseller, eBay, and Facebook Marketplace also sell older sets.
         let retailOnly = [Storefront.amazon, .pokemonCenter].contains(store)
         let products = SetLibrary.catalog.filter { !retailOnly || $0.inPrint ?? true }
@@ -81,25 +84,27 @@ enum Market {
 
         switch store {
         case .amazon:
-            for (i, p) in products.enumerated() where r.double(0...1) < Balance.amazonStockChance {
+            // A store shows a day's pick of the catalog, not every product at once.
+            for (i, p) in pickOf(products, Balance.storeListingCap, &r).enumerated() where r.double(0...1) < Balance.amazonStockChance {
                 // Usually a little over market, and on some days far over it.
                 let markup = r.double(0...1) < Balance.amazonSpikeChance ? r.double(1.4...1.9) : r.double(1.0...1.25)
-                out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug),
+                out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
                                       price: retail(p.market * markup), shipping: 0, deliveryDays: delivery))
             }
         case .reseller:
-            for (i, p) in products.enumerated() {
-                out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug),
+            for (i, p) in pickOf(products, Balance.storeListingCap, &r).enumerated() {
+                out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
                                       price: retail(p.market * r.double(2.0...2.6)), shipping: 0, deliveryDays: delivery))
             }
         case .pokemonCenter:
             let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) && !$0.isClubExclusive }
             if let p = dropKinds.isEmpty ? nil : dropKinds[r.int(0...(dropKinds.count - 1))], let msrp = p.msrp {
-                out.append(StoreOffer(id: id(0), store: store, item: .product(p, slug), price: msrp, shipping: 0,
+                out.append(StoreOffer(id: id(0), store: store, item: .product(p, p.homeSlug), price: msrp, shipping: 0,
                                       deliveryDays: delivery, note: "Drop · one attempt"))
             }
         case .ebay:
-            let singles = set.prints.filter { ($0.market ?? 0) >= 3 }
+            let singlesSet = singlesSlug(&r)
+            let singles = SetLibrary.set(singlesSet).prints.filter { ($0.market ?? 0) >= 3 }
             for i in 0..<8 {
                 let international = r.double(0...1) < 0.2
                 let rating = (r.double(95...100) * 10).rounded() / 10
@@ -107,14 +112,14 @@ enum Market {
                 if i < 4, !products.isEmpty {
                     let p = products[r.int(0...(products.count - 1))]
                     let cut = r.double(0.8...1.05) * (international ? 0.88 : 1)
-                    out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug), price: retail(p.market * cut),
+                    out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug), price: retail(p.market * cut),
                                           shipping: p.packs <= 2 ? 1.99 : 7.99, deliveryDays: international ? 10 : delivery,
                                           sellerRating: rating, sellerSales: sales,
                                           note: international ? "From another country" : nil))
                 } else if !singles.isEmpty {
                     let c = singles[r.int(0...(singles.count - 1))]
                     let price = retail((c.market ?? 0) * r.double(0.75...1.05))
-                    out.append(StoreOffer(id: id(i), store: store, item: .single(c, slug), price: price,
+                    out.append(StoreOffer(id: id(i), store: store, item: .single(c, singlesSet), price: price,
                                           shipping: price < 20 ? 1.25 : 4.99, deliveryDays: international ? 10 : delivery,
                                           sellerRating: rating, sellerSales: sales,
                                           note: international ? "From another country" : nil))
@@ -124,11 +129,22 @@ enum Market {
             for i in 0..<5 where !products.isEmpty {
                 let p = products[r.int(0...(products.count - 1))]
                 let pickup = r.double(0...1) < 0.5
-                out.append(StoreOffer(id: id(i), store: store, item: .product(p, slug),
+                out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
                                       price: retail(p.market * r.double(0.55...0.95)), shipping: pickup ? 0 : 7.99,
                                       deliveryDays: pickup ? 0 : delivery, pickup: pickup,
                                       note: pickup ? "Pickup today · 1 hour" : "Ships · \(delivery) days"))
             }
+        }
+        return out
+    }
+
+    /// A stable pick of up to `count` products for the day.
+    private static func pickOf(_ products: [Product], _ count: Int, _ r: inout SeededRandom) -> [Product] {
+        guard products.count > count else { return products }
+        var pool = products
+        var out: [Product] = []
+        while out.count < count, !pool.isEmpty {
+            out.append(pool.remove(at: r.int(0...(pool.count - 1))))
         }
         return out
     }

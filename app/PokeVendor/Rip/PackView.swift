@@ -150,10 +150,24 @@ struct PackArt: View {
         case "paradox-rift":
             [Color(red: 0.12, green: 0.05, blue: 0.25), Color(red: 0.45, green: 0.20, blue: 0.70),
              Color(red: 0.20, green: 0.55, blue: 0.85), Color(red: 0.70, green: 0.25, blue: 0.55), Color(red: 0.06, green: 0.05, blue: 0.18)]
-        default:
+        case "prismatic-evolutions", nil:
             [Color(red: 0.20, green: 0.10, blue: 0.42), Color(red: 0.62, green: 0.20, blue: 0.62),
              Color(red: 0.95, green: 0.55, blue: 0.75), Color(red: 0.18, green: 0.62, blue: 0.78), Color(red: 0.10, green: 0.14, blue: 0.40)]
+        case let slug?:
+            generated(slug)
         }
+    }
+
+    /// A stable palette for a set with no hand-picked colors: a dark edge, two bright hues from the slug, and a
+    /// pale highlight.
+    private static func generated(_ slug: String) -> [Color] {
+        var hash: UInt64 = 5381
+        for byte in slug.utf8 { hash = hash &* 33 &+ UInt64(byte) }
+        let hue = Double(hash % 360) / 360
+        let second = (hue + 0.12 + Double((hash >> 9) % 20) / 100).truncatingRemainder(dividingBy: 1)
+        return [Color(hue: hue, saturation: 0.8, brightness: 0.28), Color(hue: hue, saturation: 0.75, brightness: 0.75),
+                Color(hue: second, saturation: 0.35, brightness: 0.98), Color(hue: second, saturation: 0.7, brightness: 0.8),
+                Color(hue: hue, saturation: 0.8, brightness: 0.22)]
     }
 
     var body: some View {
