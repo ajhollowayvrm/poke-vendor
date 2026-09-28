@@ -67,9 +67,10 @@ comes wants to sell.
   off. The buyer says what they see, for example "There's some wear on
   the corners."
 - The buyer's top price is hidden. The first offer is 72% to 90% of it.
-- **Sell** takes the offer. **Counter** asks for the middle price, and
-  **Ask** asks for the table price. A counter at or under the top price
-  sells. A counter over it makes the buyer come up part of the way and
+- **Sell** takes the offer. **Counter** uses a slider that snaps to
+  5% steps of market, from 50% to 150%, and clicks at each step. It
+  starts one step past the buyer's offer. A counter at or under the top
+  price sells. A counter over it makes the buyer come up part of the way and
   uses one patience point. With no patience left, the buyer walks away.
   **Decline** sends the buyer on.
 - Sales pay cash at once, with no fees and no shipping.
@@ -90,8 +91,9 @@ something that the player can pay for. About 1 in 7 brings a big item.
 | Collector | 75% to 95% | 60% to 75% |
 | Dealer moving stock | 85% to 100% | 72% to 85% |
 
-**Buy** pays the price. **Offer** 80% or 65% of it: at or over the
-lowest price, the seller takes it. Under it, the seller comes down part
+**Buy** pays the price. **Offer** uses the same slider, from 30% to
+110% of market, and starts one step under the seller's price. At or
+over the lowest price, the seller takes it. Under it, the seller comes down part
 of the way or walks away.
 
 ### The floor
@@ -146,6 +148,13 @@ opens it at the table: the filler turns over first, then the hit.
 - **Data limit:** Base Set is the only vintage set that the game has.
   More vintage sets need their research files (see
   [13-sets.md](13-sets.md)).
+
+### Rip it on the spot
+
+After the player buys sealed product at the show, from a table or from
+a seller, a banner offers **Rip it now**. It opens the rip screen over
+the show. Each pack takes about 2 minutes of show time. **Later** keeps
+it sealed in Inventory.
 
 ### The summary
 

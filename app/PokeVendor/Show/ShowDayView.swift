@@ -5,6 +5,7 @@ import SwiftUI
 struct ShowDayView: View {
     @Environment(GameStore.self) private var store
     @State private var session: ShowSession
+    @State private var rip: RipSession?
     let onClose: () -> Void
 
     init(show: CardShow, store: GameStore, onClose: @escaping () -> Void) {
@@ -43,12 +44,48 @@ struct ShowDayView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: session.phase)
         .sheet(item: Bindable(session).reveal) { MysteryRevealView(reveal: $0) }
+        .fullScreenCover(item: $rip) { rip in
+            RipView(items: rip.items, store: store) { self.rip = nil }
+        }
+        .overlay(alignment: .bottom) {
+            if let item = session.justBought {
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Bought").font(.caption).foregroundStyle(Theme.muted)
+                        Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                    }
+                    Spacer()
+                    Button("Later") { withAnimation { session.justBought = nil } }
+                        .buttonStyle(.bordered)
+                    Button("Rip it now") {
+                        if let ready = session.ripJustBought() { rip = RipSession(items: [ready]) }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.cyan)
+                    .foregroundStyle(.black)
+                }
+                .controlSize(.small)
+                .padding(12)
+                .background(Theme.surface, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.cyan.opacity(0.5)))
+                .padding(.horizontal, 16)
+                .padding(.bottom, 96)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: session.justBought?.id)
         .onAppear {
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
             let args = ProcessInfo.processInfo.arguments
             if args.contains("floor") { session.walkFloor() }
             for kind in ["seller", "trader"] where args.contains(kind) { session.debugVisitor(kind) }
+            if args.contains("buysealed"), let v = session.vendors.first(where: { $0.kind == .gameShop }),
+               let item = v.items.first(where: { if case .sealed(let p) = $0.goods { return p.market < 80 }; return false }) {
+                session.walkFloor()
+                session.visit(v)
+                session.buy(item, from: v)
+            }
             if args.contains("approach") {
                 session.walkFloor()
                 session.debugVisitor("approach")
@@ -218,6 +255,53 @@ private struct TableStage: View {
     }
 }
 
+/// A counter as a share of market. It snaps to 5% steps and clicks at each one.
+private struct CounterSlider: View {
+    let market: Double
+    let offer: Double
+    let range: ClosedRange<Double>
+    /// True to start above the offer (a buyer), false to start below it (a seller).
+    let startAbove: Bool
+    let verb: String
+    let passTitle: String
+    let pass: () -> Void
+    let send: (Double) -> Void
+    @State private var percent: Double = 100
+
+    private var price: Double { ShowSession.round(market * percent / 100) }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("\(Int(percent))% of market").font(.subheadline.monospaced())
+                Spacer()
+                Text(money(price)).font(.headline.monospaced()).contentTransition(.numericText())
+            }
+            Slider(value: $percent, in: range, step: 5)
+                .padding(.vertical, -4)
+                .tint(Theme.cyan)
+                .onChange(of: percent) { _, _ in Haptics.tick(0.35) }
+            HStack(spacing: 8) {
+                Button { withAnimation { send(price) } } label: {
+                    Text("\(verb) \(money(price))").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.line)
+                Button { withAnimation { pass() } } label: { Text(passTitle).frame(maxWidth: .infinity) }
+                    .buttonStyle(.bordered)
+            }
+        }
+        .padding(10)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 10))
+        .onAppear {
+            // Start one step past the offer, in the player's favor.
+            let offerPercent = market > 0 ? offer / market * 100 : 100
+            let step = (offerPercent / 5).rounded(startAbove ? .up : .down) * 5 + (startAbove ? 10 : -10)
+            percent = min(range.upperBound, max(range.lowerBound, step))
+        }
+    }
+}
+
 /// Accept, counter, or decline, for a buyer, a trader, or a seller.
 private struct DealButtons: View {
     @Environment(GameStore.self) private var store
@@ -228,16 +312,11 @@ private struct DealButtons: View {
         VStack(spacing: 8) {
             switch visitor.intent {
             case .buy:
-                let ask = visitor.item.map(session.asking) ?? visitor.offer
-                let middle = ShowSession.round((visitor.offer + ask) / 2)
+                let market = visitor.item?.market ?? visitor.offer
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
-                HStack(spacing: 8) {
-                    if visitor.offer < ask {
-                        if middle > visitor.offer && middle < ask { secondary("Counter \(money(middle))") { session.counter(middle) } }
-                        secondary("Ask \(money(ask))") { session.counter(ask) }
-                    }
-                    secondary("Decline") { session.decline() }
-                }
+                CounterSlider(market: market, offer: visitor.offer, range: 50...150, startAbove: true,
+                              verb: "Counter", passTitle: "Decline", pass: { session.decline() }) { session.counter($0) }
+                    .id(visitor.id)
             case .trade:
                 primary("Accept the trade", color: Theme.green) { session.accept() }
                 HStack(spacing: 8) {
@@ -245,15 +324,11 @@ private struct DealButtons: View {
                     secondary("Decline") { session.decline() }
                 }
             case .sell:
-                let low = ShowSession.round(visitor.offer * 0.8)
-                let lower = ShowSession.round(visitor.offer * 0.65)
                 primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
                     .disabled(!store.canAfford(visitor.offer))
-                HStack(spacing: 8) {
-                    secondary("Offer \(money(low))") { session.counter(low) }
-                    secondary("Offer \(money(lower))") { session.counter(lower) }
-                    secondary("Pass") { session.decline() }
-                }
+                CounterSlider(market: visitor.goodsMarket, offer: visitor.offer, range: 30...110, startAbove: false,
+                              verb: "Offer", passTitle: "Pass", pass: { session.decline() }) { session.counter($0) }
+                    .id(visitor.id)
             }
         }
         .controlSize(.large)

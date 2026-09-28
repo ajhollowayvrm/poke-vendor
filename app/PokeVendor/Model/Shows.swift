@@ -172,13 +172,15 @@ extension GameStore {
         save()
     }
 
-    func buySealedAtShow(_ product: Product, price: Double, vendor: String, show: CardShow) {
+    @discardableResult
+    func buySealedAtShow(_ product: Product, price: Double, vendor: String, show: CardShow) -> SealedItem {
         addLedger(-price, .sealed, "\(product.name) · \(vendor)")
-        data.sealed.append(SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
-                                      acquired: .now, source: "\(vendor), \(show.name)", productID: product.id,
-                                      acquiredDay: data.day))
+        let item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
+                              acquired: .now, source: "\(vendor), \(show.name)", productID: product.id, acquiredDay: data.day)
+        data.sealed.append(item)
         log("Bought \(product.name) from \(vendor) at \(show.name) for \(money(price)).", cash: -price)
         save()
+        return item
     }
 
     /// A mystery pack: the hit goes to Raw or Slabs with the price as its cost, and the filler goes to bulk.
@@ -397,6 +399,8 @@ final class ShowSession {
     private(set) var openVendorID: UUID?
     /// The mystery pack that is being opened, while its reveal shows.
     var reveal: MysteryReveal?
+    /// Sealed product the player just bought. The player can rip it on the spot.
+    var justBought: SealedItem?
     private var arrivals: [Double] = []
     private(set) var missed = 0
     private(set) var sold: [(name: String, price: Double)] = []
@@ -711,6 +715,17 @@ final class ShowSession {
         spend(2)
     }
 
+    /// Rips the sealed product that the player just bought, on the spot. Each pack takes about 2 minutes.
+    func ripJustBought() -> SealedItem? {
+        guard let item = justBought, store.data.sealed.contains(where: { $0.id == item.id }) else {
+            justBought = nil
+            return nil
+        }
+        justBought = nil
+        spend(Double(max(1, item.packs)) * 2)
+        return item
+    }
+
     func decline() {
         guard let v = current else { return }
         note = "\(v.name) moved on."
@@ -809,7 +824,7 @@ final class ShowSession {
             store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade),
                                 price: price, vendor: seller, show: show)
         case .sealed(let product):
-            store.buySealedAtShow(product, price: price, vendor: seller, show: show)
+            justBought = store.buySealedAtShow(product, price: price, vendor: seller, show: show)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
