@@ -33,6 +33,8 @@ struct GameData: Codable {
     var showsPlannedThrough = -1
     /// The vendor kit: the upgrade that lets the player book a table at a card show.
     var vendorKit = false
+    /// Weekly shop items the player bought this week: display case singles and buy-ins.
+    var weekBought: [String] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -66,6 +68,7 @@ extension GameData {
         shows = v(.shows, shows)
         showsPlannedThrough = v(.showsPlannedThrough, showsPlannedThrough)
         vendorKit = v(.vendorKit, vendorKit)
+        weekBought = v(.weekBought, weekBought)
     }
 }
 
@@ -511,13 +514,40 @@ final class GameStore {
 
     @discardableResult
     func buyCaseSingle(_ single: CaseSingle, at store: LocalStore, credit: Bool) -> Bool {
-        guard !data.boughtToday.contains(single.id),
+        guard !data.weekBought.contains(single.id),
               pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
-        data.boughtToday.append(single.id)
+        data.weekBought.append(single.id)
         data.raw.append(OwnedCard(print: single.print, setSlug: single.setSlug, acquired: .now, paid: single.price, ripID: nil,
                                   condition: .secondHand(), acquiredDay: data.day))
         log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
             cash: credit ? nil : -single.price)
+        save()
+        return true
+    }
+
+    /// Something the shop bought from a local seller. It goes to Raw, Slabs, or Sealed.
+    @discardableResult
+    func buyBuyIn(_ item: BuyIn, at store: LocalStore, credit: Bool) -> Bool {
+        guard !data.weekBought.contains(item.id),
+              pay(item.price, at: store, credit: credit, label: "\(item.name) · \(store.rawValue)",
+                  category: item.isSealed ? .sealed : .singles) else { return false }
+        data.weekBought.append(item.id)
+        switch item.goods {
+        case .single(let print, let slug, let condition):
+            data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
+                                      condition: condition, acquiredDay: data.day))
+        case .slab(let print, let slug, let grade):
+            data.slabs.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade,
+                                        acquiredDay: data.day))
+        case .sealed(let product):
+            data.sealed.append(SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: item.price,
+                                          acquired: .now, source: "Bought at \(store.rawValue)", productID: product.id,
+                                          acquiredDay: data.day))
+        case .mystery:
+            break
+        }
+        log("Bought \(item.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
+            cash: credit ? nil : -item.price)
         save()
         return true
     }
@@ -683,6 +713,7 @@ final class GameStore {
         data.boughtToday = []
         data.shelfBought = [:]
         data.pokemonCenterAttempted = false
+        if data.day % 7 == 0 { data.weekBought = [] }
         lines += decayStanding()
         if data.day % 364 == 0 { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
 

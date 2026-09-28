@@ -544,7 +544,7 @@ private struct GoodsThumb: View {
 }
 
 /// One line under the name of something for sale: the set and condition, the grade, or the product kind.
-private struct GoodsDetail: View {
+struct GoodsDetail: View {
     let goods: VendorGoods
     let tool: Int
 
@@ -801,7 +801,7 @@ private struct GoodsRow: View {
     }
 }
 
-private struct GoodsImage: View {
+struct GoodsImage: View {
     let item: VendorItem
 
     var body: some View {
@@ -826,7 +826,7 @@ private struct GoodsImage: View {
 }
 
 /// A plain repack: a sealed foil bag with a question mark.
-private struct MysteryPackArt: View {
+struct MysteryPackArt: View {
     let pack: MysteryPack
 
     var body: some View {

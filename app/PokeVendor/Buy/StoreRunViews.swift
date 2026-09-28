@@ -118,6 +118,7 @@ struct StoreRunView: View {
                         Text("Credit").font(.caption)
                     }
                 }
+                if s.isGameShop { BuyInBox(shop: s, useCredit: useCredit) }
                 DetailBox(title: "The shelf") {
                     if shelf.isEmpty {
                         Text("The shelf is empty. This stop is a bust.").font(.subheadline).foregroundStyle(Theme.muted)
@@ -263,10 +264,11 @@ struct ShopView: View {
                         .font(.caption)
                         .foregroundStyle(Theme.muted)
                 }
+                BuyInBox(shop: shop, useCredit: useCredit)
                 DetailBox(title: "Display case · changes weekly") {
                     Toggle("Pay with store credit", isOn: $useCredit).font(.subheadline)
                     ForEach(Market.displayCase(shop, day: store.day)) { single in
-                        let bought = store.data.boughtToday.contains(single.id)
+                        let bought = store.data.weekBought.contains(single.id)
                         HStack(spacing: 10) {
                             RemoteCardImage(url: single.print.image.flatMap(URL.init(string:)), name: "")
                                 .frame(width: 40, height: 56)
@@ -296,5 +298,51 @@ struct ShopView: View {
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle(shop.rawValue)
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// What a game shop bought from local sellers this week (Market.buyIns).
+struct BuyInBox: View {
+    @Environment(GameStore.self) private var store
+    let shop: LocalStore
+    let useCredit: Bool
+
+    var body: some View {
+        let items = Market.buyIns(shop, day: store.day)
+        DetailBox(title: "Just came in · changes weekly") {
+            Text("People sell their collections to the shop. Sometimes it is old and good.")
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+            ForEach(items) { item in
+                let bought = store.data.weekBought.contains(item.id)
+                HStack(alignment: .top, spacing: 10) {
+                    GoodsImage(item: VendorItem(goods: item.goods, price: item.price, market: item.market))
+                        .frame(width: 44, height: 62)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(item.name).font(.subheadline).lineLimit(2)
+                        GoodsDetail(goods: item.goods, tool: store.data.centeringTool)
+                        HStack(spacing: 6) {
+                            Text("mkt \(money(item.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            if item.steal {
+                                Text("PRICED TO MOVE")
+                                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                                    .padding(.horizontal, 5)
+                                    .padding(.vertical, 2)
+                                    .background(Theme.green.opacity(0.2))
+                                    .foregroundStyle(Theme.green)
+                            }
+                        }
+                    }
+                    Spacer()
+                    Button(bought ? "Bought" : money(item.price)) {
+                        store.buyBuyIn(item, at: shop, credit: useCredit)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .foregroundStyle(.black)
+                    .controlSize(.small)
+                    .disabled(bought)
+                }
+            }
+        }
     }
 }

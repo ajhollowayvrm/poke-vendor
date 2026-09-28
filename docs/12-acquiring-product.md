@@ -151,8 +151,24 @@ Standing never goes below 0 or above 100. All values in this section
 are starting values for balancing.
 
 The local game shop also has:
-- A display case of singles, so the shop is also a place to buy
+- **A full shelf.** A game shop has stock on about 92% of days: 5 to 9
+  products. About 80% are in-print product of any kind (packs,
+  blisters, tins, bundles, Elite Trainer Boxes, collections, Build &
+  Battle Boxes, and booster boxes), priced at 92% to 105% of market.
+  About 20% are older out-of-print sealed, priced at 100% to 120% of
+  market. It carries no store exclusives.
+- **Just came in**, a box that changes each week: 1 to 4 things that
+  local sellers sold to the shop. It leans vintage: about 45% are
+  vintage singles (worn, with loose centering), 20% older singles, 20%
+  vintage or older slabs, and 15% vintage or older sealed. The shop
+  knows values and prices at 100% to 120% of market, but about 1 time
+  in 7 it prices something to move, at 70% to 85%. It is on the shop
+  screen and on a store run stop.
+- A display case of singles that changes each week: mostly new sets,
+  with some older and vintage cards. So the shop is also a place to buy
   singles.
+- A weekly item that the player buys stays bought for the rest of the
+  week.
 - Events: a weekly league night (see
   [17-calendar-and-events.md](17-calendar-and-events.md#recurring-entries)).
 - It buys cards too: a buylist for instant cash, bulk for store credit
