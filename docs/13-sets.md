@@ -81,6 +81,15 @@ sealed products from them.
   prints), and 12 are Prize Packs or decks.
 - Amazon does not sell store exclusives (Pokémon Center and warehouse
   club product).
+- **Lists of sealed product show by set.** Each set gets a title (the
+  set name, its series, and its year) with a divider under it, and the
+  newest set comes first. The sort order that the player picks holds
+  inside each set. This is true in the Inventory Sealed tab, the online
+  stores, the local shop shelves, a show vendor's Sealed section
+  (mystery packs come first, under their own title), and the show's
+  table setup (singles and slabs first, then sealed by set). A product
+  shows under its home set: the first set of its pack mix.
+  `set-index.json` holds each set's release date for the order.
 
 - The game groups the sets by era. **Vintage** is the Wizards of the
   Coast and e-Card eras. **Older** is EX through Sword & Shield.

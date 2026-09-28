@@ -4,916 +4,1047 @@
   "name": "Base Set",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 102
+  "prints": 102,
+  "release": "1999-01-09"
  },
  {
   "slug": "base-set-2",
   "name": "Base Set 2",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 130
+  "prints": 130,
+  "release": "2000-02-24"
  },
  {
   "slug": "fossil",
   "name": "Fossil",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 62
+  "prints": 62,
+  "release": "1999-10-10"
  },
  {
   "slug": "gym-challenge",
   "name": "Gym Challenge",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 132
+  "prints": 132,
+  "release": "2000-10-16"
  },
  {
   "slug": "gym-heroes",
   "name": "Gym Heroes",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 132
+  "prints": 132,
+  "release": "2000-08-14"
  },
  {
   "slug": "jungle",
   "name": "Jungle",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 64
+  "prints": 64,
+  "release": "1999-06-16"
  },
  {
   "slug": "neo-destiny",
   "name": "Neo Destiny",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 113
+  "prints": 113,
+  "release": "2002-02-28"
  },
  {
   "slug": "neo-discovery",
   "name": "Neo Discovery",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 75
+  "prints": 75,
+  "release": "2001-06-01"
  },
  {
   "slug": "neo-genesis",
   "name": "Neo Genesis",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 111
+  "prints": 111,
+  "release": "2000-12-16"
  },
  {
   "slug": "neo-revelation",
   "name": "Neo Revelation",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 66
+  "prints": 66,
+  "release": "2001-09-21"
  },
  {
   "slug": "southern-islands",
   "name": "Southern Islands",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 18
+  "prints": 18,
+  "release": "2001-07-31"
  },
  {
   "slug": "team-rocket",
   "name": "Team Rocket",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
-  "prints": 83
+  "prints": 83,
+  "release": "2000-04-24"
  },
  {
   "slug": "aquapolis",
   "name": "Aquapolis",
   "era": "e-card",
   "series": "e-Card",
-  "prints": 337
+  "prints": 337,
+  "release": "2003-01-15"
  },
  {
   "slug": "expedition-base-set",
   "name": "Expedition Base Set",
   "era": "e-card",
   "series": "e-Card",
-  "prints": 330
+  "prints": 330,
+  "release": "2002-09-15"
  },
  {
   "slug": "legendary-collection",
   "name": "Legendary Collection",
   "era": "e-card",
   "series": "e-Card",
-  "prints": 220
+  "prints": 220,
+  "release": "2002-05-24"
  },
  {
   "slug": "skyridge",
   "name": "Skyridge",
   "era": "e-card",
   "series": "e-Card",
-  "prints": 332
+  "prints": 332,
+  "release": "2003-05-12"
  },
  {
   "slug": "crystal-guardians",
   "name": "EX Crystal Guardians",
   "era": "ex",
   "series": "EX",
-  "prints": 188
+  "prints": 188,
+  "release": "2006-08-30"
  },
  {
   "slug": "delta-species",
   "name": "EX Delta Species",
   "era": "ex",
   "series": "EX",
-  "prints": 221
+  "prints": 221,
+  "release": "2005-10-31"
  },
  {
   "slug": "deoxys",
   "name": "EX Deoxys",
   "era": "ex",
   "series": "EX",
-  "prints": 215
+  "prints": 215,
+  "release": "2005-02-01"
  },
  {
   "slug": "dragon",
   "name": "EX Dragon",
   "era": "ex",
   "series": "EX",
-  "prints": 188
+  "prints": 188,
+  "release": "2003-11-24"
  },
  {
   "slug": "dragon-frontiers",
   "name": "EX Dragon Frontiers",
   "era": "ex",
   "series": "EX",
-  "prints": 190
+  "prints": 190,
+  "release": "2006-11-08"
  },
  {
   "slug": "emerald",
   "name": "EX Emerald",
   "era": "ex",
   "series": "EX",
-  "prints": 204
+  "prints": 204,
+  "release": "2005-05-09"
  },
  {
   "slug": "firered-leafgreen",
   "name": "EX FireRed & LeafGreen",
   "era": "ex",
   "series": "EX",
-  "prints": 231
+  "prints": 231,
+  "release": "2004-09-01"
  },
  {
   "slug": "hidden-legends",
   "name": "EX Hidden Legends",
   "era": "ex",
   "series": "EX",
-  "prints": 194
+  "prints": 194,
+  "release": "2004-06-01"
  },
  {
   "slug": "holon-phantoms",
   "name": "EX Holon Phantoms",
   "era": "ex",
   "series": "EX",
-  "prints": 211
+  "prints": 211,
+  "release": "2006-05-03"
  },
  {
   "slug": "legend-maker",
   "name": "EX Legend Maker",
   "era": "ex",
   "series": "EX",
-  "prints": 175
+  "prints": 175,
+  "release": "2006-02-13"
  },
  {
   "slug": "power-keepers",
   "name": "EX Power Keepers",
   "era": "ex",
   "series": "EX",
-  "prints": 199
+  "prints": 199,
+  "release": "2007-02-17"
  },
  {
   "slug": "ruby-sapphire",
   "name": "EX Ruby & Sapphire",
   "era": "ex",
   "series": "EX",
-  "prints": 210
+  "prints": 210,
+  "release": "2003-07-01"
  },
  {
   "slug": "sandstorm",
   "name": "EX Sandstorm",
   "era": "ex",
   "series": "EX",
-  "prints": 193
+  "prints": 193,
+  "release": "2003-09-18"
  },
  {
   "slug": "team-magma-vs-team-aqua",
   "name": "EX Team Magma vs Team Aqua",
   "era": "ex",
   "series": "EX",
-  "prints": 185
+  "prints": 185,
+  "release": "2004-03-01"
  },
  {
   "slug": "team-rocket-returns",
   "name": "EX Team Rocket Returns",
   "era": "ex",
   "series": "EX",
-  "prints": 217
+  "prints": 217,
+  "release": "2004-11-01"
  },
  {
   "slug": "unseen-forces",
   "name": "EX Unseen Forces",
   "era": "ex",
   "series": "EX",
-  "prints": 245
+  "prints": 245,
+  "release": "2005-08-22"
  },
  {
   "slug": "arceus",
   "name": "Arceus",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 204
+  "prints": 204,
+  "release": "2009-11-04"
  },
  {
   "slug": "diamond-and-pearl",
   "name": "Diamond & Pearl",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 251
+  "prints": 251,
+  "release": "2007-05-01"
  },
  {
   "slug": "great-encounters",
   "name": "Great Encounters",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 208
+  "prints": 208,
+  "release": "2008-02-01"
  },
  {
   "slug": "legends-awakened",
   "name": "Legends Awakened",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 285
+  "prints": 285,
+  "release": "2008-08-01"
  },
  {
   "slug": "majestic-dawn",
   "name": "Majestic Dawn",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 196
+  "prints": 196,
+  "release": "2008-05-01"
  },
  {
   "slug": "mysterious-treasures",
   "name": "Mysterious Treasures",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 244
+  "prints": 244,
+  "release": "2007-08-01"
  },
  {
   "slug": "platinum",
   "name": "Platinum",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 254
+  "prints": 254,
+  "release": "2009-02-11"
  },
  {
   "slug": "rising-rivals",
   "name": "Rising Rivals",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 222
+  "prints": 222,
+  "release": "2009-05-16"
  },
  {
   "slug": "secret-wonders",
   "name": "Secret Wonders",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 252
+  "prints": 252,
+  "release": "2007-11-01"
  },
  {
   "slug": "stormfront",
   "name": "Stormfront",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 201
+  "prints": 201,
+  "release": "2008-11-01"
  },
  {
   "slug": "supreme-victors",
   "name": "Supreme Victors",
   "era": "diamond-pearl-platinum",
   "series": "Diamond & Pearl",
-  "prints": 292
+  "prints": 292,
+  "release": "2009-08-19"
  },
  {
   "slug": "call-of-legends",
   "name": "Call of Legends",
   "era": "heartgold-soulsilver",
   "series": "HeartGold & SoulSilver",
-  "prints": 193
+  "prints": 193,
+  "release": "2011-02-09"
  },
  {
   "slug": "heartgold-soulsilver",
   "name": "HeartGold & SoulSilver",
   "era": "heartgold-soulsilver",
   "series": "HeartGold & SoulSilver",
-  "prints": 230
+  "prints": 230,
+  "release": "2010-02-10"
  },
  {
   "slug": "triumphant",
   "name": "Triumphant",
   "era": "heartgold-soulsilver",
   "series": "HeartGold & SoulSilver",
-  "prints": 193
+  "prints": 193,
+  "release": "2010-11-03"
  },
  {
   "slug": "undaunted",
   "name": "Undaunted",
   "era": "heartgold-soulsilver",
   "series": "HeartGold & SoulSilver",
-  "prints": 171
+  "prints": 171,
+  "release": "2010-08-18"
  },
  {
   "slug": "unleashed",
   "name": "Unleashed",
   "era": "heartgold-soulsilver",
   "series": "HeartGold & SoulSilver",
-  "prints": 179
+  "prints": 179,
+  "release": "2010-05-12"
  },
  {
   "slug": "black-white",
   "name": "Black & White",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 219
+  "prints": 219,
+  "release": "2011-04-25"
  },
  {
   "slug": "boundaries-crossed",
   "name": "Boundaries Crossed",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 283
+  "prints": 283,
+  "release": "2012-11-07"
  },
  {
   "slug": "dark-explorers",
   "name": "Dark Explorers",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 207
+  "prints": 207,
+  "release": "2012-05-09"
  },
  {
   "slug": "dragon-vault",
   "name": "Dragon Vault",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 21
+  "prints": 21,
+  "release": "2012-10-05"
  },
  {
   "slug": "dragons-exalted",
   "name": "Dragons Exalted",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 240
+  "prints": 240,
+  "release": "2012-08-15"
  },
  {
   "slug": "emerging-powers",
   "name": "Emerging Powers",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 193
+  "prints": 193,
+  "release": "2011-08-31"
  },
  {
   "slug": "legendary-treasures",
   "name": "Legendary Treasures",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 241
+  "prints": 241,
+  "release": "2013-11-06"
  },
  {
   "slug": "next-destinies",
   "name": "Next Destinies",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 190
+  "prints": 190,
+  "release": "2012-02-08"
  },
  {
   "slug": "noble-victories",
   "name": "Noble Victories",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 198
+  "prints": 198,
+  "release": "2011-11-16"
  },
  {
   "slug": "plasma-blast",
   "name": "Plasma Blast",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 190
+  "prints": 190,
+  "release": "2013-08-14"
  },
  {
   "slug": "plasma-freeze",
   "name": "Plasma Freeze",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 222
+  "prints": 222,
+  "release": "2013-05-08"
  },
  {
   "slug": "plasma-storm",
   "name": "Plasma Storm",
   "era": "black-white",
   "series": "Black & White",
-  "prints": 257
+  "prints": 257,
+  "release": "2013-02-06"
  },
  {
   "slug": "ancient-origins",
   "name": "Ancient Origins",
   "era": "xy",
   "series": "XY",
-  "prints": 174
+  "prints": 174,
+  "release": "2015-08-12"
  },
  {
   "slug": "breakpoint",
   "name": "BREAKpoint",
   "era": "xy",
   "series": "XY",
-  "prints": 226
+  "prints": 226,
+  "release": "2016-02-03"
  },
  {
   "slug": "breakthrough",
   "name": "BREAKthrough",
   "era": "xy",
   "series": "XY",
-  "prints": 302
+  "prints": 302,
+  "release": "2015-11-04"
  },
  {
   "slug": "double-crisis",
   "name": "Double Crisis",
   "era": "xy",
   "series": "XY",
-  "prints": 66
+  "prints": 66,
+  "release": "2015-03-25"
  },
  {
   "slug": "evolutions",
   "name": "Evolutions",
   "era": "xy",
   "series": "XY",
-  "prints": 196
+  "prints": 196,
+  "release": "2016-11-02"
  },
  {
   "slug": "fates-collide",
   "name": "Fates Collide",
   "era": "xy",
   "series": "XY",
-  "prints": 227
+  "prints": 227,
+  "release": "2016-05-02"
  },
  {
   "slug": "flashfire",
   "name": "Flashfire",
   "era": "xy",
   "series": "XY",
-  "prints": 202
+  "prints": 202,
+  "release": "2014-05-07"
  },
  {
   "slug": "furious-fists",
   "name": "Furious Fists",
   "era": "xy",
   "series": "XY",
-  "prints": 211
+  "prints": 211,
+  "release": "2014-08-13"
  },
  {
   "slug": "generations",
   "name": "Generations",
   "era": "xy",
   "series": "XY",
-  "prints": 187
+  "prints": 187,
+  "release": "2016-02-22"
  },
  {
   "slug": "phantom-forces",
   "name": "Phantom Forces",
   "era": "xy",
   "series": "XY",
-  "prints": 226
+  "prints": 226,
+  "release": "2014-11-05"
  },
  {
   "slug": "primal-clash",
   "name": "Primal Clash",
   "era": "xy",
   "series": "XY",
-  "prints": 296
+  "prints": 296,
+  "release": "2015-02-04"
  },
  {
   "slug": "roaring-skies",
   "name": "Roaring Skies",
   "era": "xy",
   "series": "XY",
-  "prints": 199
+  "prints": 199,
+  "release": "2015-05-06"
  },
  {
   "slug": "steam-siege",
   "name": "Steam Siege",
   "era": "xy",
   "series": "XY",
-  "prints": 209
+  "prints": 209,
+  "release": "2016-08-03"
  },
  {
   "slug": "xy",
   "name": "XY",
   "era": "xy",
   "series": "XY",
-  "prints": 269
+  "prints": 269,
+  "release": "2014-02-05"
  },
  {
   "slug": "burning-shadows",
   "name": "Burning Shadows",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 285
+  "prints": 285,
+  "release": "2017-08-04"
  },
  {
   "slug": "celestial-storm",
   "name": "Celestial Storm",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 320
+  "prints": 320,
+  "release": "2018-08-03"
  },
  {
   "slug": "cosmic-eclipse",
   "name": "Cosmic Eclipse",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 464
+  "prints": 464,
+  "release": "2019-11-01"
  },
  {
   "slug": "crimson-invasion",
   "name": "Crimson Invasion",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 217
+  "prints": 217,
+  "release": "2017-11-03"
  },
  {
   "slug": "detective-pikachu",
   "name": "Detective Pikachu",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 18
+  "prints": 18,
+  "release": "2019-03-29"
  },
  {
   "slug": "dragon-majesty",
   "name": "Dragon Majesty",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 134
+  "prints": 134,
+  "release": "2018-09-07"
  },
  {
   "slug": "forbidden-light",
   "name": "Forbidden Light",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 251
+  "prints": 251,
+  "release": "2018-05-04"
  },
  {
   "slug": "guardians-rising",
   "name": "Guardians Rising",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 287
+  "prints": 287,
+  "release": "2017-05-05"
  },
  {
   "slug": "hidden-fates",
   "name": "Hidden Fates",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 219
+  "prints": 219,
+  "release": "2019-08-23"
  },
  {
   "slug": "lost-thunder",
   "name": "Lost Thunder",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 410
+  "prints": 410,
+  "release": "2018-11-02"
  },
  {
   "slug": "shining-legends",
   "name": "Shining Legends",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 138
+  "prints": 138,
+  "release": "2017-10-06"
  },
  {
   "slug": "sun-moon",
   "name": "Sun & Moon",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 298
+  "prints": 298,
+  "release": "2017-02-03"
  },
  {
   "slug": "team-up",
   "name": "Team Up",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 339
+  "prints": 339,
+  "release": "2019-01-31"
  },
  {
   "slug": "ultra-prism",
   "name": "Ultra Prism",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 298
+  "prints": 298,
+  "release": "2018-02-02"
  },
  {
   "slug": "unbroken-bonds",
   "name": "Unbroken Bonds",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 410
+  "prints": 410,
+  "release": "2019-05-03"
  },
  {
   "slug": "unified-minds",
   "name": "Unified Minds",
   "era": "sun-moon",
   "series": "Sun & Moon",
-  "prints": 454
+  "prints": 454,
+  "release": "2019-08-02"
  },
  {
   "slug": "astral-radiance",
   "name": "Astral Radiance",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 374
+  "prints": 374,
+  "release": "2022-05-27"
  },
  {
   "slug": "battle-styles",
   "name": "Battle Styles",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 306
+  "prints": 306,
+  "release": "2021-03-19"
  },
  {
   "slug": "brilliant-stars",
   "name": "Brilliant Stars",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 340
+  "prints": 340,
+  "release": "2022-02-25"
  },
  {
   "slug": "celebrations",
   "name": "Celebrations",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 50
+  "prints": 50,
+  "release": "2021-10-08"
  },
  {
   "slug": "champions-path",
   "name": "Champion's Path",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 134
+  "prints": 134,
+  "release": "2020-09-25"
  },
  {
   "slug": "chilling-reign",
   "name": "Chilling Reign",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 369
+  "prints": 369,
+  "release": "2021-06-18"
  },
  {
   "slug": "crown-zenith",
   "name": "Crown Zenith",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 342
+  "prints": 342,
+  "release": "2023-01-20"
  },
  {
   "slug": "darkness-ablaze",
   "name": "Darkness Ablaze",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 356
+  "prints": 356,
+  "release": "2020-08-14"
  },
  {
   "slug": "evolving-skies",
   "name": "Evolving Skies",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 369
+  "prints": 369,
+  "release": "2021-08-27"
  },
  {
   "slug": "fusion-strike",
   "name": "Fusion Strike",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 501
+  "prints": 501,
+  "release": "2021-11-12"
  },
  {
   "slug": "lost-origin",
   "name": "Lost Origin",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 396
+  "prints": 396,
+  "release": "2022-09-09"
  },
  {
   "slug": "mcdonalds-collection-2021",
   "name": "McDonald's Collection 2021",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 50
+  "prints": 50,
+  "release": "2021-02-09"
  },
  {
   "slug": "mcdonalds-collection-2022",
   "name": "McDonald's Collection 2022",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 24
+  "prints": 24,
+  "release": "2022-08-03"
  },
  {
   "slug": "pokemon-go",
   "name": "Pokémon GO",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 145
+  "prints": 145,
+  "release": "2022-07-01"
  },
  {
   "slug": "rebel-clash",
   "name": "Rebel Clash",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 360
+  "prints": 360,
+  "release": "2020-05-01"
  },
  {
   "slug": "shining-fates",
   "name": "Shining Fates",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 241
+  "prints": 241,
+  "release": "2021-02-19"
  },
  {
   "slug": "silver-tempest",
   "name": "Silver Tempest",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 387
+  "prints": 387,
+  "release": "2022-11-11"
  },
  {
   "slug": "sword-shield",
   "name": "Sword & Shield",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 379
+  "prints": 379,
+  "release": "2020-02-07"
  },
  {
   "slug": "vivid-voltage",
   "name": "Vivid Voltage",
   "era": "sword-shield",
   "series": "Sword & Shield",
-  "prints": 344
+  "prints": 344,
+  "release": "2020-11-13"
  },
  {
   "slug": "151",
   "name": "151",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 360
+  "prints": 360,
+  "release": "2023-09-22"
  },
  {
   "slug": "black-bolt",
   "name": "Black Bolt",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 404
+  "prints": 404,
+  "release": "2025-07-17"
  },
  {
   "slug": "destined-rivals",
   "name": "Destined Rivals",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 409
+  "prints": 409,
+  "release": "2025-05-30"
  },
  {
   "slug": "journey-together",
   "name": "Journey Together",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 333
+  "prints": 333,
+  "release": "2025-03-28"
  },
  {
   "slug": "obsidian-flames",
   "name": "Obsidian Flames",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 406
+  "prints": 406,
+  "release": "2023-08-11"
  },
  {
   "slug": "paldea-evolved",
   "name": "Paldea Evolved",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 455
+  "prints": 455,
+  "release": "2023-06-09"
  },
  {
   "slug": "paldean-fates",
   "name": "Paldean Fates",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 326
+  "prints": 326,
+  "release": "2024-01-26"
  },
  {
   "slug": "paradox-rift",
   "name": "Paradox Rift",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 428
+  "prints": 428,
+  "release": "2023-11-03"
  },
  {
   "slug": "prismatic-evolutions",
   "name": "Prismatic Evolutions",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 447
+  "prints": 447,
+  "release": "2025-01-17"
  },
  {
   "slug": "scarlet-violet",
   "name": "Scarlet & Violet",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 444
+  "prints": 444,
+  "release": "2023-03-31"
  },
  {
   "slug": "shrouded-fable",
   "name": "Shrouded Fable",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 154
+  "prints": 154,
+  "release": "2024-08-02"
  },
  {
   "slug": "stellar-crown",
   "name": "Stellar Crown",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 300
+  "prints": 300,
+  "release": "2024-09-13"
  },
  {
   "slug": "surging-sparks",
   "name": "Surging Sparks",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 417
+  "prints": 417,
+  "release": "2024-11-08"
  },
  {
   "slug": "temporal-forces",
   "name": "Temporal Forces",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 358
+  "prints": 358,
+  "release": "2024-03-22"
  },
  {
   "slug": "twilight-masquerade",
   "name": "Twilight Masquerade",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 373
+  "prints": 373,
+  "release": "2024-05-24"
  },
  {
   "slug": "white-flare",
   "name": "White Flare",
   "era": "scarlet-violet",
   "series": "Scarlet & Violet",
-  "prints": 405
+  "prints": 405,
+  "release": "2025-07-17"
  },
  {
   "slug": "ascended-heroes",
   "name": "Ascended Heroes",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 613
+  "prints": 613,
+  "release": "2026-01-30"
  },
  {
   "slug": "chaos-rising",
   "name": "Chaos Rising",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 198
+  "prints": 198,
+  "release": "2026-05-22"
  },
  {
   "slug": "mega-evolution",
   "name": "Mega Evolution",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 310
+  "prints": 310,
+  "release": "2025-09-26"
  },
  {
   "slug": "perfect-order",
   "name": "Perfect Order",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 203
+  "prints": 203,
+  "release": "2026-03-27"
  },
  {
   "slug": "phantasmal-flames",
   "name": "Phantasmal Flames",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 214
+  "prints": 214,
+  "release": "2025-11-14"
  },
  {
   "slug": "pitch-black",
   "name": "Pitch Black",
   "era": "mega-evolution",
   "series": "Mega Evolution",
-  "prints": 194
+  "prints": 194,
+  "release": "2026-07-17"
  }
 ]

@@ -177,23 +177,12 @@ private struct SetupStage: View {
                         }
                         .font(.caption.weight(.semibold))
                     }
-                    ForEach(items) { item in
-                        Button {
-                            if session.bring.contains(item.id) { session.bring.remove(item.id) } else { session.bring.insert(item.id) }
-                        } label: {
-                            HStack(spacing: 10) {
-                                Image(systemName: session.bring.contains(item.id) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(session.bring.contains(item.id) ? Theme.cyan : Theme.muted)
-                                ItemLine(item: item)
-                                Spacer()
-                                VStack(alignment: .trailing, spacing: 2) {
-                                    Text(money(session.asking(item))).font(.subheadline.monospaced())
-                                    Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
-                                }
-                            }
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
+                    let cards = items.filter { $0.kind == .card }
+                    if !cards.isEmpty { SectionTitle(text: "Singles and slabs") }
+                    ForEach(cards) { item in bringRow(item) }
+                    ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
+                        SetHeader(slug: group.slug, count: group.items.count)
+                        ForEach(group.items) { item in bringRow(item) }
                     }
                 }
                 .padding(16)
@@ -210,6 +199,25 @@ private struct SetupStage: View {
             .controlSize(.large)
             .padding(16)
         }
+    }
+
+    private func bringRow(_ item: ShowItem) -> some View {
+        Button {
+            if session.bring.contains(item.id) { session.bring.remove(item.id) } else { session.bring.insert(item.id) }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: session.bring.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(session.bring.contains(item.id) ? Theme.cyan : Theme.muted)
+                ItemLine(item: item)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(money(session.asking(item))).font(.subheadline.monospaced())
+                    Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -692,10 +700,23 @@ private struct VendorStage: View {
                         Text(tab == .singles ? "No singles left at this table." : "No sealed product left at this table.")
                             .font(.subheadline).foregroundStyle(Theme.muted)
                     }
-                    ForEach(shown) { item in
-                        GoodsRow(item: item, tool: store.data.centeringTool, canAfford: store.canAfford(item.price),
-                                 buy: { withAnimation { session.buy(item, from: vendor) } },
-                                 ask: { session.askForDeal(item, from: vendor) })
+                    if tab == .sealed {
+                        // Sealed shows by set, newest set first. Mystery packs have no set, so they come first.
+                        let mystery = shown.filter { if case .mystery = $0.goods { return true }; return false }
+                        if !mystery.isEmpty {
+                            SectionTitle(text: "Mystery packs")
+                            ForEach(mystery) { item in row(item) }
+                        }
+                        let sealed = shown.filter { if case .sealed = $0.goods { return true }; return false }
+                        ForEach(SetLibrary.grouped(sealed, by: { item in
+                            if case .sealed(let p) = item.goods { return p.homeSlug }
+                            return ""
+                        }), id: \.slug) { group in
+                            SetHeader(slug: group.slug, count: group.items.count)
+                            ForEach(group.items) { item in row(item) }
+                        }
+                    } else {
+                        ForEach(shown) { item in row(item) }
                     }
                 }
                 .padding(16)
@@ -707,6 +728,12 @@ private struct VendorStage: View {
             .controlSize(.large)
             .padding(16)
         }
+    }
+
+    private func row(_ item: VendorItem) -> some View {
+        GoodsRow(item: item, tool: store.data.centeringTool, canAfford: store.canAfford(item.price),
+                 buy: { withAnimation { session.buy(item, from: vendor) } },
+                 ask: { session.askForDeal(item, from: vendor) })
     }
 }
 

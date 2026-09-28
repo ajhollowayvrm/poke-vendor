@@ -9,6 +9,10 @@ struct SetInfo: Codable, Hashable {
     let era: String
     let series: String
     let prints: Int
+    /// The release date, "YYYY-MM-DD".
+    let release: String?
+
+    var year: String { release.map { String($0.prefix(4)) } ?? "" }
 }
 
 enum SetLibrary {
@@ -23,6 +27,27 @@ enum SetLibrary {
         }
         return sets
     }()
+
+    static func info(_ slug: String) -> SetInfo? { infoBySlug[slug] }
+    private static let infoBySlug = Dictionary(index.map { ($0.slug, $0) }, uniquingKeysWith: { a, _ in a })
+
+    /// Newest set first. A set with no release date goes last.
+    private static let newestRank: [String: Int] = {
+        let sorted = index.sorted { ($0.release ?? "") > ($1.release ?? "") }
+        return Dictionary(sorted.enumerated().map { ($1.slug, $0) }, uniquingKeysWith: { a, _ in a })
+    }()
+
+    /// Groups items by their set, newest set first. The items keep their order inside each group.
+    static func grouped<T>(_ items: [T], by slug: (T) -> String) -> [(slug: String, items: [T])] {
+        var order: [String] = []
+        var groups: [String: [T]] = [:]
+        for item in items {
+            let s = slug(item)
+            if groups[s] == nil { order.append(s) }
+            groups[s, default: []].append(item)
+        }
+        return order.sorted { (newestRank[$0] ?? .max, $0) < (newestRank[$1] ?? .max, $1) }.map { ($0, groups[$0] ?? []) }
+    }
 
     /// The slugs of the sets from these eras.
     static func slugs(eras: Set<String>) -> [String] {

@@ -122,29 +122,32 @@ struct StoreRunView: View {
                     if shelf.isEmpty {
                         Text("The shelf is empty. This stop is a bust.").font(.subheadline).foregroundStyle(Theme.muted)
                     }
-                    ForEach(shelf) { item in
-                        let left = store.shelfLeft(item)
-                        HStack(spacing: 10) {
-                            RemoteCardImage(url: item.product.image.flatMap(URL.init(string:)), name: "")
-                                .aspectRatio(contentMode: .fit)
-                                .padding(2)
-                                .background(Color.white)
-                                .frame(width: 44, height: 56)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(item.product.name).font(.subheadline).lineLimit(2)
-                                Text("\(left) left · mkt \(money(item.product.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                            }
-                            Spacer()
-                            Button(money(item.price)) {
-                                if store.buyShelf(item, at: s, credit: useCredit && s.isGameShop) {
-                                    spent += item.price
-                                    bought.append(item.product.name)
+                    ForEach(SetLibrary.grouped(shelf, by: { $0.product.homeSlug }), id: \.slug) { group in
+                        SetHeader(slug: group.slug, count: group.items.count)
+                        ForEach(group.items) { item in
+                            let left = store.shelfLeft(item)
+                            HStack(spacing: 10) {
+                                RemoteCardImage(url: item.product.image.flatMap(URL.init(string:)), name: "")
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(2)
+                                    .background(Color.white)
+                                    .frame(width: 44, height: 56)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.product.name).font(.subheadline).lineLimit(2)
+                                    Text("\(left) left · mkt \(money(item.product.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                                 }
+                                Spacer()
+                                Button(money(item.price)) {
+                                    if store.buyShelf(item, at: s, credit: useCredit && s.isGameShop) {
+                                        spent += item.price
+                                        bought.append(item.product.name)
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .foregroundStyle(.black)
+                                .controlSize(.small)
+                                .disabled(left == 0)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
-                            .controlSize(.small)
-                            .disabled(left == 0)
                         }
                     }
                 }

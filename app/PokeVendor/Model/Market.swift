@@ -25,6 +25,13 @@ struct StoreOffer: Identifiable, Hashable {
         }
     }
 
+    /// The set the item belongs to: a product's home set, or a single's set.
+    var setSlug: String {
+        switch item {
+        case .product(_, let slug), .single(_, let slug): slug
+        }
+    }
+
     var market: Double {
         switch item {
         case .product(let p, _): p.market

@@ -96,10 +96,13 @@ struct StoreView: View {
                         .overlay(Rectangle().stroke(Theme.line))
                 }
                 VStack(spacing: 0) {
-                    ForEach(offers) { offer in
-                        OfferRow(offer: offer, bought: store.data.boughtToday.contains(offer.id),
-                                 locked: store_ == .pokemonCenter && store.data.pokemonCenterAttempted) {
-                            confirm = offer
+                    ForEach(SetLibrary.grouped(offers, by: { $0.setSlug }), id: \.slug) { group in
+                        SetHeader(slug: group.slug, count: group.items.count)
+                        ForEach(group.items) { offer in
+                            OfferRow(offer: offer, bought: store.data.boughtToday.contains(offer.id),
+                                     locked: store_ == .pokemonCenter && store.data.pokemonCenterAttempted) {
+                                confirm = offer
+                            }
                         }
                     }
                 }
