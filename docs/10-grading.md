@@ -48,6 +48,38 @@ e.g., own the centering tool but still be blind on surface condition —
 so meaningful risk persists even for an experienced player until every
 upgrade is bought.
 
+## Cut and wear
+
+**Cut** is the centering of a card, as two numbers on each face: left
+to right (LR) and top to bottom (TB). Each number is the share of one
+border, for example LR 55/45. Every card has a true cut from the moment
+it is made, and the true cut never changes. The centering subgrade
+comes from the worse axis of each face. The front allows 55/45 for a
+10, and the back allows 65/35 for a 10.
+
+What the player can read of the cut depends on the centering tool (see
+[09-upgrades.md](09-upgrades.md#centering-tools)):
+
+| Tool | Front | Back |
+| --- | --- | --- |
+| None (eyeball) | A cloudy estimate, off by up to about 6 points | Unknown (??/??) |
+| Centering ruler | Off by up to about 2 points | Off by up to about 6 points |
+| Centering scanner | Exact | Exact |
+
+- A reading that is not exact shows "≈" and its spread, for example
+  "LR ≈54/46 ±6". It looks cloudy: the rougher the reading, the more
+  it blurs.
+- The error of a reading is fixed for each card, so the same card
+  always gives the same reading.
+- The rip screen shows the front cut of the card in hand. The card
+  detail screen shows both faces.
+
+**Wear** is what anyone can see on a raw card without a tool: Near Mint
+(NM), Lightly Played (LP), or Moderately Played (MP). It comes from the
+corners, edges, and surface. Almost every card from a pack is Near
+Mint. About 1 card in 11 is Lightly Played. Values: see
+[19-prototype-values.md](19-prototype-values.md#grading).
+
 ## How the four combine into one grade
 
 The overall grade is dominated by the *worst* subgrade, not an

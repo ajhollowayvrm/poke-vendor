@@ -26,6 +26,8 @@ struct GameData: Codable {
     var pokemonCenterAttempted = false
     var shops: [String: ShopState] = [:]
     var social = SocialState()
+    /// The best centering tool the player owns: 0 is none (Balance.centeringTools).
+    var centeringTool = 0
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -55,6 +57,7 @@ extension GameData {
         pokemonCenterAttempted = v(.pokemonCenterAttempted, pokemonCenterAttempted)
         shops = v(.shops, shops)
         social = v(.social, social)
+        centeringTool = v(.centeringTool, centeringTool)
     }
 }
 
@@ -155,6 +158,22 @@ final class GameStore {
     }
 
     func canAfford(_ amount: Double) -> Bool { data.cash >= amount - 0.001 }
+
+    /// The next centering tool, if the player does not own the best one yet.
+    var nextCenteringTool: (level: Int, name: String, cost: Double, detail: String)? {
+        let level = data.centeringTool + 1
+        guard Balance.centeringTools.indices.contains(level - 1) else { return nil }
+        let tool = Balance.centeringTools[level - 1]
+        return (level, tool.name, tool.cost, tool.detail)
+    }
+
+    func buyCenteringTool() {
+        guard let tool = nextCenteringTool, canAfford(tool.cost) else { return }
+        addLedger(-tool.cost, .upgrade, tool.name)
+        data.centeringTool = tool.level
+        log("Bought the \(tool.name.lowercased()).", cash: -tool.cost)
+        save()
+    }
 
     // MARK: - Inventory values
 
@@ -363,7 +382,7 @@ final class GameStore {
             guard let print = card.print else { continue }
             if card.isHit {
                 data.raw.append(OwnedCard(print: print, setSlug: setSlug, acquired: .now, paid: nil, ripID: ripID,
-                                          acquiredDay: data.day))
+                                          condition: card.condition, acquiredDay: data.day))
             } else {
                 bulk.append(print)
             }

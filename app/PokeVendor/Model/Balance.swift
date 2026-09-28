@@ -13,6 +13,12 @@ enum Balance {
     static let workEnd = 17.0
     static let sickDaysPerYear = 5
 
+    // Upgrades (docs/09-upgrades.md). Each centering tool reads the cut more sharply than the one before it.
+    static let centeringTools: [(name: String, cost: Double, detail: String)] = [
+        ("Centering ruler", 40, "Reads the front to about ±2 and the back to about ±6."),
+        ("Centering scanner", 200, "Reads the front and the back exactly."),
+    ]
+
     // Selling (docs/15-selling.md)
     static let listingDays = 28
     static let tcgFeeRate = 0.1075

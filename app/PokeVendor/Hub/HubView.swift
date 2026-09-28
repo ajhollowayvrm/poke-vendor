@@ -261,6 +261,7 @@ struct HubView: View {
             case "shop": nav.path = [.shop(.castle)]
             case "local": nav.path = [.buyLocal]
             case "raw": nav.path = [.inventory(.raw)]
+            case "card": nav.path = [.inventory(.raw)] + (store.data.raw.first.map { [.card($0.id)] } ?? [])
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
             case "sealed": nav.path = [.inventory(.sealed)]

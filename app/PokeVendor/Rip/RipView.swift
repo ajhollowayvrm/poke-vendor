@@ -348,7 +348,8 @@ struct RipView: View {
                     .foregroundStyle(Theme.muted)
                     .frame(maxWidth: .infinity, minHeight: 82)
             } else {
-                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
+                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil },
+                         tool: model.centeringTool)
             }
             HStack(spacing: 10) {
                 Button { flipStack() } label: {

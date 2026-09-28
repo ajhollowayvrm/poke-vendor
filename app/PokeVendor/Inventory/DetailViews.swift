@@ -181,12 +181,14 @@ extension CardDetailView {
     }
 }
 
-/// What the player can tell about the condition. A raw card shows eyeball estimates; a BGS slab shows its subgrades.
+/// What the player can tell about the condition. A raw card shows its wear, its cut as well as the player's
+/// centering tool can read it, and eyeball notes. A BGS slab shows its subgrades.
 struct ConditionBox: View {
+    @Environment(GameStore.self) private var store
     let card: OwnedCard
 
     var body: some View {
-        DetailBox(title: card.grade == nil ? "Condition (eyeball)" : "Grade") {
+        DetailBox(title: card.grade == nil ? "Condition" : "Grade") {
             if let g = card.grade {
                 if g.company == .bgs {
                     let c = card.condition
@@ -199,11 +201,44 @@ struct ConditionBox: View {
                 }
             } else {
                 let c = card.condition
-                row("Centering, front", "about \(String(format: "%.1f", max(1, c.centeringFront - 0.5)))–\(String(format: "%.1f", min(10, c.centeringFront + 0.5)))")
-                row("Centering, back", "Unknown")
-                row("Corners", c.corners <= 8.5 ? "Visible whitening" : "Look sharp · fine wear needs a loupe")
-                row("Edges", c.edges <= 8.5 ? "Visible chips" : "Look clean · micro-whitening needs a loupe")
-                row("Surface", c.surface <= 7.5 ? "A visible scratch" : "Unknown without a raking light")
+                let tool = store.data.centeringTool
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Wear").font(.subheadline).foregroundStyle(Theme.muted)
+                    Spacer()
+                    WearPill(wear: c.wear)
+                    Text(c.wear.rawValue).font(.subheadline)
+                }
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Cut, front").font(.subheadline).foregroundStyle(Theme.muted)
+                    Spacer()
+                    CutLine(reading: .front(c.cut, tool: tool))
+                }
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Cut, back").font(.subheadline).foregroundStyle(Theme.muted)
+                    Spacer()
+                    CutLine(reading: .back(c.cut, tool: tool))
+                }
+                Text(tool == 0 ? "Read by eye. The back cannot be read by eye: every card back looks the same."
+                               : "Read with your \(centeringToolName(tool).lowercased()).")
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                row("Corners", c.corners <= 8 ? "Visible whitening" : "Look sharp · fine wear needs a loupe")
+                row("Edges", c.edges <= 8 ? "Visible chips" : "Look clean · micro-whitening needs a loupe")
+                row("Surface", c.surface <= 7 ? "A visible scratch" : "Unknown without a raking light")
+                if let next = store.nextCenteringTool {
+                    Button {
+                        store.buyCenteringTool()
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text("Buy the \(next.name.lowercased()) · \(money(next.cost))").font(.subheadline.weight(.semibold))
+                            Text(next.detail).font(.caption2).foregroundStyle(Theme.muted)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!store.canAfford(next.cost))
+                    .padding(.top, 4)
+                }
             }
         }
     }

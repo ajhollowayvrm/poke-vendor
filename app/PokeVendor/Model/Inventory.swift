@@ -32,6 +32,119 @@ enum SetLibrary {
     }
 }
 
+/// The cut of a card: how the border frames the art on each face (docs/10-grading.md, Cut).
+/// Each value is the share of the left (or top) border, in percent, so 50 is a perfect 50/50.
+struct Cut: Codable, Hashable {
+    var frontLR: Int
+    var frontTB: Int
+    var backLR: Int
+    var backTB: Int
+    /// The fixed error of the player's eyeball reading on each value, from -1 to 1. It does not change, so the
+    /// same card always gives the same reading.
+    var eye: [Double] = (0..<4).map { _ in .random(in: -1...1) }
+
+    /// The worse side of a value, for example 58 for 42/58.
+    static func worse(_ share: Int) -> Int { max(share, 100 - share) }
+
+    /// The centering subgrade of the front, from its worse axis. The steps follow the common grading limits:
+    /// 55/45 or better is a 10.
+    static func frontGrade(_ worst: Int) -> Double {
+        switch worst {
+        case ...55: 10
+        case ...57: 9.5
+        case ...60: 9
+        case ...62: 8.5
+        case ...65: 8
+        case ...70: 7
+        case ...75: 6
+        default: 5
+        }
+    }
+
+    /// The back allows more: 65/35 or better is a 10.
+    static func backGrade(_ worst: Int) -> Double {
+        switch worst {
+        case ...65: 10
+        case ...70: 9.5
+        case ...75: 9
+        case ...80: 8.5
+        case ...85: 8
+        case ...90: 7
+        default: 6
+        }
+    }
+
+    var frontGrade: Double { Self.frontGrade(max(Self.worse(frontLR), Self.worse(frontTB))) }
+    var backGrade: Double { Self.backGrade(max(Self.worse(backLR), Self.worse(backTB))) }
+
+    /// A cut from the factory. Left to right is a little less even than top to bottom, and the back is the least even.
+    static func random() -> Cut {
+        func share(_ spread: Double) -> Int {
+            // A normal random value (Box-Muller).
+            let z = sqrt(-2 * log(Double.random(in: 0.0001..<1))) * cos(2 * .pi * Double.random(in: 0..<1))
+            return max(20, min(80, Int((50 + z * spread).rounded())))
+        }
+        return Cut(frontLR: share(4.2), frontTB: share(3.2), backLR: share(7), backTB: share(7))
+    }
+
+    /// A cut that gives these subgrades, for a card from a save that has no cut.
+    static func matching(front: Double, back: Double) -> Cut {
+        func worst(_ grade: Double, _ table: (Int) -> Double) -> Int {
+            let fits = (50...90).filter { table($0) == grade }
+            return fits.randomElement() ?? (50...90).min { abs(table($0) - grade) < abs(table($1) - grade) } ?? 50
+        }
+        func pair(_ worst: Int) -> (Int, Int) {
+            let other = Int.random(in: 50...worst)
+            let a = Bool.random() ? worst : 100 - worst
+            let b = Bool.random() ? other : 100 - other
+            return Bool.random() ? (a, b) : (b, a)
+        }
+        let f = pair(worst(front, frontGrade))
+        let b = pair(worst(back, backGrade))
+        return Cut(frontLR: f.0, frontTB: f.1, backLR: b.0, backTB: b.1)
+    }
+}
+
+/// What the player can read of a cut. The centering tools make the reading sharper (docs/09-upgrades.md).
+struct CutReading {
+    /// The text for left to right and for top to bottom, for example "≈54/46".
+    let lr: String
+    let tb: String
+    /// How far the reading can be off, in percent. 0 is exact. Nil is unknown.
+    let spread: Int?
+
+    static func front(_ cut: Cut, tool: Int) -> CutReading {
+        read(cut.frontLR, cut.frontTB, cut.eye[0], cut.eye[1], spread: [6, 2, 0][min(tool, 2)])
+    }
+
+    /// The back cannot be read by eye: every card back looks the same.
+    static func back(_ cut: Cut, tool: Int) -> CutReading {
+        guard tool > 0 else { return CutReading(lr: "??/??", tb: "??/??", spread: nil) }
+        return read(cut.backLR, cut.backTB, cut.eye[2], cut.eye[3], spread: [6, 6, 0][min(tool, 2)])
+    }
+
+    private static func read(_ lr: Int, _ tb: Int, _ eyeLR: Double, _ eyeTB: Double, spread: Int) -> CutReading {
+        func text(_ share: Int, _ eye: Double) -> String {
+            let guess = max(5, min(95, share + Int((eye * Double(spread) * 0.7).rounded())))
+            return (spread == 0 ? "" : "≈") + "\(guess)/\(100 - guess)"
+        }
+        return CutReading(lr: text(lr, eyeLR), tb: text(tb, eyeTB), spread: spread)
+    }
+}
+
+/// The wear that anyone can see on a raw card.
+enum Wear: String {
+    case nearMint = "Near Mint", lightlyPlayed = "Lightly Played", moderatelyPlayed = "Moderately Played"
+
+    var short: String {
+        switch self {
+        case .nearMint: "NM"
+        case .lightlyPlayed: "LP"
+        case .moderatelyPlayed: "MP"
+        }
+    }
+}
+
 /// The hidden condition of one card. Each value is a subgrade from 1 to 10 (docs/10-grading.md).
 struct Condition: Codable, Hashable {
     var centeringFront: Double
@@ -39,9 +152,39 @@ struct Condition: Codable, Hashable {
     var corners: Double
     var edges: Double
     var surface: Double
+    /// The true cut. The centering subgrades come from it.
+    var cut: Cut
 
     var centering: Double { min(centeringFront, centeringBack + 0.5) }
     var subgrades: [Double] { [centering, corners, edges, surface] }
+
+    /// Whitening on a corner or an edge, or a scratch, shows by eye. Almost every card from a pack is Near Mint.
+    var wear: Wear {
+        let worst = min(corners, edges)
+        if worst <= 7 || surface <= 6 { return .moderatelyPlayed }
+        if worst <= 8 || surface <= 7 { return .lightlyPlayed }
+        return .nearMint
+    }
+
+    init(cut: Cut, corners: Double, edges: Double, surface: Double) {
+        self.cut = cut
+        centeringFront = cut.frontGrade
+        centeringBack = cut.backGrade
+        self.corners = corners
+        self.edges = edges
+        self.surface = surface
+    }
+
+    /// A save from an older build has no cut. It gets a cut that gives the same centering subgrades.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        centeringFront = try c.decode(Double.self, forKey: .centeringFront)
+        centeringBack = try c.decode(Double.self, forKey: .centeringBack)
+        corners = try c.decode(Double.self, forKey: .corners)
+        edges = try c.decode(Double.self, forKey: .edges)
+        surface = try c.decode(Double.self, forKey: .surface)
+        cut = (try? c.decodeIfPresent(Cut.self, forKey: .cut)) ?? Cut.matching(front: centeringFront, back: centeringBack)
+    }
 
     /// A card straight from a pack.
     static func packFresh() -> Condition {
@@ -53,11 +196,9 @@ struct Condition: Codable, Hashable {
             }
             return 10
         }
-        let centering: [(Double, ClosedRange<Double>)] = [(0.55, 9.5...10), (0.33, 8.5...9), (0.12, 7...8)]
         let wear: [(Double, ClosedRange<Double>)] = [(0.72, 10...10), (0.23, 9...9.5), (0.05, 7.5...8.5)]
         let surface: [(Double, ClosedRange<Double>)] = [(0.62, 10...10), (0.27, 9...9.5), (0.11, 7...8.5)]
-        return Condition(centeringFront: pick(centering), centeringBack: pick(centering),
-                         corners: pick(wear), edges: pick(wear), surface: pick(surface))
+        return Condition(cut: .random(), corners: pick(wear), edges: pick(wear), surface: pick(surface))
     }
 
     /// A single bought from a stranger. It is a little worse on average.

@@ -70,6 +70,8 @@ struct RipCard: Identifiable, Hashable {
     let tilt = Double.random(in: -5...5)
     let print: CardPrint?
     let energy: EnergyType?
+    /// The card's condition from the moment the pack is built, so the rip screen and Inventory show the same card.
+    var condition = Condition.packFresh()
 
     var name: String { print?.name ?? "Basic \(energy?.rawValue ?? "") Energy" }
     var market: Double { print?.market ?? 0 }

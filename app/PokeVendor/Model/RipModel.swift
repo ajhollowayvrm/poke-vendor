@@ -137,6 +137,9 @@ final class RipModel {
         return faceUp ? (stack.first ?? pile.last) : pile.last
     }
 
+    /// The player's centering tool, for the cut reading.
+    var centeringTool: Int { store?.data.centeringTool ?? 0 }
+
     /// "Post this pull" shows only when the player has a social media account.
     var canPost: Bool { store?.hasAccount ?? false }
 

@@ -106,6 +106,33 @@ random spread: ±0.25 for PSA, ±0.35 for BGS, ±0.45 for CGC. PSA rounds
 to a whole grade. CGC and BGS round to a half grade. A BGS card with
 four 10s is a Black Label.
 
+**Wear.** A card is Lightly Played when a corner or an edge is 8 or
+less, or the surface is 7 or less. It is Moderately Played at 7 or less
+(corners, edges) or 6 or less (surface). About 9% of cards from a pack
+are Lightly Played. No card from a pack is Moderately Played.
+
+**Cut.** Each value is the share of the left (or top) border. The
+factory spread is a normal curve around 50/50: 4.2 points for front LR,
+3.2 for front TB, and 7 for each back value. About 74% of fronts get a
+centering subgrade of 10.
+
+| Front, worse side | Subgrade | Back, worse side | Subgrade |
+| --- | --- | --- | --- |
+| 55 or better | 10 | 65 or better | 10 |
+| 57 | 9.5 | 70 | 9.5 |
+| 60 | 9 | 75 | 9 |
+| 62 | 8.5 | 80 | 8.5 |
+| 65 | 8 | 85 | 8 |
+| 70 | 7 | 90 | 7 |
+| 75 | 6 | worse | 6 |
+| worse | 5 | | |
+
+| Centering tool | Cost | Front reading | Back reading |
+| --- | --- | --- | --- |
+| None (eyeball) | — | ±6 | Unknown |
+| Centering ruler | $40 | ±2 | ±6 |
+| Centering scanner | $200 | Exact | Exact |
+
 **A grade with no sales data** is worth a multiple of the raw price,
 with a floor. A 10 is 2.5 times raw, with a floor of $15 for PSA, $12
 for CGC, and $30 for BGS.

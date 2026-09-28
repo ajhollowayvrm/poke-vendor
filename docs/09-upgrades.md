@@ -30,6 +30,20 @@ See [10-grading.md](10-grading.md) for the grading subgrade-reveal
 upgrades (centering, corners, edges, surface) — the first concrete
 examples.
 
+## Centering tools
+
+The first grading upgrades that the game has. Each tool replaces the
+one before it, and the player buys them in order. The player buys the
+next tool from the Condition box of any raw card.
+
+| Tool | What it reads |
+| --- | --- |
+| Centering ruler | The front cut to about ±2 points, and the back cut to about ±6 points |
+| Centering scanner | The front cut and the back cut exactly |
+
+Costs: see [19-prototype-values.md](19-prototype-values.md#grading).
+How the cut works: see [10-grading.md](10-grading.md#cut-and-wear).
+
 ## Open questions
 
 - How upgrades are purchased (cash only, or gated by other currencies

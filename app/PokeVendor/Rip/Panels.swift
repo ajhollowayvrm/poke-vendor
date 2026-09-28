@@ -60,6 +60,8 @@ struct TopBar: View {
 
 struct CardInfo: View {
     let card: RipCard?
+    /// The player's centering tool, for the cut reading.
+    var tool = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -81,6 +83,13 @@ struct CardInfo: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                             .lineLimit(1)
+                        if card.print != nil {
+                            HStack(spacing: 8) {
+                                WearPill(wear: card.condition.wear)
+                                CutLine(reading: .front(card.condition.cut, tool: tool))
+                            }
+                            .padding(.top, 2)
+                        }
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 0) {
