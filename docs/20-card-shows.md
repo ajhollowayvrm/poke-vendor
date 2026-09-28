@@ -21,6 +21,11 @@ Saturdays.
 
 - The same day always gives the same show, so the calendar does not
   change when the player looks again.
+- **The vendor kit** is an upgrade that the player must own to book a
+  table: a table cover, display cases, card stands, and a card reader,
+  for $200 (see [09-upgrades.md](09-upgrades.md#vendor-kit)). Without
+  it, the player can only walk in and buy. The show's detail screen
+  sells it.
 - **Booking** pays the table fee at once. There is no refund.
 - **A missed day** at a booked show gives no refund. The morning report
   says that the table stayed empty.

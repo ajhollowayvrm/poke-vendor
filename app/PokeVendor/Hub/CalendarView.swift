@@ -149,7 +149,7 @@ struct ShowDetailView: View {
                     DetailBox(title: "The show") {
                         row("Days", show.size.days == 2 ? "2 (Saturday and Sunday)" : "1 (Saturday)")
                         row("Doors", "\(GameStore.clock(Balance.showOpen)) – \(GameStore.clock(Balance.showClose))")
-                        row("Buyers at a table", "About \(Int(show.size.buyersPerDay)) a day")
+                        row("Visitors at a table", "About \(Int(show.size.buyersPerDay)) a day")
                         row("Table fee", money(show.size.tableFee) + (show.size.days == 2 ? " for both days" : ""))
                         row("Walk-in entry", money(show.size.entryFee) + " a day")
                         row("Booking closes", show.lastBookingDay < store.day ? "Closed"
@@ -158,6 +158,23 @@ struct ShowDetailView: View {
                     if show.booked {
                         Label("Your table is booked.", systemImage: "checkmark.seal.fill")
                             .foregroundStyle(Theme.green)
+                    } else if !store.data.vendorKit && show.lastBookingDay >= store.day {
+                        DetailBox(title: "Vendor kit") {
+                            Text("To sell at a show, you need a vendor kit. Without it, you walk in as a buyer only.")
+                                .font(.subheadline)
+                            Text(Balance.vendorKitDetail).font(.caption).foregroundStyle(Theme.muted)
+                            Button { store.buyVendorKit() } label: {
+                                Text("Buy the vendor kit · \(money(Balance.vendorKitCost))").frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(Theme.cyan)
+                            .foregroundStyle(.black)
+                            .controlSize(.large)
+                            .disabled(!store.canAfford(Balance.vendorKitCost))
+                            if !store.canAfford(Balance.vendorKitCost) {
+                                Text("You have \(money(store.cash)).").font(.caption).foregroundStyle(Theme.orange)
+                            }
+                        }
                     } else if show.lastBookingDay >= store.day {
                         Button { store.bookTable(show.id) } label: {
                             Text("Book a table · \(money(show.size.tableFee))").frame(maxWidth: .infinity)
@@ -188,9 +205,9 @@ struct ShowDetailView: View {
                         Text("The show takes the rest of the day.").font(.caption).foregroundStyle(Theme.muted)
                     }
                     DetailBox(title: "How a show works") {
-                        Text("With a table, you pick what to bring and set your prices. Buyers come up one at a time. Each one offers cash, or sometimes a trade. You accept, counter, or decline. The condition and the cut change what they pay.")
+                        Text("With a table (it needs the vendor kit), you pick what to bring and set your prices. People come up one at a time to buy, to trade, or to sell to you. You accept, counter, or decline. The condition and the cut change what they pay.")
                             .font(.subheadline)
-                        Text("You can walk the floor for an hour to buy from other vendors. Buyers who come to your table while you are away leave.")
+                        Text("On the floor, dealers, shops, and collectors sell singles, slabs, sealed, and mystery packs. Looking over a table takes about 15 minutes, and people who come to your table while you are away leave.")
                             .font(.subheadline)
                         if daysOut > 0 {
                             Text("Items that are kept, listed, shipping, or at a grader stay home.")

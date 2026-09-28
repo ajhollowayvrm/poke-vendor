@@ -46,6 +46,14 @@ Without a tool, the cut shows only as words, for example "Off center".
 Costs: see [19-prototype-values.md](19-prototype-values.md#grading).
 How the cut works: see [10-grading.md](10-grading.md#cut-and-wear).
 
+## Vendor kit
+
+A table cover, display cases, card stands, and a card reader. The
+player must own it to book a table at a card show and sell there.
+Without it, the player can only walk in and buy on the floor. It costs
+$200, and the player buys it from the detail screen of any card show
+(see [20-card-shows.md](20-card-shows.md#shows-on-the-calendar)).
+
 ## Open questions
 
 - How upgrades are purchased (cash only, or gated by other currencies

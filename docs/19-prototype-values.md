@@ -152,6 +152,7 @@ for CGC, and $30 for BGS.
 | Sponsor offers | From tier 1: a 12% chance each day. The pay is 1.5% of followers for each paid post, $25 minimum, for 1 to 3 posts in 5 to 10 days. An offer goes away after 5 days |
 | For-sale post | No fees, and the player pays shipping. The daily sale chance grows with followers up to 5,000 and falls as the price goes above market |
 | Analytics upgrade | $150 |
+| Vendor kit (needed to book a show table) | $200 |
 
 Live streams, follower tips, and show promos are not built.
 

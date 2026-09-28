@@ -20,6 +20,9 @@ enum Balance {
     ]
 
     // Card shows (docs/20-card-shows.md)
+    /// The upgrade that lets the player sell at a show. Without it, the player can only walk in and buy.
+    static let vendorKitCost = 200.0
+    static let vendorKitDetail = "A table cover, display cases, card stands, and a card reader. You need it to book a table at a card show."
     static let localTableFee = 40.0
     static let regionalTableFee = 150.0
     /// How far ahead the calendar shows card shows.

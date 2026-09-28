@@ -296,6 +296,7 @@ struct HubView: View {
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
             case "calendar": nav.path = [.calendar]
+            case "nextshow": nav.path = [.calendar] + (store.upcomingShows.first(where: { $0.startDay > store.day }).map { [.show($0.id)] } ?? [])
             case "sealed": nav.path = [.inventory(.sealed)]
             default: break
             }

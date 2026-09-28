@@ -96,7 +96,15 @@ extension GameStore {
     var showToday: CardShow? { data.shows.first { $0.covers(data.day) } }
 
     func canBook(_ show: CardShow) -> Bool {
-        !show.booked && data.day <= show.lastBookingDay && canAfford(show.size.tableFee)
+        data.vendorKit && !show.booked && data.day <= show.lastBookingDay && canAfford(show.size.tableFee)
+    }
+
+    func buyVendorKit() {
+        guard !data.vendorKit, canAfford(Balance.vendorKitCost) else { return }
+        addLedger(-Balance.vendorKitCost, .upgrade, "Vendor kit")
+        data.vendorKit = true
+        log("Bought a vendor kit. You can book a table at card shows now.", cash: -Balance.vendorKitCost)
+        save()
     }
 
     func bookTable(_ id: UUID) {

@@ -31,6 +31,8 @@ struct GameData: Codable {
     /// Card shows on the calendar (docs/20-card-shows.md).
     var shows: [CardShow] = []
     var showsPlannedThrough = -1
+    /// The vendor kit: the upgrade that lets the player book a table at a card show.
+    var vendorKit = false
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -63,6 +65,7 @@ extension GameData {
         centeringTool = v(.centeringTool, centeringTool)
         shows = v(.shows, shows)
         showsPlannedThrough = v(.showsPlannedThrough, showsPlannedThrough)
+        vendorKit = v(.vendorKit, vendorKit)
     }
 }
 
