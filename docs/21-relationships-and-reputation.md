@@ -2,8 +2,7 @@
 
 **Status: built.** The numbers are starting values for balancing. The
 code is in `app/PokeVendor/Model/Relationships.swift`, the Contacts
-screen is on the hub's Reputation tile, and the Test menu has
-**Relationships** tools.
+screen is on the hub's Reputation tile.
 
 **Also built:** selling fakes (see
 [14-counterfeit-risk.md](14-counterfeit-risk.md)) and regulars at meets

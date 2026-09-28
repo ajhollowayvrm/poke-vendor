@@ -218,7 +218,6 @@ A set can have rare special packs that replace the slot map
 - The summary shows the pack's title, and it waits for the moment to
   end.
 - **Skip pack** plays no moment.
-- The Test menu has **Rip now: special packs** to open one of each.
 
 ### Condition on the reveal
 
