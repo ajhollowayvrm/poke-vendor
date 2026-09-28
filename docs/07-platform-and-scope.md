@@ -51,7 +51,7 @@ set data that the app reads, and `python3 tools/export/catalog.py`
 writes the sealed product catalog with each product's pack mix and
 promo cards.
 
-The Test menu on the hub (the hammer) has a shortcut into every system.
+The hub has no test menu.
 `-soak <days>` as a launch argument plays that many days by itself and
 prints a report to the console.
 

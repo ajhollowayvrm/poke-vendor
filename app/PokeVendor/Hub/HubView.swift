@@ -40,7 +40,6 @@ struct HubView: View {
                     Button { nav.path.append(.settings) } label: { Image(systemName: "gearshape") }
                         .accessibilityLabel("Settings")
                 }
-                ToolbarItem(placement: .topBarTrailing) { testMenu }
             }
             .appDestinations()
         }
@@ -191,55 +190,6 @@ struct HubView: View {
             return "Nothing today. Next: \(sale.name), \(days == 1 ? "tomorrow" : "in \(days) days")."
         }
         return "Nothing today. The calendar has the week."
-    }
-
-    private var testEventMenus: some View {
-        Group {
-            Menu("Events") {
-                Button("Garage sale now") {
-                    let sale = store.addTestSale(.garage)
-                    if let session = store.startSale(sale) { nav.encounter = EncounterSession(session: session) }
-                }
-                Button("Estate sale now (day 1)") {
-                    let sale = store.addTestSale(.estate)
-                    if let session = store.startSale(sale) { nav.encounter = EncounterSession(session: session) }
-                }
-                Button("Follower tip") { store.addTestTip() }
-                Button("Restock at Target today") { store.testRestockToday(.target) }
-            }
-            Menu("Opportunity") {
-                ForEach(OpportunityKind.allCases, id: \.self) { kind in
-                    Button(kind.label) { store.addTestOpportunity(kind) }
-                }
-            }
-            Menu("Social") {
-                Button("Add 1,000 followers (and an account)") { store.testFollowers(1_000) }
-                Button("Add 10,000 followers") { store.testFollowers(10_000) }
-                Button("Stream now with 3 test packs") {
-                    store.testFollowers(0)
-                    var ids: [UUID] = []
-                    for _ in 0..<3 {
-                        store.addTestPack()
-                        if let id = store.data.sealed.last?.id { ids.append(id) }
-                    }
-                    if let session = store.startStream(hours: 2, itemIDs: ids, scheduled: false) { nav.stream = StreamCover(session: session) }
-                }
-            }
-            Menu("Job and trade") {
-                Button("Add 8 weeks at this job") { store.testWeeksAtJob() }
-                Button("Invite to a case split") { store.testSplitInvite() }
-                Button("Facebook offer on a card") { store.testFBOffer() }
-                Button("Stay up late (11 PM now)") { store.data.hour = Balance.dayEnd; store.save() }
-            }
-            Menu("Counterfeits") {
-                ForEach(FakeTier.allCases, id: \.self) { tier in
-                    Button("Add a fake card · \(tier.label.lowercased())") { store.addTestFake(tier) }
-                }
-                Button("Add a resealed ETB") { store.addTestResealed() }
-                Button("Authentication returns tomorrow") { store.testAuthenticationTomorrow() }
-                Button("Give the authentication tool") { store.data.upgrades.append(Upgrade.authTool.rawValue); store.save() }
-            }
-        }
     }
 
     private var tiles: some View {
@@ -452,81 +402,6 @@ struct HubView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .background(Theme.background)
-    }
-
-    /// The products to test: collection boxes and packs with each era's pack trick.
-    private static let testProducts: [(section: String, items: [(label: String, id: String)])] = [
-        ("Collection boxes", [
-            ("Surging Sparks Checklane Blister · pack + promo", "565638"),
-            ("Prismatic Mini Tin [Umbreon] · 2 packs", "593459"),
-            ("Ogerpon ex Premium Collection · 4 sets", "576482"),
-            ("Houndstone ex Box · 2 sets", "561521"),
-            ("Prismatic Surprise Box · 1 random promo", "593466"),
-            ("Prismatic ETB · 9 packs + promo", "593355"),
-            ("Prismatic Super-Premium · 15 packs", "622770"),
-        ]),
-        ("Pack tricks", [
-            ("Prismatic pack · trick 1", "593294"),
-            ("Evolving Skies pack · trick 4", "244337"),
-            ("Cosmic Eclipse pack · trick 4", "199263"),
-            ("Base Set pack · trick 3", "138130"),
-            ("Evolving Skies ETB · 8 packs", "242434"),
-        ]),
-    ]
-
-    private var testMenu: some View {
-        Menu {
-            ForEach(Self.testProducts, id: \.section) { group in
-                Menu("Rip now: \(group.section.lowercased())") {
-                    ForEach(group.items, id: \.id) { item in
-                        Button(item.label) {
-                            if let added = store.addTestProduct(item.id) { nav.startRip([added]) }
-                        }
-                    }
-                }
-            }
-            Menu("Rip now: special packs") {
-                Button("Prismatic demigod pack · 3 SIRs") { ripSpecial("demigod") }
-                Button("Prismatic god pack · 10 hits") { ripSpecial("god") }
-            }
-            Menu("Add to Inventory") {
-                ForEach(Self.testProducts, id: \.section) { group in
-                    Section(group.section) {
-                        ForEach(group.items, id: \.id) { item in
-                            Button(item.label) { store.addTestProduct(item.id) }
-                        }
-                    }
-                }
-            }
-            Menu("Card show today") {
-                Button("Local show, table booked") { store.addTestShow(.local) }
-                Button("Regional show, table booked") { store.addTestShow(.regional) }
-            }
-            Menu("Relationships") {
-                Button("Make every contact Regular") { store.testMakeRegular() }
-                Button("Add 100 reputation") { store.addReputation(100); store.save() }
-                Button("Add 350 reputation") { store.addReputation(350); store.save() }
-            }
-            Menu("Meet now") {
-                ForEach(MeetKind.allCases, id: \.self) { kind in
-                    Button(kind.label) {
-                        if let session = store.testStartMeet(kind) { nav.encounter = EncounterSession(session: session) }
-                    }
-                }
-            }
-            testEventMenus
-            Divider()
-            Button("Add $500 test cash") { store.addTestCash(500) }
-            Button("Start a new run", role: .destructive) { store.startRun() }
-        } label: {
-            Label("Test", systemImage: "hammer")
-        }
-    }
-
-    /// Rips one Prismatic Evolutions pack that is sure to be this special pack kind.
-    private func ripSpecial(_ kind: String) {
-        RipModel.forcedSpecial = kind
-        if let added = store.addTestProduct("593294") { nav.startRip([added]) }
     }
 
     #if DEBUG
