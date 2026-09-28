@@ -49,3 +49,82 @@ extension Balance {
     static let fastStepSeconds = 0.45
     static let siftStepSeconds = 0.08
 }
+
+/// The rarity ladder of a set: every slot entry, from the most common to the rarest (docs/18, The stop rule).
+struct RarityLadder {
+    /// The entries in order, most common first.
+    let entries: [String]
+    /// The entries that each print can come out as, by print index.
+    let byPrint: [Int: Set<String>]
+
+    init(set: SetData) {
+        var copies: [String: Double] = [:]
+        var order: [String] = []
+        var byPrint: [Int: Set<String>] = [:]
+        for slot in set.slots {
+            let total = slot.outcomes.reduce(0) { $0 + $1.odds }
+            for outcome in slot.outcomes {
+                if copies[outcome.entry] == nil { order.append(outcome.entry) }
+                copies[outcome.entry, default: 0] += Double(slot.count) * (total > 0 ? outcome.odds / total : 0)
+                for i in outcome.prints { byPrint[i, default: []].insert(outcome.entry) }
+            }
+        }
+        entries = order.sorted { (copies[$0] ?? 0, $1) > (copies[$1] ?? 0, $0) }
+        self.byPrint = byPrint
+    }
+
+    /// This entry and every rarer one after it.
+    func orHigher(_ entry: String) -> [String] {
+        guard let i = entries.firstIndex(of: entry) else { return [entry] }
+        return Array(entries[i...])
+    }
+}
+
+@MainActor
+extension SetLibrary {
+    private static var ladders: [String: RarityLadder] = [:]
+
+    static func ladder(_ slug: String) -> RarityLadder {
+        if let l = ladders[slug] { return l }
+        let l = RarityLadder(set: set(slug))
+        ladders[slug] = l
+        return l
+    }
+
+    /// The index of a print in its set, for the ladder.
+    static func printIndex(_ print: CardPrint, in slug: String) -> Int? {
+        set(slug).prints.firstIndex { $0.num == print.num && $0.variant == print.variant }
+    }
+}
+
+@MainActor
+extension GameStore {
+    func setRipMode(_ mode: RipMode) {
+        data.settings.ripMode = mode
+        save()
+    }
+
+    func setStopDollar(_ dollar: Double?) {
+        data.settings.stopRule.dollar = dollar
+        save()
+    }
+
+    func setStopEntries(_ entries: [String], for slug: String) {
+        if entries.isEmpty { data.settings.stopRule.rarities[slug] = nil } else { data.settings.stopRule.rarities[slug] = entries }
+        save()
+    }
+
+    /// True when a card stops Fast and Sift: the dollar amount, or a rarity entry picked for its set. With no
+    /// entries picked for the set, a hit stops the rip (docs/18, The stop rule).
+    func stops(_ card: RipCard, in slug: String) -> Bool {
+        guard let print = card.print else { return false }
+        let rule = data.settings.stopRule
+        if let dollar = rule.dollar, card.market >= dollar { return true }
+        let picked = rule.entries(for: slug)
+        // No rarities picked for this set: a hit stops the rip.
+        if picked.isEmpty { return card.isHit }
+        guard let i = SetLibrary.printIndex(print, in: slug) else { return false }
+        let entries = SetLibrary.ladder(slug).byPrint[i] ?? []
+        return !entries.isDisjoint(with: picked)
+    }
+}

@@ -17,6 +17,13 @@ extension GameStore {
         for o in data.opportunities where o.day == day && !o.answered && o.postedDay <= data.day {
             out.append(CalendarEntry(kind: .meetup, title: o.title, detail: o.hours > 0 ? formatHours(o.hours) : "Answer from the hub"))
         }
+        for m in data.meetups where m.day == day && !m.done {
+            out.append(CalendarEntry(kind: .meetup, title: m.isPickup ? "Pick up \(m.name)" : "Meet \(m.who) · \(m.name)",
+                                     detail: "Facebook Marketplace · 1 hour\(m.isPickup ? "" : " · \(money(m.price)) cash")"))
+        }
+        if data.jobState.timeOffBooked.contains(day) {
+            out.append(CalendarEntry(kind: .timeOff, title: "Time off", detail: "Booked · paid"))
+        }
         return out
     }
 }

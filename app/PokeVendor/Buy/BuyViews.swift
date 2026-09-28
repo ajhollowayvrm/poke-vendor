@@ -23,20 +23,16 @@ struct BuyView: View {
                 } else {
                     VStack(spacing: 0) {
                         ForEach(Storefront.allCases, id: \.self) { s in
-                            Button { nav.path.append(.store(s)) } label: {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 3) {
-                                        Text(s.rawValue).font(.headline)
-                                        Text(status(s)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                                }
-                                .padding(14)
-                                .contentShape(Rectangle())
+                            channelRow(title: s.rawValue, detail: status(s)) { nav.path.append(.store(s)) }
+                        }
+                        // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
+                        if store.wholesaleOpen {
+                            channelRow(title: "Distributor", detail: "Cases at \(Int(Balance.wholesaleDiscount * 100))% of MSRP · \(store.wholesaleOffers.count) this week") {
+                                nav.path.append(.wholesale)
                             }
-                            .buttonStyle(.plain)
-                            .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+                            channelRow(title: "Case splits", detail: store.openSplits.isEmpty ? "No invites right now" : "\(store.openSplits.count) open") {
+                                nav.path.append(.caseSplits)
+                            }
                         }
                     }
                     .background(Theme.surface)
@@ -52,6 +48,23 @@ struct BuyView: View {
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Buy")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func channelRow(title: String, detail: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title).font(.headline)
+                    Text(detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .padding(14)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
     }
 
     private func status(_ s: Storefront) -> String {
@@ -142,7 +155,9 @@ struct StoreView: View {
     private func confirmText(_ offer: StoreOffer) -> String {
         var parts = ["Market price \(money(offer.market))."]
         if offer.shipping > 0 { parts.append("Shipping \(money(offer.shipping)).") }
-        if offer.pickup {
+        if let day = offer.pickupDay, day > store.day {
+            parts.append("The seller can meet on day \(day + 1). You pay now, and the pickup takes 1 hour that day.")
+        } else if offer.pickup {
             if let start = store.slot(for: Balance.facebookPickupHours) {
                 parts.append("The pickup takes 1 hour, starting at \(GameStore.clock(start)).")
             } else {
@@ -164,12 +179,13 @@ struct StoreView: View {
             message = store.attemptDrop(offer) ? "You got it! It arrives in \(offer.deliveryDays) days." : "Missed. The drop sold out before your checkout went through."
             return
         }
-        if offer.pickup && store.slot(for: Balance.facebookPickupHours) == nil {
+        let later = (offer.pickupDay ?? store.day) > store.day
+        if offer.pickup && !later && store.slot(for: Balance.facebookPickupHours) == nil {
             message = "You have no free hour left today for this pickup."
             return
         }
         if store.buy(offer) {
-            message = offer.pickup ? "Picked up. It is in your Inventory now." : "Bought. It arrives in \(offer.deliveryDays) days."
+            message = later ? "Paid. The pickup is on your calendar." : offer.pickup ? "Picked up. It is in your Inventory now." : "Bought. It arrives in \(offer.deliveryDays) days."
         }
     }
 }

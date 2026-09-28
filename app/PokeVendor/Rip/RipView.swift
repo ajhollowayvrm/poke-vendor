@@ -115,6 +115,9 @@ struct RipView: View {
     @State private var skipAfterOpen = false
     /// The resealed product banner, while it shows.
     @State private var resealedShown = false
+    /// The runner for Fast and Sift.
+    @State private var autoTask: Task<Void, Never>?
+    @State private var stopRuleShown = false
     /// The info panel, the pile label, and the glow wait until a card has turned face up.
     @State private var infoCard: RipCard?
     @State private var pileTop: RipCard?
@@ -305,6 +308,20 @@ struct RipView: View {
             #if DEBUG
             runDemo()
             #endif
+            if model.mode != .normal { runAuto() }
+        }
+        .onDisappear { autoTask?.cancel() }
+        .onChange(of: model.mode) { _, mode in
+            model.resume()
+            if mode == .normal { autoTask?.cancel() } else { runAuto() }
+        }
+        .onChange(of: model.paused) { _, paused in
+            if !paused, model.mode != .normal { runAuto() }
+        }
+        .sheet(isPresented: $stopRuleShown) {
+            if let slug = model.currentPack?.setSlug, let store = model.store {
+                StopRuleSheet(slug: slug).environment(store)
+            }
         }
         .onChange(of: model.lastReveal) { _, reveal in
             guard let card = reveal?.card, card.hitTier >= .medium else { return }
@@ -340,6 +357,8 @@ struct RipView: View {
                 settleReveal()
             }
             guard phase == .done else { return }
+            // In Fast and Sift the next pack comes by itself. The summary shows after the last one.
+            if model.mode != .normal, model.hasNextPack, !model.paused { return }
             Task {
                 try? await Task.sleep(for: .milliseconds(700))
                 // The summary waits for the demigod or god pack moment to end.
@@ -426,7 +445,7 @@ struct RipView: View {
 
     private var bottomPanel: some View {
         VStack(spacing: 10) {
-            if model.phase == .sealed {
+            if model.phase == .sealed, model.mode == .normal {
                 Text("Tap or swipe across the top of the pack to open it.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
@@ -434,6 +453,7 @@ struct RipView: View {
             } else {
                 CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
             }
+            modeControl
             HStack(spacing: 10) {
                 Button { flipStack() } label: {
                     VStack(spacing: 1) {
@@ -466,6 +486,113 @@ struct RipView: View {
         }
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
+    }
+
+    /// The rip mode for this rip, and the stop rule (docs/18-ripping.md, Rip modes). Sift shows on a stream,
+    /// but it is off there.
+    private var modeControl: some View {
+        HStack(spacing: 8) {
+            Picker("Mode", selection: Bindable(model).mode) {
+                ForEach(RipMode.allCases, id: \.self) { mode in
+                    Text(mode.label).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .disabled(false)
+            .overlay {
+                if !model.allowedModes.contains(.sift) {
+                    // Sift is off on a stream. The overlay takes the taps on its third of the control.
+                    GeometryReader { geo in
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .frame(width: geo.size.width / 3)
+                            .position(x: geo.size.width * 5 / 6, y: geo.size.height / 2)
+                            .onTapGesture { model.note = "Sift is off on a live stream. Viewers want to see the cards." }
+                    }
+                }
+            }
+            if model.mode != .normal {
+                Button(model.paused ? "Continue" : "Pause") {
+                    if model.paused { model.resume() } else { model.paused = true; autoTask?.cancel() }
+                }
+                .buttonStyle(.bordered)
+                .tint(Theme.cyan)
+            }
+            Button { stopRuleShown = true } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
+                .buttonStyle(.bordered)
+                .tint(Theme.cyan)
+                .accessibilityLabel("Stop rule")
+        }
+        .overlay(alignment: .top) {
+            if let note = model.note {
+                Text(note).font(.caption).foregroundStyle(Theme.orange).offset(y: -22)
+                    .task(id: note) {
+                        try? await Task.sleep(for: .seconds(2.5))
+                        model.note = nil
+                    }
+            }
+        }
+    }
+
+    /// Fast and Sift: the pack opens by itself, the cards advance, and the rip stops on the stop rule
+    /// (docs/18-ripping.md, Fast and Sift). A resealed pack always stops.
+    private func runAuto() {
+        autoTask?.cancel()
+        autoTask = Task { @MainActor in
+            while !Task.isCancelled, model.mode != .normal, !model.paused {
+                switch model.phase {
+                case .unbox:
+                    model.openProduct()
+                    try? await Task.sleep(for: .milliseconds(400))
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { model.startPacks() }
+                    try? await Task.sleep(for: .milliseconds(500))
+                case .sealed:
+                    if model.mode == .sift {
+                        let stopped = model.sift()
+                        try? await Task.sleep(for: .seconds(Balance.siftStepSeconds * Double(model.allCards.count)))
+                        if stopped != nil { return }
+                    } else {
+                        tear()
+                        while model.phase == .opening, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(100)) }
+                        try? await Task.sleep(for: .milliseconds(300))
+                    }
+                case .opening:
+                    try? await Task.sleep(for: .milliseconds(100))
+                case .open:
+                    if model.mode == .sift {
+                        if model.sift() != nil { return }
+                        continue
+                    }
+                    // The pack trick always plays in Fast (docs/18).
+                    if !model.trickDone, model.stack.count > 1 {
+                        moveToBack()
+                        while (model.tuckingID != nil || !model.faceUp || flipping), !Task.isCancelled {
+                            try? await Task.sleep(for: .milliseconds(120))
+                        }
+                        try? await Task.sleep(for: .milliseconds(300))
+                        continue
+                    }
+                    if !model.faceUp { flipStack(force: true) }
+                    while flipping, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(80)) }
+                    guard let front = model.stack.first else { continue }
+                    if front.print != nil, model.shouldStop(front) {
+                        model.stop(on: front)
+                        Haptics.tap(.medium)
+                        return
+                    }
+                    withAnimation(.spring(response: 0.45, dampingFraction: 0.84)) { model.sendFrontToPile() }
+                    try? await Task.sleep(for: .seconds(Balance.fastStepSeconds))
+                case .done:
+                    guard model.hasNextPack else { return }
+                    try? await Task.sleep(for: .milliseconds(model.mode == .sift ? 250 : 900))
+                    while celebration != nil, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(200)) }
+                    while resealedShown, !Task.isCancelled { try? await Task.sleep(for: .milliseconds(200)) }
+                    withAnimation(.easeInOut(duration: 0.25)) { showSummary = false }
+                    nextPack()
+                    try? await Task.sleep(for: .milliseconds(300))
+                }
+            }
+        }
     }
 
     /// Turns the whole stack over. The order reverses while the stack is edge-on, so no card jumps.
@@ -565,6 +692,11 @@ struct RipView: View {
                 let distance = hypot(value.translation.width, value.translation.height)
                 if peeking {
                     withAnimation(.easeIn(duration: 0.18)) { peeking = false }
+                } else if model.mode != .normal, !model.paused {
+                    // A tap pauses Fast and Sift (docs/18, Picking the mode).
+                    autoTask?.cancel()
+                    model.paused = true
+                    Haptics.tap()
                 } else if distance < 14 || value.translation.height < -50 {
                     sendFront()
                 }

@@ -17,6 +17,11 @@ enum AppRoute: Hashable {
     case show(UUID)
     case contacts
     case opportunity(UUID)
+    case settings
+    case job
+    case upgrades
+    case wholesale
+    case caseSplits
 }
 
 struct StoreRunSession: Identifiable {
@@ -82,6 +87,11 @@ extension View {
             case .show(let id): ShowDetailView(id: id)
             case .contacts: ContactsView()
             case .opportunity(let id): OpportunityView(id: id)
+            case .settings: SettingsView()
+            case .job: JobView()
+            case .upgrades: UpgradesView()
+            case .wholesale: WholesaleView()
+            case .caseSplits: CaseSplitsView()
             }
         }
     }

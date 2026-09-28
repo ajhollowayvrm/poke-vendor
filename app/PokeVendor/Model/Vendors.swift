@@ -155,6 +155,8 @@ struct VendorItem: Identifiable, Hashable {
     var fake: FakeTier?
     /// The player's look by eye caught something.
     var looksOff = false
+    /// A recurring vendor shows it to the player before the public table (docs/04, reputation Trusted).
+    var firstLook = false
 
     var slug: String? {
         switch goods {

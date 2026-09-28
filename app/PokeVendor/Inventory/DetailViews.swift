@@ -247,9 +247,13 @@ struct ConditionBox: View {
                                : "Read with your \(centeringToolName(tool).lowercased()).")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
-                row("Corners", c.corners <= 8 ? "Visible whitening" : "Look sharp · fine wear needs a loupe")
-                row("Edges", c.edges <= 8 ? "Visible chips" : "Look clean · micro-whitening needs a loupe")
-                row("Surface", c.surface <= 7 ? "A visible scratch" : "Unknown without a raking light")
+                // The reveal tools give the number (docs/10-grading.md, Eyeball vs. paid reveal vs. permanent upgrade).
+                row("Corners", store.hasUpgrade(.cornerLoupe) ? String(format: "%.1f · loupe", c.corners)
+                    : c.corners <= 8 ? "Visible whitening" : "Look sharp · fine wear needs a loupe")
+                row("Edges", store.hasUpgrade(.edgeLight) ? String(format: "%.1f · edge light", c.edges)
+                    : c.edges <= 8 ? "Visible chips" : "Look clean · micro-whitening needs a loupe")
+                row("Surface", store.hasUpgrade(.surfaceLamp) ? String(format: "%.1f · raking lamp", c.surface)
+                    : c.surface <= 7 ? "A visible scratch" : "Unknown without a raking light")
                 if let next = store.nextCenteringTool {
                     Button {
                         store.buyCenteringTool()

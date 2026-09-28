@@ -34,7 +34,9 @@ final class RipModel {
     private(set) var queue: [QueuedPack]
     let ripID = UUID()
     private(set) var packIndex = 0
-    private let store: GameStore?
+    let store: GameStore?
+    /// A short note under the mode control, for example why Sift is off.
+    var note: String?
     /// The value and the cost of the packs that are done.
     private var doneValue: Double = 0
     private var donePaid: Double = 0
@@ -62,7 +64,15 @@ final class RipModel {
     /// Tests only: the next pack is this special pack kind.
     static var forcedSpecial: String?
     /// The rip modes this rip allows. A live stream allows Normal and Fast only (docs/18, Ripping on a live stream).
-    var allowedModes: [RipMode] = RipMode.allCases
+    var allowedModes: [RipMode] = RipMode.allCases {
+        didSet { if !allowedModes.contains(mode) { mode = .normal } }
+    }
+    /// The mode for this rip. It starts from Settings, and the player can change it during the rip.
+    var mode: RipMode
+    /// A tap in Fast or Sift pauses. The player changes the mode or continues.
+    var paused = false
+    /// The card that the stop rule stopped on, so the rip does not stop on it twice.
+    private(set) var stoppedID: UUID?
     /// The pack in hand came from a resealed product: only filler inside (docs/14-counterfeit-risk.md).
     private(set) var resealed = false
     /// Changes when a resealed pack opens, so the screen shows the banner once for each pack.
@@ -79,6 +89,7 @@ final class RipModel {
         }
         self.store = store
         faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
+        mode = store?.data.settings.ripMode ?? .normal
         #if DEBUG
         // Screenshot aid: `-special god` or `-special demigod` makes the first pack special.
         let args = ProcessInfo.processInfo.arguments
@@ -203,6 +214,7 @@ final class RipModel {
         seen = []
         tuckingID = nil
         trickDone = false
+        stoppedID = nil
         packExtras = []
         showcaseID = nil
         lastReveal = nil
@@ -305,6 +317,50 @@ final class RipModel {
     private func markFrontSeen() {
         guard faceUp, phase == .open || phase == .done, let front = stack.first else { return }
         reveal(front)
+    }
+
+    // MARK: - Fast and Sift
+
+    /// True when Fast or Sift must stop on this card (docs/18, The stop rule). A resealed pack always stops.
+    func shouldStop(_ card: RipCard) -> Bool {
+        if card.id == stoppedID { return false }
+        if resealed { return true }
+        guard let slug = currentPack?.setSlug else { return card.isHit }
+        return store?.stops(card, in: slug) ?? card.isHit
+    }
+
+    /// Stops on the card in hand: it stays on top, face up, and the rip waits for the player.
+    func stop(on card: RipCard) {
+        stoppedID = card.id
+        paused = true
+        if !faceUp { showcaseID = card.id }
+        reveal(card)
+    }
+
+    func resume() {
+        paused = false
+    }
+
+    /// Sift: no animation. The pack opens, the cards go to the pile in order, and the rip stops only on a card
+    /// that matches the stop rule. Returns the card it stopped on, or nil when the pack is done.
+    @discardableResult
+    func sift() -> RipCard? {
+        if phase == .unbox {
+            openProduct()
+            startPacks()
+        }
+        if phase == .sealed { startOpening() }
+        if phase == .opening { phase = .open }
+        if !faceUp { setFaceUp(true) }
+        trickDone = true
+        while phase == .open, let front = stack.first {
+            if front.print != nil, shouldStop(front) {
+                stop(on: front)
+                return front
+            }
+            sendFrontToPile()
+        }
+        return nil
     }
 
     private func reveal(_ card: RipCard) {

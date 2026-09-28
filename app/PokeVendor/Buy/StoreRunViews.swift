@@ -120,6 +120,7 @@ struct StoreRunView: View {
                 }
                 if s.isGameShop {
                     SavedBox(shop: s, useCredit: useCredit)
+                    ConsignBox(shop: s)
                     BuyInBox(shop: s, useCredit: useCredit)
                 }
                 DetailBox(title: "The shelf") {
@@ -269,6 +270,7 @@ struct ShopView: View {
                 }
                 SavedBox(shop: shop, useCredit: useCredit)
                 BuyInBox(shop: shop, useCredit: useCredit)
+                ConsignBox(shop: shop)
                 DetailBox(title: "Display case · changes weekly") {
                     Toggle("Pay with store credit", isOn: $useCredit).font(.subheadline)
                     ForEach(Market.displayCase(shop, day: store.day, discount: store.shopDiscount(shop))) { single in
@@ -355,6 +357,38 @@ struct BuyInBox: View {
                 }
             }
         }
+    }
+}
+
+/// Consignment in the shop's display case, at Regular and up (docs/15-selling.md, The local game shop).
+struct ConsignBox: View {
+    @Environment(GameStore.self) private var store
+    let shop: LocalStore
+    @State private var sheet = false
+
+    var body: some View {
+        let mine = store.consignedCards.filter { if case .consigned(let c) = $0.status { return c.shop == shop }; return false }
+        DetailBox(title: "Consignment") {
+            if store.canConsign(at: shop) {
+                Text("Your cards in the shop's case, at a better price than the buylist. The shop takes \(Int(store.consignCut(at: shop) * 100))%, and a sale is slow.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+                ForEach(mine) { card in
+                    if case .consigned(let c) = card.status {
+                        HStack {
+                            Text(card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name).font(.subheadline).lineLimit(1)
+                            Spacer()
+                            Text("\(money(c.price)) · day \(store.day - c.dayListed + 1) of \(Balance.consignDays)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            Button("Take back") { store.endConsignment(card.id) }.buttonStyle(.bordered).controlSize(.small)
+                        }
+                    }
+                }
+                Button("Consign cards") { sheet = true }
+                    .buttonStyle(.bordered)
+            } else {
+                Text("Consignment opens at Regular standing (30 points).").font(.caption).foregroundStyle(Theme.muted)
+            }
+        }
+        .sheet(isPresented: $sheet) { ConsignSheet(shop: shop) }
     }
 }
 

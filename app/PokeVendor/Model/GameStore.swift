@@ -68,6 +68,13 @@ struct GameData: Codable {
     var lastFreeProductDay = -1000
     /// The rip mode, the stop rule, and other settings (docs/18-ripping.md).
     var settings = Settings()
+    /// The day job's board, time off, and skips (docs/16-time-and-day.md).
+    var jobState = JobState()
+    /// Case splits the player was invited into (docs/12-acquiring-product.md).
+    var splits: [CaseSplit] = []
+    /// Facebook Marketplace offers and meetups (docs/15-selling.md).
+    var fbOffers: [FBOffer] = []
+    var meetups: [Meetup] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -122,6 +129,10 @@ extension GameData {
         priceBoosts = v(.priceBoosts, priceBoosts)
         lastFreeProductDay = v(.lastFreeProductDay, lastFreeProductDay)
         settings = v(.settings, settings)
+        jobState = v(.jobState, jobState)
+        splits = v(.splits, splits)
+        fbOffers = v(.fbOffers, fbOffers)
+        meetups = v(.meetups, meetups)
     }
 }
 
@@ -161,7 +172,7 @@ final class GameStore {
     var weekdayName: String { Self.weekdays[weekday] }
     var week: Int { data.day / 7 + 1 }
     var isWorkDay: Bool { weekday < 5 && job != nil }
-    var worksToday: Bool { isWorkDay && !data.sickToday }
+    var worksToday: Bool { isWorkDay && !data.sickToday && !bookedOffToday && !skippedToday }
     var job: Job? { data.jobIndex.map { Job.ladder[$0] } }
     var daysUntilRent: Int { Balance.rentCycleDays - data.day % Balance.rentCycleDays }
 
@@ -184,13 +195,17 @@ final class GameStore {
     }
 
     /// The start time for a block of hours today, or nil when it does not fit. The block skips the work shift.
+    /// A block can run past 11 PM, up to 2 AM. Those hours come out of sleep (docs/16, Late nights).
     func slot(for hours: Double) -> Double? {
         var start = data.hour
         if worksToday && start < Balance.workEnd && start + hours > Balance.workStart {
             start = max(start, Balance.workEnd)
         }
-        return start + hours <= Balance.dayEnd ? start : nil
+        return start + hours <= Balance.lateNightLimit ? start : nil
     }
+
+    /// Hours past 11 PM so far today.
+    var lateHoursSoFar: Double { max(0, data.hour - Balance.dayEnd) }
 
     @discardableResult
     func spendHours(_ hours: Double) -> Bool {
@@ -501,6 +516,8 @@ final class GameStore {
     func buy(_ offer: StoreOffer) -> Bool {
         let total = offer.price + offer.shipping
         guard canAfford(total), !data.boughtToday.contains(offer.id) else { return false }
+        // A pickup set for a later day goes on the calendar (docs/12, Facebook Marketplace).
+        if let day = offer.pickupDay, day > data.day { return buyLaterPickup(offer, day: day) }
         if offer.pickup {
             guard spendHours(Balance.facebookPickupHours) else { return false }
         }
@@ -802,15 +819,22 @@ final class GameStore {
         let endedWeekday = weekday
 
         if endedWeekday == 4, let job {
-            addLedger(job.weeklyPay, .paycheck, "Paycheck · \(job.title)")
-            lines.append("Payday: \(money(job.weeklyPay)) from your job.")
+            let unpaid = Double(data.jobState.unpaidDays) * job.weeklyPay / 5
+            let pay = max(0, job.weeklyPay - unpaid)
+            addLedger(pay, .paycheck, "Paycheck · \(job.title)\(unpaid > 0 ? " · \(data.jobState.unpaidDays) unpaid day\(data.jobState.unpaidDays == 1 ? "" : "s")" : "")")
+            lines.append("Payday: \(money(pay)) from your job\(unpaid > 0 ? ", less \(money(unpaid)) for the days you skipped" : "").")
+            data.jobState.unpaidDays = 0
         }
 
         if let line = missedShowLine() {
             lines.append(line)
             addReputation(-5)
         }
+        lines += jobEndDay(endedDay: data.day)
 
+        // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).
+        data.lateHours = lateHoursSoFar
+        data.tiredToday = 1
         data.day += 1
         data.hour = Balance.dayStart
         data.sickToday = false
@@ -831,7 +855,12 @@ final class GameStore {
         lines += opportunitiesEndDay()
         lines += counterfeitsEndDay()
         lines += streamsEndDay()
+        lines += splitsEndDay()
+        lines += meetupsEndDay()
         data.priceBoosts = data.priceBoosts.filter { $0.value >= data.day }
+        if data.lateHours > 0 {
+            lines.append("You were up until \(GameStore.clock(Balance.dayEnd + data.lateHours)). Start tired, or sleep in.")
+        }
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {

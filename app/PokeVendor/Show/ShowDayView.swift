@@ -574,6 +574,45 @@ struct VisitorCard: View {
     }
 }
 
+/// The grading booth: pick a raw card, pay, and get the slab now (docs/20-card-shows.md, on-site grading).
+struct GradingBoothSheet: View {
+    @Environment(GameStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let session: ShowSession
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    Text("PSA, one tier: \(money(Balance.onSiteGradingFee)) a card, back in about 20 minutes of show time. A fake comes back flagged, and the fee is gone.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
+                Section("Your raw cards") {
+                    if session.gradableCards.isEmpty { Text("No raw cards to grade.").foregroundStyle(Theme.muted) }
+                    ForEach(session.gradableCards) { card in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(card.print.name).font(.subheadline)
+                                RawLooks(condition: card.condition)
+                            }
+                            Spacer()
+                            Text("raw \(money(card.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            Button("Grade") { session.gradeOnSite(card.id) }
+                                .buttonStyle(.borderedProminent)
+                                .foregroundStyle(.black)
+                                .controlSize(.small)
+                                .disabled(!store.canAfford(Balance.onSiteGradingFee))
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Grading booth")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        }
+    }
+}
+
 /// The eyeball check caught something (docs/14-counterfeit-risk.md, Detection).
 struct LooksOffLine: View {
     let sealed: Bool
@@ -658,11 +697,33 @@ struct FloorStage: View {
 private struct FloorList: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
+    @State private var booth = false
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
+                    if session.hasGradingBooth {
+                        // On-site grading at a regional show (docs/20-card-shows.md).
+                        Button { booth = true } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "seal").frame(width: 36, height: 36)
+                                    .background(Theme.green.opacity(0.15), in: RoundedRectangle(cornerRadius: 8)).foregroundStyle(Theme.green)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("PSA grading booth").font(.subheadline.weight(.semibold))
+                                    Text("\(money(Balance.onSiteGradingFee)) a card · the slab in hand the same day · about 20 minutes").font(.caption).foregroundStyle(Theme.muted)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
+                            }
+                            .padding(12)
+                            .background(Theme.surface)
+                            .overlay(Rectangle().stroke(Theme.green.opacity(0.5)))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .sheet(isPresented: $booth) { GradingBoothSheet(session: session) }
+                    }
                     Text(session.venue.isShow ? "The floor · \(session.vendors.count) tables" : session.venue.name).font(.title3.bold())
                     Text(session.venue.isShow
                          ? "Each table is a dealer, a shop, or a person. Looking over a table takes about \(Int(Balance.vendorVisitMinutes)) minutes\(session.hasTable ? ", and buyers who come to your table meanwhile leave" : "")."
@@ -785,13 +846,21 @@ struct VendorStage: View {
                         }
                         .overlay(Rectangle().stroke(Theme.green.opacity(0.5)))
                     }
+                    let firstLook = vendor.items.filter(\.firstLook)
+                    if !firstLook.isEmpty {
+                        // Reputation Trusted: a first look before the public table (docs/04).
+                        TitledGroup(title: "First look · for you, before the table opens", count: firstLook.count, list: "show") {
+                            ForEach(firstLook) { item in row(item) }
+                        }
+                        .overlay(Rectangle().stroke(Theme.cyan.opacity(0.5)))
+                    }
                     Picker("Aisle", selection: $tab) {
                         ForEach(Aisle.allCases, id: \.self) { aisle in
-                            Text("\(aisle.rawValue) · \(vendor.items.filter { inAisle($0, aisle) }.count)").tag(aisle)
+                            Text("\(aisle.rawValue) · \(vendor.items.filter { inAisle($0, aisle) && !$0.firstLook }.count)").tag(aisle)
                         }
                     }
                     .pickerStyle(.segmented)
-                    let shown = vendor.items.filter { inAisle($0, tab) }
+                    let shown = vendor.items.filter { inAisle($0, tab) && !$0.firstLook }
                     if shown.isEmpty {
                         Text(tab == .singles ? "No singles left at this table." : "No sealed product left at this table.")
                             .font(.subheadline).foregroundStyle(Theme.muted)

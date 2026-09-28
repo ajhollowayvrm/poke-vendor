@@ -6,6 +6,7 @@ struct HubView: View {
     @Environment(AppNav.self) private var nav
     @State private var haul: CampHaul?
     @State private var streamSetup: StreamSetupRequest?
+    @State private var meetupMessage: String?
 
     /// Opens the stream setup, for a new stream or for today's scheduled one.
     struct StreamSetupRequest: Identifiable {
@@ -24,6 +25,7 @@ struct HubView: View {
                     todayCard
                     freeActions
                     timeActions
+                    offersBox
                     recentActivity
                 }
                 .padding(.horizontal, 16)
@@ -34,6 +36,10 @@ struct HubView: View {
             .navigationTitle("PokeVendor")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { nav.path.append(.settings) } label: { Image(systemName: "gearshape") }
+                        .accessibilityLabel("Settings")
+                }
                 ToolbarItem(placement: .topBarTrailing) { testMenu }
             }
             .appDestinations()
@@ -118,6 +124,20 @@ struct HubView: View {
 
     /// Sales and restocks today (docs/17-calendar-and-events.md, Posted entries; docs/12, Camp a store drop).
     @ViewBuilder private var eventRows: some View {
+        ForEach(store.meetupsToday) { m in
+            let fits = store.slot(for: Balance.facebookPickupHours) != nil
+            Button { meetupMessage = store.doMeetup(m.id) } label: {
+                PlanRow(icon: m.isPickup ? "shippingbox" : "figure.wave",
+                        title: m.isPickup ? "Pick up \(m.name)" : "Meet \(m.who) for the \(m.name)",
+                        detail: fits ? "\(m.isPickup ? "Paid" : money(m.price) + " cash") · 1 hour · Facebook Marketplace" : "No free hour left today",
+                        accent: fits)
+            }
+            .buttonStyle(.plain)
+            .disabled(!fits)
+        }
+        if let meetupMessage {
+            Text(meetupMessage).font(.caption).foregroundStyle(Theme.cyan)
+        }
         ForEach(store.salesToday) { sale in
             let block = store.saleBlock(sale)
             Button {
@@ -142,7 +162,7 @@ struct HubView: View {
             .buttonStyle(.plain)
             .disabled(block != nil)
         }
-        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil {
+        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty {
             Text(nextEventText)
                 .font(.caption2)
                 .foregroundStyle(Theme.muted)
@@ -189,6 +209,12 @@ struct HubView: View {
                     if let session = store.startStream(hours: 2, itemIDs: ids, scheduled: false) { nav.stream = StreamCover(session: session) }
                 }
             }
+            Menu("Job and trade") {
+                Button("Add 8 weeks at this job") { store.testWeeksAtJob() }
+                Button("Invite to a case split") { store.testSplitInvite() }
+                Button("Facebook offer on a card") { store.testFBOffer() }
+                Button("Stay up late (11 PM now)") { store.data.hour = Balance.dayEnd; store.save() }
+            }
             Menu("Counterfeits") {
                 ForEach(FakeTier.allCases, id: \.self) { tier in
                     Button("Add a fake card · \(tier.label.lowercased())") { store.addTestFake(tier) }
@@ -216,24 +242,34 @@ struct HubView: View {
 
     private var todayCard: some View {
         DetailBox(title: "Today") {
-            if let job = store.job {
-                if store.isWorkDay {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(store.data.sickToday ? "Sick day · paid" : "Work 9 AM – 5 PM").font(.subheadline.weight(.medium))
-                            Text(job.title).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                        }
-                        Spacer()
-                        if !store.data.sickToday {
-                            Button("Call in sick (\(store.data.sickDaysLeft))") { store.callInSick() }
-                                .buttonStyle(.bordered)
-                                .disabled(store.data.sickDaysLeft == 0 || store.data.hour >= Balance.workStart)
+            Button { nav.path.append(.job) } label: {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        if let job = store.job {
+                            Text(store.isWorkDay ? (store.dayOffReason ?? "Work 9 AM – 5 PM") : "Day off").font(.subheadline.weight(.medium))
+                            Text("\(job.title) · payday Friday \(money(job.weeklyPay))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        } else {
+                            Text("No job").font(.subheadline.weight(.medium)).foregroundStyle(Theme.orange)
+                            Text("The job board is open").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         }
                     }
-                } else {
-                    Text("Day off · \(job.title)").font(.subheadline.weight(.medium))
+                    Spacer()
+                    if let tired = store.tiredLabel { Tag(text: tired.uppercased(), color: Theme.orange) }
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
                 }
-                Text("Payday is Friday: \(money(job.weeklyPay)).").font(.caption).foregroundStyle(Theme.muted)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            if store.isWorkDay, store.worksToday, store.data.hour < Balance.workStart {
+                HStack(spacing: 8) {
+                    Button("Call in sick (\(store.data.sickDaysLeft))") { store.callInSick() }
+                        .buttonStyle(.bordered)
+                        .disabled(store.data.sickDaysLeft == 0)
+                    Button("Skip work") { _ = store.skipWork() }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.orange)
+                }
+                .controlSize(.small)
             }
             Divider().overlay(Theme.line)
             HStack {
@@ -242,6 +278,48 @@ struct HubView: View {
                 Text("due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s")")
                     .font(.subheadline.monospaced())
                     .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
+            }
+            Divider().overlay(Theme.line)
+            Button { nav.path.append(.upgrades) } label: {
+                HStack {
+                    Image(systemName: "wrench.and.screwdriver").foregroundStyle(Theme.cyan)
+                    Text("Upgrades").font(.subheadline)
+                    Spacer()
+                    Text("\(ownedUpgrades) owned").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var ownedUpgrades: Int {
+        store.data.upgrades.count + (store.data.vendorKit ? 1 : 0) + store.data.centeringTool + (store.social.analytics ? 1 : 0)
+    }
+
+    /// Facebook Marketplace offers that wait for an answer (docs/15-selling.md, Facebook Marketplace).
+    @ViewBuilder private var offersBox: some View {
+        let offers = store.pendingFBOffers
+        if !offers.isEmpty {
+            DetailBox(title: "Offers on Facebook Marketplace") {
+                ForEach(offers) { o in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(o.itemName).font(.subheadline.weight(.semibold)).lineLimit(1)
+                            Spacer()
+                            Text(money(o.offer)).font(.subheadline.monospaced()).foregroundStyle(Theme.green)
+                        }
+                        Text("\(o.buyer) offers \(Int(o.offer / max(o.listPrice, 0.01) * 100))% of your \(money(o.listPrice)). Meetup \(o.meetupDay == store.day ? "today" : "on day \(o.meetupDay + 1)") · 1 hour · cash.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                        HStack {
+                            Button("Accept") { store.acceptFBOffer(o.id) }.buttonStyle(.borderedProminent).foregroundStyle(.black)
+                            Button("Decline") { store.declineFBOffer(o.id) }.buttonStyle(.bordered)
+                        }
+                        .controlSize(.small)
+                    }
+                    .padding(.vertical, 4)
+                }
             }
         }
     }
@@ -632,12 +710,32 @@ struct ActionTile: View {
 }
 
 struct DayReportView: View {
+    @Environment(GameStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let report: DayReport
 
     var body: some View {
+        let late = store.data.lateHours
         VStack(alignment: .leading, spacing: 14) {
             Text("Good morning. Day \(report.day + 1)").font(.title2.bold())
+            if late > 0 {
+                // The late-night choice (docs/16-time-and-day.md, Late nights).
+                DetailBox(title: "You were up until \(GameStore.clock(Balance.dayEnd + late))") {
+                    Text(late >= Balance.exhaustedFrom
+                         ? "Start at 7 AM exhausted: haggling and your eye are \(Int(Balance.exhaustedPenalty * 100))% worse today."
+                         : "Start at 7 AM tired: haggling and your eye are \(Int(Balance.tiredPenalty * 100))% worse today.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                    HStack(spacing: 8) {
+                        Button("Start tired") { store.chooseMorning(sleepIn: false) }
+                            .buttonStyle(.bordered)
+                            .tint(Theme.orange)
+                        Button("Sleep in until \(GameStore.clock(Balance.dayStart + late))") { store.chooseMorning(sleepIn: true) }
+                            .buttonStyle(.borderedProminent)
+                            .foregroundStyle(.black)
+                    }
+                    .controlSize(.regular)
+                }
+            }
             if report.lines.isEmpty {
                 Text("Nothing happened overnight.").foregroundStyle(Theme.muted)
             }
@@ -652,14 +750,16 @@ struct DayReportView: View {
                 }
             }
             Button { dismiss() } label: {
-                Text("Start the day").frame(maxWidth: .infinity)
+                Text(late > 0 ? "Choose first" : "Start the day").frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
             .foregroundStyle(.black)
             .controlSize(.large)
+            .disabled(late > 0)
         }
         .padding(20)
         .background(Theme.surface.ignoresSafeArea())
+        .interactiveDismissDisabled(late > 0)
     }
 }
 

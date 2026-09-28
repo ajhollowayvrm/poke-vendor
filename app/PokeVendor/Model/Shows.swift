@@ -159,6 +159,26 @@ extension GameStore {
         save()
     }
 
+    /// The grading booth at a regional show: PSA, $40, the slab in hand the same day. A fake comes back flagged.
+    func gradeOnSite(_ cardID: UUID) -> String? {
+        guard let i = data.raw.firstIndex(where: { $0.id == cardID }), data.raw[i].status == nil, canAfford(Balance.onSiteGradingFee) else { return nil }
+        var card = data.raw[i]
+        addLedger(-Balance.onSiteGradingFee, .grading, "\(card.print.name) · grading booth")
+        if let fake = card.fake {
+            data.raw[i].fakeKnown = true
+            log("The grading booth flagged your \(card.print.name) as counterfeit (\(fake.label.lowercased())). The fee is gone.", cash: -Balance.onSiteGradingFee)
+            save()
+            return "The booth called your \(card.print.name) a fake."
+        }
+        card.grade = Self.gradeResult(card.condition, company: .psa)
+        card.verified = true
+        data.raw.remove(at: i)
+        data.slabs.append(card)
+        log("Graded \(card.print.name) at the show booth: \(card.grade?.label ?? ""), worth \(money(card.market)).", cash: -Balance.onSiteGradingFee)
+        save()
+        return "\(card.print.name) came back \(card.grade?.label ?? ""), worth \(money(card.market))."
+    }
+
     /// A booked show day that the player did not go to. Called when the day ends.
     func missedShowLine() -> String? {
         guard let show = showToday, show.booked, !show.attended.contains(data.day - show.startDay) else { return nil }
@@ -294,7 +314,7 @@ extension GameStore {
     func calendarEntries(day: Int) -> [CalendarEntry] {
         var out: [CalendarEntry] = []
         let weekday = day % 7
-        if weekday < 5, let job {
+        if weekday < 5, let job, !data.jobState.timeOffBooked.contains(day) {
             out.append(CalendarEntry(kind: .work, title: "Work shift", detail: "9 AM – 5 PM · \(job.title)"))
         }
         if weekday == 4, let job {
@@ -601,7 +621,30 @@ final class ShowSession {
                 if bonus > 0 { self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus)) }
                 self.vendors[i].items[j].rollFake(source: source, tired: store.tiredFactor)
             }
+            // Reputation Trusted and up: a recurring vendor gives the player a first look at the best stock (docs/04).
+            if venue.isShow, self.vendors[i].contactID != nil, store.reputationTier >= 2 {
+                for j in self.vendors[i].items.indices.prefix(Balance.firstLookItems) {
+                    self.vendors[i].items[j].firstLook = true
+                    self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * 0.95)
+                }
+            }
         }
+    }
+
+    /// On-site grading at a regional show: one tier, the grade comes back the same day (docs/20-card-shows.md).
+    var hasGradingBooth: Bool { show?.size == .regional }
+
+    /// The raw cards the player can grade at the booth: free, and not known fakes.
+    var gradableCards: [OwnedCard] {
+        store.data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake }.sorted { $0.market > $1.market }
+    }
+
+    func gradeOnSite(_ cardID: UUID) {
+        guard let line = store.gradeOnSite(cardID) else { return }
+        table.removeAll { $0.id == cardID }
+        bring.remove(cardID)
+        note = line
+        spend(20)
     }
 
     /// The regulars at this venue who have not come by yet.
@@ -730,8 +773,9 @@ final class ShowSession {
     }
 
     /// A stranger reads the player's reputation: they pay a little more and ask a little less at a higher tier.
+    /// Follower tier 2 adds a little more: people know the name (docs/04).
     private func strangerReputation(_ v: inout Visitor) {
-        let bonus = 0.02 * Double(store.reputationTier)
+        let bonus = 0.02 * Double(store.reputationTier) + (store.hasAccount && store.followerTier >= 2 ? Balance.followerDealBonus : 0)
         guard bonus > 0 else { return }
         switch v.intent {
         case .buy, .trade: v.limit *= 1 + bonus
@@ -1043,7 +1087,8 @@ final class ShowSession {
             return
         }
         v.patience -= 1
-        let moved = v.offer + (v.limit - v.offer) * Double.random(in: 0.5...0.9)
+        // A tired player haggles worse: the other side moves less (docs/16, Late nights).
+        let moved = v.offer + (v.limit - v.offer) * Double.random(in: 0.5...0.9) * store.tiredFactor
         v.offer = Self.round(v.intent == .sell ? max(v.limit, moved) : min(v.limit, moved))
         v.line = v.intent == .sell ? "I could do \(money(v.offer)). That's as low as I go." : "Hmm. I can go to \(money(v.offer)). That's about my limit."
         setCurrent(v)
@@ -1087,7 +1132,7 @@ final class ShowSession {
         }
         v.patience -= 1
         let most = Self.round(v.limit - cards)
-        v.tradeCash = Self.round(max(v.tradeCash, v.tradeCash + (most - v.tradeCash) * Double.random(in: 0.5...0.9)))
+        v.tradeCash = Self.round(max(v.tradeCash, v.tradeCash + (most - v.tradeCash) * Double.random(in: 0.5...0.9) * store.tiredFactor))
         v.line = v.tradeCash > 0 ? "I can add \(money(v.tradeCash)) on top, for your \(item.name). That's my best."
                                  : "My cards straight across for your \(item.name). That's my best."
         setCurrent(v)
