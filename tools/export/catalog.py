@@ -10,12 +10,14 @@ Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game
   TCGCSV group 22872 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
   Surprise Box promo has a Prismatic Evolutions stamp, so it gets the stamped print from TCGCSV group 2374
   (Miscellaneous Cards & Products), with its own price and image, and no graded prices;
-- the market price (tools/ppt/cache/sealed/), an estimated MSRP, and the image.
+- the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none), an estimated MSRP, and the image;
+- "mixGuess": true when the contents name no set, or only a series. Then the packs come from the newest sets of that
+  series (or of any series) that were out at the product's release (guess_mix).
 
 A product is in the catalog when its pack mix is exact, every pack comes from a set the app has, and it has a
 price. "inPrint" is true when every pack is from a Scarlet & Violet set. Only in-print product sells at retail.
 """
-import glob, json, os, re, sys
+import glob, json, os, random, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "..")
@@ -24,6 +26,8 @@ OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "catalog.json")
 CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 TCGCSV = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv")
+TCGDEX_MAP = os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")
+TCGDEX_SETS = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgdex", "sets")
 SVP_GROUP = "22872"
 MISC_GROUP = "2374"
 STAMP = "Prismatic Evolutions Stamp"
@@ -93,6 +97,107 @@ def stamped_promos():
     return out
 
 
+_tcgcsv_prices = {}
+
+
+def tcgcsv_price(group, product_id):
+    """The TCGCSV market price of a product, when PPT has no sealed price. TCGCSV is free and covers most sealed."""
+    if group not in _tcgcsv_prices:
+        path = os.path.join(TCGCSV, f"{group}-prices.json")
+        table = {}
+        if os.path.exists(path):
+            rows = json.load(open(path))
+            for r in rows.get("results", rows) if isinstance(rows, dict) else rows:
+                price = r.get("marketPrice") or r.get("midPrice")
+                if price:
+                    table[r["productId"]] = price
+        _tcgcsv_prices[group] = table
+    return _tcgcsv_prices[group].get(int(product_id))
+
+
+def set_releases(sets):
+    """The release date of each set, from its TCGdex set (tools/cardlist/tcgdex-map.json)."""
+    tcgdex = json.load(open(TCGDEX_MAP))
+    out = {}
+    for slug in sets:
+        for tid in tcgdex.get(slug, []):
+            path = os.path.join(TCGDEX_SETS, f"{tid}.json")
+            if os.path.exists(path):
+                date = json.load(open(path)).get("releaseDate")
+                if date:
+                    out[slug] = date
+                    break
+    return out
+
+
+def product_date(release):
+    """The latest date a product can be from, for example "2021 Q4" gives the end of 2021 Q4."""
+    m = re.search(r"(\d{4})\s*Q([1-4])", release or "")
+    if m:
+        return f"{m.group(1)}-{int(m.group(2)) * 3:02d}-28"
+    m = re.search(r"\b(\d{4})\b", release or "")
+    return f"{m.group(1)}-12-31" if m else None
+
+
+# A "<series> Series" pack in the contents, for example "four XY Series booster packs".
+SERIES_ERAS = [("scarlet", "scarlet-violet"), ("mega", "mega-evolution"), ("sword", "sword-shield"), ("sun & moon", "sun-moon"),
+               ("sun and moon", "sun-moon"), ("xy", "xy"), ("black", "black-white"), ("heartgold", "heartgold-soulsilver"),
+               ("diamond", "diamond-pearl-platinum"), ("platinum", "diamond-pearl-platinum"), ("ex ", "ex")]
+
+
+def series_era(label):
+    low = label.lower() + " "
+    return next((era for key, era in SERIES_ERAS if key in low), None)
+
+
+def named_set(name, sets):
+    """The set that a product's name starts with or holds, the longest name first. "Base Set 2" wins over "Base Set"."""
+    low = name.lower()
+    names = sorted(((d["name"].lower(), slug) for slug, d in sets.items() if not slug.startswith("mcdonalds")),
+                   key=lambda x: -len(x[0]))
+    for set_name, slug in names:
+        if re.search(r"(?<![\w])" + re.escape(set_name) + r"(?![\w])", low):
+            return slug
+    return None
+
+
+def guess_mix(it, sets, releases):
+    """A pack mix for a product whose contents name no set, or only a series. Real products like these hold
+    assorted packs. The guess takes the packs from the newest sets of the named series (or of any series) that were
+    out when the product came out. The same product always gives the same guess. Returns None when no guess fits."""
+    packs = it["packs"]
+    mix = dict(it.get("mix") or {})
+    known = {k: n for k, n in mix.items() if k in sets}
+    buckets = {k: n for k, n in mix.items() if k not in sets}
+    left = packs - sum(mix.values())
+    if left < 0:
+        return None
+    if not mix and it.get("slug") in sets:
+        return {it["slug"]: packs}
+    if left:
+        buckets["unknown"] = buckets.get("unknown", 0) + left
+    # A product named for a set, for example "Darkness Ablaze 3 Pack Blister", holds packs of that set.
+    named = named_set(it["name"], sets)
+    if named and "unknown" in buckets:
+        known[named] = known.get(named, 0) + buckets.pop("unknown")
+    date = product_date(it.get("release"))
+    rng = random.Random(int(it["id"]))
+    out = dict(known)
+    for key, n in buckets.items():
+        era = series_era(key) if key != "unknown" else None
+        if era is None and date is None:
+            return None
+        pool = [s for s in sets if releases.get(s) and (era is None or sets[s].get("era") == era)
+                and (date is None or releases[s] <= date) and not s.startswith("mcdonalds")]
+        if not pool:
+            return None
+        pool = sorted(pool, key=lambda s: releases[s], reverse=True)[:4]
+        for _ in range(n):
+            s = rng.choice(pool)
+            out[s] = out.get(s, 0) + 1
+    return out
+
+
 def resolve_promo(text, sets, svp, stamped=None):
     m = re.match(r"^(.*) \((.+) (\d+)\)$", text)
     if not m:
@@ -128,18 +233,29 @@ def main():
     prices = sealed_prices()
     svp = svp_promos()
     stamped = stamped_promos()
+    releases = set_releases(sets)
     out, skipped = [], []
+    guessed = 0
     for it in json.load(open(CONTENTS)):
         mix = it.get("mix") or {}
         packs = it.get("packs")
-        if it.get("confidence") not in ("Exact", "Product set") or not packs or it.get("kind") == "Case or display":
+        if not packs or it.get("kind") in ("Case or display", "Prize pack", "Deck") or "Dollar General" in it["name"]:
             continue
-        if not mix or sum(mix.values()) != packs or any(slug not in sets for slug in mix):
+        # A product with no stated mix, or with only a series named, gets a guessed mix (guess_mix).
+        guess = False
+        if it.get("confidence") not in ("Exact", "Product set") or not mix or sum(mix.values()) != packs \
+                or any(slug not in sets for slug in mix):
+            mix = guess_mix(it, sets, releases)
+            if not mix or any(slug not in sets for slug in mix) or sum(mix.values()) != packs:
+                continue
+            guess = True
+        # PPT gives the sealed price and image. TCGCSV fills in when PPT has no price.
+        p = prices.get(str(it["id"])) or {}
+        market = p.get("unopenedPrice") or tcgcsv_price(it["group"], it["id"])
+        if not market:
             continue
-        # Every product of the app's sets is in the catalog.
-        p = prices.get(str(it["id"]))
-        if not p or not p.get("unopenedPrice") or "Dollar General" in it["name"]:
-            continue
+        image = p.get("imageCdnUrl800") or p.get("imageUrl") or f"https://tcgplayer-cdn.tcgplayer.com/product/{it['id']}_in_800x800.jpg"
+        guessed += guess
         # The set files rip Unlimited prints only, so 1st Edition and Shadowless product stays out.
         if re.search(r"1st Edition|Shadowless", it["name"]):
             continue
@@ -164,11 +280,10 @@ def main():
         out.append({"id": str(it["id"]), "name": name, "kind": it["kind"], "packs": packs, "inPrint": in_print,
                     "mix": [{"slug": s, "packs": n} for s, n in order],
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,
-                    "market": p["unopenedPrice"], "msrp": msrp,
-                    "image": p.get("imageCdnUrl800") or p.get("imageUrl")})
+                    "market": market, "msrp": msrp, "image": image, "mixGuess": guess})
     out.sort(key=lambda x: (x["mix"][0]["slug"] != HOME, x["kind"], x["name"]))
     json.dump(out, open(OUT, "w"), ensure_ascii=False, indent=1)
-    print(f"{len(out)} products -> {os.path.relpath(OUT, ROOT)}")
+    print(f"{len(out)} products ({guessed} with a guessed pack mix) -> {os.path.relpath(OUT, ROOT)}")
     for x in out:
         mix = ", ".join(f"{m['packs']} {m['slug']}" for m in x["mix"])
         promos = "; ".join(f"{p['name']} {p['num']} ${p['market']}" for p in x["promos"])

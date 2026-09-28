@@ -85,7 +85,8 @@ enum Market {
         switch store {
         case .amazon:
             // A store shows a day's pick of the catalog, not every product at once.
-            for (i, p) in pickOf(products, Balance.storeListingCap, &r).enumerated() where r.double(0...1) < Balance.amazonStockChance {
+            for (i, p) in pickOf(products.filter { !$0.isStoreExclusive }, Balance.storeListingCap, &r).enumerated()
+            where r.double(0...1) < Balance.amazonStockChance {
                 // Usually a little over market, and on some days far over it.
                 let markup = r.double(0...1) < Balance.amazonSpikeChance ? r.double(1.4...1.9) : r.double(1.0...1.25)
                 out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),

@@ -59,6 +59,8 @@ struct Product: Codable, Hashable, Identifiable {
     var homeSlug: String { mix.first?.slug ?? "prismatic-evolutions" }
     /// A warehouse-club product. Pokemon Center drops and local shelves do not carry it.
     var isClubExclusive: Bool { name.contains("Costco") || name.contains("Sam's Club") }
+    /// Sold only by one store: a warehouse club or the Pokemon Center. Amazon does not carry it.
+    var isStoreExclusive: Bool { isClubExclusive || name.contains("Pokemon Center") || name.contains("Pokémon Center") }
 }
 
 struct SlotOutcome: Codable {

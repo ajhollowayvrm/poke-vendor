@@ -61,8 +61,26 @@ The game has 131 English sets: every English booster expansion from
 Base Set to the current Mega Evolution sets, plus the McDonald's
 Collection 2021 and 2022. `tools/export/rip_set.py` exports each set
 file to `app/PokeVendor/Resources/Sets/`, `tools/export/set_index.py`
-writes the list of sets, and `tools/export/catalog.py` writes 1,255
+writes the list of sets, and `tools/export/catalog.py` writes 1,716
 sealed products from them.
+
+- **Prices:** PPT's sealed price first. When PPT has none, the TCGCSV
+  market price of the product.
+- **Guessed pack mixes (406 products):** when a product's contents name
+  no set, or only a series ("four XY Series booster packs"), the
+  catalog guesses the mix and marks it with `mixGuess`. The rules, in
+  order: a product in a set's own TCGplayer group holds that set's
+  packs. A product whose name holds a set name, for example "Darkness
+  Ablaze 3 Pack Blister", holds packs of that set. Else the packs come
+  from the 4 newest sets of the named series (or of any series) that
+  were out at the product's release. The same product always gives the
+  same guess. Real products like these hold assorted packs.
+- **Still out of the catalog (482):** 287 have no price anywhere, 132
+  have no mix and no release date to guess from, 30 have no pack
+  count, 21 are 1st Edition or Shadowless (the set files use Unlimited
+  prints), and 12 are Prize Packs or decks.
+- Amazon does not sell store exclusives (Pokémon Center and warehouse
+  club product).
 
 - The game groups the sets by era. **Vintage** is the Wizards of the
   Coast and e-Card eras. **Older** is EX through Sword & Shield.
