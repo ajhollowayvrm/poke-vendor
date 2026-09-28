@@ -153,18 +153,34 @@ struct HitBanner: View {
     }
 }
 
-/// A short white flash over the screen, for big hits.
-struct HitFlash: View {
-    @State private var opacity = 0.75
+/// Rings of the hit's colors that grow out from the card, for big hits. It takes the place of a screen flash,
+/// so the screen never goes bright all at once.
+struct HitShockwave: View {
+    let tier: HitTier
+    let cardSize: CGSize
+    @State private var on = false
 
     var body: some View {
-        Color.white
-            .opacity(opacity)
-            .ignoresSafeArea()
-            .onAppear {
-                withAnimation(.easeOut(duration: 0.6)) { opacity = 0 }
+        let colors = tier.colors
+        ZStack {
+            RadialGradient(colors: [colors[0].opacity(0.45), .clear], center: .center,
+                           startRadius: cardSize.width * 0.3, endRadius: cardSize.width * 1.4)
+                .frame(width: cardSize.width * 2.8, height: cardSize.width * 2.8)
+                .scaleEffect(on ? 1.2 : 0.7)
+                .opacity(on ? 0 : 1)
+            ForEach(0..<3, id: \.self) { i in
+                RoundedRectangle(cornerRadius: cardSize.width * 0.08)
+                    .stroke(AngularGradient(colors: colors + [colors[0]], center: .center), lineWidth: 5 - CGFloat(i))
+                    .frame(width: cardSize.width, height: cardSize.height)
+                    .scaleEffect(on ? 2.4 + CGFloat(i) * 0.5 : 1)
+                    .opacity(on ? 0 : 0.85)
+                    .blur(radius: on ? 6 : 0)
+                    .animation(.easeOut(duration: 0.9).delay(Double(i) * 0.12), value: on)
             }
-            .allowsHitTesting(false)
+        }
+        .animation(.easeOut(duration: 0.9), value: on)
+        .onAppear { on = true }
+        .allowsHitTesting(false)
     }
 }
 

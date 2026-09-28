@@ -178,9 +178,11 @@ struct RipView: View {
                             .zIndex(370)
                     }
                     if burst.card.hitTier == .big {
-                        HitFlash()
+                        HitShockwave(tier: burst.card.hitTier,
+                                     cardSize: inPile ? layout.pileSize : CGSize(width: layout.cardW, height: layout.cardH))
+                            .position(inPile ? layout.pileCenter : layout.stackCenter)
                             .id(burst.id)
-                            .zIndex(450)
+                            .zIndex(355)
                     }
                 }
 
