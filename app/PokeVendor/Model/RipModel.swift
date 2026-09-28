@@ -61,6 +61,8 @@ final class RipModel {
     private var specialSeen = 0
     /// Tests only: the next pack is this special pack kind.
     static var forcedSpecial: String?
+    /// The rip modes this rip allows. A live stream allows Normal and Fast only (docs/18, Ripping on a live stream).
+    var allowedModes: [RipMode] = RipMode.allCases
     /// The pack in hand came from a resealed product: only filler inside (docs/14-counterfeit-risk.md).
     private(set) var resealed = false
     /// Changes when a resealed pack opens, so the screen shows the banner once for each pack.
@@ -155,10 +157,16 @@ final class RipModel {
         faceUp || card.id == showcaseID
     }
 
+    /// The hits from the packs that are done.
+    private var doneHits: [RipCard] = []
+    /// Every hit in the whole rip so far, the pack in hand included.
+    var allHits: [RipCard] { doneHits + allCards.filter { seen.contains($0.id) && $0.isHit } }
+
     func nextPack() {
         guard hasNextPack else { return }
         doneValue += valueSoFar
         donePaid += packCost
+        doneHits += allCards.filter { seen.contains($0.id) && $0.isHit }
         packIndex += 1
         loadPack()
     }

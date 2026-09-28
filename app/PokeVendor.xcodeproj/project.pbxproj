@@ -177,6 +177,7 @@
 		EDD8C4793FF75C17DC34588C /* neo-revelation.json in Resources */ = {isa = PBXBuildFile; fileRef = DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */; };
 		EDDCCCC55DD1BF8A2178A352 /* scarlet-violet.json in Resources */ = {isa = PBXBuildFile; fileRef = D918370ED77643B50651E40E /* scarlet-violet.json */; };
 		EDECE585BE210F65109E48BD /* Counterfeits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4755B9D1944633247C22C671 /* Counterfeits.swift */; };
+		EE25610F66D60690F7AE0E00 /* RipSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDA3B83589268718F6EE970 /* RipSettings.swift */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
 		EFB2115EA9D920286DEF9A6D /* plasma-blast.json in Resources */ = {isa = PBXBuildFile; fileRef = EF7FFEBF9985028B8340B74E /* plasma-blast.json */; };
 		EFFE245540550F3FE1FB6701 /* celebrations.json in Resources */ = {isa = PBXBuildFile; fileRef = FDDB3709D7BFD861D4F66368 /* celebrations.json */; };
@@ -185,6 +186,7 @@
 		F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */ = {isa = PBXBuildFile; fileRef = 99D48054DE8D081D34F8C24C /* fossil.json */; };
 		F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */ = {isa = PBXBuildFile; fileRef = 649C90774494AA3AF98125AC /* legendary-collection.json */; };
 		F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820C299F6D8FD690239ED0CC /* SocialViews.swift */; };
+		F905C1398E75C747E47A1439 /* StreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AB0D2FABBE0297520AD440 /* StreamView.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 /* End PBXBuildFile section */
 
@@ -229,6 +231,7 @@
 		3BE8F9A509ED85647311ACD5 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sword-shield.json"; sourceTree = "<group>"; };
 		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
+		3DDA3B83589268718F6EE970 /* RipSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipSettings.swift; sourceTree = "<group>"; };
 		3F83F25627755699228CC982 /* ascended-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ascended-heroes.json"; sourceTree = "<group>"; };
 		40AFA031CD12EA2F8CAF859A /* ultra-prism.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ultra-prism.json"; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
@@ -249,6 +252,7 @@
 		523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unified-minds.json"; sourceTree = "<group>"; };
 		5430A1321F8CBDA7347D1045 /* fusion-strike.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fusion-strike.json"; sourceTree = "<group>"; };
 		544120DEF70C6BCBC2EF918A /* DetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViews.swift; sourceTree = "<group>"; };
+		55AB0D2FABBE0297520AD440 /* StreamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamView.swift; sourceTree = "<group>"; };
 		56E647BE8C027106C56398C6 /* team-up.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-up.json"; sourceTree = "<group>"; };
 		56EE5582CFBBA45162D5DFFC /* stormfront.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stormfront.json; sourceTree = "<group>"; };
 		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
@@ -390,6 +394,14 @@
 				35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */,
 			);
 			path = Inventory;
+			sourceTree = "<group>";
+		};
+		28DB81501AA5B5775E544CC8 /* Stream */ = {
+			isa = PBXGroup;
+			children = (
+				55AB0D2FABBE0297520AD440 /* StreamView.swift */,
+			);
+			path = Stream;
 			sourceTree = "<group>";
 		};
 		54BBAE50F56DF76DD790B949 /* Support */ = {
@@ -575,6 +587,7 @@
 				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
+				3DDA3B83589268718F6EE970 /* RipSettings.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
@@ -636,6 +649,7 @@
 				F5C1AC9B977941A9F77C4039 /* Rip */,
 				064A48322225BE4427467A9F /* Show */,
 				7F6F6FB8D7BA41D01B439268 /* Social */,
+				28DB81501AA5B5775E544CC8 /* Stream */,
 				54BBAE50F56DF76DD790B949 /* Support */,
 			);
 			path = PokeVendor;
@@ -899,6 +913,7 @@
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */,
 				24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */,
+				EE25610F66D60690F7AE0E00 /* RipSettings.swift in Sources */,
 				EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */,
 				470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */,
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
@@ -908,6 +923,7 @@
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
+				F905C1398E75C747E47A1439 /* StreamView.swift in Sources */,
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,
 				55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */,
 				10FF285F3BF4A21924331909 /* Upgrades.swift in Sources */,

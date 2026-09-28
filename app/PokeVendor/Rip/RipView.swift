@@ -78,9 +78,16 @@ struct RipView: View {
     @State private var model: RipModel
     let onClose: () -> Void
 
-    init(items: [SealedItem], store: GameStore, onClose: @escaping () -> Void) {
-        _model = State(initialValue: RipModel(items: items, store: store))
-        self.onClose = onClose
+    /// `onHits` gets every hit of the rip when the screen closes. A live stream uses it.
+    init(items: [SealedItem], store: GameStore, allowedModes: [RipMode] = RipMode.allCases,
+         onHits: (([RipCard]) -> Void)? = nil, onClose: @escaping () -> Void) {
+        let model = RipModel(items: items, store: store)
+        model.allowedModes = allowedModes
+        _model = State(initialValue: model)
+        self.onClose = {
+            onHits?(model.allHits)
+            onClose()
+        }
     }
 
     @State private var tearProgress: Double = 0

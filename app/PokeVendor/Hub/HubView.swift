@@ -5,6 +5,13 @@ struct HubView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
     @State private var haul: CampHaul?
+    @State private var streamSetup: StreamSetupRequest?
+
+    /// Opens the stream setup, for a new stream or for today's scheduled one.
+    struct StreamSetupRequest: Identifiable {
+        let id = UUID()
+        var plan: StreamPlan?
+    }
 
     var body: some View {
         @Bindable var nav = nav
@@ -40,6 +47,12 @@ struct HubView: View {
         }
         .fullScreenCover(item: $nav.encounter) { encounter in
             ShowDayView(session: encounter.session) { nav.encounter = nil }
+        }
+        .fullScreenCover(item: $nav.stream) { cover in
+            StreamView(session: cover.session) { nav.stream = nil }
+        }
+        .sheet(item: $streamSetup) { request in
+            StreamSetupView(plan: request.plan)
         }
         .fullScreenCover(item: $nav.storeRun) { session in
             StoreRunView(stops: session.stops) { nav.storeRun = nil }
@@ -163,6 +176,19 @@ struct HubView: View {
                     Button(kind.label) { store.addTestOpportunity(kind) }
                 }
             }
+            Menu("Social") {
+                Button("Add 1,000 followers (and an account)") { store.testFollowers(1_000) }
+                Button("Add 10,000 followers") { store.testFollowers(10_000) }
+                Button("Stream now with 3 test packs") {
+                    store.testFollowers(0)
+                    var ids: [UUID] = []
+                    for _ in 0..<3 {
+                        store.addTestPack()
+                        if let id = store.data.sealed.last?.id { ids.append(id) }
+                    }
+                    if let session = store.startStream(hours: 2, itemIDs: ids, scheduled: false) { nav.stream = StreamCover(session: session) }
+                }
+            }
             Menu("Counterfeits") {
                 ForEach(FakeTier.allCases, id: \.self) { tier in
                     Button("Add a fake card · \(tier.label.lowercased())") { store.addTestFake(tier) }
@@ -272,6 +298,19 @@ struct HubView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            if store.hasAccount {
+                // Go Live (docs/08-ui-direction.md, tap target 8). Hidden until the player has an account.
+                let plan = store.streamToday
+                let block = store.streamBlock(hours: plan?.hours ?? Balance.streamHours[0])
+                Button { streamSetup = StreamSetupRequest(plan: plan) } label: {
+                    PlanRow(icon: "dot.radiowaves.left.and.right",
+                            title: plan.map { "Scheduled stream at \(GameStore.clock($0.startHour))" } ?? "Go live",
+                            detail: block ?? (plan.map { "\(formatHours($0.hours)) · followers are waiting" } ?? "2 or 3 hours · rip, sell, and talk to chat"),
+                            accent: block == nil)
+                }
+                .buttonStyle(.plain)
+                .disabled(block != nil)
+            }
             ForEach(store.meetsToday, id: \.self) { kind in
                 let block = store.meetBlock(kind)
                 Button {

@@ -40,6 +40,12 @@ struct EncounterSession: Identifiable {
     let session: ShowSession
 }
 
+/// A live stream, in its own cover.
+struct StreamCover: Identifiable {
+    let id = UUID()
+    let session: StreamSession
+}
+
 /// The navigation path and the rip cover, shared by every screen.
 @MainActor @Observable
 final class AppNav {
@@ -48,6 +54,7 @@ final class AppNav {
     var storeRun: StoreRunSession?
     var showDay: ShowDaySession?
     var encounter: EncounterSession?
+    var stream: StreamCover?
 
     func startRip(_ items: [SealedItem]) {
         guard !items.isEmpty else { return }

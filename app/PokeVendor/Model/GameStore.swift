@@ -61,6 +61,13 @@ struct GameData: Codable {
     var tiredToday = 1.0
     /// Hours past 11 PM last night, waiting for the morning choice.
     var lateHours = 0.0
+    /// Scheduled live streams (docs/06-social-media.md, Live streams).
+    var streams: [StreamPlan] = []
+    /// Cards the player posted about at follower tier 4, by name, and the last day the boost holds.
+    var priceBoosts: [String: Int] = [:]
+    var lastFreeProductDay = -1000
+    /// The rip mode, the stop rule, and other settings (docs/18-ripping.md).
+    var settings = Settings()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -111,6 +118,10 @@ extension GameData {
         badSales = v(.badSales, badSales)
         tiredToday = v(.tiredToday, tiredToday)
         lateHours = v(.lateHours, lateHours)
+        streams = v(.streams, streams)
+        priceBoosts = v(.priceBoosts, priceBoosts)
+        lastFreeProductDay = v(.lastFreeProductDay, lastFreeProductDay)
+        settings = v(.settings, settings)
     }
 }
 
@@ -819,6 +830,8 @@ final class GameStore {
         lines += followerTipsEndDay()
         lines += opportunitiesEndDay()
         lines += counterfeitsEndDay()
+        lines += streamsEndDay()
+        data.priceBoosts = data.priceBoosts.filter { $0.value >= data.day }
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {

@@ -26,6 +26,10 @@ struct CardShow: Codable, Identifiable, Hashable {
     var booked = false
     /// The show days that the player went to, as 0 or 1.
     var attended: [Int] = []
+    /// The player posted a promo for this show (docs/20-card-shows.md). Optional, so old saves still load.
+    var promoted: Bool?
+    /// A better table spot, from reputation Trusted and up (docs/04). Optional, so old saves still load.
+    var goodSpot: Bool?
 
     var endDay: Int { startDay + size.days - 1 }
     var lastBookingDay: Int { startDay - size.bookingCloses }
@@ -120,6 +124,8 @@ extension GameStore {
         guard let i = data.shows.firstIndex(where: { $0.id == id }), canBook(data.shows[i]) else { return }
         let show = data.shows[i]
         data.shows[i].booked = true
+        // Reputation Trusted and up gets a better spot (docs/04-reputation-and-followers-unlocks.md).
+        if reputationTier >= 2 { data.shows[i].goodSpot = true }
         addLedger(-show.size.tableFee, .showFees, "Table · \(show.name)")
         log("Booked a table at \(show.name) for \(money(show.size.tableFee)).", cash: -show.size.tableFee)
         save()
@@ -308,6 +314,10 @@ extension GameStore {
             let lock = meetUnlocked(kind) ? "" : " · invite only"
             out.append(CalendarEntry(kind: kind == .leagueNight ? .league : .meet, title: kind.label,
                                      detail: "\(kind.hoursText) · \(place)\(lock)"))
+        }
+        for plan in data.streams where plan.day == day {
+            out.append(CalendarEntry(kind: .stream, title: "Live stream",
+                                     detail: "\(GameStore.clock(plan.startHour)) · \(formatHours(plan.hours)) · \(plan.itemIDs.count) items"))
         }
         out += eventEntries(day: day)
         let offset = day - data.day
@@ -632,6 +642,9 @@ final class ShowSession {
         // More value on the table draws more people, up to a point.
         var mean = venue.visitorsMean * (1 - minute / closeMinute)
         mean *= min(1.3, 0.7 + Double(table.count) / 30)
+        // A promo post and a good table spot bring more people (docs/20, docs/04).
+        if show?.promoted == true { mean *= Balance.showPromoVisitorBonus }
+        if show?.goodSpot == true { mean *= Balance.goodSpotBonus }
         let count = max(0, Int((mean + Double.random(in: -2...2)).rounded()))
         arrivals = (0..<count).map { _ in Double.random(in: minute..<closeMinute) }.sorted()
         opened = true

@@ -5,6 +5,7 @@ struct SocialHubView: View {
     @Environment(GameStore.self) private var store
     @State private var handle = ""
     @State private var newPost: NewPostRequest?
+    @State private var goLive = false
 
     var body: some View {
         ScrollView {
@@ -18,6 +19,12 @@ struct SocialHubView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .foregroundStyle(.black)
+                    .controlSize(.large)
+                    Button { goLive = true } label: {
+                        Label(store.streamToday == nil ? "Go live" : "Your scheduled stream", systemImage: "dot.radiowaves.left.and.right").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(.red)
                     .controlSize(.large)
                     inbox
                     if !store.saleTips.isEmpty { tips }
@@ -33,6 +40,7 @@ struct SocialHubView: View {
         .navigationTitle(store.social.handle ?? "Social media")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(item: $newPost) { NewPostSheet(request: $0) }
+        .sheet(isPresented: $goLive) { StreamSetupView(plan: store.streamToday) }
     }
 
     private var createAccount: some View {
@@ -240,6 +248,10 @@ struct NewPostSheet: View {
         _subject = State(initialValue: request.subject)
     }
 
+    /// Shows the player can promote: coming up, and not over (docs/20-card-shows.md, the show promo).
+    private var shows: [CardShow] { store.upcomingShows.filter { $0.promoted != true } }
+    @State private var show: CardShow?
+
     private var subjects: [PostSubject] {
         let cards = (store.data.raw + store.data.slabs).map { c in
             PostSubject(id: c.id, name: c.grade.map { "\(c.print.name) \($0.label)" } ?? c.print.name, value: c.market, isCard: true,
@@ -275,8 +287,24 @@ struct NewPostSheet: View {
                         ForEach([PostType.pullReveal, .collectionFlex, .hotTake, .forSale], id: \.self) { t in
                             Button(t.rawValue) { type = t }
                         }
+                        if !shows.isEmpty {
+                            Button(PostType.showPromo.rawValue) { type = .showPromo }
+                        }
                         if store.activeDeal != nil {
                             Button(PostType.sponsored.rawValue) { type = .sponsored }
+                        }
+                    }
+                } else if let t = type, t.needsShow, show == nil {
+                    Section("Pick a show") {
+                        ForEach(shows) { s in
+                            Button { show = s } label: {
+                                HStack {
+                                    Text(s.name).foregroundStyle(Theme.text)
+                                    Spacer()
+                                    Text(s.startDay == store.day ? "today" : "in \(s.startDay - store.day) day\(s.startDay - store.day == 1 ? "" : "s")")
+                                        .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                }
+                            }
                         }
                     }
                 } else if let t = type, t.needsItem, subject == nil {
@@ -296,6 +324,11 @@ struct NewPostSheet: View {
                     Section("Confirm") {
                         Text(t.rawValue).font(.headline)
                         if let subject { Text(subject.name) }
+                        if let show {
+                            Text(show.name)
+                            Text("More people come to your table at that show. Book a table there to make it count.")
+                                .font(.caption).foregroundStyle(Theme.muted)
+                        }
                         if t == .forSale {
                             HStack {
                                 Slider(value: $percent, in: 70...140, step: 1)
@@ -306,9 +339,9 @@ struct NewPostSheet: View {
                                 .foregroundStyle(Theme.muted)
                         }
                         Button("Post") {
-                            result = store.post(t, subject: subject?.name, value: subject?.value ?? 0,
+                            result = store.post(t, subject: subject?.name ?? show?.name, value: subject?.value ?? 0,
                                                 saleCardID: t == .forSale ? subject?.id : nil,
-                                                salePrice: t == .forSale ? salePrice : nil)
+                                                salePrice: t == .forSale ? salePrice : nil, showID: show?.id)
                         }
                     }
                 }

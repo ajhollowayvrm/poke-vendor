@@ -41,6 +41,12 @@ enum Balance {
     static var showSets: [String] { vintageSets + olderSets + modernSets }
     /// Minutes to look over one vendor table.
     static let vendorVisitMinutes = 15.0
+    /// A better table spot, at reputation Trusted and up, brings more people (docs/04).
+    static let goodSpotBonus = 1.15
+    /// First look: a recurring vendor shows the player this many items before the public table (docs/04).
+    static let firstLookItems = 2
+    /// On-site grading at a regional show: one tier, back the same day (docs/20-card-shows.md).
+    static let onSiteGradingFee = 40.0
 
     // Selling (docs/15-selling.md)
     static let listingDays = 28
