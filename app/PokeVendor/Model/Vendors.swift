@@ -151,6 +151,30 @@ struct VendorItem: Identifiable, Hashable {
     /// The item's market value, for reference. A mystery pack has none.
     let market: Double?
     var askedForDeal = false
+    /// Hidden: the item is a fake (docs/14-counterfeit-risk.md).
+    var fake: FakeTier?
+    /// The player's look by eye caught something.
+    var looksOff = false
+
+    var slug: String? {
+        switch goods {
+        case .single(_, let s, _), .slab(_, let s, _): s
+        case .sealed(let p): p.homeSlug
+        case .mystery: nil
+        }
+    }
+
+    var isSealed: Bool {
+        if case .sealed = goods { return true }
+        return false
+    }
+
+    /// Rolls whether this item is a fake, from where it is sold. Mystery packs are what they are.
+    mutating func rollFake(source: FakeSource, tired: Double) {
+        if case .mystery = goods { return }
+        fake = Counterfeit.roll(source: source, sealed: isSealed, slug: slug, market: market ?? price)
+        if let fake { looksOff = Counterfeit.eyeballCatches(fake, tired: tired) }
+    }
 
     var name: String {
         switch goods {

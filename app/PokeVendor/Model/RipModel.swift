@@ -61,6 +61,10 @@ final class RipModel {
     private var specialSeen = 0
     /// Tests only: the next pack is this special pack kind.
     static var forcedSpecial: String?
+    /// The pack in hand came from a resealed product: only filler inside (docs/14-counterfeit-risk.md).
+    private(set) var resealed = false
+    /// Changes when a resealed pack opens, so the screen shows the banner once for each pack.
+    private(set) var resealedMoment: UUID?
 
     init(items: [SealedItem], store: GameStore?) {
         queue = items.flatMap { item in
@@ -175,6 +179,17 @@ final class RipModel {
             cards[cards.count - 2] = RipCard(print: sir, energy: nil)
         }
         #endif
+        // A resealed product was opened and searched. Every hit is gone, and filler took its place.
+        resealed = currentPack.flatMap { store?.fakeOf(sourceID: $0.sourceID) } != nil
+        resealedMoment = nil
+        if resealed {
+            special = nil
+            let filler = cardSet.prints.filter { ["Common", "Uncommon"].contains($0.rarity) && ($0.market ?? 0) < 1 }
+            cards = cards.map { card in
+                guard card.isHit, let print = filler.randomElement() else { return card }
+                return RipCard(print: print, energy: nil)
+            }
+        }
         stack = faceUp ? cards : cards.reversed()
         pile = []
         seen = []
@@ -211,6 +226,10 @@ final class RipModel {
     func finishOpening() {
         phase = .open
         markFrontSeen()
+        if resealed, let pack = currentPack {
+            store?.foundResealed(sourceID: pack.sourceID, name: pack.productName)
+            resealedMoment = UUID()
+        }
     }
 
     /// Flips a face-down top card in place, so the player can see a hit before it goes to the pile.

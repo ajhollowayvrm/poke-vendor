@@ -62,6 +62,7 @@
 		512687D15CB634EBCB49407A /* battle-styles.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */; };
 		51B39009255482C3B2DB9E7D /* emerging-powers.json in Resources */ = {isa = PBXBuildFile; fileRef = 678B02909309694DEE98F244 /* emerging-powers.json */; };
 		51B49AA4701423DA8AE58344 /* shrouded-fable.json in Resources */ = {isa = PBXBuildFile; fileRef = 3739377E784083CCC3233A37 /* shrouded-fable.json */; };
+		54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3284779D32F44C664EE1950F /* Consignment.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
 		55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */; };
 		5644339FA3071C555DC255FD /* xy.json in Resources */ = {isa = PBXBuildFile; fileRef = B9400ABD48A2925CE3BE6865 /* xy.json */; };
@@ -139,6 +140,7 @@
 		BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */; };
 		C13E4D86A349AC573D8646EC /* phantom-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = 754F7D2C37FC137EEECF52E0 /* phantom-forces.json */; };
 		C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */ = {isa = PBXBuildFile; fileRef = 7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */; };
+		C3BA9223FB686ECAAA25A207 /* LiveStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */; };
 		C7F13CF3236CA8E43886D612 /* celestial-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 61E68EE2207FCE8AD0A066C8 /* celestial-storm.json */; };
 		C9F245EC988EC93EC1037DB3 /* paldean-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = 201CF0C8665BF1729BF4B106 /* paldean-fates.json */; };
 		CA12F46151423814D55751CF /* southern-islands.json in Resources */ = {isa = PBXBuildFile; fileRef = 3DAA9319761EC5C721BCC199 /* southern-islands.json */; };
@@ -210,6 +212,7 @@
 		297BD4F44B83A77E160F288F /* CardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViews.swift; sourceTree = "<group>"; };
 		2BB5E54A48F045F4D8D408CD /* plasma-storm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-storm.json"; sourceTree = "<group>"; };
 		2E04FD006DB8B88A9342A378 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
+		3284779D32F44C664EE1950F /* Consignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consignment.swift; sourceTree = "<group>"; };
 		3300530D0D241B426A6EF827 /* supreme-victors.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "supreme-victors.json"; sourceTree = "<group>"; };
 		33CED089D9AD4D92AB2AAA7C /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
 		358CC15CDFF4392C2418EBCB /* Opportunities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Opportunities.swift; sourceTree = "<group>"; };
@@ -250,6 +253,7 @@
 		56EE5582CFBBA45162D5DFFC /* stormfront.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = stormfront.json; sourceTree = "<group>"; };
 		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
 		5B48285729B6638BC44FA869 /* skyridge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = skyridge.json; sourceTree = "<group>"; };
+		5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStream.swift; sourceTree = "<group>"; };
 		5F38B7B3DE47AF76DF106787 /* stellar-crown.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stellar-crown.json"; sourceTree = "<group>"; };
 		5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fates-collide.json"; sourceTree = "<group>"; };
 		617D61638A31A85F3BE630D9 /* rising-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "rising-rivals.json"; sourceTree = "<group>"; };
@@ -556,11 +560,13 @@
 			children = (
 				3BE8F9A509ED85647311ACD5 /* Balance.swift */,
 				D85667450A30BCA2B91E3829 /* Camping.swift */,
+				3284779D32F44C664EE1950F /* Consignment.swift */,
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				38152100E3F21C13B7C61E1B /* GameStore.swift */,
 				4B1D85597836B370B32E25FC /* GarageSales.swift */,
 				1B3A5E9B134DA765470B7666 /* Inventory.swift */,
+				5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */,
 				DFA05E48B4793E422BDD8455 /* LocalStores.swift */,
 				642F08591A3569F0A27BA0D1 /* Market.swift */,
 				B263211917DE478A8911439F /* Meets.swift */,
@@ -868,6 +874,7 @@
 				AE80D65ED6605B15A934D2E7 /* Camping.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
+				54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */,
 				E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */,
 				EDECE585BE210F65109E48BD /* Counterfeits.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
@@ -879,6 +886,7 @@
 				A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */,
 				63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */,
 				F0032B8697D4063D2F6E8907 /* InventoryView.swift in Sources */,
+				C3BA9223FB686ECAAA25A207 /* LiveStream.swift in Sources */,
 				7C714401A1C5DB31FFCD79E6 /* LocalStores.swift in Sources */,
 				DA4F133419BB03A1679C5705 /* Market.swift in Sources */,
 				32208ECC539710AD0EA71CAD /* Meets.swift in Sources */,

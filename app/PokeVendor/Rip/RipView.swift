@@ -46,6 +46,34 @@ private struct Placement {
     var faceUp: Bool
 }
 
+/// The product was resealed: the rip stops here in every mode (docs/14-counterfeit-risk.md; docs/18, The stop rule).
+struct ResealedBanner: View {
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.6).ignoresSafeArea()
+            VStack(spacing: 12) {
+                Image(systemName: "exclamationmark.triangle.fill").font(.system(size: 40)).foregroundStyle(Theme.orange)
+                Text("RESEALED").font(.system(size: 28, weight: .black, design: .monospaced)).foregroundStyle(Theme.orange)
+                Text("Someone opened this product, took the hits, and sealed it again. Only filler is left. Every pack from it is worthless.")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Theme.text)
+                Button(action: onDismiss) { Text("Continue").frame(maxWidth: .infinity) }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.orange)
+                    .foregroundStyle(.black)
+                    .controlSize(.large)
+            }
+            .padding(20)
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.orange.opacity(0.6)))
+            .padding(28)
+        }
+    }
+}
+
 struct RipView: View {
     @State private var model: RipModel
     let onClose: () -> Void
@@ -78,6 +106,8 @@ struct RipView: View {
     @State private var stackTurn: Double = 0
     @State private var flipping = false
     @State private var skipAfterOpen = false
+    /// The resealed product banner, while it shows.
+    @State private var resealedShown = false
     /// The info panel, the pile label, and the glow wait until a card has turned face up.
     @State private var infoCard: RipCard?
     @State private var pileTop: RipCard?
@@ -225,6 +255,14 @@ struct RipView: View {
                     .zIndex(480)
                 }
 
+                if resealedShown {
+                    ResealedBanner {
+                        withAnimation(.easeOut(duration: 0.3)) { resealedShown = false }
+                    }
+                    .transition(.opacity)
+                    .zIndex(485)
+                }
+
                 if peeking {
                     PeekView(cards: model.stack, size: geo.size)
                         .transition(.opacity)
@@ -273,6 +311,14 @@ struct RipView: View {
             Task {
                 try? await Task.sleep(for: .milliseconds(Self.revealDelay + 350))
                 withAnimation(.easeIn(duration: 0.25)) { celebration = special }
+            }
+        }
+        .onChange(of: model.resealedMoment) { _, moment in
+            guard moment != nil else { return }
+            Task {
+                try? await Task.sleep(for: .milliseconds(Self.revealDelay + 200))
+                Haptics.tap(.heavy)
+                withAnimation(.easeIn(duration: 0.25)) { resealedShown = true }
             }
         }
         .onChange(of: revealKey) { _, _ in

@@ -497,6 +497,9 @@ struct VisitorCard: View {
                         Text(VendorItem(goods: goods, price: 0, market: nil).name).font(.subheadline.weight(.semibold))
                         GoodsDetail(goods: goods, tool: tool)
                         Text("market \(money(visitor.goodsMarket))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        if visitor.goodsLooksOff {
+                            LooksOffLine(sealed: { if case .sealed = goods { return true }; return false }())
+                        }
                     }
                 }
             }
@@ -568,6 +571,17 @@ struct VisitorCard: View {
         case .trade: Color(red: 0.7, green: 0.55, blue: 1)
         case .sell: Theme.cyan
         }
+    }
+}
+
+/// The eyeball check caught something (docs/14-counterfeit-risk.md, Detection).
+struct LooksOffLine: View {
+    let sealed: Bool
+
+    var body: some View {
+        Label(sealed ? "Looks off · the wrap seam is wrong" : "Looks off · soft cardstock, flat colors", systemImage: "eye.trianglebadge.exclamationmark")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Theme.orange)
     }
 }
 
@@ -855,6 +869,7 @@ private struct GoodsRow: View {
                         Text("mkt \(money(market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                     }
                 }
+                if item.looksOff { LooksOffLine(sealed: item.isSealed) }
                 HStack(spacing: 8) {
                     Button(isMystery ? "Buy and open" : "Buy", action: buy)
                         .buttonStyle(.borderedProminent).tint(Theme.cyan).foregroundStyle(.black)

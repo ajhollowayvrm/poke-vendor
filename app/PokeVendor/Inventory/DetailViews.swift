@@ -43,6 +43,19 @@ struct StatusBox: View {
                 Text("On the way from \(from.rawValue) · arrives in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
             case .atGrader(let company, let tier, let days, _):
                 Text("At \(company.rawValue) (\(tier)) · back in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+            case .atAuthenticator(let days, _):
+                Text("At the authenticator · back in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+            case .arriving(let days, let from):
+                Text("On the way from \(from) · arrives in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+            case .consigned(let c):
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("On consignment at \(c.shop.rawValue) for \(money(c.price))").font(.subheadline)
+                    Text("Day \(store.day - c.dayListed + 1) of \(Balance.consignDays) · the shop takes \(Int(c.cut * 100))%")
+                        .font(.caption.monospaced())
+                        .foregroundStyle(Theme.muted)
+                    Button("Take it back") { store.endConsignment(id) }
+                        .buttonStyle(.bordered)
+                }
             case .listed(let listing):
                 VStack(alignment: .leading, spacing: 6) {
                     if let end = listing.auctionEndDay {
@@ -97,7 +110,7 @@ struct CardDetailView: View {
                         if count > 1 {
                             Text("×\(count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                         }
-                        Tags(keep: card.keep, status: card.status)
+                        Tags(keep: card.keep, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
                     }
                     DetailBox(title: "Prices") {
                         HStack(alignment: .firstTextBaseline) {
@@ -117,6 +130,11 @@ struct CardDetailView: View {
                         GradedPricesGrid(print: card.print)
                     }
                     ConditionBox(card: card)
+                    if card.paid != nil || card.fake != nil {
+                        AuthenticityBox(cardID: card.id, fake: card.fake, known: card.isKnownFake, verified: card.isVerified,
+                                        status: card.status, sealed: false, eyeball: store.eyeballWarning(card),
+                                        tool: store.toolReading(fake: card.fake, id: card.id))
+                    }
                     StatusBox(id: card.id, status: card.status)
                     DetailBox(title: "Where it came from") {
                         if let paid = card.paid {
@@ -127,6 +145,14 @@ struct CardDetailView: View {
                         }
                     }
                     let free = card.status == nil
+                    if card.isKnownFake {
+                        Banner(text: "You know this card is a fake. It is worth nothing. If you sell it and the buyer finds out, it is a scam.",
+                               color: .red)
+                        Button("Throw it away") { store.discardFake(card.id) }
+                            .buttonStyle(.bordered)
+                            .tint(.red)
+                            .disabled(!free)
+                    }
                     HStack(spacing: 10) {
                         Button("Sell") {
                             let free = store.mates(of: card).filter { $0.status == nil && !$0.keep }.map(\.id)
@@ -251,6 +277,78 @@ struct ConditionBox: View {
     }
 }
 
+/// What the player can tell about a card being real: the look by eye, the tool, and the paid check
+/// (docs/14-counterfeit-risk.md, Detection).
+struct AuthenticityBox: View {
+    @Environment(GameStore.self) private var store
+    let cardID: UUID
+    let fake: FakeTier?
+    let known: Bool
+    let verified: Bool
+    let status: ItemStatus?
+    let sealed: Bool
+    /// The tells the player can see, or nil when it looks right.
+    let eyeball: String?
+    /// The tool's reading, when the player has one.
+    let tool: Bool?
+
+    var body: some View {
+        DetailBox(title: "Authenticity") {
+            if known {
+                Label(fake.map { "Fake · \($0.label.lowercased())" } ?? "Fake", systemImage: "xmark.octagon.fill")
+                    .font(.subheadline.weight(.semibold)).foregroundStyle(.red)
+            } else if verified {
+                Label("Real · checked", systemImage: "checkmark.seal.fill").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.green)
+            } else {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("By eye").font(.subheadline).foregroundStyle(Theme.muted)
+                    Spacer()
+                    Text(eyeball == nil ? "Looks right" : "Looks off").font(.subheadline.monospaced())
+                        .foregroundStyle(eyeball == nil ? Theme.text : Theme.orange)
+                }
+                if let eyeball {
+                    Text(eyeball).font(.caption).foregroundStyle(Theme.orange)
+                }
+                if let tool {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Authentication tool").font(.subheadline).foregroundStyle(Theme.muted)
+                        Spacer()
+                        Text(tool ? "Real" : "FAKE").font(.subheadline.monospaced().weight(.semibold))
+                            .foregroundStyle(tool ? Theme.green : .red)
+                    }
+                    if !tool {
+                        Button("Mark it as a fake") {
+                            if sealed { store.markFakeKnown(sealedID: cardID) } else { store.markFakeKnown(cardID: cardID) }
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.red)
+                    }
+                } else if !sealed {
+                    Text("A look by eye catches a bootleg, not a good fake. A paid check takes \(Balance.authenticationDays) days. A grader catches every fake, but keeps the fee.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                    Button("Authenticate · \(money(Balance.authenticationFee)) · \(Balance.authenticationDays) days") {
+                        store.authenticate([cardID])
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(status != nil || !store.canAfford(Balance.authenticationFee))
+                } else {
+                    Text("A resealed product shows itself when you open it. Every pack inside is filler.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
+                if eyeball != nil {
+                    Button("I'm sure it's fake") {
+                        if sealed { store.markFakeKnown(sealedID: cardID) } else { store.markFakeKnown(cardID: cardID) }
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Theme.orange)
+                }
+            }
+        }
+    }
+}
+
 struct SealedDetailView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
@@ -277,7 +375,7 @@ struct SealedDetailView: View {
                         if mates.count > 1 {
                             Text("×\(mates.count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                         }
-                        Tags(keep: item.keep, status: item.status)
+                        Tags(keep: item.keep, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
                     }
                     DetailBox(title: "Contents") {
                         let slugs = store.packSlugs(of: item)
@@ -304,9 +402,30 @@ struct SealedDetailView: View {
                         HStack(spacing: 0) {
                             StatCell(label: "Sealed market", value: money(store.market(of: item)))
                             StatCell(label: "Paid", value: money(item.paid))
+                            if store.hasUpgrade(.evReadout), let product {
+                                let ev = store.expectedValue(of: product)
+                                StatCell(label: "Open EV", value: money(ev), color: ev >= store.market(of: item) ? Theme.green : Theme.orange)
+                            }
+                        }
+                        if store.hasUpgrade(.evReadout) {
+                            Text("Open EV: the expected value of the cards inside, from the pull rates and today's prices.")
+                                .font(.caption2).foregroundStyle(Theme.muted)
                         }
                     }
+                    if item.fake != nil || !item.source.hasPrefix("Test") {
+                        AuthenticityBox(cardID: item.id, fake: item.fake, known: item.isKnownFake, verified: item.isVerified,
+                                        status: item.status, sealed: true, eyeball: store.eyeballWarning(item),
+                                        tool: store.toolReading(fake: item.fake, id: item.id))
+                    }
                     StatusBox(id: item.id, status: item.status)
+                    if item.isKnownFake {
+                        Banner(text: "You know this product is resealed. It is worth nothing. If you sell it and the buyer finds out, it is a scam.",
+                               color: .red)
+                        Button("Throw it away") { store.discardFake(item.id) }
+                            .buttonStyle(.bordered)
+                            .tint(.red)
+                            .disabled(item.status != nil)
+                    }
                     DetailBox(title: "Where it came from") {
                         Text("\(item.source) · day \(item.acquiredDay + 1)").font(.subheadline)
                     }

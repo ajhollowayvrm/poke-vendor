@@ -74,6 +74,8 @@ enum Balance {
         .pokemonCenter: 5, .amazon: 2, .reseller: 3, .ebay: 4, .facebook: 4,
     ]
     static let facebookPickupHours = 1.0
+    /// Half of the Facebook pickups are set for a later day (docs/12, Facebook Marketplace).
+    static let fbLaterPickupChance = 0.5
 
     // Grading (docs/10-grading.md)
     static let gradingTiers: [GradingCompany: [GradingTier]] = [

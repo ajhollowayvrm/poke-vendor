@@ -55,6 +55,12 @@ struct GameData: Codable {
     var opportunities: [Opportunity] = []
     /// The upgrades the player owns, by `Upgrade.rawValue` (docs/09-upgrades.md).
     var upgrades: [String] = []
+    /// Sales of fakes that the buyer will find out about (docs/14-counterfeit-risk.md).
+    var badSales: [BadSale] = []
+    /// The tired factor today: 1 rested, 0.85 tired, 0.7 exhausted (docs/16-time-and-day.md, Late nights).
+    var tiredToday = 1.0
+    /// Hours past 11 PM last night, waiting for the morning choice.
+    var lateHours = 0.0
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -102,6 +108,9 @@ extension GameData {
         testRestocks = v(.testRestocks, testRestocks)
         opportunities = v(.opportunities, opportunities)
         upgrades = v(.upgrades, upgrades)
+        badSales = v(.badSales, badSales)
+        tiredToday = v(.tiredToday, tiredToday)
+        lateHours = v(.lateHours, lateHours)
     }
 }
 
@@ -224,9 +233,9 @@ final class GameStore {
 
     // MARK: - Inventory values
 
+    /// What the item is worth to the player. A known resealed product is worth nothing.
     func market(of item: SealedItem) -> Double {
-        if let product = SetLibrary.product(item.productID, in: item.setSlug) { return product.market }
-        return (SetLibrary.set(item.setSlug).packCost ?? 0) * Double(item.packs)
+        item.isKnownFake ? 0 : realMarket(of: item)
     }
 
     var marketValue: Double {
@@ -489,13 +498,17 @@ final class GameStore {
         switch offer.item {
         case .product(let product, let slug):
             addLedger(-total, .sealed, "\(product.name) · \(offer.store.rawValue)")
-            data.sealed.append(SealedItem(setSlug: slug, name: product.name, packs: product.packs, paid: total,
-                                          acquired: .now, source: "Bought on \(offer.store.rawValue)",
-                                          productID: product.id, status: status, acquiredDay: data.day))
+            var item = SealedItem(setSlug: slug, name: product.name, packs: product.packs, paid: total,
+                                  acquired: .now, source: "Bought on \(offer.store.rawValue)",
+                                  productID: product.id, status: status, acquiredDay: data.day)
+            item.fake = offer.fake
+            data.sealed.append(item)
         case .single(let print, let slug):
             addLedger(-total, .singles, "\(print.name) · \(offer.store.rawValue)")
-            data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: total, ripID: nil,
-                                      condition: .secondHand(), status: status, acquiredDay: data.day))
+            var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: total, ripID: nil,
+                                 condition: .secondHand(), status: status, acquiredDay: data.day)
+            card.fake = offer.fake
+            data.raw.append(card)
         }
         log("Bought \(offer.title) on \(offer.store.rawValue) for \(money(total)).", cash: -total)
         save()
@@ -558,8 +571,11 @@ final class GameStore {
         data.weekBought.append(single.id)
         recordDeal(shopContactID(store), what: "Bought \(single.print.name)", price: single.price, market: single.print.market ?? 0,
                    slug: single.setSlug)
-        data.raw.append(OwnedCard(print: single.print, setSlug: single.setSlug, acquired: .now, paid: single.price, ripID: nil,
-                                  condition: .secondHand(), acquiredDay: data.day))
+        var card = OwnedCard(print: single.print, setSlug: single.setSlug, acquired: .now, paid: single.price, ripID: nil,
+                             condition: .secondHand(), acquiredDay: data.day)
+        card.fake = single.fake
+        if single.looksOff, single.fake != nil { card.fakeKnown = true }
+        data.raw.append(card)
         log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
             cash: credit ? nil : -single.price)
         save()
@@ -574,17 +590,27 @@ final class GameStore {
                   category: item.isSealed ? .sealed : .singles) else { return false }
         data.weekBought.append(item.id)
         recordDeal(shopContactID(store), what: "Bought \(item.name)", price: item.price, market: item.market, slug: nil)
+        let known: Bool? = item.looksOff && item.fake != nil ? true : nil
         switch item.goods {
         case .single(let print, let slug, let condition):
-            data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
-                                      condition: condition, acquiredDay: data.day))
+            var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
+                                 condition: condition, acquiredDay: data.day)
+            card.fake = item.fake
+            card.fakeKnown = known
+            data.raw.append(card)
         case .slab(let print, let slug, let grade):
-            data.slabs.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade,
-                                        acquiredDay: data.day))
+            var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade,
+                                 acquiredDay: data.day)
+            card.fake = item.fake
+            card.fakeKnown = known
+            data.slabs.append(card)
         case .sealed(let product):
-            data.sealed.append(SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: item.price,
-                                          acquired: .now, source: "Bought at \(store.rawValue)", productID: product.id,
-                                          acquiredDay: data.day))
+            var sealed = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: item.price,
+                                    acquired: .now, source: "Bought at \(store.rawValue)", productID: product.id,
+                                    acquiredDay: data.day)
+            sealed.fake = item.fake
+            sealed.fakeKnown = known
+            data.sealed.append(sealed)
         case .mystery:
             break
         }
@@ -614,20 +640,38 @@ final class GameStore {
         return true
     }
 
+    /// The buylist offer. The shop does not know a fake yet, so it quotes the real price.
     func buylistPrice(_ card: OwnedCard, at store: LocalStore) -> Double {
-        (card.market * standing(store).buylistRate * 100).rounded() / 100
+        (card.realMarket * standing(store).buylistRate * 100).rounded() / 100
     }
 
-    /// The buylist: instant cash, well below market (docs/15-selling.md, The local game shop).
-    func sellToShop(_ id: UUID, at store: LocalStore) {
-        guard let card = card(id), card.status == nil, !card.keep else { return }
-        let price = buylistPrice(card, at: store)
+    /// The buylist: instant cash, well below market (docs/15-selling.md, The local game shop). The shop checks each
+    /// card first. A fake it catches costs standing, and the shop keeps nothing (docs/14, Consequences).
+    /// Returns false when the shop refused the card.
+    @discardableResult
+    func sellToShop(_ id: UUID, at store: LocalStore) -> Bool {
+        guard let card = card(id), card.status == nil, !card.keep else { return false }
+        if let fake = card.fake, Double.random(in: 0..<1) < Balance.shopDetectChance[fake.rawValue] {
+            var state = shop(store)
+            state.points = max(0, state.points - Balance.shopFakeStandingCost)
+            data.shops[store.rawValue] = state
+            markFakeKnown(cardID: id)
+            log("\(store.rawValue) checked your \(card.print.name) and called it a fake. Standing −\(Balance.shopFakeStandingCost).")
+            save()
+            return false
+        }
+        let price = (card.realMarket * standing(store).buylistRate * 100).rounded() / 100
         data.raw.removeAll { $0.id == id }
         data.slabs.removeAll { $0.id == id }
         addLedger(price, .sale, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(store.rawValue) buylist")
-        recordDeal(shopContactID(store), what: "Sold them \(card.print.name)", price: price, market: card.market, slug: card.setSlug)
+        recordDeal(shopContactID(store), what: "Sold them \(card.print.name)", price: price, market: card.realMarket, slug: card.setSlug)
+        if let fake = card.fake {
+            recordBadSale(item: card.print.name, channel: "\(store.rawValue) buylist", price: price, fake: fake, known: card.isKnownFake,
+                          refunds: false, contactID: shopContactID(store), shop: store)
+        }
         log("Sold \(card.print.name) to \(store.rawValue) for \(money(price)) cash.", cash: price)
         save()
+        return true
     }
 
     func bulkCredit(_ group: BulkGroup) -> Double {
@@ -687,8 +731,11 @@ final class GameStore {
         let fees = switch channel {
         case .tcgplayer: price * Balance.tcgFeeRate + Balance.tcgFeeFlat
         case .ebay, .ebayAuction: price * Balance.ebayFeeRate + Balance.ebayFeeFlat
-        case .social: 0.0
+        case .whatnot: price * Balance.whatnotFeeRate + Balance.whatnotFeeFlat
+        case .social, .facebook: 0.0
         }
+        // Facebook Marketplace hands over in person: no shipping, no insurance.
+        guard channel.ships else { return (fees, 0, 0) }
         let shipping = Balance.shippingCost(for: price, sealed: sealed)
         return (fees, shipping, insured ? Balance.insuranceCost(for: price) : 0)
     }
@@ -771,6 +818,7 @@ final class GameStore {
         lines += relationshipsEndDay()
         lines += followerTipsEndDay()
         lines += opportunitiesEndDay()
+        lines += counterfeitsEndDay()
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {
@@ -812,12 +860,20 @@ final class GameStore {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
             case .listed(let listing):
-                if let sale = rollSale(listing, market: market(of: item), sealed: true) {
-                    lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true))
+                if let sale = rollSale(listing, market: realMarket(of: item), sealed: true) {
+                    lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true,
+                                              fake: item.fake, known: item.isKnownFake))
                     continue
                 } else if listingExpired(listing) {
                     item.status = nil
                     lines.append("Your \(listing.channel.rawValue) listing for \(item.name) ended with no sale.")
+                }
+            case .arriving(let days, let from):
+                if days <= 1 {
+                    item.status = nil
+                    lines.append("Arrived from \(from): \(item.name).")
+                } else {
+                    item.status = .arriving(daysLeft: days - 1, from: from)
                 }
             default:
                 break
@@ -843,24 +899,55 @@ final class GameStore {
                 }
             case .atGrader(let company, let tier, let days, let ledgerID):
                 if days <= 1 {
-                    let grade = Self.gradeResult(card.condition, company: company)
-                    card.status = nil
-                    card.grade = grade
-                    slabs.append(card)
-                    lines.append("\(card.print.name) came back from \(company.rawValue): \(grade.label), worth \(money(card.market)).")
                     if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) {
                         data.ledger[i].pending = data.raw.contains {
                             if case .atGrader(_, _, let d, let l) = $0.status, l == ledgerID, $0.id != card.id { return d > 1 }
                             return false
                         }
+                    }
+                    // A grader catches every fake. The fee stays paid (docs/14, Detection).
+                    if let fake = card.fake {
+                        card.status = nil
+                        card.fakeKnown = true
+                        lines.append("\(company.rawValue) flagged your \(card.print.name) as counterfeit (\(fake.label.lowercased())). No grade, and the fee is not refunded.")
+                        raw.append(card)
+                        continue
+                    }
+                    let grade = Self.gradeResult(card.condition, company: company)
+                    card.status = nil
+                    card.grade = grade
+                    card.verified = true
+                    slabs.append(card)
+                    lines.append("\(card.print.name) came back from \(company.rawValue): \(grade.label), worth \(money(card.market)).")
+                    if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) {
                         data.ledger[i].label += " · \(card.print.name) \(grade.label)"
                     }
                     continue
                 }
                 card.status = .atGrader(company: company, tier: tier, daysLeft: days - 1, ledgerID: ledgerID)
+            case .atAuthenticator(let days, let ledgerID):
+                if days <= 1 {
+                    if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) { data.ledger[i].pending = false }
+                    lines.append(authenticationResult(&card))
+                } else {
+                    card.status = .atAuthenticator(daysLeft: days - 1, ledgerID: ledgerID)
+                }
+            case .arriving(let days, let from):
+                if days <= 1 {
+                    card.status = nil
+                    lines.append("Back from \(from): \(card.print.name).")
+                } else {
+                    card.status = .arriving(daysLeft: days - 1, from: from)
+                }
+            case .consigned(let c):
+                if let line = advanceConsignment(&card, c) {
+                    lines.append(line)
+                    if card.status == nil, c.sellDay == data.day { continue }
+                }
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
-                    lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false))
+                    lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false,
+                                              fake: card.fake, known: card.isKnownFake))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -874,10 +961,11 @@ final class GameStore {
             raw.append(card)
         }
         for var card in data.slabs where card.status != nil {
-            if case .listed(let listing) = card.status {
+            switch card.status {
+            case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
-                                              price: sale, sealed: false))
+                                              price: sale, sealed: false, fake: card.fake, known: card.isKnownFake))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -885,6 +973,27 @@ final class GameStore {
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .noSale) }
                     lines.append("Your \(listing.channel.rawValue) listing for \(card.print.name) ended with no sale.")
                 }
+            case .atAuthenticator(let days, let ledgerID):
+                if days <= 1 {
+                    if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) { data.ledger[i].pending = false }
+                    lines.append(authenticationResult(&card))
+                } else {
+                    card.status = .atAuthenticator(daysLeft: days - 1, ledgerID: ledgerID)
+                }
+            case .arriving(let days, let from):
+                if days <= 1 {
+                    card.status = nil
+                    lines.append("Back from \(from): \(card.print.name).")
+                } else {
+                    card.status = .arriving(daysLeft: days - 1, from: from)
+                }
+            case .consigned(let c):
+                if let line = advanceConsignment(&card, c) {
+                    lines.append(line)
+                    if card.status == nil, c.sellDay == data.day { continue }
+                }
+            default:
+                break
             }
             slabs.append(card)
         }
@@ -901,12 +1010,16 @@ final class GameStore {
         if listing.channel == .tcgplayer {
             let lowest = Self.tcgLowest(for: card.print)
             let chance = listing.price <= lowest ? 0.30 : 0.30 * exp(-(listing.price / lowest - 1) * 35)
-            return Double.random(in: 0..<1) < chance ? listing.price : nil
+            return Double.random(in: 0..<1) < chance * reachSaleFactor ? listing.price : nil
         }
-        return rollSale(listing, market: card.market, sealed: false, slab: card.grade != nil)
+        return rollSale(listing, market: card.realMarket, sealed: false, slab: card.grade != nil)
     }
 
+    /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
+    var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
+
     private func rollSale(_ listing: Listing, market: Double, sealed: Bool, slab: Bool = false) -> Double? {
+        let reach = reachSaleFactor
         switch listing.channel {
         case .ebayAuction:
             guard let end = listing.auctionEndDay, data.day >= end else { return nil }
@@ -916,21 +1029,29 @@ final class GameStore {
         case .ebay:
             let base = slab || sealed ? 0.14 : 0.10
             let chance = base * exp(-(listing.price / max(market, 0.01) - 1) * 8)
-            return Double.random(in: 0..<1) < min(0.6, chance) ? listing.price : nil
+            return Double.random(in: 0..<1) < min(0.6, chance * reach) ? listing.price : nil
         case .tcgplayer:
             let chance = 0.30 * exp(-(listing.price / max(market * 0.95, 0.01) - 1) * 35)
-            return Double.random(in: 0..<1) < chance ? listing.price : nil
+            return Double.random(in: 0..<1) < chance * reach ? listing.price : nil
         case .social:
             return Double.random(in: 0..<1) < socialSaleChance(price: listing.price, market: market) ? listing.price : nil
+        case .whatnot:
+            // Whatnot sells on a stream, not from a standing listing.
+            return nil
+        case .facebook:
+            // A Facebook listing gives an offer, not a sale. `meetupsEndDay` handles it.
+            return nil
         }
     }
 
-    private func completeSale(name: String, listing: Listing, price: Double, sealed: Bool) -> String {
-        let costs = Self.saleCosts(price: price, channel: listing.channel, sealed: sealed, insured: listing.insured)
-        let net = price - costs.fees - costs.shipping - costs.insurance
-        addLedger(net, .sale, "\(name) · \(listing.channel.rawValue) · sold \(money(price))")
-        var line = "Sold \(name) on \(listing.channel.rawValue) for \(money(price)). You got \(money(net)) after fees and shipping."
-        if Double.random(in: 0..<1) < Balance.lossChance {
+    /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
+    private func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, fake: FakeTier? = nil, known: Bool = false) -> String {
+        var line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured)
+        if let fake {
+            recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
+                          refunds: listing.channel.refundsFakes)
+        }
+        if listing.channel.ships, Double.random(in: 0..<1) < Balance.lossChance {
             if listing.insured {
                 line += " The package got lost, and the insurance paid you back."
             } else {
@@ -939,6 +1060,15 @@ final class GameStore {
             }
         }
         return line
+    }
+
+    /// Takes the money for a sale on a channel, less its fees and shipping. Returns the line for the report.
+    func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool) -> String {
+        let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
+        let net = price - costs.fees - costs.shipping - costs.insurance
+        addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
+        let after = channel.ships ? "after fees and shipping" : "in cash"
+        return "Sold \(name) on \(channel.rawValue) for \(money(price)). You got \(money(net)) \(after)."
     }
 
     // MARK: - Saving

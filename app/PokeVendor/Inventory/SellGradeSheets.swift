@@ -24,6 +24,7 @@ struct SellSheet: View {
         let isRaw: Bool
     }
 
+    /// The prices are what a real copy sells for: a buyer does not know a fake until they look (docs/14).
     private var lines: [Line] {
         var out: [Line] = []
         for st in stacks(store.data.raw.filter { ids.contains($0.id) }, key: store.stackKey) {
@@ -31,14 +32,20 @@ struct SellSheet: View {
         }
         for st in stacks(store.data.slabs.filter { ids.contains($0.id) }, key: store.stackKey) {
             let c = st.items[0]
-            out.append(Line(id: st.id, ids: st.items.map(\.id), name: "\(c.print.name) \(c.grade?.label ?? "")", reference: c.market,
+            out.append(Line(id: st.id, ids: st.items.map(\.id), name: "\(c.print.name) \(c.grade?.label ?? "")", reference: c.realMarket,
                             sealed: false, isRaw: false))
         }
         for st in stacks(store.data.sealed.filter { ids.contains($0.id) }, key: store.stackKey) {
             let s = st.items[0]
-            out.append(Line(id: st.id, ids: st.items.map(\.id), name: s.name, reference: store.market(of: s), sealed: true, isRaw: false))
+            out.append(Line(id: st.id, ids: st.items.map(\.id), name: s.name, reference: store.realMarket(of: s), sealed: true, isRaw: false))
         }
         return out
+    }
+
+    /// True when any item to list is a fake that the player knows about.
+    private var sellingKnownFake: Bool {
+        (store.data.raw + store.data.slabs).contains { ids.contains($0.id) && $0.isKnownFake }
+            || store.data.sealed.contains { ids.contains($0.id) && $0.isKnownFake }
     }
 
     private func count(_ line: Line) -> Int {
@@ -55,7 +62,7 @@ struct SellSheet: View {
     /// TCGplayer prices against the lowest listing. eBay prices against the market price.
     private func reference(_ line: Line) -> Double {
         guard line.isRaw, let card = store.card(line.id) else { return line.reference }
-        return channel == .tcgplayer ? GameStore.tcgLowest(for: card.print) : card.market
+        return channel == .tcgplayer ? GameStore.tcgLowest(for: card.print) : card.realMarket
     }
 
     private func price(_ line: Line) -> Double {
@@ -67,11 +74,20 @@ struct SellSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                if sellingKnownFake {
+                    Section {
+                        Label("You know this is a fake. If the buyer finds out, it is a scam: a refund, a hit to your reputation, and maybe a public accusation.",
+                              systemImage: "exclamationmark.triangle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(Theme.orange)
+                    }
+                }
                 Section("Channel") {
                     Picker("Channel", selection: $channel) {
                         if tcgAllowed { Text("TCGplayer").tag(Listing.Channel.tcgplayer) }
                         Text("eBay Buy It Now").tag(Listing.Channel.ebay)
                         Text("eBay auction").tag(Listing.Channel.ebayAuction)
+                        Text("Facebook Marketplace").tag(Listing.Channel.facebook)
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
@@ -97,8 +113,10 @@ struct SellSheet: View {
                             .foregroundStyle(Theme.muted)
                     }
                 }
-                Section {
-                    Toggle("Shipping insurance", isOn: $insured)
+                if channel.ships {
+                    Section {
+                        Toggle("Shipping insurance", isOn: $insured)
+                    }
                 }
                 Section("Items") {
                     ForEach(lines) { line in
@@ -153,6 +171,8 @@ struct SellSheet: View {
         case .ebay: "A fixed price. Slower, but the price is known. The highest fees."
         case .ebayAuction: "The bids set the price. It can end high or well below value."
         case .social: "Post it for sale on the social media hub."
+        case .whatnot: "Sold live on a stream."
+        case .facebook: "Local buyers, cash, no fees, no shipping. Buyers offer low, and the meetup takes 1 hour. Some do not show up."
         }
     }
 }

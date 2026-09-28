@@ -360,11 +360,23 @@ struct Tag: View {
 struct Tags: View {
     let keep: Bool
     let status: ItemStatus?
+    /// The item's hidden fake tier, and what the player knows (docs/14-counterfeit-risk.md).
+    var fake: FakeTier?
+    var fakeKnown = false
+    var verified = false
+    var id: UUID?
 
     var body: some View {
         HStack(spacing: 4) {
             if keep { Tag(text: "KEEP") }
             if let status { Tag(text: status.tag, color: Theme.orange) }
+            if fakeKnown {
+                Tag(text: "FAKE", color: .red)
+            } else if verified {
+                Tag(text: "VERIFIED", color: Theme.green)
+            } else if let fake, let id, Counterfeit.eyeballCatches(fake, id: id) {
+                Tag(text: "LOOKS OFF", color: Theme.orange)
+            }
         }
     }
 }
@@ -387,7 +399,7 @@ struct SealedRow: View {
                 Text(count > 1 ? "\(money(market)) each" : "\(item.packs) pack\(item.packs == 1 ? "" : "s")")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
-                Tags(keep: item.keep, status: item.status)
+                Tags(keep: item.keep, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
@@ -437,7 +449,7 @@ struct CardRow: View {
                 if card.grade == nil {
                     RawLooks(condition: card.condition)
                 }
-                Tags(keep: card.keep, status: card.status)
+                Tags(keep: card.keep, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {

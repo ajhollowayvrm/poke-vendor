@@ -191,11 +191,13 @@ extension GameStore {
     }
 
     @discardableResult
-    func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil) -> SealedItem {
+    func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil,
+                         known: Bool? = nil) -> SealedItem {
         addLedger(-price, .sealed, "\(product.name) · \(vendor)")
         var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
                               acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: data.day)
         item.fake = fake
+        item.fakeKnown = known
         data.sealed.append(item)
         log("Bought \(product.name) from \(vendor) at \(venue) for \(money(price)).", cash: -price)
         save()
@@ -231,6 +233,7 @@ extension GameStore {
             var owned = OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.market, ripID: nil,
                                   condition: card.condition, acquiredDay: data.day)
             owned.fake = card.fake
+            if card.looksOff, card.fake != nil { owned.fakeKnown = true }
             data.raw.append(owned)
         }
         if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(venue)") }
@@ -327,6 +330,24 @@ extension GameStore {
             out.append(CalendarEntry(kind: .grading, title: "Grades come back",
                                      detail: "\(grading.count) card\(grading.count == 1 ? "" : "s")"))
         }
+        let authenticating = (data.raw + data.slabs).filter {
+            if case .atAuthenticator(let d, _) = $0.status { return d == offset }
+            return false
+        }
+        if !authenticating.isEmpty {
+            out.append(CalendarEntry(kind: .grading, title: "Authentication comes back",
+                                     detail: "\(authenticating.count) card\(authenticating.count == 1 ? "" : "s")"))
+        }
+        let arriving2 = (data.raw + data.slabs).filter {
+            if case .arriving(let d, _) = $0.status { return d == offset }
+            return false
+        }.count + data.sealed.filter {
+            if case .arriving(let d, _) = $0.status { return d == offset }
+            return false
+        }.count
+        if arriving2 > 0 {
+            out.append(CalendarEntry(kind: .delivery, title: "Arriving", detail: "\(arriving2) item\(arriving2 == 1 ? "" : "s")"))
+        }
         let auctions = (data.raw + data.slabs).filter {
             if case .listed(let l) = $0.status { return l.auctionEndDay == day }
             return false
@@ -357,6 +378,9 @@ struct ShowItem: Identifiable, Hashable {
     let condition: Condition?
     let graded: Bool
     let setSlug: String
+    /// Hidden: the item is a fake. A buyer who catches it walks (docs/14-counterfeit-risk.md).
+    var fake: FakeTier?
+    var fakeKnown = false
 
     var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
 }
@@ -442,6 +466,9 @@ struct Visitor: Identifiable {
     /// What they sell, and what it is worth.
     var goods: VendorGoods?
     var goodsMarket: Double = 0
+    /// Hidden: what they sell is a fake. `goodsLooksOff` is the player's look by eye.
+    var goodsFake: FakeTier?
+    var goodsLooksOff = false
     /// A contact that the game remembers. Nil for a stranger.
     var contactID: String?
     /// A seller who does not know what they have: they ask far under market.
@@ -555,12 +582,14 @@ final class ShowSession {
         bring = Set(stock.cards.map(\.id) + stock.sealed.map(\.id))
         self.vendors = vendors
         self.regulars = regulars
-        // A recurring vendor prices better for a player they know.
         for i in self.vendors.indices {
+            // A recurring vendor prices better for a player they know.
             let bonus = store.level(self.vendors[i].contactID).priceBonus
-            guard bonus > 0 else { continue }
+            // Some of what is for sale is fake. A contact the player knows carries less risk.
+            let source = store.fakeSource(contact: self.vendors[i].contactID, fallback: venue.fakeSource)
             for j in self.vendors[i].items.indices {
-                self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus))
+                if bonus > 0 { self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus)) }
+                self.vendors[i].items[j].rollFake(source: source, tired: store.tiredFactor)
             }
         }
     }
@@ -583,15 +612,17 @@ final class ShowSession {
 
     var stockItems: [ShowItem] {
         let stock = store.showStock
+        // The table shows the real price: buyers do not know a fake until they look.
         let cards = stock.cards.map { card in
             ShowItem(id: card.id, kind: .card, name: card.print.name,
-                     detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.market,
+                     detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.realMarket,
                      image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
-                     setSlug: card.setSlug)
+                     setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake)
         }
         let sealed = stock.sealed.map { item in
-            ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: store.market(of: item),
-                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug)
+            ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: store.realMarket(of: item),
+                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
+                     fake: item.fake, fakeKnown: item.isKnownFake)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
@@ -645,7 +676,21 @@ final class ShowSession {
         } else {
             strangerReputation(&visitor)
         }
+        rollGoodsFake(&visitor)
         return visitor
+    }
+
+    /// What a seller brings can be a fake. A contact carries less risk than a stranger.
+    private func rollGoodsFake(_ v: inout Visitor) {
+        guard v.intent == .sell, let goods = v.goods, v.goodsFake == nil else { return }
+        let source = store.fakeSource(contact: v.contactID, fallback: venue.fakeSource == .none ? .stranger : venue.fakeSource)
+        let (slug, sealed): (String?, Bool) = switch goods {
+        case .single(_, let s, _), .slab(_, let s, _): (s, false)
+        case .sealed(let p): (p.homeSlug, true)
+        case .mystery: (nil, false)
+        }
+        v.goodsFake = Counterfeit.roll(source: source, sealed: sealed, slug: slug, market: v.goodsMarket)
+        if let fake = v.goodsFake { v.goodsLooksOff = Counterfeit.eyeballCatches(fake, tired: store.tiredFactor) }
     }
 
     /// A regular: their own name, more patience, and better prices for a player they know. A regular at Trusted or
@@ -833,22 +878,51 @@ final class ShowSession {
         if phase == .table { visitor = v } else { approach = v }
     }
 
+    /// A buyer or a trader looks the item over. If it is a fake and they see it, they walk, and word gets around
+    /// (docs/14-counterfeit-risk.md, Consequences). Returns true when they caught it.
+    private func buyerCatchesFake(_ v: Visitor, _ item: ShowItem) -> Bool {
+        guard let fake = item.fake, Counterfeit.eyeballCatches(fake) else { return false }
+        var caught = v
+        caught.line = "Hold on. This isn't real. I'm not buying a fake."
+        caught.patience = 0
+        setCurrent(caught)
+        store.addReputation(-Balance.fakeCaughtReputationCost)
+        store.addPoints(v.contactID, -Balance.fakeCaughtContactCost)
+        store.markFakeKnown(cardID: item.id)
+        store.markFakeKnown(sealedID: item.id)
+        table.removeAll { $0.id == item.id }
+        walkedAway += 1
+        note = "\(v.name) called your \(item.name) a fake and walked."
+        finish(minutes: .random(in: 4...8))
+        return true
+    }
+
     func accept() {
         guard let v = current else { return }
         switch v.intent {
         case .buy:
             guard let item = v.item else { return }
+            if buyerCatchesFake(v, item) { return }
             store.sellAtShow(item, price: v.offer, at: venue.name)
             sold.append((item.name, v.offer))
             table.removeAll { $0.id == item.id }
             store.recordDeal(v.contactID, what: "Sold them \(item.name)", price: v.offer, market: item.market, slug: item.setSlug)
+            if let fake = item.fake {
+                store.recordBadSale(item: item.name, channel: venue.name, price: v.offer, fake: fake, known: item.fakeKnown,
+                                    refunds: false, contactID: v.contactID)
+            }
         case .trade:
             guard let item = v.item else { return }
             if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
                 note = "You do not have \(money(-v.tradeCash))."
                 return
             }
+            if buyerCatchesFake(v, item) { return }
             store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name)
+            if let fake = item.fake {
+                store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
+                                    refunds: false, contactID: v.contactID)
+            }
             let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
             trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
             table.removeAll { $0.id == item.id }
@@ -860,7 +934,7 @@ final class ShowSession {
                 note = "You do not have enough cash."
                 return
             }
-            buyGoods(goods, price: v.offer, from: v.name)
+            buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
             store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
                              market: v.goodsMarket, slug: goodsSlug(goods))
         }
@@ -905,7 +979,7 @@ final class ShowSession {
             note = "You do not have \(money(price))."
             return
         }
-        buyGoods(goods, price: price, from: v.name)
+        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
         store.addReputation(5)
         if let id = v.contactID {
             store.addPoints(id, 4)
@@ -925,7 +999,7 @@ final class ShowSession {
         guard let v = current, v.intent == .sell, let goods = v.goods else { return }
         let price = max(1, Self.round(v.offer * 0.5))
         guard store.canAfford(price) else { return }
-        buyGoods(goods, price: price, from: v.name)
+        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
         let name = VendorItem(goods: goods, price: price, market: nil).name
         store.recordScam(seller: v.name, contactID: v.contactID, item: name)
         note = "\(v.name) took \(money(price)) and thanked you."
@@ -1101,7 +1175,7 @@ final class ShowSession {
             note = "You do not have enough cash."
             return
         }
-        buyGoods(item.goods, price: item.price, from: vendor.name)
+        buyGoods(item.goods, price: item.price, from: vendor.name, fake: item.fake, looksOff: item.looksOff)
         store.recordDeal(vendor.contactID, what: "Bought \(item.name)", price: item.price, market: item.market ?? item.price,
                          slug: goodsSlug(item.goods))
         // Mystery packs do not run out. Everything else leaves the table.
@@ -1110,17 +1184,23 @@ final class ShowSession {
         Haptics.tap(.medium)
     }
 
-    private func buyGoods(_ goods: VendorGoods, price: Double, from seller: String) {
+    /// `fake` is the item's hidden truth, and `looksOff` means the player saw it, so they know what they bought.
+    private func buyGoods(_ goods: VendorGoods, price: Double, from seller: String, fake: FakeTier? = nil, looksOff: Bool = false) {
         let name = VendorItem(goods: goods, price: price, market: nil).name
+        let known: Bool? = looksOff && fake != nil ? true : nil
         switch goods {
         case .single(let print, let slug, let condition):
-            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil,
-                                          condition: condition), price: price, vendor: seller, at: venue.name)
+            var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, condition: condition)
+            card.fake = fake
+            card.fakeKnown = known
+            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name)
         case .slab(let print, let slug, let grade):
-            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade),
-                                price: price, vendor: seller, at: venue.name)
+            var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade)
+            card.fake = fake
+            card.fakeKnown = known
+            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name)
         case .sealed(let product):
-            justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name)
+            justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name, fake: fake, known: known)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
@@ -1164,7 +1244,11 @@ final class ShowSession {
             let sets = Double.random(in: 0..<1) < 0.4 ? Balance.vintageSets + Balance.olderSets : Balance.modernSets
             guard let (print, slug) = VendorFloor.randomPrint(from: sets, minMarket: max(2, value * 0.3), maxMarket: value) else { continue }
             let condition = sets.contains("base-set") ? Condition.played() : Condition.packFresh()
-            let card = FloorListing(print: print, setSlug: slug, condition: condition, price: 0)
+            var card = FloorListing(print: print, setSlug: slug, condition: condition, price: 0)
+            // A trader's card can be a fake too.
+            card.fake = Counterfeit.roll(source: venue.fakeSource == .none ? .stranger : venue.fakeSource, sealed: false, slug: slug,
+                                         market: card.market)
+            if let fake = card.fake { card.looksOff = Counterfeit.eyeballCatches(fake, tired: store.tiredFactor) }
             if card.market <= value, card.market >= 1 { return card }
         }
         return nil

@@ -17,6 +17,10 @@ struct StoreOffer: Identifiable, Hashable {
     var sellerRating: Double?
     var sellerSales: Int?
     var note: String?
+    /// Hidden: the item is a fake (docs/14-counterfeit-risk.md). No storefront shows it.
+    var fake: FakeTier?
+    /// For Facebook Marketplace: the seller set the pickup for a later day (docs/12, Facebook Marketplace).
+    var pickupDay: Int?
 
     var title: String {
         switch item {
@@ -101,8 +105,10 @@ enum Market {
             }
         case .reseller:
             for (i, p) in pickOf(products, Balance.storeListingCap, &r).enumerated() {
-                out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
-                                      price: retail(p.market * r.double(2.0...2.6)), shipping: 0, deliveryDays: delivery))
+                var offer = StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
+                                       price: retail(p.market * r.double(2.0...2.6)), shipping: 0, deliveryDays: delivery)
+                offer.fake = Counterfeit.roll(source: .reseller, sealed: true, slug: p.homeSlug, market: p.market, msrp: p.msrp, &r)
+                out.append(offer)
             }
         case .pokemonCenter:
             let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) && !$0.isClubExclusive }
@@ -115,32 +121,47 @@ enum Market {
             let singles = SetLibrary.set(singlesSet).prints.filter { ($0.market ?? 0) >= 3 }
             for i in 0..<8 {
                 let international = r.double(0...1) < 0.2
-                let rating = (r.double(95...100) * 10).rounded() / 10
+                var rating = (r.double(95...100) * 10).rounded() / 10
                 let sales = r.int(3...4000)
                 if i < 4, !products.isEmpty {
                     let p = products[r.int(0...(products.count - 1))]
                     let cut = r.double(0.8...1.05) * (international ? 0.88 : 1)
-                    out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug), price: retail(p.market * cut),
-                                          shipping: p.packs <= 2 ? 1.99 : 7.99, deliveryDays: international ? 10 : delivery,
-                                          sellerRating: rating, sellerSales: sales,
-                                          note: international ? "From another country" : nil))
+                    let fake = Counterfeit.roll(source: .ebay, sealed: true, slug: p.homeSlug, market: p.market, msrp: p.msrp, &r)
+                    // The seller rating is the only signal (docs/14, Risk is hidden at purchase).
+                    if fake != nil { rating = (r.double(90...97.5) * 10).rounded() / 10 }
+                    var offer = StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug), price: retail(p.market * cut),
+                                           shipping: p.packs <= 2 ? 1.99 : 7.99, deliveryDays: international ? 10 : delivery,
+                                           sellerRating: rating, sellerSales: sales,
+                                           note: international ? "From another country" : nil)
+                    offer.fake = fake
+                    out.append(offer)
                 } else if !singles.isEmpty {
                     let c = singles[r.int(0...(singles.count - 1))]
                     let price = retail((c.market ?? 0) * r.double(0.75...1.05))
-                    out.append(StoreOffer(id: id(i), store: store, item: .single(c, singlesSet), price: price,
-                                          shipping: price < 20 ? 1.25 : 4.99, deliveryDays: international ? 10 : delivery,
-                                          sellerRating: rating, sellerSales: sales,
-                                          note: international ? "From another country" : nil))
+                    let fake = Counterfeit.roll(source: .ebay, sealed: false, slug: singlesSet, market: c.market ?? 0, &r)
+                    if fake != nil { rating = (r.double(90...97.5) * 10).rounded() / 10 }
+                    var offer = StoreOffer(id: id(i), store: store, item: .single(c, singlesSet), price: price,
+                                           shipping: price < 20 ? 1.25 : 4.99, deliveryDays: international ? 10 : delivery,
+                                           sellerRating: rating, sellerSales: sales,
+                                           note: international ? "From another country" : nil)
+                    offer.fake = fake
+                    out.append(offer)
                 }
             }
         case .facebook:
             for i in 0..<5 where !products.isEmpty {
                 let p = products[r.int(0...(products.count - 1))]
                 let pickup = r.double(0...1) < 0.5
-                out.append(StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
-                                      price: retail(p.market * r.double(0.55...0.95)), shipping: pickup ? 0 : 7.99,
-                                      deliveryDays: pickup ? 0 : delivery, pickup: pickup,
-                                      note: pickup ? "Pickup today · 1 hour" : "Ships · \(delivery) days"))
+                // Half of the pickups are set for a later day (docs/12, Facebook Marketplace).
+                let laterDay: Int? = pickup && r.double(0...1) < Balance.fbLaterPickupChance ? day + r.int(1...3) : nil
+                var offer = StoreOffer(id: id(i), store: store, item: .product(p, p.homeSlug),
+                                       price: retail(p.market * r.double(0.55...0.95)), shipping: pickup ? 0 : 7.99,
+                                       deliveryDays: pickup ? 0 : delivery, pickup: pickup,
+                                       note: pickup ? (laterDay.map { "Pickup in \($0 - day) day\($0 - day == 1 ? "" : "s") · 1 hour" } ?? "Pickup today · 1 hour")
+                                                    : "Ships · \(delivery) days")
+                offer.pickupDay = laterDay
+                offer.fake = Counterfeit.roll(source: .facebook, sealed: true, slug: p.homeSlug, market: p.market, msrp: p.msrp, &r)
+                out.append(offer)
             }
         }
         return out

@@ -29,6 +29,10 @@ struct BuyIn: Identifiable, Hashable {
     let market: Double
     /// The shop priced it under market to move it.
     let steal: Bool
+    /// Hidden: a fake that got past the shop (docs/14-counterfeit-risk.md).
+    var fake: FakeTier?
+    /// The player's look by eye caught something.
+    var looksOff = false
 
     var name: String { VendorItem(goods: goods, price: price, market: market).name }
     var isSealed: Bool {
@@ -43,6 +47,8 @@ struct CaseSingle: Identifiable, Hashable {
     let print: CardPrint
     let setSlug: String
     let price: Double
+    var fake: FakeTier?
+    var looksOff = false
 }
 
 struct ShopState: Codable, Hashable {
@@ -174,7 +180,15 @@ extension Market {
             guard let goods, market > 0 else { continue }
             let steal = r.double(0...1) < 0.15
             let price = retail(market * (steal ? r.double(0.7...0.85) : r.double(1.0...1.2)) * (1 - discount))
-            out.append(BuyIn(id: "w\(week)-\(store.rawValue)-in-\(i)", goods: goods, price: price, market: market, steal: steal))
+            var item = BuyIn(id: "w\(week)-\(store.rawValue)-in-\(i)", goods: goods, price: price, market: market, steal: steal)
+            let (slug, sealed): (String?, Bool) = switch goods {
+            case .single(_, let s, _), .slab(_, let s, _): (s, false)
+            case .sealed(let p): (p.homeSlug, true)
+            case .mystery: (nil, false)
+            }
+            item.fake = Counterfeit.roll(source: .shopCase, sealed: sealed, slug: slug, market: market, &r)
+            if let fake = item.fake { item.looksOff = Counterfeit.eyeballCatches(fake, &r) }
+            out.append(item)
         }
         return out
     }
@@ -216,8 +230,11 @@ extension Market {
             let singles = SetLibrary.set(slug).prints.filter { ($0.market ?? 0) >= 5 }
             guard !singles.isEmpty else { return nil }
             let c = singles[r.int(0...(singles.count - 1))]
-            return CaseSingle(id: "\(day / 7)-\(store.rawValue)-case-\(i)", print: c, setSlug: slug,
-                              price: retail((c.market ?? 0) * Balance.displayCaseMarkup * (1 - discount)))
+            var single = CaseSingle(id: "\(day / 7)-\(store.rawValue)-case-\(i)", print: c, setSlug: slug,
+                                    price: retail((c.market ?? 0) * Balance.displayCaseMarkup * (1 - discount)))
+            single.fake = Counterfeit.roll(source: .shopCase, sealed: false, slug: slug, market: c.market ?? 0, &r)
+            if let fake = single.fake { single.looksOff = Counterfeit.eyeballCatches(fake, &r) }
+            return single
         }
     }
 }

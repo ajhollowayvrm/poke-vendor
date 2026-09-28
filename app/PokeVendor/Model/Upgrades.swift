@@ -97,6 +97,45 @@ extension GameStore {
         save()
     }
 
+    /// The expected value of opening a product: the pull rates times the card prices, plus the promos
+    /// (docs/12-acquiring-product.md, The expected-value upgrade).
+    func expectedValue(of product: Product) -> Double {
+        var total = 0.0
+        for slug in product.packSlugs { total += Self.expectedValue(ofPack: SetLibrary.set(slug)) }
+        let promos = product.promos.map { $0.market ?? 0 }
+        if product.pickOnePromo, !promos.isEmpty {
+            total += promos.reduce(0, +) / Double(promos.count)
+        } else {
+            total += promos.reduce(0, +)
+        }
+        return total
+    }
+
+    static func expectedValue(ofPack set: SetData) -> Double {
+        var normal = 0.0
+        for slot in set.slots {
+            let odds = slot.outcomes.reduce(0) { $0 + $1.odds }
+            guard odds > 0 else { continue }
+            for outcome in slot.outcomes where !outcome.prints.isEmpty {
+                let mean = outcome.prints.reduce(0) { $0 + (set.prints[$1].market ?? 0) } / Double(outcome.prints.count)
+                normal += Double(slot.count) * outcome.odds / odds * mean
+            }
+        }
+        // A special pack replaces the slot map at its own odds.
+        var specialOdds = 0.0
+        var special = 0.0
+        for pack in set.specialPacks ?? [] {
+            specialOdds += pack.odds
+            if let cards = pack.cards {
+                special += pack.odds * cards.reduce(0) { $0 + (set.prints[$1].market ?? 0) }
+            } else if let pool = pack.pool, let slots = pack.slots, !pool.isEmpty {
+                let mean = pool.reduce(0) { $0 + (set.prints[$1].market ?? 0) } / Double(pool.count)
+                special += pack.odds * (normal + Double(slots.count) * mean)
+            }
+        }
+        return normal * (1 - min(1, specialOdds)) + special
+    }
+
     var restockBotBonus: Double { hasUpgrade(.restockBot) ? Balance.restockBotBonus : 0 }
     var storeStopHours: Double { hasUpgrade(.betterCar) ? Balance.betterCarStopHours : LocalStore.baseHours }
     /// Content quality from the gear: 1.0, 1.25, or 1.5.

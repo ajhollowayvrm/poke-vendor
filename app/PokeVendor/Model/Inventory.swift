@@ -318,6 +318,12 @@ struct SlabGrade: Codable, Hashable {
 struct Listing: Codable, Hashable {
     enum Channel: String, Codable, CaseIterable {
         case tcgplayer = "TCGplayer", ebay = "eBay", ebayAuction = "eBay auction", social = "Social"
+        case whatnot = "Whatnot", facebook = "Facebook Marketplace"
+
+        /// The platform refunds a buyer who got a fake (docs/14, Consequences).
+        var refundsFakes: Bool { self == .tcgplayer || self == .ebay || self == .ebayAuction || self == .whatnot }
+        /// The item ships. Facebook Marketplace hands over in person.
+        var ships: Bool { self != .facebook }
     }
 
     let channel: Channel
@@ -331,14 +337,34 @@ enum ItemStatus: Codable, Hashable {
     case onTheWay(daysLeft: Int, store: Storefront)
     case atGrader(company: GradingCompany, tier: String, daysLeft: Int, ledgerID: UUID)
     case listed(Listing)
+    /// At the paid authenticator (docs/14-counterfeit-risk.md).
+    case atAuthenticator(daysLeft: Int, ledgerID: UUID)
+    /// On its way from a wholesaler, a case split, or back from consignment (docs/12, docs/15).
+    case arriving(daysLeft: Int, from: String)
+    /// In a game shop's display case on consignment (docs/15-selling.md, The local game shop).
+    case consigned(Consignment)
 
     var tag: String {
         switch self {
         case .onTheWay(let days, _): "ON THE WAY · \(days)D"
         case .atGrader(let company, _, let days, _): "AT \(company.rawValue) · \(days)D"
         case .listed(let listing): "LISTED · \(listing.channel.rawValue.uppercased())"
+        case .atAuthenticator(let days, _): "AUTHENTICATING · \(days)D"
+        case .arriving(let days, _): "ARRIVING · \(days)D"
+        case .consigned(let c): "CONSIGNED · \(c.shop.rawValue.uppercased())"
         }
     }
+}
+
+/// A card in a game shop's display case, on consignment (docs/15-selling.md).
+struct Consignment: Codable, Hashable {
+    let shop: LocalStore
+    let price: Double
+    /// The shop's cut, as a share of the price.
+    let cut: Double
+    let dayListed: Int
+    /// The day the card sells, decided when it is listed. Nil when it does not sell in the window.
+    let sellDay: Int?
 }
 
 /// A single card that the player owns: raw, or in a slab when it has a grade.
@@ -367,8 +393,11 @@ struct OwnedCard: Codable, Identifiable, Hashable {
 
     var rawMarket: Double { print.market ?? 0 }
 
-    var market: Double {
-        if isKnownFake { return 0 }
+    /// What the card is worth to the player. A known fake is worth nothing.
+    var market: Double { isKnownFake ? 0 : realMarket }
+
+    /// What a real copy sells for: the price a buyer who does not know pays.
+    var realMarket: Double {
         guard let grade else { return rawMarket }
         if let price = print.graded[grade.priceKey] ?? nil { return grade.blackLabel ? price * 2 : price }
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
@@ -432,6 +461,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case startingCapital = "Starting capital", paycheck = "Paycheck", sale = "Sale", refund = "Refund"
         case sealed = "Sealed product", singles = "Singles", grading = "Grading fees", rent = "Rent"
         case sponsorship = "Sponsorship", upgrade = "Upgrades", showFees = "Show fees", test = "Test"
+        case authentication = "Authentication fees", tips = "Live-stream tips", wholesale = "Wholesale"
     }
 
     var id = UUID()

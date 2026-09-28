@@ -163,6 +163,14 @@ struct HubView: View {
                     Button(kind.label) { store.addTestOpportunity(kind) }
                 }
             }
+            Menu("Counterfeits") {
+                ForEach(FakeTier.allCases, id: \.self) { tier in
+                    Button("Add a fake card · \(tier.label.lowercased())") { store.addTestFake(tier) }
+                }
+                Button("Add a resealed ETB") { store.addTestResealed() }
+                Button("Authentication returns tomorrow") { store.testAuthenticationTomorrow() }
+                Button("Give the authentication tool") { store.data.upgrades.append(Upgrade.authTool.rawValue); store.save() }
+            }
         }
     }
 

@@ -280,6 +280,7 @@ struct ShopView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(single.print.name).font(.subheadline)
                                 Text("\(single.print.rarity) · mkt \(money(single.print.market ?? 0))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                if single.looksOff { LooksOffLine(sealed: false) }
                             }
                             Spacer()
                             Button(bought ? "Bought" : money(single.price)) {
@@ -341,6 +342,7 @@ struct BuyInBox: View {
                                     .foregroundStyle(Theme.green)
                             }
                         }
+                        if item.looksOff { LooksOffLine(sealed: item.isSealed) }
                     }
                     Spacer()
                     Button(bought ? "Bought" : money(item.price)) {
