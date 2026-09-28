@@ -71,16 +71,52 @@ as missed.
   value. The card comes in at its market price as its cost.
 - Sales pay cash at once, with no fees and no shipping.
 
-### Walk the floor
+### The floor
 
-- One aisle takes 1 hour and shows 6 vendor cards: hits from the
-  game's sets, priced from 72% to 125% of market. About 30% of them
-  have more wear.
-- Each card shows its condition and its cut, as the player's centering
-  tool can read it.
-- **Ask for a deal** works about half the time and takes 10% off. Each
-  vendor hears it once.
-- Buyers who come to the table while the player is on the floor leave.
+The floor is the other tables at the show. Each table is a business or
+a person, with its own stock and its own prices. Big shows matter
+because this is where most vintage turns up.
+
+| Table | Stock | Price, share of market | Says yes to 10% off |
+| --- | --- | --- | --- |
+| Vintage dealer | Base Set singles, Base Set slabs, and some Base Set or older out-of-print sealed | 100% to 125% | 30% of the time |
+| Modern dealer | New singles, some slabs, and new sealed | 95% to 120% | 45% |
+| Game shop booth | Mostly new and older sealed, and a few singles | 95% to 112% | 40% |
+| Collector clearing out | A mixed collection: vintage and older cards, or new and older cards. Often worn. | 60% to 95% | 70% |
+| Mystery packs | Three kinds of repack, and a few singles | 100% to 130% | Never asked |
+
+- **Table count:** a local show has 8 tables, and 1 of them is a
+  vintage dealer. A regional show has 18 tables, and 5 of them are
+  vintage dealers.
+- **Old cards show their age.** Vintage and older cards from a dealer
+  or a collector have more wear and looser centering. A worn card is
+  priced from its worn value (80% of market for light wear, 60% for
+  heavy wear).
+- **Slabs** are PSA or CGC, grade 6 to 10, at the graded price.
+- **Time:** looking over a table the first time takes 15 minutes. A
+  buy takes 5 minutes, and asking for a deal takes 2. Buyers who come
+  to the player's table meanwhile leave after half an hour.
+- Each item can be asked about once.
+
+### Mystery packs
+
+A mystery pack is mostly filler and one guaranteed hit. The player
+opens it at the table: the filler turns over first, then the hit.
+
+| Pack | Price | Inside |
+| --- | --- | --- |
+| Modern mystery pack | $10 | 4 filler cards and 1 hit from the new sets |
+| Vintage mystery pack | $35 | 4 Base Set filler cards and 1 Base Set rare or better |
+| Slab mystery box | $80 | 1 PSA or CGC slab, grade 8 to 10 |
+
+- The hit comes from a pool where cheaper cards are more common, so
+  most packs are worth less than the price, and a big card is a rare
+  find.
+- The hit goes to Raw or Slabs with the price as its cost. The filler
+  goes to Bulk.
+- **Data limit:** Base Set is the only vintage set that the game has.
+  More vintage sets need their research files (see
+  [13-sets.md](13-sets.md)).
 
 ### The summary
 

@@ -162,14 +162,38 @@ extension GameStore {
         save()
     }
 
-    func buyAtShow(_ listing: FloorListing, price: Double, show: CardShow) -> Bool {
-        guard canAfford(price) else { return false }
-        addLedger(-price, .singles, "\(listing.print.name) · \(show.name) floor")
-        data.raw.append(OwnedCard(print: listing.print, setSlug: listing.setSlug, acquired: .now, paid: price, ripID: nil,
-                                  condition: listing.condition, acquiredDay: data.day))
-        log("Bought \(listing.print.name) on the floor at \(show.name) for \(money(price)).", cash: -price)
+    func buyCardAtShow(_ card: OwnedCard, price: Double, vendor: String, show: CardShow) {
+        var card = card
+        card.acquiredDay = data.day
+        addLedger(-price, .singles, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(vendor)")
+        if card.grade == nil { data.raw.append(card) } else { data.slabs.append(card) }
+        log("Bought \(card.print.name)\(card.grade.map { " (\($0.label))" } ?? "") from \(vendor) at \(show.name) for \(money(price)).",
+            cash: -price)
         save()
-        return true
+    }
+
+    func buySealedAtShow(_ product: Product, price: Double, vendor: String, show: CardShow) {
+        addLedger(-price, .sealed, "\(product.name) · \(vendor)")
+        data.sealed.append(SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
+                                      acquired: .now, source: "\(vendor), \(show.name)", productID: product.id,
+                                      acquiredDay: data.day))
+        log("Bought \(product.name) from \(vendor) at \(show.name) for \(money(price)).", cash: -price)
+        save()
+    }
+
+    /// A mystery pack: the hit goes to Raw or Slabs with the price as its cost, and the filler goes to bulk.
+    func buyMysteryAtShow(_ pack: MysteryPack, hit: OwnedCard, filler: [CardPrint], fillerSlug: String, price: Double,
+                          vendor: String, show: CardShow) {
+        var hit = hit
+        hit.acquiredDay = data.day
+        addLedger(-price, .singles, "\(pack.name) · \(vendor)")
+        if hit.grade == nil { data.raw.append(hit) } else { data.slabs.append(hit) }
+        if !filler.isEmpty {
+            data.bulk.append(BulkGroup(ripID: UUID(), setSlug: fillerSlug, date: .now, cards: filler, day: data.day))
+        }
+        log("Opened a \(pack.name.lowercased()) from \(vendor): \(hit.print.name)\(hit.grade.map { " (\($0.label))" } ?? "") worth \(money(hit.market)).",
+            cash: -price)
+        save()
     }
 
     /// A trade: the player's item goes, and the buyer's card plus any cash comes in.
@@ -329,7 +353,10 @@ final class ShowSession {
     var bring: Set<UUID> = []
     private(set) var table: [ShowItem] = []
     private(set) var buyer: Buyer?
-    private(set) var floor: [FloorListing] = []
+    private(set) var vendors: [Vendor] = []
+    private(set) var openVendorID: UUID?
+    /// The mystery pack that is being opened, while its reveal shows.
+    var reveal: MysteryReveal?
     private var arrivals: [Double] = []
     private(set) var missed = 0
     private(set) var sold: [(name: String, price: Double)] = []
@@ -350,7 +377,7 @@ final class ShowSession {
         minute = max(0, (store.data.hour - Balance.showOpen) * 60)
         let stock = store.showStock
         bring = Set(stock.cards.map(\.id) + stock.sealed.map(\.id))
-        if !show.booked { walkFloor(charge: false) }
+        vendors = VendorFloor.tables(for: show.size)
     }
 
     var clock: String { GameStore.clock(Balance.showOpen + minute / 60) }
@@ -545,21 +572,42 @@ final class ShowSession {
 
     // MARK: Floor
 
-    /// One hour on the floor. Buyers who come to the table meanwhile are missed.
-    func walkFloor(charge: Bool = true) {
+    /// Leaves the table for the floor. The clock only moves when the player looks at a table or buys.
+    func walkFloor() {
         buyer = nil
-        if charge {
-            minute = min(closeMinute, minute + 60)
-            let gone = arrivals.filter { $0 < minute - 30 }.count
-            missed += gone
-            arrivals.removeAll { $0 < minute - 30 }
-        }
-        floor = (0..<6).compactMap { _ in floorListing() }
+        openVendorID = nil
         phase = isOver ? .summary : .floor
+    }
+
+    var openVendor: Vendor? { vendors.first { $0.id == openVendorID } }
+
+    /// Looks over one table. The first look takes a quarter hour. Buyers who come to the player's table meanwhile
+    /// leave after half an hour.
+    func visit(_ vendor: Vendor) {
+        guard let i = vendors.firstIndex(where: { $0.id == vendor.id }) else { return }
+        if !vendors[i].visited {
+            vendors[i].visited = true
+            spend(Balance.vendorVisitMinutes)
+        }
+        openVendorID = vendor.id
+    }
+
+    func closeVendor() { openVendorID = nil }
+
+    private func spend(_ minutes: Double) {
+        minute = min(closeMinute, minute + minutes)
+        let gone = arrivals.filter { $0 < minute - 30 }.count
+        missed += gone
+        arrivals.removeAll { $0 < minute - 30 }
+        if isOver {
+            openVendorID = nil
+            phase = .summary
+        }
     }
 
     func backToTable() {
         guard hasTable else { return }
+        openVendorID = nil
         guard opened else {
             phase = .setup
             return
@@ -568,54 +616,64 @@ final class ShowSession {
         nextBuyer()
     }
 
-    func buyOnFloor(_ listing: FloorListing) {
-        guard let i = floor.firstIndex(where: { $0.id == listing.id }),
-              store.buyAtShow(listing, price: listing.price, show: show) else {
+    func buy(_ item: VendorItem, from vendor: Vendor) {
+        guard let v = vendors.firstIndex(where: { $0.id == vendor.id }),
+              let i = vendors[v].items.firstIndex(where: { $0.id == item.id }) else { return }
+        guard store.canAfford(item.price) else {
             note = "You do not have enough cash."
             return
         }
-        bought.append((listing.print.name, listing.price))
-        floor.remove(at: i)
-        minute += 5
+        switch item.goods {
+        case .single(let print, let slug, let condition):
+            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
+                                          condition: condition), price: item.price, vendor: vendor.name, show: show)
+        case .slab(let print, let slug, let grade):
+            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade),
+                                price: item.price, vendor: vendor.name, show: show)
+        case .sealed(let product):
+            store.buySealedAtShow(product, price: item.price, vendor: vendor.name, show: show)
+        case .mystery(let pack):
+            let contents = VendorFloor.open(pack)
+            store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
+                                   price: item.price, vendor: vendor.name, show: show)
+            reveal = MysteryReveal(pack: pack, price: item.price, filler: contents.filler, hit: contents.hit)
+        }
+        bought.append((item.name, item.price))
+        // Mystery packs do not run out. Everything else leaves the table.
+        if case .mystery = item.goods {} else { vendors[v].items.remove(at: i) }
+        spend(5)
         Haptics.tap(.medium)
     }
 
-    /// Asks the vendor for a better price. About half say yes to 10% off. Each vendor hears it once.
-    func askForDeal(_ listing: FloorListing) {
-        guard let i = floor.firstIndex(where: { $0.id == listing.id }), !floor[i].askedForDeal else { return }
-        let yes = Double.random(in: 0..<1) < 0.5
-        let old = floor[i]
-        floor[i] = FloorListing(print: old.print, setSlug: old.setSlug, condition: old.condition,
-                                price: yes ? Self.round(old.price * 0.9) : old.price, askedForDeal: true)
-        note = yes ? "The vendor took 10% off." : "The vendor said the price is firm."
-        minute += 2
-    }
-
-    /// A vendor's card: a hit from one of the sets, priced from well under market to well over it.
-    private func floorListing() -> FloorListing? {
-        guard let (print, slug) = randomHit(minMarket: 3) else { return nil }
-        let price = Self.round((print.market ?? 0) * Double.random(in: 0.72...1.25))
-        let condition = Double.random(in: 0..<1) < 0.3 ? Condition.secondHand() : Condition.packFresh()
-        return FloorListing(print: print, setSlug: slug, condition: condition, price: price)
+    /// Asks the vendor for 10% off. How often it works depends on the vendor. Each item can be asked about once.
+    func askForDeal(_ item: VendorItem, from vendor: Vendor) {
+        guard let v = vendors.firstIndex(where: { $0.id == vendor.id }),
+              let i = vendors[v].items.firstIndex(where: { $0.id == item.id }), !vendors[v].items[i].askedForDeal else { return }
+        let yes = Double.random(in: 0..<1) < vendor.kind.dealChance
+        vendors[v].items[i].askedForDeal = true
+        if yes { vendors[v].items[i].price = Self.round(item.price * 0.9) }
+        note = yes ? "\(vendor.name) took 10% off." : "\(vendor.name) said the price is firm."
+        spend(2)
     }
 
     private func tradeCard(near value: Double) -> FloorListing? {
         for _ in 0..<20 {
-            guard let (print, slug) = randomHit(minMarket: value * 0.5) else { return nil }
+            guard let (print, slug) = VendorFloor.randomPrint(from: Balance.showSets, minMarket: value * 0.5) else { return nil }
             let m = print.market ?? 0
             if m <= value * 0.95 { return FloorListing(print: print, setSlug: slug, condition: .secondHand(), price: m) }
         }
         return nil
     }
 
-    private func randomHit(minMarket: Double) -> (CardPrint, String)? {
-        let slug = Balance.showSets.randomElement() ?? "prismatic-evolutions"
-        let prints = SetLibrary.set(slug).prints.filter {
-            ($0.market ?? 0) >= minMarket && !["Common", "Uncommon"].contains($0.rarity)
-        }
-        return prints.randomElement().map { ($0, slug) }
-    }
-
     private static let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia",
                                 "Jordan", "Kai", "Mia", "Ben", "Rosa", "Luis", "Hannah", "Theo"]
+}
+
+/// A mystery pack that the player just bought: the filler first, then the hit.
+struct MysteryReveal: Identifiable {
+    let id = UUID()
+    let pack: MysteryPack
+    let price: Double
+    let filler: [CardPrint]
+    let hit: OwnedCard
 }

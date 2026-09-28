@@ -42,10 +42,23 @@ struct ShowDayView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: session.phase)
+        .sheet(item: Bindable(session).reveal) { MysteryRevealView(reveal: $0) }
         .onAppear {
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
-            if ProcessInfo.processInfo.arguments.contains("floor") { session.walkFloor(charge: false) }
+            let args = ProcessInfo.processInfo.arguments
+            if args.contains("floor") { session.walkFloor() }
+            // Screenshot aids: `vintage` opens a vintage dealer, and `mystery` buys a vintage mystery pack.
+            if args.contains("vintage"), let v = session.vendors.first(where: { $0.kind == .vintageDealer }) {
+                session.walkFloor()
+                session.visit(v)
+            }
+            if args.contains("mystery"), let v = session.vendors.first(where: { $0.kind == .mysteryPacks }),
+               let item = v.items.first(where: { if case .mystery(let p) = $0.goods { return p.tier == .vintage }; return false }) {
+                session.walkFloor()
+                session.visit(v)
+                session.buy(item, from: v)
+            }
             #endif
         }
     }
@@ -144,7 +157,7 @@ private struct SetupStage: View {
                 .padding(16)
             }
             HStack(spacing: 10) {
-                Button("Walk the floor") { session.walkFloor(charge: false) }
+                Button("Walk the floor") { session.walkFloor() }
                     .buttonStyle(.bordered)
                 Button { session.openTable() } label: { Text("Open the table").frame(maxWidth: .infinity) }
                     .buttonStyle(.borderedProminent)
@@ -187,7 +200,7 @@ private struct TableStage: View {
                 dealButtons(buyer)
             }
             HStack(spacing: 10) {
-                Button("Walk the floor · 1 hr") { withAnimation { session.walkFloor() } }
+                Button("Walk the floor") { withAnimation { session.walkFloor() } }
                     .buttonStyle(.bordered)
                 Button("Pack up") { withAnimation { session.packUp() } }
                     .buttonStyle(.bordered)
@@ -314,37 +327,63 @@ private struct BuyerCard: View {
 // MARK: - Floor
 
 private struct FloorStage: View {
-    @Environment(GameStore.self) private var store
+    let session: ShowSession
+
+    var body: some View {
+        if let vendor = session.openVendor {
+            VendorStage(session: session, vendor: vendor)
+                .transition(.move(edge: .trailing))
+        } else {
+            FloorList(session: session)
+                .transition(.move(edge: .leading))
+        }
+    }
+}
+
+private struct FloorList: View {
     let session: ShowSession
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("On the floor").font(.title3.bold())
-                    Text("Vendor tables. Some price under market, and some over. Asking for a deal works about half the time.")
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("The floor · \(session.vendors.count) tables").font(.title3.bold())
+                    Text("Each table is a dealer, a shop, or a person. Looking over a table takes about \(Int(Balance.vendorVisitMinutes)) minutes\(session.hasTable ? ", and buyers who come to your table meanwhile leave" : "").")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
-                    ForEach(session.floor) { listing in
-                        FloorRow(listing: listing, tool: store.data.centeringTool,
-                                 canAfford: store.canAfford(listing.price),
-                                 buy: { session.buyOnFloor(listing) },
-                                 ask: { session.askForDeal(listing) })
-                    }
-                    if session.floor.isEmpty {
-                        Text("You bought everything in this aisle.").font(.subheadline).foregroundStyle(Theme.muted)
+                    ForEach(session.vendors) { vendor in
+                        Button { withAnimation(.easeInOut(duration: 0.25)) { session.visit(vendor) } } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: vendor.kind.icon)
+                                    .frame(width: 36, height: 36)
+                                    .background((vendor.kind == .vintageDealer ? Color(red: 1, green: 0.8, blue: 0.3) : Theme.cyan).opacity(0.15),
+                                                in: RoundedRectangle(cornerRadius: 8))
+                                    .foregroundStyle(vendor.kind == .vintageDealer ? Color(red: 1, green: 0.8, blue: 0.3) : Theme.cyan)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(vendor.name).font(.subheadline.weight(.semibold))
+                                    Text(vendor.kind.label).font(.caption).foregroundStyle(Theme.muted)
+                                    Text(vendor.tags).font(.caption2.monospaced()).foregroundStyle(Theme.muted).lineLimit(1)
+                                }
+                                Spacer()
+                                if vendor.visited {
+                                    Text("SEEN").font(.system(size: 9, weight: .bold, design: .monospaced)).foregroundStyle(Theme.muted)
+                                }
+                                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.muted)
+                            }
+                            .padding(12)
+                            .background(Theme.surface)
+                            .overlay(Rectangle().stroke(Theme.line))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(16)
             }
             HStack(spacing: 10) {
-                Button("Next aisle · 1 hr") { withAnimation { session.walkFloor() } }
-                    .buttonStyle(.bordered)
-                    .disabled(session.isOver)
                 if session.hasTable {
                     Button { withAnimation { session.backToTable() } } label: {
-                        Text(session.opened ? "Back to my table" : "Set up the table")
-                            .frame(maxWidth: .infinity)
+                        Text(session.opened ? "Back to my table" : "Set up the table").frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(Theme.cyan)
@@ -362,39 +401,86 @@ private struct FloorStage: View {
     }
 }
 
-private struct FloorRow: View {
-    let listing: FloorListing
+private struct VendorStage: View {
+    @Environment(GameStore.self) private var store
+    let session: ShowSession
+    let vendor: Vendor
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 10) {
+                        Image(systemName: vendor.kind.icon).font(.title2).foregroundStyle(Theme.cyan)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(vendor.name).font(.title3.bold())
+                            Text(vendor.kind.label).font(.subheadline).foregroundStyle(Theme.muted)
+                        }
+                    }
+                    Text(vendor.kind.tagline).font(.subheadline).foregroundStyle(Theme.muted)
+                    if vendor.items.isEmpty {
+                        Text("You bought out this table.").font(.subheadline).foregroundStyle(Theme.muted)
+                    }
+                    ForEach(vendor.items) { item in
+                        GoodsRow(item: item, tool: store.data.centeringTool, canAfford: store.canAfford(item.price),
+                                 buy: { withAnimation { session.buy(item, from: vendor) } },
+                                 ask: { session.askForDeal(item, from: vendor) })
+                    }
+                }
+                .padding(16)
+            }
+            Button { withAnimation(.easeInOut(duration: 0.25)) { session.closeVendor() } } label: {
+                Label("Back to the floor", systemImage: "chevron.left").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .padding(16)
+        }
+    }
+}
+
+private struct GoodsRow: View {
+    let item: VendorItem
     let tool: Int
     let canAfford: Bool
     let buy: () -> Void
     let ask: () -> Void
 
     var body: some View {
-        let deal = listing.price < listing.market
         HStack(alignment: .top, spacing: 12) {
-            RemoteCardImage(url: listing.print.image.flatMap(URL.init(string:)), name: "")
-                .aspectRatio(63.0 / 88.0, contentMode: .fit)
-                .frame(width: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 3))
+            GoodsImage(item: item).frame(width: 56, height: 78)
             VStack(alignment: .leading, spacing: 4) {
-                Text(listing.print.name).font(.subheadline.weight(.semibold))
-                Text("\(SetLibrary.set(listing.setSlug).name) · \(listing.print.rarity)")
-                    .font(.caption).foregroundStyle(Theme.muted).lineLimit(1)
-                HStack(spacing: 6) {
-                    WearText(wear: listing.condition.wear)
-                    Text("·").font(.caption).foregroundStyle(Theme.muted)
-                    CutLine(reading: .front(listing.condition.cut, tool: tool))
+                Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(2)
+                switch item.goods {
+                case .single(let print, let slug, let condition):
+                    Text("\(SetLibrary.set(slug).name) · \(print.rarity)").font(.caption).foregroundStyle(Theme.muted).lineLimit(1)
+                    HStack(spacing: 6) {
+                        WearText(wear: condition.wear)
+                        Text("·").font(.caption).foregroundStyle(Theme.muted)
+                        CutLine(reading: .front(condition.cut, tool: tool))
+                    }
+                case .slab(_, let slug, let grade):
+                    Text("\(SetLibrary.set(slug).name) · \(grade.label)").font(.caption.weight(.semibold)).foregroundStyle(Theme.cyan)
+                case .sealed(let product):
+                    Text("Sealed · \(product.kind)").font(.caption).foregroundStyle(Theme.muted)
+                case .mystery(let pack):
+                    Text(pack.detail).font(.caption).foregroundStyle(Theme.muted)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(money(listing.price)).font(.subheadline.monospaced().weight(.semibold))
-                        .foregroundStyle(deal ? Theme.green : Theme.text)
-                    Text("mkt \(money(listing.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    Text(money(item.price)).font(.subheadline.monospaced().weight(.semibold))
+                        .foregroundStyle((item.market ?? .infinity) > item.price ? Theme.green : Theme.text)
+                    if let market = item.market {
+                        Text("mkt \(money(market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
                 }
                 HStack(spacing: 8) {
-                    Button("Buy", action: buy).buttonStyle(.borderedProminent).tint(Theme.cyan).foregroundStyle(.black)
+                    Button(isMystery ? "Buy and open" : "Buy", action: buy)
+                        .buttonStyle(.borderedProminent).tint(Theme.cyan).foregroundStyle(.black)
                         .disabled(!canAfford)
-                    Button(listing.askedForDeal ? "Asked" : "Ask for a deal", action: ask).buttonStyle(.bordered)
-                        .disabled(listing.askedForDeal)
+                    if !isMystery {
+                        Button(item.askedForDeal ? "Asked" : "Ask for a deal", action: ask).buttonStyle(.bordered)
+                            .disabled(item.askedForDeal)
+                    }
                 }
                 .controlSize(.small)
             }
@@ -403,6 +489,123 @@ private struct FloorRow: View {
         .padding(12)
         .background(Theme.surface)
         .overlay(Rectangle().stroke(Theme.line))
+    }
+
+    private var isMystery: Bool {
+        if case .mystery = item.goods { return true }
+        return false
+    }
+}
+
+private struct GoodsImage: View {
+    let item: VendorItem
+
+    var body: some View {
+        switch item.goods {
+        case .sealed:
+            ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
+        case .mystery(let pack):
+            MysteryPackArt(pack: pack)
+        case .slab:
+            RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: "")
+                .padding(4)
+                .padding(.top, 10)
+                .background(Color(white: 0.85), in: RoundedRectangle(cornerRadius: 4))
+                .overlay(alignment: .top) {
+                    Rectangle().fill(Color.red.opacity(0.85)).frame(height: 10)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+        case .single:
+            RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: "").clipShape(RoundedRectangle(cornerRadius: 3))
+        }
+    }
+}
+
+/// A plain repack: a sealed foil bag with a question mark.
+private struct MysteryPackArt: View {
+    let pack: MysteryPack
+
+    var body: some View {
+        let colors: [Color] = switch pack.tier {
+        case .modern: [.purple, .blue]
+        case .vintage: [Color(red: 0.9, green: 0.6, blue: 0.1), Color(red: 0.6, green: 0.2, blue: 0.1)]
+        case .slab: [Color(white: 0.6), Color(white: 0.3)]
+        }
+        ZStack {
+            RoundedRectangle(cornerRadius: 4).fill(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+            Image(systemName: "questionmark").font(.system(size: 26, weight: .black)).foregroundStyle(.white.opacity(0.9))
+        }
+    }
+}
+
+/// Opening a mystery pack: the filler cards turn over one by one, then the hit.
+struct MysteryRevealView: View {
+    @Environment(\.dismiss) private var dismiss
+    let reveal: MysteryReveal
+    @State private var shown = 0
+    @State private var burst = false
+
+    private var total: Int { reveal.filler.count + 1 }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Text(reveal.pack.name).font(.title3.bold()).padding(.top, 36)
+            Text("You paid \(money(reveal.price)).").font(.subheadline).foregroundStyle(Theme.muted)
+            if !reveal.filler.isEmpty {
+                HStack(spacing: 8) {
+                    ForEach(Array(reveal.filler.enumerated()), id: \.offset) { i, print in
+                        FlipCard(angle: i < shown ? 0 : 180, front: CardFace(card: RipCard(print: print, energy: nil)), back: CardBack())
+                            .aspectRatio(63.0 / 88.0, contentMode: .fit)
+                            .frame(width: 64, height: 89)
+                    }
+                }
+                .frame(height: 89)
+                .padding(.horizontal, 16)
+            }
+            FlipCard(angle: shown >= total ? 0 : 180, front: CardFace(card: RipCard(print: reveal.hit.print, energy: nil)), back: CardBack())
+                .frame(width: 180, height: 251)
+                .shadow(color: .black.opacity(0.5), radius: 12, y: 8)
+                // An overlay, so the burst does not take up room in the layout.
+                .overlay {
+                    if burst {
+                        SparkleBurst(tier: reveal.hit.market >= reveal.price ? .big : .small).frame(width: 500, height: 500)
+                    }
+                }
+            if shown >= total {
+                VStack(spacing: 4) {
+                    Text(reveal.hit.print.name).font(.headline)
+                    if let grade = reveal.hit.grade {
+                        Text(grade.label).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.cyan)
+                    } else {
+                        RawLooks(condition: reveal.hit.condition)
+                    }
+                    Text("Worth \(money(reveal.hit.market))").font(.title3.monospaced().weight(.semibold))
+                        .foregroundStyle(reveal.hit.market >= reveal.price ? Theme.green : Theme.orange)
+                    Text(reveal.hit.market >= reveal.price ? "A win." : "Most mystery packs lose money.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
+                .transition(.opacity)
+            }
+            Spacer()
+            Button { dismiss() } label: { Text(shown >= total ? "Done" : "Skip").frame(maxWidth: .infinity) }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.cyan)
+                .foregroundStyle(.black)
+                .controlSize(.large)
+                .padding(16)
+        }
+        .background(Theme.background.ignoresSafeArea())
+        .interactiveDismissDisabled(shown < total)
+        .task {
+            for i in 0..<total {
+                try? await Task.sleep(for: .milliseconds(i == total - 1 ? 900 : 380))
+                withAnimation(.easeInOut(duration: 0.45)) { shown = i + 1 }
+                Haptics.tap(i == total - 1 ? .heavy : .light)
+            }
+            try? await Task.sleep(for: .milliseconds(250))
+            burst = true
+            if reveal.hit.market >= reveal.price { Haptics.hit() }
+        }
     }
 }
 

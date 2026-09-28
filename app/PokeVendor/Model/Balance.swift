@@ -26,9 +26,13 @@ enum Balance {
     static let showHorizonDays = 42
     static let showOpen = 9.0
     static let showClose = 17.0
-    /// The sets that vendors and traders at a show carry.
-    static let showSets = ["prismatic-evolutions", "surging-sparks", "stellar-crown", "twilight-masquerade", "paradox-rift",
-                           "evolving-skies", "cosmic-eclipse", "base-set"]
+    /// The sets at a show: vintage (the Wizards of the Coast era), older out-of-print sets, and new sets.
+    static let vintageSets = ["base-set"]
+    static let olderSets = ["evolving-skies", "cosmic-eclipse"]
+    static let modernSets = ["prismatic-evolutions", "surging-sparks", "stellar-crown", "twilight-masquerade", "paradox-rift"]
+    static var showSets: [String] { vintageSets + olderSets + modernSets }
+    /// Minutes to look over one vendor table.
+    static let vendorVisitMinutes = 15.0
 
     // Selling (docs/15-selling.md)
     static let listingDays = 28
