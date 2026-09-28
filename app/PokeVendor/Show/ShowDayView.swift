@@ -48,6 +48,11 @@ struct ShowDayView: View {
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
             let args = ProcessInfo.processInfo.arguments
             if args.contains("floor") { session.walkFloor() }
+            for kind in ["seller", "trader"] where args.contains(kind) { session.debugVisitor(kind) }
+            if args.contains("approach") {
+                session.walkFloor()
+                session.debugVisitor("approach")
+            }
             // Screenshot aids: `vintage` opens a vintage dealer, and `mystery` buys a vintage mystery pack.
             if args.contains("vintage"), let v = session.vendors.first(where: { $0.kind == .vintageDealer }) {
                 session.walkFloor()
@@ -181,23 +186,23 @@ private struct TableStage: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 14) {
-                    if let buyer = session.buyer {
-                        BuyerCard(buyer: buyer, asking: session.asking(buyer.item), tool: store.data.centeringTool)
-                            .id(buyer.id)
+                    if let visitor = session.visitor {
+                        VisitorCard(visitor: visitor, asking: visitor.item.map(session.asking), tool: store.data.centeringTool)
+                            .id(visitor.id)
                             .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                                     removal: .move(edge: .leading).combined(with: .opacity)))
                     } else {
                         Text("No one at your table.").font(.subheadline).foregroundStyle(Theme.muted).padding(.top, 40)
                     }
-                    Text("\(session.table.count) item\(session.table.count == 1 ? "" : "s") on the table · \(session.missed) buyer\(session.missed == 1 ? "" : "s") missed")
+                    Text("\(session.table.count) item\(session.table.count == 1 ? "" : "s") on the table · \(session.missed) visitor\(session.missed == 1 ? "" : "s") missed")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
                 .padding(16)
-                .animation(.spring(response: 0.4, dampingFraction: 0.85), value: session.buyer?.id)
+                .animation(.spring(response: 0.4, dampingFraction: 0.85), value: session.visitor?.id)
             }
-            if let buyer = session.buyer {
-                dealButtons(buyer)
+            if let visitor = session.visitor {
+                DealButtons(session: session, visitor: visitor)
             }
             HStack(spacing: 10) {
                 Button("Walk the floor") { withAnimation { session.walkFloor() } }
@@ -211,109 +216,165 @@ private struct TableStage: View {
             .padding(.bottom, 16)
         }
     }
+}
 
-    private func dealButtons(_ buyer: Buyer) -> some View {
-        let ask = session.asking(buyer.item)
-        let middle = ShowSession.round((buyer.offer + ask) / 2)
-        return VStack(spacing: 8) {
-            Button { withAnimation { session.accept() } } label: {
-                Text(buyer.trade != nil ? "Accept the trade" : "Accept \(money(buyer.offer))").frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Theme.green)
-            .foregroundStyle(.black)
-            HStack(spacing: 8) {
-                if buyer.offer < ask {
-                    if middle > buyer.offer && middle < ask {
-                        Button { withAnimation { session.counter(middle) } } label: {
-                            Text("Counter \(money(middle))").frame(maxWidth: .infinity)
-                        }
+/// Accept, counter, or decline, for a buyer, a trader, or a seller.
+private struct DealButtons: View {
+    @Environment(GameStore.self) private var store
+    let session: ShowSession
+    let visitor: Visitor
+
+    var body: some View {
+        VStack(spacing: 8) {
+            switch visitor.intent {
+            case .buy:
+                let ask = visitor.item.map(session.asking) ?? visitor.offer
+                let middle = ShowSession.round((visitor.offer + ask) / 2)
+                primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
+                HStack(spacing: 8) {
+                    if visitor.offer < ask {
+                        if middle > visitor.offer && middle < ask { secondary("Counter \(money(middle))") { session.counter(middle) } }
+                        secondary("Ask \(money(ask))") { session.counter(ask) }
                     }
-                    Button { withAnimation { session.counter(ask) } } label: {
-                        Text("Ask \(money(ask))").frame(maxWidth: .infinity)
-                    }
+                    secondary("Decline") { session.decline() }
                 }
-                Button { withAnimation { session.decline() } } label: { Text("Decline").frame(maxWidth: .infinity) }
+            case .trade:
+                primary("Accept the trade", color: Theme.green) { session.accept() }
+                HStack(spacing: 8) {
+                    if visitor.patience > 0 { secondary("Ask for cash too") { session.askForCash() } }
+                    secondary("Decline") { session.decline() }
+                }
+            case .sell:
+                let low = ShowSession.round(visitor.offer * 0.8)
+                let lower = ShowSession.round(visitor.offer * 0.65)
+                primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
+                    .disabled(!store.canAfford(visitor.offer))
+                HStack(spacing: 8) {
+                    secondary("Offer \(money(low))") { session.counter(low) }
+                    secondary("Offer \(money(lower))") { session.counter(lower) }
+                    secondary("Pass") { session.decline() }
+                }
             }
-            .buttonStyle(.bordered)
         }
         .controlSize(.large)
         .padding(.horizontal, 16)
         .padding(.bottom, 10)
     }
+
+    private func primary(_ title: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button { withAnimation { action() } } label: { Text(title).frame(maxWidth: .infinity) }
+            .buttonStyle(.borderedProminent)
+            .tint(color)
+            .foregroundStyle(.black)
+    }
+
+    private func secondary(_ title: String, action: @escaping () -> Void) -> some View {
+        Button { withAnimation { action() } } label: { Text(title).frame(maxWidth: .infinity) }
+            .buttonStyle(.bordered)
+    }
 }
 
-private struct BuyerCard: View {
-    let buyer: Buyer
-    let asking: Double
+private struct VisitorCard: View {
+    let visitor: Visitor
+    let asking: Double?
     let tool: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                Image(systemName: buyer.type.icon)
+                Image(systemName: visitor.type.icon)
                     .font(.title3)
                     .frame(width: 40, height: 40)
-                    .background(Theme.cyan.opacity(0.15), in: Circle())
-                    .foregroundStyle(Theme.cyan)
+                    .background(accent.opacity(0.15), in: Circle())
+                    .foregroundStyle(accent)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(buyer.name).font(.headline)
-                    Text(buyer.type.label).font(.caption).foregroundStyle(Theme.muted)
+                    Text(visitor.name).font(.headline)
+                    Text(visitor.type.label).font(.caption).foregroundStyle(Theme.muted)
                 }
                 Spacer()
-                HStack(spacing: 3) {
-                    ForEach(0..<3, id: \.self) { i in
-                        Circle().fill(i <= buyer.patience ? Theme.orange : Theme.line).frame(width: 7, height: 7)
-                    }
-                }
-                .accessibilityLabel("Patience")
-            }
-            HStack(alignment: .top, spacing: 12) {
-                ItemImage(item: buyer.item).frame(width: 64, height: 89)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(buyer.item.name).font(.subheadline.weight(.semibold))
-                    Text(buyer.item.detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                    if let c = buyer.item.condition {
-                        HStack(spacing: 6) {
-                            WearText(wear: c.wear)
-                            Text("·").font(.caption).foregroundStyle(Theme.muted)
-                            CutLine(reading: .front(c.cut, tool: tool))
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(intentLabel)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(accent.opacity(0.18))
+                        .foregroundStyle(accent)
+                    HStack(spacing: 3) {
+                        ForEach(0..<3, id: \.self) { i in
+                            Circle().fill(i <= visitor.patience ? Theme.orange : Theme.line).frame(width: 6, height: 6)
                         }
                     }
-                    Text("Your price \(money(asking)) · market \(money(buyer.item.market))")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(Theme.muted)
+                    .accessibilityLabel("Patience")
                 }
             }
-            Text("“\(buyer.line)”")
+            if let item = visitor.item {
+                if visitor.intent == .trade { Text("THEY WANT").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted) }
+                HStack(alignment: .top, spacing: 12) {
+                    ItemImage(item: item).frame(width: 64, height: 89)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.name).font(.subheadline.weight(.semibold))
+                        Text(item.detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        if let c = item.condition {
+                            HStack(spacing: 6) {
+                                WearText(wear: c.wear)
+                                Text("·").font(.caption).foregroundStyle(Theme.muted)
+                                CutLine(reading: .front(c.cut, tool: tool))
+                            }
+                        }
+                        Text("\(asking.map { "Your price \(money($0)) · " } ?? "")market \(money(item.market))")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
+            }
+            if let goods = visitor.goods {
+                Text("THEY'RE SELLING").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                HStack(alignment: .top, spacing: 12) {
+                    GoodsThumb(goods: goods).frame(width: 64, height: 89)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(VendorItem(goods: goods, price: 0, market: nil).name).font(.subheadline.weight(.semibold))
+                        GoodsDetail(goods: goods, tool: tool)
+                        Text("market \(money(visitor.goodsMarket))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                }
+            }
+            Text("“\(visitor.line)”")
                 .font(.body.italic())
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Theme.background, in: RoundedRectangle(cornerRadius: 10))
-            if let trade = buyer.trade {
-                HStack(spacing: 12) {
-                    RemoteCardImage(url: trade.card.print.image.flatMap(URL.init(string:)), name: "")
-                        .aspectRatio(63.0 / 88.0, contentMode: .fit)
-                        .frame(width: 48)
-                        .clipShape(RoundedRectangle(cornerRadius: 3))
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("THEY OFFER").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
-                        Text(trade.card.print.name).font(.subheadline.weight(.semibold))
-                        HStack(spacing: 6) {
-                            WearText(wear: trade.card.condition.wear)
-                            Text("mkt \(money(trade.card.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                        }
-                        if trade.cash > 0 {
-                            Text("plus \(money(trade.cash)) cash").font(.caption.monospaced()).foregroundStyle(Theme.green)
+            switch visitor.intent {
+            case .trade:
+                Text("THEY OFFER").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                ForEach(visitor.tradeCards) { card in
+                    HStack(spacing: 12) {
+                        RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: "")
+                            .frame(width: 44, height: 61)
+                            .clipShape(RoundedRectangle(cornerRadius: 3))
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(card.print.name).font(.subheadline.weight(.semibold))
+                            Text(SetLibrary.set(card.setSlug).name).font(.caption).foregroundStyle(Theme.muted)
+                            HStack(spacing: 6) {
+                                WearText(wear: card.condition.wear)
+                                Text("worth \(money(card.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            }
                         }
                     }
                 }
-            } else {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("OFFER").font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                HStack {
+                    Text(visitor.tradeCash > 0 ? "Plus \(money(visitor.tradeCash)) cash" : "No cash").font(.subheadline.monospaced())
+                        .foregroundStyle(visitor.tradeCash > 0 ? Theme.green : Theme.muted)
                     Spacer()
-                    Text(money(buyer.offer)).font(.system(size: 28, weight: .bold, design: .monospaced))
-                        .foregroundStyle(buyer.offer >= asking ? Theme.green : Theme.text)
+                    Text("Total \(money(visitor.tradeValue))").font(.subheadline.monospaced().weight(.semibold))
+                        .contentTransition(.numericText())
+                }
+            default:
+                HStack(alignment: .firstTextBaseline) {
+                    Text(visitor.intent == .sell ? "THEIR PRICE" : "OFFER")
+                        .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                    Spacer()
+                    Text(money(visitor.offer)).font(.system(size: 28, weight: .bold, design: .monospaced))
+                        .foregroundStyle(good ? Theme.green : Theme.text)
                         .contentTransition(.numericText())
                 }
             }
@@ -322,6 +383,63 @@ private struct BuyerCard: View {
         .background(Theme.surface)
         .overlay(Rectangle().stroke(Theme.line))
     }
+
+    private var good: Bool {
+        switch visitor.intent {
+        case .buy: visitor.offer >= (asking ?? .infinity)
+        case .sell: visitor.offer < visitor.goodsMarket
+        case .trade: false
+        }
+    }
+
+    private var intentLabel: String {
+        switch visitor.intent {
+        case .buy: "WANTS TO BUY"
+        case .trade: "WANTS TO TRADE"
+        case .sell: "WANTS TO SELL"
+        }
+    }
+
+    private var accent: Color {
+        switch visitor.intent {
+        case .buy: Theme.green
+        case .trade: Color(red: 0.7, green: 0.55, blue: 1)
+        case .sell: Theme.cyan
+        }
+    }
+}
+
+/// The image of something for sale: a card, a slab, sealed product, or a mystery pack.
+private struct GoodsThumb: View {
+    let goods: VendorGoods
+
+    var body: some View {
+        GoodsImage(item: VendorItem(goods: goods, price: 0, market: nil))
+    }
+}
+
+/// One line under the name of something for sale: the set and condition, the grade, or the product kind.
+private struct GoodsDetail: View {
+    let goods: VendorGoods
+    let tool: Int
+
+    var body: some View {
+        switch goods {
+        case .single(let print, let slug, let condition):
+            Text("\(SetLibrary.set(slug).name) · \(print.rarity)").font(.caption).foregroundStyle(Theme.muted).lineLimit(1)
+            HStack(spacing: 6) {
+                WearText(wear: condition.wear)
+                Text("·").font(.caption).foregroundStyle(Theme.muted)
+                CutLine(reading: .front(condition.cut, tool: tool))
+            }
+        case .slab(_, let slug, let grade):
+            Text("\(SetLibrary.set(slug).name) · \(grade.label)").font(.caption.weight(.semibold)).foregroundStyle(Theme.cyan)
+        case .sealed(let product):
+            Text("Sealed · \(product.kind)").font(.caption).foregroundStyle(Theme.muted)
+        case .mystery(let pack):
+            Text(pack.detail).font(.caption).foregroundStyle(Theme.muted)
+        }
+    }
 }
 
 // MARK: - Floor
@@ -329,14 +447,35 @@ private struct BuyerCard: View {
 private struct FloorStage: View {
     let session: ShowSession
 
+    @Environment(GameStore.self) private var store
+
     var body: some View {
-        if let vendor = session.openVendor {
-            VendorStage(session: session, vendor: vendor)
-                .transition(.move(edge: .trailing))
-        } else {
-            FloorList(session: session)
-                .transition(.move(edge: .leading))
+        ZStack {
+            if let vendor = session.openVendor {
+                VendorStage(session: session, vendor: vendor)
+                    .transition(.move(edge: .trailing))
+            } else {
+                FloorList(session: session)
+                    .transition(.move(edge: .leading))
+            }
+            // Someone stops the player on the way to a table.
+            if let approach = session.approach {
+                Color.black.opacity(0.6).ignoresSafeArea()
+                VStack(spacing: 0) {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Someone stops you").font(.headline).padding(.top, 8)
+                            VisitorCard(visitor: approach, asking: nil, tool: store.data.centeringTool)
+                        }
+                        .padding(16)
+                    }
+                    DealButtons(session: session, visitor: approach)
+                }
+                .background(Theme.background)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: session.approach?.id)
     }
 }
 
@@ -405,6 +544,17 @@ private struct VendorStage: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
     let vendor: Vendor
+    @State private var tab: Aisle = .singles
+
+    private enum Aisle: String, CaseIterable { case singles = "Singles", sealed = "Sealed" }
+
+    /// Singles and slabs, or sealed product and mystery packs.
+    private func inAisle(_ item: VendorItem, _ aisle: Aisle) -> Bool {
+        switch item.goods {
+        case .single, .slab: aisle == .singles
+        case .sealed, .mystery: aisle == .sealed
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -418,10 +568,18 @@ private struct VendorStage: View {
                         }
                     }
                     Text(vendor.kind.tagline).font(.subheadline).foregroundStyle(Theme.muted)
-                    if vendor.items.isEmpty {
-                        Text("You bought out this table.").font(.subheadline).foregroundStyle(Theme.muted)
+                    Picker("Aisle", selection: $tab) {
+                        ForEach(Aisle.allCases, id: \.self) { aisle in
+                            Text("\(aisle.rawValue) · \(vendor.items.filter { inAisle($0, aisle) }.count)").tag(aisle)
+                        }
                     }
-                    ForEach(vendor.items) { item in
+                    .pickerStyle(.segmented)
+                    let shown = vendor.items.filter { inAisle($0, tab) }
+                    if shown.isEmpty {
+                        Text(tab == .singles ? "No singles left at this table." : "No sealed product left at this table.")
+                            .font(.subheadline).foregroundStyle(Theme.muted)
+                    }
+                    ForEach(shown) { item in
                         GoodsRow(item: item, tool: store.data.centeringTool, canAfford: store.canAfford(item.price),
                                  buy: { withAnimation { session.buy(item, from: vendor) } },
                                  ask: { session.askForDeal(item, from: vendor) })

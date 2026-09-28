@@ -10,7 +10,7 @@ enum ShowSize: String, Codable, Hashable {
     var tableFee: Double { self == .regional ? Balance.regionalTableFee : Balance.localTableFee }
     var entryFee: Double { self == .regional ? 15 : 5 }
     /// The mean number of buyers who come to one table in one day.
-    var buyersPerDay: Double { self == .regional ? 28 : 14 }
+    var buyersPerDay: Double { self == .regional ? 40 : 20 }
     /// Booking closes this many days before the first day.
     var bookingCloses: Int { self == .regional ? 7 : 1 }
     var label: String { self == .regional ? "Regional show" : "Local show" }
@@ -196,8 +196,8 @@ extension GameStore {
         save()
     }
 
-    /// A trade: the player's item goes, and the buyer's card plus any cash comes in.
-    func tradeAtShow(_ item: ShowItem, for card: FloorListing, cash: Double, show: CardShow) {
+    /// A trade: the player's item goes, and the other person's cards plus any cash come in.
+    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, show: CardShow) {
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -205,11 +205,13 @@ extension GameStore {
         case .sealed:
             data.sealed.removeAll { $0.id == item.id }
         }
-        // The card that came in carries the trade value as its cost, so the portfolio header stays honest.
-        data.raw.append(OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.market, ripID: nil,
-                                  condition: card.condition, acquiredDay: data.day))
+        // Each card that came in carries its value as its cost, so the portfolio header stays honest.
+        for card in cards {
+            data.raw.append(OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.market, ripID: nil,
+                                      condition: card.condition, acquiredDay: data.day))
+        }
         if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(show.name)") }
-        log("Traded \(item.name) for \(card.print.name)\(cash > 0 ? " plus \(money(cash))" : "") at \(show.name).",
+        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(cash > 0 ? " plus \(money(cash))" : "") at \(show.name).",
             cash: cash > 0 ? cash : nil)
         save()
     }
@@ -284,23 +286,37 @@ struct ShowItem: Identifiable, Hashable {
     /// Nil for sealed product and slabs.
     let condition: Condition?
     let graded: Bool
+    let setSlug: String
+
+    var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
 }
 
-/// A card for sale at another vendor's table, or a card a buyer offers in a trade.
+/// A card that a visitor offers in a trade.
 struct FloorListing: Identifiable, Hashable {
     let id = UUID()
     let print: CardPrint
     let setSlug: String
     let condition: Condition
     let price: Double
-    var askedForDeal = false
 
-    var market: Double { print.market ?? 0 }
+    /// The card's value in its condition.
+    var market: Double { (print.market ?? 0) * condition.wear.valueFactor }
 }
 
-/// The kinds of buyer who come to a table. Each wants something different and pays differently.
-enum BuyerType: CaseIterable {
-    case collector, flipper, kid, gradeHunter
+extension Wear {
+    /// What wear takes off a card's value.
+    var valueFactor: Double {
+        switch self {
+        case .nearMint: 1
+        case .lightlyPlayed: 0.8
+        case .moderatelyPlayed: 0.6
+        }
+    }
+}
+
+/// The people who come up at a show.
+enum VisitorType: CaseIterable {
+    case collector, flipper, kid, gradeHunter, vintageFan, sealedCollector, trader, closetCleaner, dealer
 
     var label: String {
         switch self {
@@ -308,6 +324,11 @@ enum BuyerType: CaseIterable {
         case .flipper: "Flipper"
         case .kid: "Kid with a parent"
         case .gradeHunter: "Grading hunter"
+        case .vintageFan: "Vintage collector"
+        case .sealedCollector: "Sealed collector"
+        case .trader: "Trader"
+        case .closetCleaner: "Cleaning out a closet"
+        case .dealer: "Dealer moving stock"
         }
     }
 
@@ -317,25 +338,41 @@ enum BuyerType: CaseIterable {
         case .flipper: "arrow.left.arrow.right"
         case .kid: "figure.and.child.holdinghands"
         case .gradeHunter: "magnifyingglass"
+        case .vintageFan: "crown"
+        case .sealedCollector: "shippingbox"
+        case .trader: "arrow.triangle.swap"
+        case .closetCleaner: "archivebox"
+        case .dealer: "briefcase"
         }
     }
 }
 
-struct Buyer: Identifiable {
+/// Someone at the show who wants to buy from the player, trade with the player, or sell to the player.
+struct Visitor: Identifiable {
+    enum Intent { case buy, trade, sell }
+
     let id = UUID()
-    let type: BuyerType
+    let type: VisitorType
     let name: String
-    let item: ShowItem
-    /// The most this buyer will pay. The player never sees it.
-    let top: Double
+    let intent: Intent
+    /// The player's item that they want, to buy or to trade for.
+    let item: ShowItem?
+    /// Hidden. To buy: the most they pay. To sell: the least they take.
+    var limit: Double
+    /// To buy: their offer. To sell: their price.
     var offer: Double
     var patience: Int
     var line: String
-    /// Some collectors offer a card, plus cash, in place of cash only.
-    var trade: (card: FloorListing, cash: Double)?
+    var tradeCards: [FloorListing] = []
+    var tradeCash: Double = 0
+    /// What they sell, and what it is worth.
+    var goods: VendorGoods?
+    var goodsMarket: Double = 0
+
+    var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
 
-/// One day at a card show: the table, the buyers, and the floor.
+/// One day at a card show: the table, the visitors, and the floor.
 @MainActor @Observable
 final class ShowSession {
     enum Phase { case setup, table, floor, summary }
@@ -352,7 +389,10 @@ final class ShowSession {
     var markup = 1.10
     var bring: Set<UUID> = []
     private(set) var table: [ShowItem] = []
-    private(set) var buyer: Buyer?
+    /// The person at the player's table.
+    private(set) var visitor: Visitor?
+    /// Someone who stops the player on the floor.
+    private(set) var approach: Visitor?
     private(set) var vendors: [Vendor] = []
     private(set) var openVendorID: UUID?
     /// The mystery pack that is being opened, while its reveal shows.
@@ -398,38 +438,39 @@ final class ShowSession {
         let cards = stock.cards.map { card in
             ShowItem(id: card.id, kind: .card, name: card.print.name,
                      detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.market,
-                     image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil)
+                     image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
+                     setSlug: card.setSlug)
         }
         let sealed = stock.sealed.map { item in
             ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: store.market(of: item),
-                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false)
+                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
 
     func openTable() {
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
-        // More value on the table draws more buyers, up to a point.
+        // More value on the table draws more people, up to a point.
         var mean = show.size.buyersPerDay * (1 - minute / closeMinute)
         mean *= min(1.3, 0.7 + Double(table.count) / 30)
         let count = max(0, Int((mean + Double.random(in: -2...2)).rounded()))
         arrivals = (0..<count).map { _ in Double.random(in: minute..<closeMinute) }.sorted()
         opened = true
         phase = .table
-        nextBuyer()
+        nextVisitor()
     }
 
     // MARK: Table
 
-    /// Brings the next buyer. The clock jumps to their arrival. Buyers who waited more than half an hour left.
-    func nextBuyer() {
-        buyer = nil
+    /// Brings the next person. The clock jumps to their arrival. People who waited more than half an hour left.
+    func nextVisitor() {
+        visitor = nil
         guard phase == .table else { return }
         while let first = arrivals.first, first < minute - 30 {
             arrivals.removeFirst()
             missed += 1
         }
-        guard !table.isEmpty, let first = arrivals.first, first < closeMinute else {
+        guard let first = arrivals.first, first < closeMinute else {
             arrivals.removeAll()
             minute = closeMinute
             phase = .summary
@@ -437,25 +478,41 @@ final class ShowSession {
         }
         arrivals.removeFirst()
         minute = max(minute, first)
-        buyer = makeBuyer()
-        if buyer == nil { nextBuyer() }
+        visitor = makeVisitor()
+        if visitor == nil { nextVisitor() }
     }
 
-    private func makeBuyer() -> Buyer? {
-        let type = BuyerType.allCases.randomElement() ?? .collector
-        let wanted: [ShowItem] = switch type {
+    /// Most people want to buy. Some want to trade, and some want to sell to the player.
+    private func makeVisitor() -> Visitor? {
+        let roll = Double.random(in: 0..<1)
+        if table.isEmpty || roll < 0.22 { return makeSeller() }
+        if roll < 0.40, let trader = makeTrader() { return trader }
+        return makeBuyer()
+    }
+
+    private func makeBuyer() -> Visitor? {
+        var type = [VisitorType.collector, .collector, .flipper, .kid, .gradeHunter, .vintageFan, .sealedCollector]
+            .randomElement() ?? .collector
+        var wanted: [ShowItem] = switch type {
         case .kid: table.filter { $0.market <= 30 }
         case .gradeHunter: table.filter { $0.kind == .card && !$0.graded && $0.market >= 5 }
+        case .vintageFan: table.filter(\.isVintage)
+        case .sealedCollector: table.filter { $0.kind == .sealed }
         default: table
         }
-        // Buyers look at the better cards first.
-        guard let item = pick(wanted.isEmpty ? table : wanted) else { return nil }
-        var top: Double
-        switch type {
-        case .collector: top = item.market * Double.random(in: 0.92...1.08)
-        case .flipper: top = item.market * Double.random(in: 0.68...0.82)
-        case .kid: top = min(item.market * Double.random(in: 0.95...1.15), 30)
-        case .gradeHunter: top = item.market * Double.random(in: 0.85...1.0)
+        if wanted.isEmpty {
+            type = .collector
+            wanted = table
+        }
+        // People look at the better items first.
+        guard let item = pick(wanted) else { return nil }
+        var top: Double = switch type {
+        case .flipper: item.market * Double.random(in: 0.68...0.82)
+        case .kid: min(item.market * Double.random(in: 0.95...1.15), 30)
+        case .gradeHunter: item.market * Double.random(in: 0.85...1.0)
+        case .vintageFan: item.market * Double.random(in: 0.95...1.12)
+        case .sealedCollector: item.market * Double.random(in: 0.9...1.05)
+        default: item.market * Double.random(in: 0.92...1.08)
         }
         var line = ""
         if let c = item.condition {
@@ -483,18 +540,84 @@ final class ShowSession {
                 line += "It's a bit off center. "
             }
         }
+        if type == .vintageFan { line = "I've been hunting for one of these. " + line }
         top = max(0.25, top)
         let ask = asking(item)
-        let offer = Self.round(min(ask, top * Double.random(in: 0.72...0.9)))
-        var buyer = Buyer(type: type, name: Self.names.randomElement() ?? "A buyer", item: item, top: min(top, ask * 1.0),
-                          offer: max(0.25, offer), patience: type == .flipper ? 1 : 2,
-                          line: line + (offer >= ask ? "I'll take it at your price." : "Would you take \(money(max(0.25, offer)))?"))
-        if type == .collector, item.market >= 15, Double.random(in: 0..<1) < 0.25, let card = tradeCard(near: item.market) {
-            let cash = max(0, Self.round(top - card.market))
-            buyer.trade = (card, cash)
-            buyer.line = line + "Want to trade? My \(card.print.name)\(cash > 0 ? " plus \(money(cash))" : "") for it."
+        let offer = max(0.25, Self.round(min(ask, top * Double.random(in: 0.72...0.9))))
+        return Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: item, limit: min(top, ask),
+                       offer: offer, patience: type == .flipper ? 1 : 2,
+                       line: line + (offer >= ask ? "I'll take it at your price." : "Would you take \(money(offer))?"))
+    }
+
+    /// A trade: one or two of their cards, and sometimes cash, for one of the player's items.
+    private func makeTrader() -> Visitor? {
+        guard let item = pick(table.filter { $0.market >= 8 }) else { return nil }
+        let target = item.market * Double.random(in: 0.8...1.02)
+        var cards: [FloorListing] = []
+        if let first = tradeCard(max: target * Double.random(in: 0.5...0.95)) { cards.append(first) }
+        let left = target - cards.reduce(0) { $0 + $1.market }
+        if left > 4, Bool.random(), let second = tradeCard(max: left) { cards.append(second) }
+        guard !cards.isEmpty else { return nil }
+        let value = cards.reduce(0) { $0 + $1.market }
+        let cash = value < target && Bool.random() ? Self.round(target - value) : 0
+        let names = cards.map(\.print.name).joined(separator: " and ")
+        var v = Visitor(type: .trader, name: Self.names.randomElement() ?? "A trader", intent: .trade, item: item,
+                        limit: item.market * Double.random(in: 1.0...1.1), offer: 0, patience: 1,
+                        line: "I'm after your \(item.name). My \(names)\(cash > 0 ? " plus \(money(cash))" : "") for it?")
+        v.tradeCards = cards
+        v.tradeCash = cash
+        return v
+    }
+
+    /// Someone who wants to sell to the player: often an old collection, with vintage in it.
+    private func makeSeller() -> Visitor? {
+        let type = [VisitorType.closetCleaner, .closetCleaner, .collector, .dealer].randomElement() ?? .closetCleaner
+        // Most sellers bring something the player can pay for. Now and then, someone brings a big item.
+        let budget = max(40, store.cash * 1.3)
+        let stretch = Double.random(in: 0..<1) < 0.15
+        var picked: (VendorGoods, Double)?
+        for _ in 0..<10 {
+            guard let offer = sellerGoods() else { continue }
+            picked = offer
+            if stretch || offer.1 <= budget { break }
         }
-        return buyer
+        guard let (goods, market) = picked else { return nil }
+        let (askRange, floorRange): (ClosedRange<Double>, ClosedRange<Double>) = switch type {
+        case .closetCleaner: (0.6...0.85, 0.42...0.6)
+        case .dealer: (0.85...1.0, 0.72...0.85)
+        default: (0.75...0.95, 0.6...0.75)
+        }
+        let ask = max(1, Self.round(market * Double.random(in: askRange)))
+        let bottom = min(ask, market * Double.random(in: floorRange))
+        let name = VendorItem(goods: goods, price: ask, market: market).name
+        let line: String = switch type {
+        case .closetCleaner: "Found this in my closet. Would you give me \(money(ask)) for the \(name)?"
+        case .dealer: "I'm moving some stock. \(money(ask)) for this \(name)?"
+        default: "Selling off part of my collection. \(money(ask)) for the \(name)?"
+        }
+        var v = Visitor(type: type, name: Self.names.randomElement() ?? "A seller", intent: .sell, item: nil, limit: bottom,
+                        offer: ask, patience: type == .closetCleaner ? 2 : 1, line: line)
+        v.goods = goods
+        v.goodsMarket = market
+        return v
+    }
+
+    /// One thing a seller could bring: a single (often old), a slab, or sealed product.
+    private func sellerGoods() -> (VendorGoods, Double)? {
+        let roll = Double.random(in: 0..<1)
+        if roll < 0.5, let (p, s) = VendorFloor.randomPrint(from: Double.random(in: 0..<1) < 0.6 ? Balance.vintageSets + Balance.olderSets
+                                                             : Balance.modernSets, minMarket: 4) {
+            let c = Balance.vintageSets.contains(s) || Balance.olderSets.contains(s) ? Condition.played() : .packFresh()
+            return (.single(p, slug: s, condition: c), (p.market ?? 0) * c.wear.valueFactor)
+        }
+        if roll < 0.7, let (p, s) = VendorFloor.randomPrint(from: Balance.showSets, minMarket: 10) {
+            let grade = SlabGrade(company: Bool.random() ? .psa : .cgc, grade: [7.0, 8, 9, 9, 10].randomElement() ?? 9)
+            return (.slab(p, slug: s, grade: grade), OwnedCard(print: p, setSlug: s, acquired: .now, paid: nil, ripID: nil, grade: grade).market)
+        }
+        guard let product = SetLibrary.catalog.filter({ Balance.showSets.contains($0.homeSlug) && $0.market > 0 }).randomElement() else {
+            return nil
+        }
+        return (.sealed(product), product.market)
     }
 
     private func pick(_ items: [ShowItem]) -> ShowItem? {
@@ -509,62 +632,105 @@ final class ShowSession {
         return items.last
     }
 
+    // MARK: Deals
+
+    /// The person the player is dealing with: at the table, or on the floor.
+    var current: Visitor? { phase == .table ? visitor : approach }
+
+    private func setCurrent(_ v: Visitor?) {
+        if phase == .table { visitor = v } else { approach = v }
+    }
+
     func accept() {
-        guard var b = buyer else { return }
-        if let trade = b.trade {
-            store.tradeAtShow(b.item, for: trade.card, cash: trade.cash, show: show)
-            trades.append("\(b.item.name) → \(trade.card.print.name)\(trade.cash > 0 ? " + \(money(trade.cash))" : "")")
-            b.trade = nil
-        } else {
-            store.sellAtShow(b.item, price: b.offer, show: show)
-            sold.append((b.item.name, b.offer))
+        guard let v = current else { return }
+        switch v.intent {
+        case .buy:
+            guard let item = v.item else { return }
+            store.sellAtShow(item, price: v.offer, show: show)
+            sold.append((item.name, v.offer))
+            table.removeAll { $0.id == item.id }
+        case .trade:
+            guard let item = v.item else { return }
+            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, show: show)
+            trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(v.tradeCash > 0 ? " + \(money(v.tradeCash))" : "")")
+            table.removeAll { $0.id == item.id }
+        case .sell:
+            guard let goods = v.goods else { return }
+            guard store.canAfford(v.offer) else {
+                note = "You do not have enough cash."
+                return
+            }
+            buyGoods(goods, price: v.offer, from: v.name)
         }
-        table.removeAll { $0.id == b.item.id }
-        finishBuyer(minutes: .random(in: 6...12))
+        finish(minutes: .random(in: 6...12))
         Haptics.hit()
     }
 
-    /// The player asks for more. The buyer takes it if it is at or under their top price. If not, they come up
-    /// part of the way, or they walk away when their patience runs out.
+    /// A counter. To a buyer: the player asks for more. To a seller: the player offers less. Past the hidden limit,
+    /// the other side moves part of the way, or walks away when their patience runs out.
     func counter(_ price: Double) {
-        guard var b = buyer else { return }
-        b.trade = nil
-        if price <= b.top + 0.001 {
-            b.offer = price
-            b.line = "Deal."
-            buyer = b
+        guard var v = current else { return }
+        let fits = v.intent == .sell ? price >= v.limit - 0.001 : price <= v.limit + 0.001
+        if fits {
+            v.offer = price
+            v.line = "Deal."
+            setCurrent(v)
             accept()
             return
         }
-        if b.patience <= 0 {
-            b.line = "That's too much for me. Good luck!"
-            buyer = b
+        if v.patience <= 0 {
+            v.line = v.intent == .sell ? "No, that's too low. I'll find someone else." : "That's too much for me. Good luck!"
+            setCurrent(v)
             walkedAway += 1
-            note = "\(b.name) walked away."
-            finishBuyer(minutes: .random(in: 4...8))
+            note = "\(v.name) walked away."
+            finish(minutes: .random(in: 4...8))
             return
         }
-        b.patience -= 1
-        b.offer = Self.round(min(b.top, b.offer + (b.top - b.offer) * Double.random(in: 0.5...0.9)))
-        b.line = "Hmm. I can go to \(money(b.offer)). That's about my limit."
-        buyer = b
-        minute += 3
+        v.patience -= 1
+        let moved = v.offer + (v.limit - v.offer) * Double.random(in: 0.5...0.9)
+        v.offer = Self.round(v.intent == .sell ? max(v.limit, moved) : min(v.limit, moved))
+        v.line = v.intent == .sell ? "I could do \(money(v.offer)). That's as low as I go." : "Hmm. I can go to \(money(v.offer)). That's about my limit."
+        setCurrent(v)
+        spend(3)
+    }
+
+    /// In a trade: asks for cash on top. It works when their limit leaves room for it.
+    func askForCash() {
+        guard var v = current, v.intent == .trade, let item = v.item else { return }
+        let room = v.limit - v.tradeValue
+        if v.patience > 0, room > 1 {
+            let extra = Self.round(room * Double.random(in: 0.5...1))
+            v.tradeCash += extra
+            v.patience -= 1
+            v.line = "Fine. I'll add \(money(extra)). That's my best."
+        } else {
+            v.patience = 0
+            v.line = "That's already a fair trade for your \(item.name)."
+        }
+        setCurrent(v)
+        spend(2)
     }
 
     func decline() {
-        guard let b = buyer else { return }
-        note = "\(b.name) moved on."
-        finishBuyer(minutes: .random(in: 2...5))
+        guard let v = current else { return }
+        note = "\(v.name) moved on."
+        finish(minutes: .random(in: 2...5))
     }
 
-    private func finishBuyer(minutes: Double) {
-        minute += minutes
-        buyer = nil
-        if isOver { phase = .summary } else { nextBuyer() }
+    private func finish(minutes: Double) {
+        if phase == .table {
+            minute += minutes
+            visitor = nil
+            if isOver { phase = .summary } else { nextVisitor() }
+        } else {
+            approach = nil
+            spend(minutes)
+        }
     }
 
     func packUp() {
-        buyer = nil
+        visitor = nil
+        approach = nil
         missed += arrivals.count
         arrivals.removeAll()
         phase = .summary
@@ -572,22 +738,23 @@ final class ShowSession {
 
     // MARK: Floor
 
-    /// Leaves the table for the floor. The clock only moves when the player looks at a table or buys.
+    /// Leaves the table for the floor. The clock only moves when the player looks at a table, deals, or buys.
     func walkFloor() {
-        buyer = nil
+        visitor = nil
         openVendorID = nil
         phase = isOver ? .summary : .floor
     }
 
     var openVendor: Vendor? { vendors.first { $0.id == openVendorID } }
 
-    /// Looks over one table. The first look takes a quarter hour. Buyers who come to the player's table meanwhile
-    /// leave after half an hour.
+    /// Looks over one table. The first look takes a quarter hour. Sometimes someone stops the player on the way
+    /// with something to sell.
     func visit(_ vendor: Vendor) {
         guard let i = vendors.firstIndex(where: { $0.id == vendor.id }) else { return }
         if !vendors[i].visited {
             vendors[i].visited = true
             spend(Balance.vendorVisitMinutes)
+            if !isOver, approach == nil, Double.random(in: 0..<1) < 0.25 { approach = makeSeller() }
         }
         openVendorID = vendor.id
     }
@@ -601,6 +768,7 @@ final class ShowSession {
         arrivals.removeAll { $0 < minute - 30 }
         if isOver {
             openVendorID = nil
+            approach = nil
             phase = .summary
         }
     }
@@ -608,12 +776,13 @@ final class ShowSession {
     func backToTable() {
         guard hasTable else { return }
         openVendorID = nil
+        approach = nil
         guard opened else {
             phase = .setup
             return
         }
         phase = .table
-        nextBuyer()
+        nextVisitor()
     }
 
     func buy(_ item: VendorItem, from vendor: Vendor) {
@@ -623,26 +792,31 @@ final class ShowSession {
             note = "You do not have enough cash."
             return
         }
-        switch item.goods {
-        case .single(let print, let slug, let condition):
-            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
-                                          condition: condition), price: item.price, vendor: vendor.name, show: show)
-        case .slab(let print, let slug, let grade):
-            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade),
-                                price: item.price, vendor: vendor.name, show: show)
-        case .sealed(let product):
-            store.buySealedAtShow(product, price: item.price, vendor: vendor.name, show: show)
-        case .mystery(let pack):
-            let contents = VendorFloor.open(pack)
-            store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
-                                   price: item.price, vendor: vendor.name, show: show)
-            reveal = MysteryReveal(pack: pack, price: item.price, filler: contents.filler, hit: contents.hit)
-        }
-        bought.append((item.name, item.price))
+        buyGoods(item.goods, price: item.price, from: vendor.name)
         // Mystery packs do not run out. Everything else leaves the table.
         if case .mystery = item.goods {} else { vendors[v].items.remove(at: i) }
         spend(5)
         Haptics.tap(.medium)
+    }
+
+    private func buyGoods(_ goods: VendorGoods, price: Double, from seller: String) {
+        let name = VendorItem(goods: goods, price: price, market: nil).name
+        switch goods {
+        case .single(let print, let slug, let condition):
+            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil,
+                                          condition: condition), price: price, vendor: seller, show: show)
+        case .slab(let print, let slug, let grade):
+            store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade),
+                                price: price, vendor: seller, show: show)
+        case .sealed(let product):
+            store.buySealedAtShow(product, price: price, vendor: seller, show: show)
+        case .mystery(let pack):
+            let contents = VendorFloor.open(pack)
+            store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
+                                   price: price, vendor: seller, show: show)
+            reveal = MysteryReveal(pack: pack, price: price, filler: contents.filler, hit: contents.hit)
+        }
+        bought.append((name, price))
     }
 
     /// Asks the vendor for 10% off. How often it works depends on the vendor. Each item can be asked about once.
@@ -656,17 +830,32 @@ final class ShowSession {
         spend(2)
     }
 
-    private func tradeCard(near value: Double) -> FloorListing? {
-        for _ in 0..<20 {
-            guard let (print, slug) = VendorFloor.randomPrint(from: Balance.showSets, minMarket: value * 0.5) else { return nil }
-            let m = print.market ?? 0
-            if m <= value * 0.95 { return FloorListing(print: print, setSlug: slug, condition: .secondHand(), price: m) }
+    /// A card for a trade, worth no more than the value given. Traders often bring older cards.
+    private func tradeCard(max value: Double) -> FloorListing? {
+        for _ in 0..<25 {
+            let sets = Double.random(in: 0..<1) < 0.4 ? Balance.vintageSets + Balance.olderSets : Balance.modernSets
+            guard let (print, slug) = VendorFloor.randomPrint(from: sets, minMarket: max(2, value * 0.3), maxMarket: value) else { continue }
+            let condition = sets.contains("base-set") ? Condition.played() : Condition.packFresh()
+            let card = FloorListing(print: print, setSlug: slug, condition: condition, price: 0)
+            if card.market <= value, card.market >= 1 { return card }
         }
         return nil
     }
 
+    #if DEBUG
+    /// Screenshot aid: puts a seller or a trader at the table, or stops the player on the floor.
+    func debugVisitor(_ kind: String) {
+        switch kind {
+        case "seller": visitor = makeSeller()
+        case "trader": visitor = makeTrader() ?? visitor
+        default: approach = makeSeller()
+        }
+    }
+    #endif
+
     private static let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia",
-                                "Jordan", "Kai", "Mia", "Ben", "Rosa", "Luis", "Hannah", "Theo"]
+                                "Jordan", "Kai", "Mia", "Ben", "Rosa", "Luis", "Hannah", "Theo", "Gabe", "Wes", "Tina",
+                                "Omar", "Lena", "Victor", "Ruth", "Andre", "Ellie", "Frank"]
 }
 
 /// A mystery pack that the player just bought: the filler first, then the hit.

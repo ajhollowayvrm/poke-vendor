@@ -57,6 +57,32 @@ enum VendorKind: CaseIterable, Hashable {
         }
     }
 
+    private static let places = ["Kanto", "Johto", "Pallet", "Cerulean", "Vermilion", "Celadon", "Lavender", "Saffron",
+                                 "Viridian", "Goldenrod", "Ecruteak", "Mahogany", "Hoenn", "Sinnoh", "Unova", "Kalos", "Galar", "Paldea"]
+    private static let people = ["Dave", "Rachel", "Mike", "Sarah", "Tom", "Jess", "Carlos", "Amy", "Kevin", "Laura", "Greg", "Nina"]
+
+    /// A business name for a dealer or a shop, or a person for a collector.
+    static func randomName(_ kind: VendorKind) -> String {
+        let place = places.randomElement() ?? "Kanto"
+        let person = people.randomElement() ?? "Dave"
+        switch kind {
+        case .vintageDealer:
+            return Bool.random() ? (businesses[kind]?.randomElement() ?? "Holo Vault")
+                : "\(place) \(["Classics", "Vintage", "Retro Cards", "Holo Vault", "Card Archive"].randomElement() ?? "Classics")"
+        case .modernDealer:
+            return Bool.random() ? (businesses[kind]?.randomElement() ?? "Top Deck")
+                : "\(place) \(["Collectibles", "Card Co.", "Trading", "TCG", "Singles"].randomElement() ?? "Cards")"
+        case .gameShop:
+            return Bool.random() ? (businesses[kind]?.randomElement() ?? "Critical Hit Games")
+                : "\(place) \(["Games", "Hobby", "Game Room", "Comics & Cards"].randomElement() ?? "Games")"
+        case .collector:
+            return ["\(person)'s childhood binder", "\(person), clearing out", "\(person)'s old collection",
+                    "\(person)'s shoebox of cards", "\(person) and family, selling binders"].randomElement() ?? person
+        case .mysteryPacks:
+            return businesses[kind]?.randomElement() ?? "Repacks"
+        }
+    }
+
     static let businesses: [VendorKind: [String]] = [
         .vintageDealer: ["Kanto Classics", "Holo Vault", "Pallet Town Vintage", "First Edition Finds", "Slab City", "WOTC Warehouse"],
         .modernDealer: ["Top Deck Collectibles", "Mint Condition Co.", "Chase Card Club", "Tera Trading", "Prism Cards"],
@@ -155,14 +181,18 @@ enum VendorFloor {
     /// Local shows are small. Regional shows are big, and they are where the vintage is.
     static func tables(for size: ShowSize) -> [Vendor] {
         let plan: [(VendorKind, Int)] = size == .regional
-            ? [(.vintageDealer, 5), (.modernDealer, 5), (.gameShop, 2), (.collector, 4), (.mysteryPacks, 2)]
-            : [(.vintageDealer, 1), (.modernDealer, 2), (.gameShop, 1), (.collector, 3), (.mysteryPacks, 1)]
+            ? [(.vintageDealer, 8), (.modernDealer, 8), (.gameShop, 4), (.collector, 7), (.mysteryPacks, 3)]
+            : [(.vintageDealer, 2), (.modernDealer, 3), (.gameShop, 2), (.collector, 4), (.mysteryPacks, 1)]
         var used: Set<String> = []
         var vendors: [Vendor] = []
         for (kind, count) in plan {
             for _ in 0..<count {
-                let names = (VendorKind.businesses[kind] ?? []).filter { !used.contains($0) }
-                let name = names.randomElement() ?? kind.label
+                var name = VendorKind.randomName(kind)
+                var tries = 0
+                while used.contains(name) && tries < 20 {
+                    name = VendorKind.randomName(kind)
+                    tries += 1
+                }
                 used.insert(name)
                 vendors.append(Vendor(name: name, kind: kind, items: stock(kind)))
             }
@@ -172,29 +202,38 @@ enum VendorFloor {
 
     static func stock(_ kind: VendorKind) -> [VendorItem] {
         var items: [VendorItem] = []
+        func add(_ count: ClosedRange<Int>, _ make: () -> VendorItem?) {
+            items += (0..<Int.random(in: count)).compactMap { _ in make() }
+        }
         switch kind {
         case .vintageDealer:
-            items += (0..<Int.random(in: 4...6)).compactMap { _ in single(from: Balance.vintageSets, minMarket: 8, kind: kind, vintage: true) }
-            items += (0..<Int.random(in: 1...3)).compactMap { _ in slab(from: Balance.vintageSets, kind: kind) }
+            add(10...16) { single(from: Balance.vintageSets, minMarket: 5, kind: kind, vintage: true) }
+            add(3...6) { single(from: Balance.olderSets, minMarket: 8, kind: kind, vintage: true) }
+            add(3...6) { slab(from: Balance.vintageSets, kind: kind) }
             // Vintage sealed first. Out-of-print modern sealed fills in.
-            items += (0..<Int.random(in: 0...2)).compactMap { _ in
-                sealed(from: Double.random(in: 0..<1) < 0.6 ? Balance.vintageSets : Balance.olderSets, kind: kind)
-            }
+            add(2...4) { sealed(from: Double.random(in: 0..<1) < 0.5 ? Balance.vintageSets : Balance.olderSets, kind: kind) }
         case .modernDealer:
-            items += (0..<Int.random(in: 5...7)).compactMap { _ in single(from: Balance.modernSets, minMarket: 3, kind: kind) }
-            items += (0..<Int.random(in: 0...1)).compactMap { _ in slab(from: Balance.modernSets, kind: kind) }
-            items += (0..<Int.random(in: 1...2)).compactMap { _ in sealed(from: Balance.modernSets, kind: kind) }
+            add(12...20) { single(from: Balance.modernSets, minMarket: 3, kind: kind) }
+            add(1...3) { slab(from: Balance.modernSets + Balance.olderSets, kind: kind) }
+            add(3...6) { sealed(from: Balance.modernSets, kind: kind) }
         case .gameShop:
-            items += (0..<Int.random(in: 4...6)).compactMap { _ in sealed(from: Balance.modernSets + Balance.olderSets, kind: kind) }
-            items += (0..<Int.random(in: 1...3)).compactMap { _ in single(from: Balance.modernSets, minMarket: 2, kind: kind) }
+            add(8...14) { sealed(from: Balance.modernSets + Balance.olderSets, kind: kind) }
+            add(4...8) { single(from: Balance.modernSets, minMarket: 2, kind: kind) }
         case .collector:
             // A collection can hold anything, and old cards show their age.
             let pool = Bool.random() ? Balance.vintageSets + Balance.olderSets : Balance.modernSets + Balance.olderSets
-            items += (0..<Int.random(in: 5...8)).compactMap { _ in single(from: pool, minMarket: 1.5, kind: kind, vintage: true) }
-            items += (0..<Int.random(in: 0...1)).compactMap { _ in sealed(from: pool, kind: kind) }
+            add(10...18) { single(from: pool, minMarket: 1.5, kind: kind, vintage: true) }
+            add(0...2) { slab(from: pool, kind: kind) }
+            add(1...3) { sealed(from: pool, kind: kind) }
         case .mysteryPacks:
             items += MysteryPack.catalog.map { VendorItem(goods: .mystery($0), price: $0.price, market: nil) }
-            items += (0..<Int.random(in: 1...2)).compactMap { _ in single(from: Balance.modernSets, minMarket: 5, kind: kind) }
+            add(3...6) { single(from: Balance.modernSets + Balance.vintageSets, minMarket: 5, kind: kind) }
+        }
+        // The same product can show up twice. A table shows each product once.
+        var seen: Set<String> = []
+        items = items.filter { item in
+            guard case .sealed(let p) = item.goods else { return true }
+            return seen.insert(p.id).inserted
         }
         return items.sorted { ($0.market ?? $0.price) > ($1.market ?? $1.price) }
     }
