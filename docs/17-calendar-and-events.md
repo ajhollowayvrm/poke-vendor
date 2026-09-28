@@ -1,5 +1,7 @@
 # Calendar and Events
 
+**Status: built.** Recurring entries (work, payday, the four weekly meets), posted entries (garage and estate sales, restock days), scheduled entries (shows, rent, streams, time off, meetups), and surprise entries (Pokemon Center drops and the alert banner for opportunities). Hidden garage sales come from follower tips. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+
 When things happen: the weekly calendar, how far ahead the player sees
 each event, and how arrival time changes a result. This doc builds on
 the clock and game days in [16-time-and-day.md](16-time-and-day.md).

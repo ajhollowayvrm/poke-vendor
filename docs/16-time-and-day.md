@@ -1,5 +1,7 @@
 # Time and the Day
 
+**Status: built.** The clock, End Day, the job ladder with the job board, time off, sick days, unexcused skips, quitting, rent, and late nights with the morning choice (`Model/Job.swift`). Time-cost actions can run to 2 AM.
+
 How the game measures time: the clock, the day's hours, game days, the
 day job, rent, and late nights. This doc gives numbers to the day
 structure in [01-premise-and-loop.md](01-premise-and-loop.md#day-structure).

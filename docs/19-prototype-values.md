@@ -154,5 +154,87 @@ for CGC, and $30 for BGS.
 | Analytics upgrade | $150 |
 | Vendor kit (needed to book a show table) | $200 |
 
-Live streams, follower tips, and show promos are not built.
+| Production value | Studio lights ×1.25, camera kit ×1.5, on reach and on stream viewers |
+| Show promo post | ×1.25 visitors at that show's table |
+| Follower tier 2 | +3% on deals with strangers, and a free product from a sponsor every 28 days |
+| Follower tier 3 | Sponsor deals pay 2×, and every listing sells 1.3× as often |
+| Follower tier 4 | A pull reveal or a flex about a card raises its price ×1.15 for 7 days |
+
+## Live streams
+
+| Value | Prototype value |
+| --- | --- |
+| Length | 2 or 3 hours. One real second is one stream minute. A rip adds 3 minutes a pack |
+| Viewers | Target (8 + 0.02 × followers) × production value × timing × luck × 1.5 when scheduled. The count moves 10% of the way to the target each minute |
+| Interest | Starts at 0.6, −0.02 a minute. Talk +0.2, show a card +0.15 × log10(value + 1) / 2, giveaway +0.5, auction +0.25, rip hit +0.1/+0.3/+0.6 by tier. Chat slows under 0.25 |
+| Tips | Viewers × 0.004 × (0.5 + interest) tips a minute, $1 to $5 each. A big hit adds 3 to 8 tips |
+| Auction | 8 minutes, starts at 50% of market. Bidders are 3% of the viewers, each with a ceiling of market × (0.55 + 0.55 × viewers / 200) × 0.85 to 1.2 |
+| Buy Now | 15 minutes. The chance a minute is viewers × 0.002, falling as the price goes above market |
+| Whatnot fees | 10.9% + $0.30, and the player ships |
+| Giveaway | Followers +5% of the viewers, authenticity +0.03, viewers ×1.2 |
+| End | Followers +10% of the peak viewers × (0.5 + authenticity). Burnout +0.12 |
+| Missed scheduled stream | Followers −2%, authenticity −0.10 |
+
+## Meets, sales, camping, and opportunities
+
+| Value | Prototype value |
+| --- | --- |
+| Meets | Trade night Wed 6:30–9 PM, park swap Sat 1–4 PM, trading circle Sun 2–5 PM (reputation Known), league night Thu 6–9 PM (+3 standing). 10 visitors, 6 at league night. 30% sellers, 60% regulars |
+| Garage sales | 3 to 6 a week, Fri–Sun 7 AM–1 PM, posted 2 to 3 days ahead. 3 hours, 8 when far (30%). 6 to 20 good cards × quality 0.6–1.6, ×0.75 each hour after the doors. 15% bust. Prices 25–70% of market. The host comes up 40% of the time |
+| Estate sales | 0 to 2 a week, Thu–Sat 8 AM–3 PM, 4 hours. Cards ×1.0/0.6/0.35 and prices ×1.0/0.75/0.5 by day. Prices 60–100% of market |
+| Hidden sales | 60% of weeks add one. A follower tip (tier 1) reveals it 50% of the days it is 1 to 3 days out |
+| Camping | 6 hours from 8 AM. 60% at the door, ×0.75 each hour late, +25% with the restock bot. 2 to 4 products, 2 to 6 each, at MSRP. A restock every 14 days per store, posted 3 days ahead |
+| Opportunities | 1.5 every 28 days, 0 or 1 day of notice. A collection at 70% of market, a closeout at 60%, a private buyer at 120–150%, a free table, an estate tip, a vintage collection at Elite |
+
+## Counterfeits
+
+| Value | Prototype value |
+| --- | --- |
+| Fake rates | Reseller 4%, eBay 8%, Facebook 10%, garage sale 12%, estate sale 8%, stranger 5%, Familiar contact 2%, Regular and up 0.5%, shop case 1%. Sealed ×0.5. Vintage ×3, older ×1.5. Hyped sealed ×1.5 |
+| Tiers | Bootleg 50%, convincing 35%, professional 15% |
+| A look by eye | Catches 90% / 15% / 0% by tier, × the tired factor |
+| Paid check | $8, 3 days |
+| Authentication tool | $350. Misses a professional counterfeit 10% of the time |
+| Buyer finds out | 90% / 60% / 25% by tier, +30% when the player knew, 2 to 10 days later |
+| Cost | Reputation −40, the contact −20, the shop −20 standing. TCGplayer, eBay, and Whatnot refund the buyer. Public 30% + 10% per reputation tier and follower tier: followers −5%, authenticity −0.10 |
+| At the table | A buyer who catches a fake walks: reputation −10, the contact −10 |
+| Shop buylist | Catches 95% / 70% / 40% by tier |
+
+## Rip modes
+
+| Value | Prototype value |
+| --- | --- |
+| Stop rule | $20 by default, and the rarities picked for each set. With none picked, a hit stops the rip |
+| Speed | Fast 0.45 seconds a card. Sift 0.08 |
+
+## The job and late nights
+
+| Value | Prototype value |
+| --- | --- |
+| Hire chance | 90% / 60% / 45% / 30% |
+| Time off | 1 day every 5 / 4 / 3 / 2 weeks |
+| Next job | Opens after 56 days at the job below or higher |
+| Unexcused skip | Unpaid (a fifth of the week). Fired 25% / 50% / 100%. The count resets after 28 days |
+| Late nights | Actions can run to 2 AM. Tired (1 to 2 hours) 15% worse, exhausted (3 or more) 30% worse, on haggling and the eye |
+
+## Wholesale, splits, consignment, and Facebook selling
+
+| Value | Prototype value |
+| --- | --- |
+| Wholesale | 72% of MSRP, $500 minimum, 5-day delivery. Cases of 6 boxes, 10 ETBs, 12 bundles, 36 packs |
+| Case splits | 85% of market a box (80% from a Friend vendor). Respected: 1 invite a week, 2 boxes. Elite: 2 a week, half the case. Closes in 3 days, arrives 4 days later |
+| Consignment | From Regular. The shop takes 20%, 12% at Trusted. 28 days. A card at market sells 60% of the time. +2 standing a sale |
+| Facebook selling | An offer 8% of days at 65–95% of the price. Half meet today, half in 1 to 3 days. 20% do not show. 1 hour, cash, no fees |
+
+## Upgrades
+
+| Upgrade | Cost |
+| --- | --- |
+| Expected value readout | $120 |
+| A better car (30-minute stops, far sales 6 hours) | $900 |
+| Drop alert Discord | $60 |
+| Restock alert bot | $150 |
+| Authentication tool | $350 |
+| Corner loupe, edge light, raking lamp | $60, $90, $140 |
+| Studio lights, camera kit | $250, $600 |
 

@@ -9,27 +9,51 @@ Native iOS, built in Swift.
 Private build. This is not, at this stage, intended for public release.
 
 The app is in `app/`. XcodeGen makes the Xcode project from
-`app/project.yml`. The app opens on the home hub. It has days and a clock, End Day, the
-day job and the paycheck, rent (and game over when the player cannot
-pay it), the Wallet ledger, and the Activity log. The player buys
-product from eight sets online from five storefronts: Prismatic
-Evolutions, Surging Sparks, Stellar Crown, Twilight Masquerade, and
-Paradox Rift (in print), and Evolving Skies, Cosmic Eclipse, and Base
-Set (out of print). Amazon, Pokemon Center drops, and local shelves
-sell only in-print product. Each era rips with its own pack order and
-pack trick, rips it in
-Inventory, lists cards on TCGplayer or eBay, and grades cards at PSA,
-CGC, or BGS. A store run visits big stores and two game shops, where the
-player buys at MSRP, sells singles on the buylist, and sells bulk for
-store credit. The player can start a social media account, make quick
-posts, grow followers, take sponsor deals, and post cards for sale. The values that the design leaves to balancing are in
-[19-prototype-values.md](19-prototype-values.md). Live streams, meets,
-garage sales, shows, holds, consignment, and league night are not
-built yet.
+`app/project.yml`. Build it with `cd app && xcodegen generate &&
+xcodebuild -scheme PokeVendor -destination 'platform=iOS
+Simulator,name=iPhone 17 Pro' build`. The app opens on the home hub.
+
+Every system in this folder is built. The list:
+
+- **Time**: days and a clock, End Day, the day job with the job board,
+  time off, sick days, unexcused skips, and quitting, rent (and game
+  over when the player cannot pay it), late nights with the morning
+  choice, the Wallet ledger, and the Activity log.
+- **Buying**: all 131 English booster sets. Five online storefronts,
+  store runs to big stores and two game shops, camping a restock day,
+  wholesale and case splits from reputation Respected, and Facebook
+  pickups set for a later day.
+- **Ripping**: each era's pack order and pack trick, demigod and god
+  packs, and three modes: Normal, Fast, and Sift with a stop rule.
+- **Inventory and selling**: TCGplayer, eBay, eBay auctions, Facebook
+  Marketplace meetups, social posts, Whatnot on a stream, the game shop
+  buylist, bulk for credit, and consignment.
+- **Grading**: PSA, CGC, and BGS, the centering tools, the reveal tools
+  for corners, edges, and surface, and a grading booth at regional
+  shows.
+- **Counterfeits**: fakes from risky sources, a look by eye, paid
+  authentication, the authentication tool, graders that flag fakes,
+  resealed product, and bad sales that come back to the player.
+- **The world**: card shows, weekly meets, league night, garage and
+  estate sales, follower tips, surprise opportunities, and the calendar
+  that holds them.
+- **People**: contacts, relationship levels, saved items, the want
+  list, fair dealing, and the reputation tiers with their unlocks.
+- **Social media**: quick posts, sponsors, the analytics upgrade, live
+  streams with auctions, Buy Now, giveaways, and tips, scheduled
+  streams, and the show promo post.
+- **Upgrades**: one screen with every upgrade.
+
+The values that the design leaves to balancing are in
+[19-prototype-values.md](19-prototype-values.md).
 `python3 tools/export/rip_set.py <set>` writes the
 set data that the app reads, and `python3 tools/export/catalog.py`
 writes the sealed product catalog with each product's pack mix and
 promo cards.
+
+The Test menu on the hub (the hammer) has a shortcut into every system.
+`-soak <days>` as a launch argument plays that many days by itself and
+prints a report to the console.
 
 ## Pokemon IP note
 

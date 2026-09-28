@@ -176,10 +176,20 @@ The summary shows the sales, the floor buys, the trades, the buyers
 missed, and the buyers who walked away. After day 1 of a regional show,
 the player ends the day from the hub and comes back for day 2.
 
-## Not built yet
+## Also built
 
-- The show promo post on social media (see
-  [06-social-media.md](06-social-media.md)).
-- Better table spots for higher reputation (see
+- **The show promo post** (see [06-social-media.md](06-social-media.md)):
+  a quick post that picks a show. 25% more people come to the table
+  there.
+- **A better table spot** from reputation Trusted: 15% more people at
+  the table (see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md)).
-- On-site grading.
+- **A first look** from reputation Trusted: a recurring vendor shows
+  the player their 2 best items before the table opens, at 5% off.
+- **The grading booth** at a regional show: PSA, $40 a card, the slab
+  in hand after about 20 minutes of show time. A fake comes back
+  flagged, and the fee is gone.
+- **The Venue.** The show session is the encounter for meets, league
+  night, garage and estate sales, and surprise opportunities too. A
+  venue sets the hours, the visitor count, the seller share, and whether
+  there is a table and a floor (`Model/Shows.swift`, `Venue`).

@@ -1,6 +1,10 @@
 # PokeVendor — Concept Reference
 
-Status: idea exploration. No code exists yet. This folder is the design record.
+Status: every system in this folder is built in `app/`. This folder is
+the design record, and each doc says what the code does now. The numbers
+are starting values for balancing. See
+[07-platform-and-scope.md](07-platform-and-scope.md#build-status) for
+the list.
 
 Private build. Full real Pokemon branding, for now. Not for public release in its
 current form — see [07-platform-and-scope.md](07-platform-and-scope.md) for the
@@ -34,15 +38,17 @@ tracks four separate currencies, and any one of them can be your route there.
 - [16-time-and-day.md](16-time-and-day.md) — time in hours on a clock: 16 waking hours (7 AM–11 PM), the End Day button, travel included in each action, starting hour values, game days (End Day moves grading and every other wait forward by 1 day), the weekday day job (weekly pay, a four-job ladder, sick days and time off booked in advance, a dice roll to get hired), rent ($1,200 every 4 weeks, with a 3-day warning; miss it and the game is over), and the late-night choice (start tired, or sleep in).
 - [17-calendar-and-events.md](17-calendar-and-events.md) — the weekly calendar: recurring entries (work shift, Friday paycheck, league night, fixed weekly meets), posted entries 2–3 days ahead (garage sales, estate sales, store restock days) where early arrival gets the best cards, scheduled entries (card shows, rent), surprise entries (Pokemon Center drops, store run stock, alert-banner events), and the fixed set list with no new releases.
 - [18-ripping.md](18-ripping.md) — the rip screen: a rip queue of any products as one rip, three modes (Normal, Fast, Sift), a stop rule of a dollar amount or per-set rarities, the animated pack trick, the pile of seen cards, running pack and rip totals, and the summary.
-- [20-card-shows.md](20-card-shows.md) — card shows on the calendar: booking a table, setting up, live buyers who haggle and trade, walking the floor, and the summary.
+- [19-prototype-values.md](19-prototype-values.md) — the starting values for everything the design leaves to balancing.
+- [20-card-shows.md](20-card-shows.md) — card shows on the calendar: booking a table, setting up, live buyers who haggle and trade, walking the floor, the grading booth, and the summary.
 - [21-relationships-and-reputation.md](21-relationships-and-reputation.md) — contacts (game shops, recurring show vendors, regulars, and strangers who become contacts), relationship levels, saved items, the want list, fair dealing, and the reputation tiers.
 
-## Open topics (not yet explored)
+## Open topics
 
-- Tuning the reputation-point cost/reward of each action, the archetype-formula coefficients, and counterfeit-risk probabilities (see [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#status), [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md#open-topics), and [14-counterfeit-risk.md](14-counterfeit-risk.md#open-topics)) — balancing tasks, not research tasks.
-- Whether a player can knowingly pass on a counterfeit as a deliberate choice (see [14-counterfeit-risk.md](14-counterfeit-risk.md#open-topics)).
-- The rest of the upgrades system beyond the grading-reveal examples.
-- Screens for most of the home hub's tap targets (see [08-ui-direction.md](08-ui-direction.md)) — in progress; Wallet / cash ledger done, 10 remaining.
+- Balancing. Every number in the design is a starting value. The code
+  keeps them in `Balance` extensions, one per system, and
+  [19-prototype-values.md](19-prototype-values.md) lists them. Playtesting
+  sets them.
+- The archetype-formula coefficients (see [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md#open-topics)).
 - PokemonPriceTracker data-pull cadence: one-time pull vs. periodic re-pulls.
 - Sets: all 131 English booster sets are in the game (see [13-sets.md](13-sets.md#sets-in-the-game)). Open: the Prize Pack Series, Trick or Trade 2022, and the POP Series, and the 1st Edition images in the Wizards of the Coast sets.
 - Base Set's own two remaining question marks: the common/energy split, and whether the 16 rares are equally weighted (see [sets/base-set.md](sets/base-set.md#open-topics)).

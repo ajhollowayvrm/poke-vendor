@@ -1,5 +1,7 @@
 # Ripping
 
+**Status: built.** The rip queue, the three modes, the stop rule (Settings, and the rip screen), the pack trick, the pile, demigod and god packs, sealed products in the rip, the resealed stop, and ripping on a live stream (Normal and Fast only).
+
 The screen where the player opens sealed product. This is the "rip"
 side of the rip-or-hold decision in
 [12-acquiring-product.md](12-acquiring-product.md#the-rip-or-hold-decision).

@@ -1,5 +1,7 @@
 # Selling
 
+**Status: built.** TCGplayer, eBay, eBay auctions, Facebook Marketplace with meetups and no-shows, Whatnot on a stream, social posts, the game shop buylist, bulk for credit, consignment, local meets, shipping, insurance, and bad sales. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+
 How the player turns inventory into cash. This is the sell side of the
 loop, opposite of [12-acquiring-product.md](12-acquiring-product.md).
 

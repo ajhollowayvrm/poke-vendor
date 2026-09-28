@@ -1,5 +1,7 @@
 # Acquiring Product
 
+**Status: built.** The five storefronts, store runs, camping a restock day, wholesale and case splits from reputation Respected, Facebook pickups set for a later day, garage and estate sales, and the expected value readout. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+
 How the player gets sealed product (packs, boxes, cases) to sit on or
 rip open — the Grinder archetype's core loop (see
 [02-playstyles.md](02-playstyles.md)), and the supply side of the

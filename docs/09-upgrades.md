@@ -1,5 +1,7 @@
 # Upgrades
 
+**Status: built.** The Upgrades screen (hub, Today card) has every upgrade: the centering tools, the vendor kit, the analytics upgrade, the expected value readout, the better car, the drop alert Discord, the restock alert bot, the authentication tool, the corner loupe, the edge light, the raking lamp, the studio lights, and the camera kit. Upgrades are cash only. The camera kit needs the studio lights. The costs are in [19-prototype-values.md](19-prototype-values.md).
+
 ## Status
 
 Early. Upgrades will eventually cover every system in the game, not

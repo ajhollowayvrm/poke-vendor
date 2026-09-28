@@ -1,5 +1,7 @@
 # Counterfeit Risk
 
+**Status: built** (`Model/Counterfeits.swift`). The open topic is closed: the player can knowingly sell a fake. The find-out chance rises by 30%, and a scam accusation follows. Grading appeals stay out of scope: a grader's call is final. The rates are in [19-prototype-values.md](19-prototype-values.md).
+
 Fake cards and resealed boxes are a real part of the hobby this game
 mirrors, so they get a real mechanic — not everywhere, only where real
 counterfeiting actually happens: old sealed product, and singles bought

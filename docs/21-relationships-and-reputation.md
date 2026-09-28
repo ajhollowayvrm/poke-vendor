@@ -1,12 +1,13 @@
-# Relationships and Reputation (draft)
+# Relationships and Reputation
 
 **Status: built.** The numbers are starting values for balancing. The
 code is in `app/PokeVendor/Model/Relationships.swift`, the Contacts
 screen is on the hub's Reputation tile, and the Test menu has
 **Relationships** tools.
 
-**Not built yet:** selling fakes (the counterfeit system does not exist
-yet), and regulars at meets (meets do not exist yet). A stranger who
+**Also built:** selling fakes (see
+[14-counterfeit-risk.md](14-counterfeit-risk.md)) and regulars at meets
+(see [15-selling.md](15-selling.md#local-meets)). A stranger who
 completes a deal gives their number 1 time in 4. The roster holds at most
 60 contacts.
 

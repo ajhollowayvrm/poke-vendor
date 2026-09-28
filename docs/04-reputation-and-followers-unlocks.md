@@ -1,5 +1,7 @@
 # Reputation and Followers: What They Unlock
 
+**Status: built.** Every unlock in this doc is in the code. Reputation: the trading circle at Known; a better table spot and a first look at Trusted; wholesale and case splits at Respected; priority in splits and the vintage collection opportunity at Elite. Followers: sponsors, Whatnot, and follower tips at tier 1; better deals and free product at tier 2; bigger sponsor deals and faster sales at tier 3; a post that moves a card's price at tier 4. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+
 Both currencies unlock "access to more things," but they gate different
 kinds of access because they represent different audiences: reputation is
 your standing with the in-person trading world, followers are your standing
