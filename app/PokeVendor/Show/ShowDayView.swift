@@ -178,11 +178,15 @@ private struct SetupStage: View {
                         .font(.caption.weight(.semibold))
                     }
                     let cards = items.filter { $0.kind == .card }
-                    if !cards.isEmpty { SectionTitle(text: "Singles and slabs") }
-                    ForEach(cards) { item in bringRow(item) }
+                    if !cards.isEmpty {
+                        TitledGroup(title: "Singles and slabs", count: cards.count, list: "show") {
+                            ForEach(cards) { item in bringRow(item) }
+                        }
+                    }
                     ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
-                        SetHeader(slug: group.slug, count: group.items.count)
-                        ForEach(group.items) { item in bringRow(item) }
+                        SetGroup(slug: group.slug, count: group.items.count, list: "show") {
+                            ForEach(group.items) { item in bringRow(item) }
+                        }
                     }
                 }
                 .padding(16)
@@ -704,16 +708,18 @@ private struct VendorStage: View {
                         // Sealed shows by set, newest set first. Mystery packs have no set, so they come first.
                         let mystery = shown.filter { if case .mystery = $0.goods { return true }; return false }
                         if !mystery.isEmpty {
-                            SectionTitle(text: "Mystery packs")
-                            ForEach(mystery) { item in row(item) }
+                            TitledGroup(title: "Mystery packs", count: mystery.count, list: "show") {
+                                ForEach(mystery) { item in row(item) }
+                            }
                         }
                         let sealed = shown.filter { if case .sealed = $0.goods { return true }; return false }
                         ForEach(SetLibrary.grouped(sealed, by: { item in
                             if case .sealed(let p) = item.goods { return p.homeSlug }
                             return ""
                         }), id: \.slug) { group in
-                            SetHeader(slug: group.slug, count: group.items.count)
-                            ForEach(group.items) { item in row(item) }
+                            SetGroup(slug: group.slug, count: group.items.count, list: "show") {
+                                ForEach(group.items) { item in row(item) }
+                            }
                         }
                     } else {
                         ForEach(shown) { item in row(item) }

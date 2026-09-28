@@ -89,6 +89,11 @@ sealed products from them.
   (mystery packs come first, under their own title), and the show's
   table setup (singles and slabs first, then sealed by set). A product
   shows under its home set: the first set of its pack mix.
+- **Each group folds.** A tap on a set's title folds or unfolds its
+  items, and the chevron turns. Each list keeps its own folds between
+  visits (on the player's device only): the Inventory, the online
+  stores, the shop shelves, and the card show. The "Mystery packs" and
+  "Singles and slabs" titles fold too.
   `set-index.json` holds each set's release date for the order.
 
 - The game groups the sets by era. **Vintage** is the Wizards of the

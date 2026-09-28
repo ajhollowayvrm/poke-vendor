@@ -107,11 +107,12 @@ struct InventoryView: View {
                 }
                 // Sealed product shows by set, newest set first. The sort order holds inside each set.
                 ForEach(SetLibrary.grouped(stacks(items, key: store.stackKey), by: { $0.items[0].setSlug }), id: \.slug) { group in
-                    SetHeader(slug: group.slug, count: group.items.reduce(0) { $0 + $1.items.count })
-                    ForEach(group.items) { stack in
-                        rowButton(stack.ids, route: .sealed(stack.id)) {
-                            SealedRow(item: stack.items[0], market: store.market(of: stack.items[0]), count: stack.items.count,
-                                      paid: stack.items.reduce(0) { $0 + $1.paid })
+                    SetGroup(slug: group.slug, count: group.items.reduce(0) { $0 + $1.items.count }, list: "inventory.sealed") {
+                        ForEach(group.items) { stack in
+                            rowButton(stack.ids, route: .sealed(stack.id)) {
+                                SealedRow(item: stack.items[0], market: store.market(of: stack.items[0]), count: stack.items.count,
+                                          paid: stack.items.reduce(0) { $0 + $1.paid })
+                            }
                         }
                     }
                 }
