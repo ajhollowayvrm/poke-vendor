@@ -5,7 +5,7 @@ enum InventoryTab: String, CaseIterable, Hashable {
 }
 
 enum SortOrder: String, CaseIterable {
-    case newest = "Newest", value = "Highest value", setOrder = "Set order"
+    case newest = "Newest", value = "Highest value", setOrder = "Set order", condition = "Best condition"
 }
 
 /// The order of a card inside its set, from its card number.
@@ -87,7 +87,8 @@ struct InventoryView: View {
             Spacer()
             Menu {
                 Picker("Sort", selection: $sort) {
-                    ForEach(SortOrder.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                    // Only raw cards have a condition to sort by.
+                    ForEach(SortOrder.allCases.filter { $0 != .condition || tab == .raw }, id: \.self) { Text($0.rawValue).tag($0) }
                 }
             } label: {
                 Label(sort.rawValue, systemImage: "arrow.up.arrow.down")
@@ -239,7 +240,7 @@ struct InventoryView: View {
     private var sortedSealed: [SealedItem] {
         let items = store.data.sealed.filter { !keptOnly || $0.keep }
         switch sort {
-        case .newest: return items.sorted { $0.acquired > $1.acquired }
+        case .newest, .condition: return items.sorted { $0.acquired > $1.acquired }
         case .value: return items.sorted { store.market(of: $0) > store.market(of: $1) }
         case .setOrder: return items.sorted { $0.name < $1.name }
         }
@@ -251,6 +252,8 @@ struct InventoryView: View {
         case .newest: return items.sorted { $0.acquired > $1.acquired }
         case .value: return items.sorted { $0.market > $1.market }
         case .setOrder: return items.sorted { setOrder($0.print.num) < setOrder($1.print.num) }
+        // A slab's condition is its grade, so slabs sort by value.
+        case .condition: return tab == .raw ? items.sorted(by: store.conditionOrder) : items.sorted { $0.market > $1.market }
         }
     }
 
@@ -426,6 +429,9 @@ struct CardRow: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(card.grade == nil ? Theme.muted : Theme.cyan)
                     .lineLimit(1)
+                if card.grade == nil {
+                    RawLooks(condition: card.condition)
+                }
                 Tags(keep: card.keep, status: card.status)
             }
             Spacer()
@@ -478,5 +484,20 @@ struct EmptyTab: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 36)
             .padding(.horizontal, 16)
+    }
+}
+
+/// The condition and the front cut of a raw card, as the player can read them, on one line.
+struct RawLooks: View {
+    @Environment(GameStore.self) private var store
+    let condition: Condition
+
+    var body: some View {
+        HStack(spacing: 6) {
+            WearText(wear: condition.wear)
+            Text("·").font(.caption).foregroundStyle(Theme.muted)
+            CutLine(reading: .front(condition.cut, tool: store.data.centeringTool))
+        }
+        .lineLimit(1)
     }
 }

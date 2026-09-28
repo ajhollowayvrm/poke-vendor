@@ -78,6 +78,13 @@ What the player can read of the cut depends on the centering tool (see
   always gives the same reading.
 - The rip screen shows the front cut of the card in hand. The card
   detail screen shows both faces.
+- **Inventory, to pick cards for grading:** each raw card row shows its
+  wear and its front cut. The grade sheet shows the wear, the front
+  cut, and the back cut of each card before the player pays. Raw copies
+  of the same card stack only when they look the same, so the player
+  can grade the better copy. The Raw tab sorts by **Best condition**:
+  wear first, then the front cut, then the back cut, as the player can
+  read them. The sort never uses the hidden values.
 
 **Wear** is what anyone can see on a raw card without a tool. The game
 shows it in words: "Looks clean" (Near Mint), "Light wear" (Lightly

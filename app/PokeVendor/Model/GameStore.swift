@@ -257,8 +257,30 @@ final class GameStore {
         "\(s.productID ?? s.name)|\(s.setSlug)|\(s.keep)|\(s.status?.tag ?? "")"
     }
 
+    /// Raw copies stack only when they look the same: the same wear and the same cut reading. The player can then
+    /// pick the better copy to grade.
     func stackKey(_ c: OwnedCard) -> String {
-        "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.keep)|\(c.status?.tag ?? "")|\(c.paid == nil)"
+        let looks = c.grade == nil ? "|\(c.condition.wear.short)|\(cutKey(c.condition.cut))" : ""
+        return "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.keep)|\(c.status?.tag ?? "")|\(c.paid == nil)" + looks
+    }
+
+    private func cutKey(_ cut: Cut) -> String {
+        let tool = data.centeringTool
+        return [CutReading.front(cut, tool: tool), CutReading.back(cut, tool: tool)]
+            .map { $0.words ?? "\($0.lr) \($0.tb)" }
+            .joined(separator: "|")
+    }
+
+    /// Sorts raw cards by what the player can see: the wear, then the front cut, then the back cut. Best first.
+    func conditionOrder(_ a: OwnedCard, _ b: OwnedCard) -> Bool {
+        func key(_ c: OwnedCard) -> [Int] {
+            let tool = data.centeringTool
+            return [Wear.allCases.firstIndex(of: c.condition.wear) ?? 0,
+                    CutReading.front(c.condition.cut, tool: tool).rank,
+                    CutReading.back(c.condition.cut, tool: tool).rank]
+        }
+        let ka = key(a), kb = key(b)
+        return ka == kb ? a.market > b.market : ka.lexicographicallyPrecedes(kb)
     }
 
     func mates(of s: SealedItem) -> [SealedItem] {

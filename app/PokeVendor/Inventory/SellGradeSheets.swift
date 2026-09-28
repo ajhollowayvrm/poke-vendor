@@ -191,7 +191,14 @@ struct GradeSheet: View {
                 Section("Cards") {
                     ForEach(cards) { card in
                         HStack {
-                            Text(card.print.name).font(.subheadline)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(card.print.name).font(.subheadline)
+                                RawLooks(condition: card.condition)
+                                HStack(spacing: 4) {
+                                    Text("Back").font(.caption).foregroundStyle(Theme.muted)
+                                    CutLine(reading: .back(card.condition.cut, tool: store.data.centeringTool))
+                                }
+                            }
                             Spacer()
                             VStack(alignment: .trailing) {
                                 Text("raw \(money(card.market))").font(.caption.monospaced())

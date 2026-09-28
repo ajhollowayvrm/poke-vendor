@@ -115,6 +115,8 @@ struct CutReading {
     let tb: String
     /// How far the numbers can be off, in percent. 0 is exact.
     let spread: Int
+    /// For sorting by what the player can see: the worse side as read, so lower is better. 0 is unknown.
+    var rank = 0
 
     static func front(_ cut: Cut, tool: Int) -> CutReading {
         switch tool {
@@ -127,7 +129,7 @@ struct CutReading {
     /// The back cannot be read by eye: every card back looks the same.
     static func back(_ cut: Cut, tool: Int) -> CutReading {
         switch tool {
-        case 0: CutReading(words: "Can't tell by eye", lr: "", tb: "", spread: 0)
+        case 0: CutReading(words: "Can't tell by eye", lr: "", tb: "", spread: 0, rank: 0)
         case 1: words(cut.backLR, cut.backTB, cut.eye[2], cut.eye[3], error: 6, back: true)
         default: numbers(cut.backLR, cut.backTB, 0, 0, spread: 0)
         }
@@ -140,26 +142,28 @@ struct CutReading {
         let seen = max(Cut.worse(lr + Int((eyeLR * error).rounded())), Cut.worse(tb + Int((eyeTB * error).rounded())))
         // The back allows more, so its words start later.
         let shift = back ? 10 : 0
-        let text = switch seen - shift {
-        case ...53: "Looks centered"
-        case ...57: "Slightly off center"
-        case ...63: "Off center"
-        default: "Way off center"
+        let (text, rank) = switch seen - shift {
+        case ...53: ("Looks centered", 53)
+        case ...57: ("Slightly off center", 57)
+        case ...63: ("Off center", 63)
+        default: ("Way off center", 70)
         }
-        return CutReading(words: text, lr: "", tb: "", spread: 0)
+        return CutReading(words: text, lr: "", tb: "", spread: 0, rank: rank)
     }
 
     private static func numbers(_ lr: Int, _ tb: Int, _ eyeLR: Double, _ eyeTB: Double, spread: Int) -> CutReading {
-        func text(_ share: Int, _ eye: Double) -> String {
-            let guess = max(5, min(95, share + Int((eye * Double(spread) * 0.7).rounded())))
-            return (spread == 0 ? "" : "≈") + "\(guess)/\(100 - guess)"
+        func guess(_ share: Int, _ eye: Double) -> Int {
+            max(5, min(95, share + Int((eye * Double(spread) * 0.7).rounded())))
         }
-        return CutReading(words: nil, lr: text(lr, eyeLR), tb: text(tb, eyeTB), spread: spread)
+        func text(_ g: Int) -> String { (spread == 0 ? "" : "≈") + "\(g)/\(100 - g)" }
+        let a = guess(lr, eyeLR)
+        let b = guess(tb, eyeTB)
+        return CutReading(words: nil, lr: text(a), tb: text(b), spread: spread, rank: max(Cut.worse(a), Cut.worse(b)))
     }
 }
 
 /// The wear that anyone can see on a raw card.
-enum Wear: String {
+enum Wear: String, CaseIterable {
     case nearMint = "Near Mint", lightlyPlayed = "Lightly Played", moderatelyPlayed = "Moderately Played"
 
     var short: String {
