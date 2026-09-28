@@ -15,8 +15,8 @@ enum Balance {
 
     // Upgrades (docs/09-upgrades.md). Each centering tool reads the cut more sharply than the one before it.
     static let centeringTools: [(name: String, cost: Double, detail: String)] = [
-        ("Centering ruler", 40, "Reads the front to about ±2 and the back to about ±6."),
-        ("Centering scanner", 200, "Reads the front and the back exactly."),
+        ("Centering ruler", 40, "Gives numbers for the front, to about ±2, and words for the back."),
+        ("Centering scanner", 200, "Gives exact numbers for the front and the back."),
     ]
 
     // Selling (docs/15-selling.md)

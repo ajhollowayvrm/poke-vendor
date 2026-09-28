@@ -218,7 +218,7 @@ struct ConditionBox: View {
                     Spacer()
                     CutLine(reading: .back(c.cut, tool: tool))
                 }
-                Text(tool == 0 ? "Read by eye. The back cannot be read by eye: every card back looks the same."
+                Text(tool == 0 ? "Read by eye. A centering tool gives numbers. The back cannot be read by eye: every card back looks the same."
                                : "Read with your \(centeringToolName(tool).lowercased()).")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)

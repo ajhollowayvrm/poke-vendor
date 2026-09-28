@@ -62,13 +62,18 @@ What the player can read of the cut depends on the centering tool (see
 
 | Tool | Front | Back |
 | --- | --- | --- |
-| None (eyeball) | A cloudy estimate, off by up to about 6 points | Unknown (??/??) |
-| Centering ruler | Off by up to about 2 points | Off by up to about 6 points |
-| Centering scanner | Exact | Exact |
+| None (eyeball) | Words only | "Can't tell by eye" |
+| Centering ruler | Numbers, off by up to about 2 points, for example "LR ≈54/46 ±2" | Words only |
+| Centering scanner | Exact numbers | Exact numbers |
 
-- A reading that is not exact shows "≈" and its spread, for example
-  "LR ≈54/46 ±6". It looks cloudy: the rougher the reading, the more
-  it blurs.
+- **No numbers show until the player owns the centering ruler.** The
+  words come from the worse axis: "Looks centered" (53/47 or better),
+  "Slightly off center" (to 57/43), "Off center" (to 63/37), and "Way
+  off center" (worse). The back words start 10 points later, because
+  the back allows more.
+- The eye can be wrong: the words use the cut as the player sees it,
+  off by up to 3 points on the front and 6 on the back. So a card near
+  the line between two words can read as either one.
 - The error of a reading is fixed for each card, so the same card
   always gives the same reading.
 - The rip screen shows the front cut of the card in hand. The card

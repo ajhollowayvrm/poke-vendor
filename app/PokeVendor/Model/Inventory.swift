@@ -105,30 +105,56 @@ struct Cut: Codable, Hashable {
     }
 }
 
-/// What the player can read of a cut. The centering tools make the reading sharper (docs/09-upgrades.md).
+/// What the player can read of a cut. Without a tool it is only words. The centering ruler gives numbers for the
+/// front, and the centering scanner gives exact numbers for both faces (docs/09-upgrades.md).
 struct CutReading {
-    /// The text for left to right and for top to bottom, for example "≈54/46".
+    /// Words in place of numbers, for example "Off center".
+    let words: String?
+    /// The numbers for left to right and for top to bottom, for example "≈54/46".
     let lr: String
     let tb: String
-    /// How far the reading can be off, in percent. 0 is exact. Nil is unknown.
-    let spread: Int?
+    /// How far the numbers can be off, in percent. 0 is exact.
+    let spread: Int
 
     static func front(_ cut: Cut, tool: Int) -> CutReading {
-        read(cut.frontLR, cut.frontTB, cut.eye[0], cut.eye[1], spread: [6, 2, 0][min(tool, 2)])
+        switch tool {
+        case 0: words(cut.frontLR, cut.frontTB, cut.eye[0], cut.eye[1], error: 3)
+        case 1: numbers(cut.frontLR, cut.frontTB, cut.eye[0], cut.eye[1], spread: 2)
+        default: numbers(cut.frontLR, cut.frontTB, 0, 0, spread: 0)
+        }
     }
 
     /// The back cannot be read by eye: every card back looks the same.
     static func back(_ cut: Cut, tool: Int) -> CutReading {
-        guard tool > 0 else { return CutReading(lr: "??/??", tb: "??/??", spread: nil) }
-        return read(cut.backLR, cut.backTB, cut.eye[2], cut.eye[3], spread: [6, 6, 0][min(tool, 2)])
+        switch tool {
+        case 0: CutReading(words: "Can't tell by eye", lr: "", tb: "", spread: 0)
+        case 1: words(cut.backLR, cut.backTB, cut.eye[2], cut.eye[3], error: 6, back: true)
+        default: numbers(cut.backLR, cut.backTB, 0, 0, spread: 0)
+        }
     }
 
-    private static func read(_ lr: Int, _ tb: Int, _ eyeLR: Double, _ eyeTB: Double, spread: Int) -> CutReading {
+    /// The words come from the worse axis as the player sees it. A card near the line between two words can
+    /// read as either one.
+    private static func words(_ lr: Int, _ tb: Int, _ eyeLR: Double, _ eyeTB: Double, error: Double,
+                              back: Bool = false) -> CutReading {
+        let seen = max(Cut.worse(lr + Int((eyeLR * error).rounded())), Cut.worse(tb + Int((eyeTB * error).rounded())))
+        // The back allows more, so its words start later.
+        let shift = back ? 10 : 0
+        let text = switch seen - shift {
+        case ...53: "Looks centered"
+        case ...57: "Slightly off center"
+        case ...63: "Off center"
+        default: "Way off center"
+        }
+        return CutReading(words: text, lr: "", tb: "", spread: 0)
+    }
+
+    private static func numbers(_ lr: Int, _ tb: Int, _ eyeLR: Double, _ eyeTB: Double, spread: Int) -> CutReading {
         func text(_ share: Int, _ eye: Double) -> String {
             let guess = max(5, min(95, share + Int((eye * Double(spread) * 0.7).rounded())))
             return (spread == 0 ? "" : "≈") + "\(guess)/\(100 - guess)"
         }
-        return CutReading(lr: text(lr, eyeLR), tb: text(tb, eyeTB), spread: spread)
+        return CutReading(words: nil, lr: text(lr, eyeLR), tb: text(tb, eyeTB), spread: spread)
     }
 }
 

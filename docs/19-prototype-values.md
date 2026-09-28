@@ -129,8 +129,8 @@ centering subgrade of 10.
 
 | Centering tool | Cost | Front reading | Back reading |
 | --- | --- | --- | --- |
-| None (eyeball) | — | ±6 | Unknown |
-| Centering ruler | $40 | ±2 | ±6 |
+| None (eyeball) | — | Words (eye error ±3) | Unknown |
+| Centering ruler | $40 | Numbers ±2 | Words (eye error ±6) |
 | Centering scanner | $200 | Exact | Exact |
 
 **A grade with no sales data** is worth a multiple of the raw price,

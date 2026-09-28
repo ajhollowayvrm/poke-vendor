@@ -38,8 +38,10 @@ next tool from the Condition box of any raw card.
 
 | Tool | What it reads |
 | --- | --- |
-| Centering ruler | The front cut to about ±2 points, and the back cut to about ±6 points |
-| Centering scanner | The front cut and the back cut exactly |
+| Centering ruler | Numbers for the front cut, to about ±2 points. The back cut shows as words. |
+| Centering scanner | Exact numbers for the front cut and the back cut |
+
+Without a tool, the cut shows only as words, for example "Off center".
 
 Costs: see [19-prototype-values.md](19-prototype-values.md#grading).
 How the cut works: see [10-grading.md](10-grading.md#cut-and-wear).
