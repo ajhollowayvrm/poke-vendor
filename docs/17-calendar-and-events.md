@@ -12,6 +12,14 @@ surprises arrive with little or no notice.
 All days, times, counts, and chances in this doc are starting values
 for balancing.
 
+## The calendar screen
+
+The hub's Calendar row opens the next 6 weeks, one row for each day.
+The game has these entries now: the work shift, payday, rent, card
+shows, deliveries, grades that come back, and auctions that end. A card
+show opens its detail screen. The other entries in this doc wait for
+their systems.
+
 ## Four kinds of calendar entries
 
 | Kind | Notice | Examples |
@@ -109,7 +117,8 @@ left.
 Card shows and rent appear weeks ahead, because they need real
 planning. A scheduled live stream appears when the player schedules it.
 
-- **Card shows**: multi-day blocks. Shows get their own design.
+- **Card shows**: 1-day local shows and 2-day regional shows, up to 6
+  weeks ahead (see [20-card-shows.md](20-card-shows.md)).
 - **A scheduled live stream**: the player puts a stream on a later
   day, any number of days ahead. Followers see it, so it brings more
   viewers. A missed scheduled stream costs followers and authenticity

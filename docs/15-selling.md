@@ -6,7 +6,7 @@ loop, opposite of [12-acquiring-product.md](12-acquiring-product.md).
 ## Scope
 
 - **In scope**: the selling channels below, shipping, and bad sales.
-- **Out of scope**: card shows. Shows get their own design later.
+- **Card shows**: see [20-card-shows.md](20-card-shows.md).
 - **Out of scope**: opening a real storefront (see
   [01-premise-and-loop.md](01-premise-and-loop.md)).
 

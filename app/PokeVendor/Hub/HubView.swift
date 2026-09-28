@@ -34,6 +34,9 @@ struct HubView: View {
         .fullScreenCover(item: $nav.rip) { session in
             RipView(items: session.items, store: store) { nav.rip = nil }
         }
+        .fullScreenCover(item: $nav.showDay) { session in
+            ShowDayView(show: session.show, store: store) { nav.showDay = nil }
+        }
         .fullScreenCover(item: $nav.storeRun) { session in
             StoreRunView(stops: session.stops) { nav.storeRun = nil }
         }
@@ -139,6 +142,30 @@ struct HubView: View {
 
     private var timeActions: some View {
         DetailBox(title: "Plans for today") {
+            if let show = store.showToday {
+                Button {
+                    if store.canGoToShowToday, let started = store.startShowDay() {
+                        nav.showDay = ShowDaySession(show: started)
+                    } else {
+                        nav.path.append(.show(show.id))
+                    }
+                } label: {
+                    PlanRow(icon: "tablecells", title: "Card show today: \(show.name)",
+                            detail: store.canGoToShowToday
+                                ? (show.booked ? "Your table is booked · takes the rest of the day"
+                                               : "Walk in for \(money(show.size.entryFee)) · takes the rest of the day")
+                                : "Done for today", accent: store.canGoToShowToday)
+                }
+                .buttonStyle(.plain)
+            }
+            Button { nav.path.append(.calendar) } label: {
+                PlanRow(icon: "calendar", title: "Calendar",
+                        detail: store.upcomingShows.first(where: { $0.startDay > store.day }).map { next in
+                            let days = next.startDay - store.day
+                            return "Next show: \(next.name) · \(days == 1 ? "tomorrow" : "in \(days) days")\(next.booked ? " · booked" : "")"
+                        } ?? "Shows, paydays, rent, and deliveries")
+            }
+            .buttonStyle(.plain)
             Button { nav.path.append(.buyLocal) } label: {
                 HStack {
                     Image(systemName: "car").foregroundStyle(Theme.cyan)
@@ -152,7 +179,7 @@ struct HubView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            Text("Meets, garage sales, card shows, and live streams are not built yet.")
+            Text("Meets, garage sales, and live streams are not built yet.")
                 .font(.caption2)
                 .foregroundStyle(Theme.muted)
         }
@@ -234,6 +261,10 @@ struct HubView: View {
                     }
                 }
             }
+            Menu("Card show today") {
+                Button("Local show, table booked") { store.addTestShow(.local) }
+                Button("Regional show, table booked") { store.addTestShow(.regional) }
+            }
             Divider()
             Button("Add $500 test cash") { store.addTestCash(500) }
             Button("Start a new run", role: .destructive) { store.startRun() }
@@ -264,6 +295,7 @@ struct HubView: View {
             case "card": nav.path = [.inventory(.raw)] + (store.data.raw.first.map { [.card($0.id)] } ?? [])
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
+            case "calendar": nav.path = [.calendar]
             case "sealed": nav.path = [.inventory(.sealed)]
             default: break
             }
@@ -331,6 +363,14 @@ struct HubView: View {
             if args.contains("-autosell"), let pack = store.data.sealed.first(where: { $0.packs == 1 }) {
                 nav.path.append(.sealed(pack.id))
             }
+        }
+        // Screenshot aid: `-show local` or `-show regional` opens a booked show today. `open` opens the table.
+        if let i = args.firstIndex(of: "-show"), i + 1 < args.count {
+            store.addTestShow(args[i + 1] == "regional" ? .regional : .local)
+            if store.showStock.sealed.count < 3 {
+                for id in ["593294", "593294", "593355", "593466", "565638"] { store.addTestProduct(id) }
+            }
+            if let show = store.startShowDay() { nav.showDay = ShowDaySession(show: show) }
         }
         if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {
             store.startRun()
@@ -487,5 +527,26 @@ struct GameOverView: View {
         }
         .padding(24)
         .background(Theme.background.ignoresSafeArea())
+    }
+}
+
+/// One row in Plans for today.
+private struct PlanRow: View {
+    let icon: String
+    let title: String
+    let detail: String
+    var accent = false
+
+    var body: some View {
+        HStack {
+            Image(systemName: icon).foregroundStyle(Theme.cyan)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.weight(.medium)).foregroundStyle(accent ? Theme.cyan : Theme.text)
+                Text(detail).font(.caption).foregroundStyle(Theme.muted)
+            }
+            Spacer()
+            Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+        }
+        .contentShape(Rectangle())
     }
 }

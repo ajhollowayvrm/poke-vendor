@@ -19,6 +19,17 @@ enum Balance {
         ("Centering scanner", 200, "Gives exact numbers for the front and the back."),
     ]
 
+    // Card shows (docs/20-card-shows.md)
+    static let localTableFee = 40.0
+    static let regionalTableFee = 150.0
+    /// How far ahead the calendar shows card shows.
+    static let showHorizonDays = 42
+    static let showOpen = 9.0
+    static let showClose = 17.0
+    /// The sets that vendors and traders at a show carry.
+    static let showSets = ["prismatic-evolutions", "surging-sparks", "stellar-crown", "twilight-masquerade", "paradox-rift",
+                           "evolving-skies", "cosmic-eclipse", "base-set"]
+
     // Selling (docs/15-selling.md)
     static let listingDays = 28
     static let tcgFeeRate = 0.1075

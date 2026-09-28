@@ -13,11 +13,18 @@ enum AppRoute: Hashable {
     case card(UUID)
     case sealed(UUID)
     case bulk(UUID)
+    case calendar
+    case show(UUID)
 }
 
 struct StoreRunSession: Identifiable {
     let id = UUID()
     let stops: [LocalStore]
+}
+
+struct ShowDaySession: Identifiable {
+    let id = UUID()
+    let show: CardShow
 }
 
 struct RipSession: Identifiable {
@@ -31,6 +38,7 @@ final class AppNav {
     var path: [AppRoute] = []
     var rip: RipSession?
     var storeRun: StoreRunSession?
+    var showDay: ShowDaySession?
 
     func startRip(_ items: [SealedItem]) {
         guard !items.isEmpty else { return }
@@ -54,6 +62,8 @@ extension View {
             case .card(let id): CardDetailView(id: id)
             case .sealed(let id): SealedDetailView(id: id)
             case .bulk(let id): BulkDetailView(id: id)
+            case .calendar: CalendarView()
+            case .show(let id): ShowDetailView(id: id)
             }
         }
     }

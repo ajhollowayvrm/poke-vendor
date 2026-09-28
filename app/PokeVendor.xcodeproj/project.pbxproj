@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		05753AF2B42F7F6B87B95C1E /* twilight-masquerade.json in Resources */ = {isa = PBXBuildFile; fileRef = A9F4C9816D29FE5052461E66 /* twilight-masquerade.json */; };
 		0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7653D159E767B267752F265 /* StoreRunViews.swift */; };
+		0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20845FB5280BA69E0BC46DC /* ShowDayView.swift */; };
 		147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F38B7B3DE47AF76DF106787 /* stellar-crown.json */; };
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
 		2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */ = {isa = PBXBuildFile; fileRef = E389E8E864F1F2802B2B9E76 /* surging-sparks.json */; };
@@ -22,6 +23,7 @@
 		57856FEC663D96592E925B4F /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38152100E3F21C13B7C61E1B /* GameStore.swift */; };
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
+		7ACC1B39815CB76022632456 /* Shows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C938A56BB535142EA1BE4B /* Shows.swift */; };
 		7C714401A1C5DB31FFCD79E6 /* LocalStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA05E48B4793E422BDD8455 /* LocalStores.swift */; };
 		7D71A92431332B26D0BA9ED7 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F97256E10C06386BD90E19 /* WalletView.swift */; };
 		7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE8F9A509ED85647311ACD5 /* Balance.swift */; };
@@ -36,6 +38,7 @@
 		B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 781DF97D530EE9737F37D11A /* BuyViews.swift */; };
 		BF40EF0C7B89584AA1DB15F8 /* base-set.json in Resources */ = {isa = PBXBuildFile; fileRef = 05ED658C6E7349BE468EC9FE /* base-set.json */; };
 		BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */; };
+		CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
 		D9AA152721D08C2AD1ED0B0E /* evolving-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */; };
 		DA4F133419BB03A1679C5705 /* Market.swift in Sources */ = {isa = PBXBuildFile; fileRef = 642F08591A3569F0A27BA0D1 /* Market.swift */; };
@@ -67,6 +70,7 @@
 		50F97256E10C06386BD90E19 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		523EE1F5C13F88A7FDA88127 /* HitEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HitEffects.swift; sourceTree = "<group>"; };
 		544120DEF70C6BCBC2EF918A /* DetailViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViews.swift; sourceTree = "<group>"; };
+		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
 		5F38B7B3DE47AF76DF106787 /* stellar-crown.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stellar-crown.json"; sourceTree = "<group>"; };
 		642F08591A3569F0A27BA0D1 /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
 		7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "cosmic-eclipse.json"; sourceTree = "<group>"; };
@@ -86,11 +90,21 @@
 		DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paradox-rift.json"; sourceTree = "<group>"; };
 		DFA05E48B4793E422BDD8455 /* LocalStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStores.swift; sourceTree = "<group>"; };
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E20845FB5280BA69E0BC46DC /* ShowDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowDayView.swift; sourceTree = "<group>"; };
 		E389E8E864F1F2802B2B9E76 /* surging-sparks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "surging-sparks.json"; sourceTree = "<group>"; };
 		EFEB00B5E3B98AFB182E5118 /* RipModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipModel.swift; sourceTree = "<group>"; };
+		F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		064A48322225BE4427467A9F /* Show */ = {
+			isa = PBXGroup;
+			children = (
+				E20845FB5280BA69E0BC46DC /* ShowDayView.swift */,
+			);
+			path = Show;
+			sourceTree = "<group>";
+		};
 		20039E26AAF34D635C5565E0 /* Inventory */ = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +167,7 @@
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
+				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 			);
 			path = Model;
@@ -186,6 +201,7 @@
 		DABE85C8B61B1D21C480B476 /* Hub */ = {
 			isa = PBXGroup;
 			children = (
+				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
 				22DCF071A80BA4398E968082 /* HubView.swift */,
 				50F97256E10C06386BD90E19 /* WalletView.swift */,
 			);
@@ -204,6 +220,7 @@
 				96C1692A0ED7B2E72EE64380 /* Model */,
 				A45715057FF8BD97B10D1027 /* Resources */,
 				F5C1AC9B977941A9F77C4039 /* Rip */,
+				064A48322225BE4427467A9F /* Show */,
 				7F6F6FB8D7BA41D01B439268 /* Social */,
 				54BBAE50F56DF76DD790B949 /* Support */,
 			);
@@ -315,6 +332,7 @@
 				BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */,
 				7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
+				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
@@ -335,6 +353,8 @@
 				EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */,
 				470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */,
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
+				0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */,
+				7ACC1B39815CB76022632456 /* Shows.swift in Sources */,
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,

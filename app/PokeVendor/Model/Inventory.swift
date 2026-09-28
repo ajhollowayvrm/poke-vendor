@@ -365,7 +365,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
     enum Category: String, Codable, CaseIterable {
         case startingCapital = "Starting capital", paycheck = "Paycheck", sale = "Sale", refund = "Refund"
         case sealed = "Sealed product", singles = "Singles", grading = "Grading fees", rent = "Rent"
-        case sponsorship = "Sponsorship", upgrade = "Upgrades", test = "Test"
+        case sponsorship = "Sponsorship", upgrade = "Upgrades", showFees = "Show fees", test = "Test"
     }
 
     var id = UUID()

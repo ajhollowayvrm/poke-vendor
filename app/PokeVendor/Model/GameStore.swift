@@ -28,6 +28,9 @@ struct GameData: Codable {
     var social = SocialState()
     /// The best centering tool the player owns: 0 is none (Balance.centeringTools).
     var centeringTool = 0
+    /// Card shows on the calendar (docs/20-card-shows.md).
+    var shows: [CardShow] = []
+    var showsPlannedThrough = -1
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -58,6 +61,8 @@ extension GameData {
         shops = v(.shops, shops)
         social = v(.social, social)
         centeringTool = v(.centeringTool, centeringTool)
+        shows = v(.shows, shows)
+        showsPlannedThrough = v(.showsPlannedThrough, showsPlannedThrough)
     }
 }
 
@@ -83,6 +88,7 @@ final class GameStore {
             data = GameData()
             startRun()
         }
+        scheduleShows()
     }
 
     // MARK: - Calendar and clock
@@ -299,6 +305,7 @@ final class GameStore {
         data = GameData()
         addLedger(Balance.startingCash, .startingCapital, "Starting capital")
         log("Day 1. You have \(money(Balance.startingCash)) and a job as a retail associate.")
+        scheduleShows()
         save()
     }
 
@@ -326,6 +333,14 @@ final class GameStore {
 
     func addTestCard(_ print: CardPrint, slug: String = "prismatic-evolutions") {
         data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: nil, ripID: nil, acquiredDay: data.day))
+        save()
+    }
+
+    /// A card show that starts today, with a table booked and no fee.
+    func addTestShow(_ size: ShowSize) {
+        let today = data.day
+        data.shows.removeAll { $0.covers(today) }
+        data.shows.append(CardShow(name: "Test Card Show", venue: "Test Hall", size: size, startDay: today, booked: true))
         save()
     }
 
@@ -657,6 +672,8 @@ final class GameStore {
             lines.append("Payday: \(money(job.weeklyPay)) from your job.")
         }
 
+        if let line = missedShowLine() { lines.append(line) }
+
         data.day += 1
         data.hour = Balance.dayStart
         data.sickToday = false
@@ -669,6 +686,7 @@ final class GameStore {
         lines += advanceSealed()
         lines += advanceCards()
         lines += advanceSocial()
+        scheduleShows()
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {
