@@ -60,8 +60,6 @@ struct TopBar: View {
 
 struct CardInfo: View {
     let card: RipCard?
-    /// The player's centering tool, for the cut reading.
-    var tool = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -83,13 +81,6 @@ struct CardInfo: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                             .lineLimit(1)
-                        if card.print != nil {
-                            HStack(spacing: 8) {
-                                WearText(wear: card.condition.wear)
-                                CutLine(reading: .front(card.condition.cut, tool: tool))
-                            }
-                            .padding(.top, 2)
-                        }
                     }
                     Spacer()
                     VStack(alignment: .trailing, spacing: 0) {
@@ -301,5 +292,64 @@ struct SummaryView: View {
         .background(Theme.surface)
         .overlay(Rectangle().stroke(Theme.line))
         .padding(16)
+    }
+}
+
+/// The condition of the card in hand, in the column on the left of the stack.
+struct ConditionColumn: View {
+    let card: RipCard
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 4) {
+            SideHeader(text: "CONDITION")
+            WearText(wear: card.condition.wear)
+                .multilineTextAlignment(.trailing)
+        }
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// The cut of the card in hand, front and back, in the column on the right of the stack.
+struct CutColumn: View {
+    let card: RipCard
+    let tool: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            SideHeader(text: "CUT")
+            reading(.front(card.condition.cut, tool: tool))
+            SideHeader(text: "BACK").padding(.top, 4)
+            reading(.back(card.condition.cut, tool: tool))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    @ViewBuilder
+    private func reading(_ r: CutReading) -> some View {
+        if let words = r.words {
+            Text(words).font(.caption)
+        } else {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("LR \(r.lr)")
+                Text("TB \(r.tb)")
+                if r.spread > 0 {
+                    Text("±\(r.spread)").foregroundStyle(Theme.muted)
+                }
+            }
+            .font(.caption2.monospaced())
+        }
+    }
+}
+
+private struct SideHeader: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 9, weight: .semibold))
+            .kerning(0.8)
+            .foregroundStyle(Theme.muted)
     }
 }

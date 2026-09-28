@@ -1,28 +1,37 @@
 import SwiftUI
 
-/// Where things sit on the screen. The pile is on the left of the stack, so the card uses the full height between
-/// the top bar and the panel, and the space at the sides.
+/// Where things sit on the screen: the pile on top, the stack under it, the condition on the left of the stack,
+/// and the cut on the right. The spare height is shared evenly, so no gap opens under the stack.
 struct TableLayout {
     static let ratio: CGFloat = 88.0 / 63.0
     let size: CGSize
     let topInset: CGFloat = 104
-    /// The card panel and the buttons under the stack.
-    let bottomInset: CGFloat = 252
-    let side: CGFloat = 14
-    let gap: CGFloat = 10
-    let pileScale: CGFloat = 0.34
+    /// The price panel and the buttons under the stack.
+    let bottomInset: CGFloat = 236
+    let side: CGFloat = 12
+    let gap: CGFloat = 8
+    /// The width of each column at the sides of the stack.
+    let infoW: CGFloat = 66
+    let pileScale: CGFloat = 0.36
+    /// The cards under the top card step up a little (placement), so the stack needs this much room above it.
+    let depth: CGFloat = 14
 
-    private var room: CGFloat { size.height - topInset - bottomInset }
-    var cardW: CGFloat { min((size.width - side * 2 - gap) / (1 + pileScale), (room - 12) / Self.ratio) }
+    private var room: CGFloat { size.height - topInset - bottomInset - depth }
+    var cardW: CGFloat {
+        min(size.width - side * 2 - infoW * 2 - gap * 2, (room - gap * 3) / (Self.ratio * (1 + pileScale)))
+    }
     var cardH: CGFloat { cardW * Self.ratio }
     var pileSize: CGSize { CGSize(width: cardW * pileScale, height: cardH * pileScale) }
-    /// The left edge of the pile and the stack together. The pair is centered on the screen.
-    private var left: CGFloat { max(side, (size.width - pileSize.width - gap - cardW) / 2) }
-    var stackCenter: CGPoint { CGPoint(x: left + pileSize.width + gap + cardW / 2, y: topInset + room / 2) }
-    /// The pile lines up with the top of the stack.
-    var pileCenter: CGPoint { CGPoint(x: left + pileSize.width / 2, y: stackCenter.y - cardH / 2 + pileSize.height / 2) }
-    /// The sealed pack sits in the middle of the screen. Its cards move over to the stack when they come out.
-    var packCenter: CGPoint { CGPoint(x: size.width / 2, y: stackCenter.y) }
+    private var spare: CGFloat { max(0, room - pileSize.height - cardH) / 3 }
+    var pileCenter: CGPoint { CGPoint(x: size.width / 2, y: topInset + spare + pileSize.height / 2) }
+    var stackCenter: CGPoint {
+        CGPoint(x: size.width / 2, y: topInset + spare * 2 + pileSize.height + depth + cardH / 2)
+    }
+    /// The condition column on the left of the stack, and the cut column on the right.
+    var leftInfo: CGPoint { CGPoint(x: (side + size.width / 2 - cardW / 2 - gap) / 2, y: stackCenter.y) }
+    var rightInfo: CGPoint { CGPoint(x: size.width - leftInfo.x, y: stackCenter.y) }
+    /// The sealed pack sits in the middle of the free space. Its cards move to the stack when they come out.
+    var packCenter: CGPoint { CGPoint(x: size.width / 2, y: topInset + room / 2) }
     /// The pack fits between the top bar and the panel, and keeps its shape.
     var packH: CGFloat { min(cardH * 1.28, room - 8, (size.width - side * 2) / Self.packAspect) }
     var packW: CGFloat { packH * Self.packAspect }
@@ -84,6 +93,18 @@ struct RipView: View {
                 if model.phase == .open || model.phase == .done {
                     pileOutline(layout)
                     pileSlot(layout)
+                }
+
+                if model.phase == .open || model.phase == .done, !peeking, let card = infoCard, card.print != nil,
+                   model.allCards.contains(where: { $0.id == card.id }) {
+                    ConditionColumn(card: card)
+                        .frame(width: layout.infoW)
+                        .position(layout.leftInfo)
+                        .zIndex(330)
+                    CutColumn(card: card, tool: model.centeringTool)
+                        .frame(width: layout.infoW)
+                        .position(layout.rightInfo)
+                        .zIndex(330)
                 }
 
                 if let front = glowCard {
@@ -181,8 +202,8 @@ struct RipView: View {
                         .id(burst.id)
                         .zIndex(360)
                     if burst.card.hitTier >= .medium && !inPile {
-                        HitBanner(card: burst.card, tool: model.centeringTool)
-                            .position(x: layout.stackCenter.x, y: layout.stackCenter.y + layout.cardH / 2 - 60)
+                        HitBanner(card: burst.card)
+                            .position(x: layout.stackCenter.x, y: layout.stackCenter.y + layout.cardH / 2 - 12)
                             .id(burst.id)
                             .transition(.opacity)
                             .zIndex(370)
@@ -337,8 +358,8 @@ struct RipView: View {
                         .font(.caption2)
                         .foregroundStyle(Theme.muted)
                 }
-                .frame(width: layout.pileSize.width + 6, height: 120, alignment: .topLeading)
-                .position(x: layout.pileCenter.x, y: layout.pileCenter.y + layout.pileSize.height / 2 + 12 + 60)
+                .frame(width: 110, alignment: .leading)
+                .position(x: layout.pileCenter.x + layout.pileSize.width / 2 + 16 + 55, y: layout.pileCenter.y)
             }
 
             Color.clear
@@ -358,8 +379,7 @@ struct RipView: View {
                     .foregroundStyle(Theme.muted)
                     .frame(maxWidth: .infinity, minHeight: 82)
             } else {
-                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil },
-                         tool: model.centeringTool)
+                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
             }
             HStack(spacing: 10) {
                 Button { flipStack() } label: {
