@@ -77,9 +77,18 @@ comes wants to sell.
 
 **Traders** want one item of $8 or more. They offer one or two of
 their own cards, often older ones, and sometimes cash. The offer is 80%
-to 102% of the item's market. **Ask for cash too** gets more cash when
-the trader has room, once. The cards that come in carry their value as
-their cost.
+to 102% of the item's market. **Accept** takes the trader's offer.
+
+To counter, the player sets what the trader's cards are worth to them,
+with a slider from 50% to 120% of market in 5% steps. It starts at 80%.
+The cash that evens the trade against the item's market follows: the
+trader adds cash, or, when the player values the cards above the item,
+the player adds cash. **Propose** sends it. The trader takes it when the
+real value they give (the cards at market plus their cash) stays within
+their hidden limit, 100% to 110% of the item's market. If not, they add
+part of the cash, or walk away when their patience runs out.
+
+The cards that come in carry their value as their cost.
 
 **Sellers** want to sell something to the player: a single (often
 vintage or older, and worn), a slab, or sealed product. Most bring

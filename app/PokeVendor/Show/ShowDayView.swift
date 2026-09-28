@@ -302,6 +302,47 @@ private struct CounterSlider: View {
     }
 }
 
+/// A trade counter: the player sets what the trader's cards are worth to them, and the cash follows.
+private struct TradeSlider: View {
+    let session: ShowSession
+    let visitor: Visitor
+    @State private var percent: Double = 80
+
+    var body: some View {
+        let cards = session.tradeCardsValue(visitor)
+        let cash = session.tradeCash(visitor, valuing: percent)
+        VStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Their cards at \(Int(percent))%").font(.subheadline.monospaced())
+                Spacer()
+                Text(money(ShowSession.round(cards * percent / 100))).font(.headline.monospaced()).contentTransition(.numericText())
+            }
+            Slider(value: $percent, in: 50...120, step: 5)
+                .padding(.vertical, -4)
+                .tint(Color(red: 0.7, green: 0.55, blue: 1))
+                .onChange(of: percent) { _, _ in Haptics.tick(0.35) }
+            HStack {
+                Text(cash > 0 ? "They add \(money(cash))" : cash < 0 ? "You add \(money(-cash))" : "Straight across")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(cash >= 0 ? Theme.green : Theme.orange)
+                Spacer()
+                Text("for your \(money(visitor.item?.market ?? 0)) item").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            }
+            HStack(spacing: 8) {
+                Button { withAnimation { session.proposeTrade(valuing: percent) } } label: {
+                    Text("Propose").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.line)
+                Button { withAnimation { session.decline() } } label: { Text("Decline").frame(maxWidth: .infinity) }
+                    .buttonStyle(.bordered)
+            }
+        }
+        .padding(10)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 10))
+    }
+}
+
 /// Accept, counter, or decline, for a buyer, a trader, or a seller.
 private struct DealButtons: View {
     @Environment(GameStore.self) private var store
@@ -319,10 +360,7 @@ private struct DealButtons: View {
                     .id(visitor.id)
             case .trade:
                 primary("Accept the trade", color: Theme.green) { session.accept() }
-                HStack(spacing: 8) {
-                    if visitor.patience > 0 { secondary("Ask for cash too") { session.askForCash() } }
-                    secondary("Decline") { session.decline() }
-                }
+                TradeSlider(session: session, visitor: visitor).id(visitor.id)
             case .sell:
                 primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
                     .disabled(!store.canAfford(visitor.offer))

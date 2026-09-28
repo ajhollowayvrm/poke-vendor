@@ -213,8 +213,10 @@ extension GameStore {
                                       condition: card.condition, acquiredDay: data.day))
         }
         if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(show.name)") }
-        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(cash > 0 ? " plus \(money(cash))" : "") at \(show.name).",
-            cash: cash > 0 ? cash : nil)
+        if cash < 0 { addLedger(cash, .singles, "Cash added in a trade at \(show.name)") }
+        let extra = cash > 0 ? " plus \(money(cash))" : cash < 0 ? ", adding \(money(-cash)) of your own" : ""
+        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(extra) at \(show.name).",
+            cash: cash != 0 ? cash : nil)
         save()
     }
 
@@ -655,8 +657,13 @@ final class ShowSession {
             table.removeAll { $0.id == item.id }
         case .trade:
             guard let item = v.item else { return }
+            if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
+                note = "You do not have \(money(-v.tradeCash))."
+                return
+            }
             store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, show: show)
-            trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(v.tradeCash > 0 ? " + \(money(v.tradeCash))" : "")")
+            let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
+            trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
             table.removeAll { $0.id == item.id }
         case .sell:
             guard let goods = v.goods else { return }
@@ -698,21 +705,48 @@ final class ShowSession {
         spend(3)
     }
 
-    /// In a trade: asks for cash on top. It works when their limit leaves room for it.
-    func askForCash() {
+    /// Market value of the cards a trader offers.
+    func tradeCardsValue(_ v: Visitor) -> Double { v.tradeCards.reduce(0) { $0 + $1.market } }
+
+    /// The cash that evens a trade when the player values the trader's cards at this share of market.
+    /// Positive: the trader adds cash. Negative: the player adds cash.
+    func tradeCash(_ v: Visitor, valuing percent: Double) -> Double {
+        guard let item = v.item else { return 0 }
+        return Self.round(item.market - tradeCardsValue(v) * percent / 100)
+    }
+
+    /// The player sets a value on the trader's cards, and the cash follows. The trader takes it when the real
+    /// value they give stays within their limit. If not, they add part of the cash, or walk away.
+    func proposeTrade(valuing percent: Double) {
         guard var v = current, v.intent == .trade, let item = v.item else { return }
-        let room = v.limit - v.tradeValue
-        if v.patience > 0, room > 1 {
-            let extra = Self.round(room * Double.random(in: 0.5...1))
-            v.tradeCash += extra
-            v.patience -= 1
-            v.line = "Fine. I'll add \(money(extra)). That's my best."
-        } else {
-            v.patience = 0
-            v.line = "That's already a fair trade for your \(item.name)."
+        let cash = tradeCash(v, valuing: percent)
+        let cards = tradeCardsValue(v)
+        if cards + cash <= v.limit + 0.001 {
+            if cash < 0, !store.canAfford(-cash) {
+                note = "You do not have \(money(-cash))."
+                return
+            }
+            v.tradeCash = cash
+            v.line = "Deal."
+            setCurrent(v)
+            accept()
+            return
         }
+        if v.patience <= 0 {
+            v.line = "No, my cards are worth more than that. I'll keep them."
+            setCurrent(v)
+            walkedAway += 1
+            note = "\(v.name) walked away."
+            finish(minutes: .random(in: 4...8))
+            return
+        }
+        v.patience -= 1
+        let most = Self.round(v.limit - cards)
+        v.tradeCash = Self.round(max(v.tradeCash, v.tradeCash + (most - v.tradeCash) * Double.random(in: 0.5...0.9)))
+        v.line = v.tradeCash > 0 ? "I can add \(money(v.tradeCash)) on top, for your \(item.name). That's my best."
+                                 : "My cards straight across for your \(item.name). That's my best."
         setCurrent(v)
-        spend(2)
+        spend(3)
     }
 
     /// Rips the sealed product that the player just bought, on the spot. Each pack takes about 2 minutes.
