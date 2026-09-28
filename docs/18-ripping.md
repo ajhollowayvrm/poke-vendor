@@ -143,7 +143,7 @@ Normal is a manual rip. The player holds the cards like a real pack:
    a face-down stack turns face up by itself, and Flip stays off for
    the rest of the pack.
 5. A tap on the front card slides it off the top onto the **pile**,
-   above the stack.
+   on the left of the stack.
 6. A tap on the pile puts the top card of the pile back on the front
    of the stack.
 7. A long press on the stack shows a **peek**: only the very top
@@ -220,7 +220,8 @@ A set can have rare special packs that replace the slot map
 
 ### Condition on the reveal
 
-The card's wear (NM, LP, or MP) and its front cut show in three places
+The card's wear in words ("Looks clean", "Light wear", or "Heavy
+wear") and its front cut show in three places
 on the rip screen: in the panel for the card in hand, on the hit banner
 of a medium or big hit, and next to each hit in the summary. The cut is
 as sharp as the player's centering tool can read it (see
@@ -297,8 +298,12 @@ starting point for balancing.
 The cards that the player already saw go to a **pile**.
 
 - The pile shows the cards as real cards, not as a text list.
-- The pile sits above the stack. Its top card shows its name and its
-  market price next to it.
+- The pile sits on the left of the stack, level with the top of the
+  stack. Its top card shows its name and its market price under it.
+  This keeps the full height for the stack, so the card is large and
+  the panel under it never covers it. The sealed pack sits in the
+  middle of the screen, and its cards move over to the stack when they
+  come out.
 - A tap on the pile puts the top card back on the front of the stack.
 - The peek is the only way to see a card before the rip reveals it.
 - The pile holds all cards from the **current pack**, and every **hit

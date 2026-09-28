@@ -85,7 +85,7 @@ struct CardInfo: View {
                             .lineLimit(1)
                         if card.print != nil {
                             HStack(spacing: 8) {
-                                WearPill(wear: card.condition.wear)
+                                WearText(wear: card.condition.wear)
                                 CutLine(reading: .front(card.condition.cut, tool: tool))
                             }
                             .padding(.top, 2)
@@ -258,7 +258,7 @@ struct SummaryView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 Text(card.name).font(.subheadline.weight(.medium))
-                                WearPill(wear: card.condition.wear)
+                                WearText(wear: card.condition.wear)
                             }
                             Text(card.print?.variant ?? "").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             CutLine(reading: .front(card.condition.cut, tool: model.centeringTool))

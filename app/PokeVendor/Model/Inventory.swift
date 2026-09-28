@@ -169,6 +169,15 @@ enum Wear: String {
         case .moderatelyPlayed: "MP"
         }
     }
+
+    /// What the player sees by eye. The game shows these words, not the grade names.
+    var looks: String {
+        switch self {
+        case .nearMint: "Looks clean"
+        case .lightlyPlayed: "Light wear"
+        case .moderatelyPlayed: "Heavy wear"
+        }
+    }
 }
 
 /// The hidden condition of one card. Each value is a subgrade from 1 to 10 (docs/10-grading.md).

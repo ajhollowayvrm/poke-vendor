@@ -79,8 +79,9 @@ What the player can read of the cut depends on the centering tool (see
 - The rip screen shows the front cut of the card in hand. The card
   detail screen shows both faces.
 
-**Wear** is what anyone can see on a raw card without a tool: Near Mint
-(NM), Lightly Played (LP), or Moderately Played (MP). It comes from the
+**Wear** is what anyone can see on a raw card without a tool. The game
+shows it in words: "Looks clean" (Near Mint), "Light wear" (Lightly
+Played), or "Heavy wear" (Moderately Played). It comes from the
 corners, edges, and surface. Almost every card from a pack is Near
 Mint. About 1 card in 11 is Lightly Played. Values: see
 [19-prototype-values.md](19-prototype-values.md#grading).

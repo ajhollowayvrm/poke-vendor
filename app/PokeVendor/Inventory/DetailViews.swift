@@ -205,8 +205,7 @@ struct ConditionBox: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text("Wear").font(.subheadline).foregroundStyle(Theme.muted)
                     Spacer()
-                    WearPill(wear: c.wear)
-                    Text(c.wear.rawValue).font(.subheadline)
+                    WearText(wear: c.wear)
                 }
                 HStack(alignment: .firstTextBaseline) {
                     Text("Cut, front").font(.subheadline).foregroundStyle(Theme.muted)

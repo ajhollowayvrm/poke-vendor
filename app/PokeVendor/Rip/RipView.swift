@@ -1,22 +1,32 @@
 import SwiftUI
 
-/// Where things sit on the screen. The pile is above the stack.
+/// Where things sit on the screen. The pile is on the left of the stack, so the card uses the full height between
+/// the top bar and the panel, and the space at the sides.
 struct TableLayout {
     static let ratio: CGFloat = 88.0 / 63.0
     let size: CGSize
-    let topInset: CGFloat = 100
-    let bottomInset: CGFloat = 206
-    let pileScale: CGFloat = 0.42
+    let topInset: CGFloat = 104
+    /// The card panel and the buttons under the stack.
+    let bottomInset: CGFloat = 252
+    let side: CGFloat = 14
+    let gap: CGFloat = 10
+    let pileScale: CGFloat = 0.34
 
-    var cardW: CGFloat {
-        min(size.width * 0.62, (size.height - topInset - bottomInset - 28) / (Self.ratio * (1 + pileScale)))
-    }
+    private var room: CGFloat { size.height - topInset - bottomInset }
+    var cardW: CGFloat { min((size.width - side * 2 - gap) / (1 + pileScale), (room - 12) / Self.ratio) }
     var cardH: CGFloat { cardW * Self.ratio }
     var pileSize: CGSize { CGSize(width: cardW * pileScale, height: cardH * pileScale) }
-    var pileCenter: CGPoint { CGPoint(x: size.width / 2, y: topInset + pileSize.height / 2) }
-    var stackCenter: CGPoint { CGPoint(x: size.width / 2, y: size.height - bottomInset - cardH / 2) }
-    var packW: CGFloat { cardW * 1.12 }
-    var packH: CGFloat { cardH * 1.28 }
+    /// The left edge of the pile and the stack together. The pair is centered on the screen.
+    private var left: CGFloat { max(side, (size.width - pileSize.width - gap - cardW) / 2) }
+    var stackCenter: CGPoint { CGPoint(x: left + pileSize.width + gap + cardW / 2, y: topInset + room / 2) }
+    /// The pile lines up with the top of the stack.
+    var pileCenter: CGPoint { CGPoint(x: left + pileSize.width / 2, y: stackCenter.y - cardH / 2 + pileSize.height / 2) }
+    /// The sealed pack sits in the middle of the screen. Its cards move over to the stack when they come out.
+    var packCenter: CGPoint { CGPoint(x: size.width / 2, y: stackCenter.y) }
+    /// The pack fits between the top bar and the panel, and keeps its shape.
+    var packH: CGFloat { min(cardH * 1.28, room - 8, (size.width - side * 2) / Self.packAspect) }
+    var packW: CGFloat { packH * Self.packAspect }
+    static let packAspect: CGFloat = 1.12 / (1.28 * ratio)
 }
 
 private struct Placement {
@@ -104,8 +114,8 @@ struct RipView: View {
                              fromLeft: tearFromLeft)
                         .frame(width: layout.packW, height: layout.packH)
                         .rotationEffect(.degrees(packGone ? 14 : 0))
-                        .position(x: layout.stackCenter.x,
-                                  y: layout.stackCenter.y + (packGone ? geo.size.height : 0))
+                        .position(x: layout.packCenter.x,
+                                  y: layout.packCenter.y + (packGone ? geo.size.height : 0))
                         .zIndex(300)
                         .transition(.asymmetric(insertion: .offset(y: 140).combined(with: .scale(scale: 0.85)).combined(with: .opacity),
                                                 removal: .opacity))
@@ -120,7 +130,7 @@ struct RipView: View {
                         .frame(width: layout.packW * 1.8, height: layout.packW * 1.1)
                         .blendMode(.plusLighter)
                         .opacity(openFlash)
-                        .position(x: layout.stackCenter.x, y: tearY(layout))
+                        .position(x: layout.packCenter.x, y: tearY(layout))
                         .allowsHitTesting(false)
                         .zIndex(302)
                 }
@@ -132,8 +142,8 @@ struct RipView: View {
                     Color.clear
                         .contentShape(Rectangle())
                         .frame(width: layout.packW + 40, height: layout.packH * 0.32)
-                        .position(x: layout.stackCenter.x,
-                                  y: layout.stackCenter.y - layout.packH / 2 + layout.packH * 0.14)
+                        .position(x: layout.packCenter.x,
+                                  y: layout.packCenter.y - layout.packH / 2 + layout.packH * 0.14)
                         .gesture(tearGesture(layout))
                         .zIndex(310)
                 }
@@ -327,8 +337,8 @@ struct RipView: View {
                         .font(.caption2)
                         .foregroundStyle(Theme.muted)
                 }
-                .frame(width: 110, alignment: .leading)
-                .position(x: layout.pileCenter.x + layout.pileSize.width / 2 + 16 + 55, y: layout.pileCenter.y)
+                .frame(width: layout.pileSize.width + 6, height: 120, alignment: .topLeading)
+                .position(x: layout.pileCenter.x, y: layout.pileCenter.y + layout.pileSize.height / 2 + 12 + 60)
             }
 
             Color.clear
@@ -416,7 +426,7 @@ struct RipView: View {
         let center = layout.stackCenter
         if model.phase == .opening && !cardsOut {
             let y = cardsRise ? center.y - layout.packH * 0.42 : center.y + 20
-            return Placement(point: CGPoint(x: center.x, y: y), scale: 1, rotation: 0,
+            return Placement(point: CGPoint(x: layout.packCenter.x, y: y), scale: 1, rotation: 0,
                              z: 50 - Double(i), faceUp: model.faceUp)
         }
         if card.id == model.tuckingID {
@@ -492,12 +502,12 @@ struct RipView: View {
 
     /// The height of the tear line on the screen.
     private func tearY(_ layout: TableLayout) -> CGFloat {
-        layout.stackCenter.y - layout.packH / 2 + layout.packH * PackView.tearLine
+        layout.packCenter.y - layout.packH / 2 + layout.packH * PackView.tearLine
     }
 
     private func addFlecks(_ layout: TableLayout, count: Int, across: Bool = false) {
-        let left = layout.stackCenter.x - layout.packW / 2
-        let x = across ? layout.stackCenter.x
+        let left = layout.packCenter.x - layout.packW / 2
+        let x = across ? layout.packCenter.x
             : left + layout.packW * (tearFromLeft ? tearProgress : 1 - tearProgress)
         let colors = model.special?.isGod == true
             ? [.pink, .yellow, .green, .cyan, .purple, .white]

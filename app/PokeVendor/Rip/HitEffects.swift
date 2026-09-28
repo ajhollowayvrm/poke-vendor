@@ -141,8 +141,8 @@ struct HitBanner: View {
             Text(money(card.market))
                 .font(.system(size: big ? 18 : 14, weight: .bold, design: .monospaced))
                 .foregroundStyle(.white)
-            HStack(spacing: 6) {
-                WearPill(wear: card.condition.wear)
+            HStack(spacing: 8) {
+                WearText(wear: card.condition.wear)
                 CutLine(reading: .front(card.condition.cut, tool: tool))
             }
             .padding(.top, 2)

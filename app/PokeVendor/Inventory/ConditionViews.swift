@@ -1,17 +1,13 @@
 import SwiftUI
 
-/// The wear of a raw card, as a small tag: NM, LP, or MP.
-struct WearPill: View {
+/// The wear of a raw card, in words: "Looks clean", "Light wear", or "Heavy wear".
+struct WearText: View {
     let wear: Wear
 
     var body: some View {
-        let color = wear == .nearMint ? Theme.green : wear == .lightlyPlayed ? Theme.orange : .red
-        Text(wear.short)
-            .font(.system(size: 10, weight: .bold, design: .monospaced))
-            .padding(.horizontal, 5)
-            .padding(.vertical, 2)
-            .background(color.opacity(0.2))
-            .foregroundStyle(color)
+        Text(wear.looks)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(wear == .nearMint ? Theme.green : wear == .lightlyPlayed ? Theme.orange : .red)
     }
 }
 
