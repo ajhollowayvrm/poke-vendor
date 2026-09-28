@@ -13,6 +13,12 @@ struct ShowDayView: View {
         self.onClose = onClose
     }
 
+    /// Any venue: a meet, league night, a sale, or an opportunity.
+    init(session: ShowSession, onClose: @escaping () -> Void) {
+        _session = State(initialValue: session)
+        self.onClose = onClose
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             header
@@ -109,8 +115,8 @@ struct ShowDayView: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(session.show.name).font(.headline)
-                    Text("\(session.show.size.label)\(session.show.size.days > 1 ? " · day \(session.dayIndex + 1) of 2" : "") · \(session.hasTable ? "your table" : "walk-in")")
+                    Text(session.venue.name).font(.headline)
+                    Text(session.venue.detail)
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
@@ -132,15 +138,14 @@ struct ShowDayView: View {
     }
 
     private func finish() {
-        store.finishShowDay(session.show, sold: session.soldTotal, bought: session.boughtTotal,
-                            count: session.sold.count + session.bought.count + session.trades.count)
+        store.finishEncounter(session)
         onClose()
     }
 }
 
 // MARK: - Setup
 
-private struct SetupStage: View {
+struct SetupStage: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
 
@@ -149,7 +154,7 @@ private struct SetupStage: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Set up your table").font(.title3.bold())
+                    Text(session.venue.isShow ? "Set up your table" : "Lay out your cards").font(.title3.bold())
                     Text("Pick what to bring, and set your prices. Buyers haggle, so a markup leaves room to come down.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
@@ -192,9 +197,14 @@ private struct SetupStage: View {
                 .padding(16)
             }
             HStack(spacing: 10) {
-                Button("Walk the floor") { session.walkFloor() }
-                    .buttonStyle(.bordered)
-                Button { session.openTable() } label: { Text("Open the table").frame(maxWidth: .infinity) }
+                if session.venue.hasFloor {
+                    Button("Walk the floor") { session.walkFloor() }
+                        .buttonStyle(.bordered)
+                } else {
+                    Button("Leave") { session.packUp() }
+                        .buttonStyle(.bordered)
+                }
+                Button { session.openTable() } label: { Text(session.venue.isShow ? "Open the table" : "Start dealing").frame(maxWidth: .infinity) }
                     .buttonStyle(.borderedProminent)
                     .tint(Theme.cyan)
                     .foregroundStyle(.black)
@@ -227,7 +237,7 @@ private struct SetupStage: View {
 
 // MARK: - Table
 
-private struct TableStage: View {
+struct TableStage: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
 
@@ -243,7 +253,7 @@ private struct TableStage: View {
                     } else {
                         Text("No one at your table.").font(.subheadline).foregroundStyle(Theme.muted).padding(.top, 40)
                     }
-                    Text("\(session.table.count) item\(session.table.count == 1 ? "" : "s") on the table · \(session.missed) visitor\(session.missed == 1 ? "" : "s") missed")
+                    Text("\(session.table.count) item\(session.table.count == 1 ? "" : "s") out · \(session.missed) visitor\(session.missed == 1 ? "" : "s") missed")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
@@ -254,9 +264,11 @@ private struct TableStage: View {
                 DealButtons(session: session, visitor: visitor)
             }
             HStack(spacing: 10) {
-                Button("Walk the floor") { withAnimation { session.walkFloor() } }
-                    .buttonStyle(.bordered)
-                Button("Pack up") { withAnimation { session.packUp() } }
+                if session.venue.hasFloor {
+                    Button("Walk the floor") { withAnimation { session.walkFloor() } }
+                        .buttonStyle(.bordered)
+                }
+                Button(session.venue.isShow ? "Pack up" : "Leave") { withAnimation { session.packUp() } }
                     .buttonStyle(.bordered)
                     .tint(Theme.orange)
             }
@@ -268,7 +280,7 @@ private struct TableStage: View {
 }
 
 /// A counter as a share of market. It snaps to 5% steps and clicks at each one.
-private struct CounterSlider: View {
+struct CounterSlider: View {
     let market: Double
     let offer: Double
     let range: ClosedRange<Double>
@@ -315,7 +327,7 @@ private struct CounterSlider: View {
 }
 
 /// A trade counter: the player sets what the trader's cards are worth to them, and the cash follows.
-private struct TradeSlider: View {
+struct TradeSlider: View {
     let session: ShowSession
     let visitor: Visitor
     @State private var percent: Double = 80
@@ -356,7 +368,7 @@ private struct TradeSlider: View {
 }
 
 /// Accept, counter, or decline, for a buyer, a trader, or a seller.
-private struct DealButtons: View {
+struct DealButtons: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
     let visitor: Visitor
@@ -415,7 +427,7 @@ private struct DealButtons: View {
     }
 }
 
-private struct VisitorCard: View {
+struct VisitorCard: View {
     @Environment(GameStore.self) private var store
     let visitor: Visitor
     let asking: Double?
@@ -594,7 +606,7 @@ struct GoodsDetail: View {
 
 // MARK: - Floor
 
-private struct FloorStage: View {
+struct FloorStage: View {
     let session: ShowSession
 
     @Environment(GameStore.self) private var store
@@ -637,8 +649,10 @@ private struct FloorList: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("The floor · \(session.vendors.count) tables").font(.title3.bold())
-                    Text("Each table is a dealer, a shop, or a person. Looking over a table takes about \(Int(Balance.vendorVisitMinutes)) minutes\(session.hasTable ? ", and buyers who come to your table meanwhile leave" : "").")
+                    Text(session.venue.isShow ? "The floor · \(session.vendors.count) tables" : session.venue.name).font(.title3.bold())
+                    Text(session.venue.isShow
+                         ? "Each table is a dealer, a shop, or a person. Looking over a table takes about \(Int(Balance.vendorVisitMinutes)) minutes\(session.hasTable ? ", and buyers who come to your table meanwhile leave" : "")."
+                         : "Look over what is out. A look takes about \(Int(Balance.vendorVisitMinutes)) minutes. The seller may come up to you.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
                     ForEach(session.vendors) { vendor in
@@ -682,7 +696,9 @@ private struct FloorList: View {
                     .tint(Theme.cyan)
                     .foregroundStyle(.black)
                 } else {
-                    Button { withAnimation { session.packUp() } } label: { Text("Leave the show").frame(maxWidth: .infinity) }
+                    Button { withAnimation { session.packUp() } } label: {
+                        Text(session.venue.isShow ? "Leave the show" : "Leave").frame(maxWidth: .infinity)
+                    }
                         .buttonStyle(.borderedProminent)
                         .tint(Theme.cyan)
                         .foregroundStyle(.black)
@@ -694,7 +710,7 @@ private struct FloorList: View {
     }
 }
 
-private struct VendorStage: View {
+struct VendorStage: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
     let vendor: Vendor
@@ -985,9 +1001,10 @@ private struct SummaryStage: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(session.show.size.days > 1 && session.dayIndex == 0 ? "Day 1 is done" : "The show is over")
+                    let twoDay = (session.show?.size.days ?? 1) > 1 && session.dayIndex == 0
+                    Text(twoDay ? "Day 1 is done" : session.venue.isShow ? "The show is over" : "\(session.venue.name) is over")
                         .font(.title2.bold())
-                    if session.show.size.days > 1 && session.dayIndex == 0 {
+                    if twoDay {
                         Text("Come back tomorrow for day 2. End the day from the hub.").font(.subheadline).foregroundStyle(Theme.muted)
                     }
                     HStack(spacing: 0) {

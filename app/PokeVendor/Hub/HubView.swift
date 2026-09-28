@@ -4,6 +4,7 @@ import SwiftUI
 struct HubView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
+    @State private var haul: CampHaul?
 
     var body: some View {
         @Bindable var nav = nav
@@ -37,11 +38,18 @@ struct HubView: View {
         .fullScreenCover(item: $nav.showDay) { session in
             ShowDayView(show: session.show, store: store) { nav.showDay = nil }
         }
+        .fullScreenCover(item: $nav.encounter) { encounter in
+            ShowDayView(session: encounter.session) { nav.encounter = nil }
+        }
         .fullScreenCover(item: $nav.storeRun) { session in
             StoreRunView(stops: session.stops) { nav.storeRun = nil }
         }
         .sheet(item: Binding(get: { store.report }, set: { store.report = $0 })) { report in
             DayReportView(report: report)
+                .presentationDetents([.medium, .large])
+        }
+        .sheet(item: $haul) { haul in
+            CampView(haul: haul)
                 .presentationDetents([.medium, .large])
         }
         .fullScreenCover(isPresented: Binding(get: { store.data.gameOver != nil }, set: { _ in })) {
@@ -81,6 +89,80 @@ struct HubView: View {
                 Banner(text: "A Pokemon Center drop is live today. You get one attempt.", color: Theme.green)
             }
             .buttonStyle(.plain)
+        }
+        if store.hasUpgrade(.dropDiscord), store.isPokemonCenterDropLive(day: store.day + 1) {
+            Banner(text: "Discord: a Pokemon Center drop is set for tomorrow.", color: Theme.cyan)
+        }
+        // Surprise opportunities: the alert banner (docs/08-ui-direction.md, tap target 5).
+        ForEach(store.activeOpportunities) { o in
+            Button { nav.path.append(.opportunity(o.id)) } label: {
+                Banner(text: "\(o.title)\(o.day > store.day ? " · tomorrow" : " · today")\(o.hours > 0 ? " · \(formatHours(o.hours))" : ""). Tap to answer.",
+                       color: Theme.orange, icon: o.kind.icon)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Sales and restocks today (docs/17-calendar-and-events.md, Posted entries; docs/12, Camp a store drop).
+    @ViewBuilder private var eventRows: some View {
+        ForEach(store.salesToday) { sale in
+            let block = store.saleBlock(sale)
+            Button {
+                if let session = store.startSale(sale) { nav.encounter = EncounterSession(session: session) }
+            } label: {
+                PlanRow(icon: sale.kind == .garage ? "house" : "house.and.flag", title: sale.name,
+                        detail: block ?? "\(sale.hoursText) · \(formatHours(store.saleHours(sale)))\(sale.far ? " · far" : "") · early gets the best",
+                        accent: block == nil)
+            }
+            .buttonStyle(.plain)
+            .disabled(block != nil)
+        }
+        ForEach(store.restocksNow) { restock in
+            let block = store.campBlock(restock.store)
+            Button {
+                if let result = store.camp(restock.store) { haul = result }
+            } label: {
+                PlanRow(icon: "cart.badge.clock", title: "Camp the \(restock.store.rawValue) restock",
+                        detail: block ?? "Doors at \(GameStore.clock(Balance.campStart)) · \(formatHours(Balance.campHours)) · product at MSRP if you get in",
+                        accent: block == nil)
+            }
+            .buttonStyle(.plain)
+            .disabled(block != nil)
+        }
+        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil {
+            Text(nextEventText)
+                .font(.caption2)
+                .foregroundStyle(Theme.muted)
+        }
+    }
+
+    private var nextEventText: String {
+        if let sale = store.visibleSales.first(where: { $0.startDay > store.day }) {
+            let days = sale.startDay - store.day
+            return "Nothing today. Next: \(sale.name), \(days == 1 ? "tomorrow" : "in \(days) days")."
+        }
+        return "Nothing today. The calendar has the week."
+    }
+
+    private var testEventMenus: some View {
+        Group {
+            Menu("Events") {
+                Button("Garage sale now") {
+                    let sale = store.addTestSale(.garage)
+                    if let session = store.startSale(sale) { nav.encounter = EncounterSession(session: session) }
+                }
+                Button("Estate sale now (day 1)") {
+                    let sale = store.addTestSale(.estate)
+                    if let session = store.startSale(sale) { nav.encounter = EncounterSession(session: session) }
+                }
+                Button("Follower tip") { store.addTestTip() }
+                Button("Restock at Target today") { store.testRestockToday(.target) }
+            }
+            Menu("Opportunity") {
+                ForEach(OpportunityKind.allCases, id: \.self) { kind in
+                    Button(kind.label) { store.addTestOpportunity(kind) }
+                }
+            }
         }
     }
 
@@ -182,9 +264,20 @@ struct HubView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            Text("Meets, garage sales, and live streams are not built yet.")
-                .font(.caption2)
-                .foregroundStyle(Theme.muted)
+            ForEach(store.meetsToday, id: \.self) { kind in
+                let block = store.meetBlock(kind)
+                Button {
+                    if let session = store.startMeet(kind) { nav.encounter = EncounterSession(session: session) }
+                } label: {
+                    PlanRow(icon: kind.icon,
+                            title: kind == .leagueNight ? "League night at \(store.leagueShop(day: store.day).rawValue)" : "\(kind.label) tonight",
+                            detail: block ?? "\(kind.hoursText) · \(kind.place) · \(formatHours(Balance.meetHours))",
+                            accent: block == nil)
+                }
+                .buttonStyle(.plain)
+                .disabled(block != nil)
+            }
+            eventRows
         }
     }
 
@@ -271,7 +364,16 @@ struct HubView: View {
             Menu("Relationships") {
                 Button("Make every contact Regular") { store.testMakeRegular() }
                 Button("Add 100 reputation") { store.addReputation(100); store.save() }
+                Button("Add 350 reputation") { store.addReputation(350); store.save() }
             }
+            Menu("Meet now") {
+                ForEach(MeetKind.allCases, id: \.self) { kind in
+                    Button(kind.label) {
+                        if let session = store.testStartMeet(kind) { nav.encounter = EncounterSession(session: session) }
+                    }
+                }
+            }
+            testEventMenus
             Divider()
             Button("Add $500 test cash") { store.addTestCash(500) }
             Button("Start a new run", role: .destructive) { store.startRun() }
@@ -417,10 +519,11 @@ func formatHours(_ h: Double) -> String {
 struct Banner: View {
     let text: String
     let color: Color
+    var icon = "exclamationmark.circle.fill"
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.circle.fill")
+            Image(systemName: icon)
             Text(text).font(.subheadline).multilineTextAlignment(.leading)
             Spacer(minLength: 0)
         }

@@ -16,6 +16,7 @@ enum AppRoute: Hashable {
     case calendar
     case show(UUID)
     case contacts
+    case opportunity(UUID)
 }
 
 struct StoreRunSession: Identifiable {
@@ -33,6 +34,12 @@ struct RipSession: Identifiable {
     let items: [SealedItem]
 }
 
+/// A meet, league night, a garage or estate sale, or an opportunity, in the show day screen.
+struct EncounterSession: Identifiable {
+    let id = UUID()
+    let session: ShowSession
+}
+
 /// The navigation path and the rip cover, shared by every screen.
 @MainActor @Observable
 final class AppNav {
@@ -40,6 +47,7 @@ final class AppNav {
     var rip: RipSession?
     var storeRun: StoreRunSession?
     var showDay: ShowDaySession?
+    var encounter: EncounterSession?
 
     func startRip(_ items: [SealedItem]) {
         guard !items.isEmpty else { return }
@@ -66,6 +74,7 @@ extension View {
             case .calendar: CalendarView()
             case .show(let id): ShowDetailView(id: id)
             case .contacts: ContactsView()
+            case .opportunity(let id): OpportunityView(id: id)
             }
         }
     }

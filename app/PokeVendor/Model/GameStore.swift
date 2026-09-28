@@ -41,6 +41,20 @@ struct GameData: Codable {
     var wantList: [WantItem] = []
     var saved: [SavedItem] = []
     var scams: [ScamRecord] = []
+    /// Meets and league nights the player went to (docs/15-selling.md, Local meets).
+    var meetsAttended: [MeetRecord] = []
+    /// Garage and estate sales on the calendar (docs/17-calendar-and-events.md, Posted entries).
+    var sales: [PostedSale] = []
+    var salesPlannedThrough = -1
+    /// Hidden sales that a follower tipped, waiting for an answer.
+    var saleTips: [UUID] = []
+    /// "Store-day" keys of restocks the player camped, and test restocks.
+    var campedDays: [String] = []
+    var testRestocks: [String] = []
+    /// Surprise opportunities (docs/17-calendar-and-events.md, Surprise entries).
+    var opportunities: [Opportunity] = []
+    /// The upgrades the player owns, by `Upgrade.rawValue` (docs/09-upgrades.md).
+    var upgrades: [String] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -80,6 +94,14 @@ extension GameData {
         wantList = v(.wantList, wantList)
         saved = v(.saved, saved)
         scams = v(.scams, scams)
+        meetsAttended = v(.meetsAttended, meetsAttended)
+        sales = v(.sales, sales)
+        salesPlannedThrough = v(.salesPlannedThrough, salesPlannedThrough)
+        saleTips = v(.saleTips, saleTips)
+        campedDays = v(.campedDays, campedDays)
+        testRestocks = v(.testRestocks, testRestocks)
+        opportunities = v(.opportunities, opportunities)
+        upgrades = v(.upgrades, upgrades)
     }
 }
 
@@ -106,6 +128,7 @@ final class GameStore {
             startRun()
         }
         scheduleShows()
+        scheduleSales()
         seedContacts()
     }
 
@@ -122,7 +145,7 @@ final class GameStore {
     var job: Job? { data.jobIndex.map { Job.ladder[$0] } }
     var daysUntilRent: Int { Balance.rentCycleDays - data.day % Balance.rentCycleDays }
 
-    static func clock(_ hour: Double) -> String {
+    nonisolated static func clock(_ hour: Double) -> String {
         let h = Int(hour) % 24
         let m = Int(((hour - Double(Int(hour))) * 60).rounded())
         let suffix = h < 12 ? "AM" : "PM"
@@ -324,6 +347,7 @@ final class GameStore {
         addLedger(Balance.startingCash, .startingCapital, "Starting capital")
         log("Day 1. You have \(money(Balance.startingCash)) and a job as a retail associate.")
         scheduleShows()
+        scheduleSales()
         seedContacts()
         save()
     }
@@ -498,7 +522,7 @@ final class GameStore {
 
     /// Starts a store run: the whole trip is one block of time.
     func startStoreRun(_ stores: [LocalStore]) -> Bool {
-        let hours = stores.reduce(0) { $0 + $1.hours }
+        let hours = Double(stores.count) * storeStopHours
         guard !stores.isEmpty, spendHours(hours) else { return false }
         for s in stores where s.isGameShop {
             var state = shop(s)
@@ -743,7 +767,10 @@ final class GameStore {
         lines += advanceCards()
         lines += advanceSocial()
         scheduleShows()
+        scheduleSales()
         lines += relationshipsEndDay()
+        lines += followerTipsEndDay()
+        lines += opportunitiesEndDay()
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {
@@ -765,8 +792,10 @@ final class GameStore {
         save()
     }
 
-    var isPokemonCenterDropLive: Bool {
-        var rng = SeededRandom(seed: UInt64(data.day) &* 7919 &+ 17)
+    var isPokemonCenterDropLive: Bool { isPokemonCenterDropLive(day: data.day) }
+
+    func isPokemonCenterDropLive(day: Int) -> Bool {
+        var rng = SeededRandom(seed: UInt64(day) &* 7919 &+ 17)
         return Double(rng.next()) < Balance.pokemonCenterDropChance
     }
 

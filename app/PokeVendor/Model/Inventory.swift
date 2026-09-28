@@ -355,10 +355,20 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var grade: SlabGrade?
     var status: ItemStatus?
     var acquiredDay = 0
+    /// Hidden: the card is a fake of this tier (docs/14-counterfeit-risk.md). Optional, so old saves still load.
+    var fake: FakeTier?
+    /// The player knows it is a fake: a check, the tool, or a grader said so.
+    var fakeKnown: Bool?
+    /// A check, the tool, or a grader said it is real.
+    var verified: Bool?
+
+    var isKnownFake: Bool { fake != nil && fakeKnown == true }
+    var isVerified: Bool { verified == true }
 
     var rawMarket: Double { print.market ?? 0 }
 
     var market: Double {
+        if isKnownFake { return 0 }
         guard let grade else { return rawMarket }
         if let price = print.graded[grade.priceKey] ?? nil { return grade.blackLabel ? price * 2 : price }
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
@@ -392,6 +402,13 @@ struct SealedItem: Codable, Identifiable, Hashable {
     /// The product that this loose pack came out of, after the rip broke its seal.
     var brokenFrom: UUID?
     var acquiredDay = 0
+    /// Hidden: the product is resealed (docs/14-counterfeit-risk.md). Optional, so old saves still load.
+    var fake: FakeTier?
+    var fakeKnown: Bool?
+    var verified: Bool?
+
+    var isKnownFake: Bool { fake != nil && fakeKnown == true }
+    var isVerified: Bool { verified == true }
 
     var paidPerPack: Double { paid / Double(max(packs, 1)) }
 }

@@ -8,7 +8,7 @@ struct StoreRunPlanner: View {
     @State private var message: String?
 
     var body: some View {
-        let hours = chosen.reduce(0) { $0 + $1.hours }
+        let hours = Double(chosen.count) * store.storeStopHours
         VStack(spacing: 12) {
             VStack(spacing: 0) {
                 ForEach(LocalStore.allCases, id: \.self) { s in
@@ -294,7 +294,12 @@ struct ShopView: View {
                     Text("Buying from the case here needs no store run in this build.").font(.caption2).foregroundStyle(Theme.muted)
                 }
                 DetailBox(title: "League night") {
-                    Text("Not built yet. League night gives +3 standing.").font(.subheadline).foregroundStyle(Theme.muted)
+                    let mine = store.leagueShop(day: store.day) == shop
+                    Text("Thursday, \(MeetKind.leagueNight.hoursText). The shops take turns: \(mine ? "this shop hosts this week." : "the other shop hosts this week.")")
+                        .font(.subheadline)
+                    Text("A small meet with the shop's regulars. Each night is +\(Balance.leagueStandingPoints) standing. Go from the hub on Thursday.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
                 }
             }
             .padding(16)

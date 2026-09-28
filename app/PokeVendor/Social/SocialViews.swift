@@ -20,6 +20,7 @@ struct SocialHubView: View {
                     .foregroundStyle(.black)
                     .controlSize(.large)
                     inbox
+                    if !store.saleTips.isEmpty { tips }
                     if !store.social.analytics { analyticsOffer }
                     recentPosts
                 } else {
@@ -118,6 +119,31 @@ struct SocialHubView: View {
                         }
                         .controlSize(.small)
                     }
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    /// Hidden garage sales that followers tipped (docs/17-calendar-and-events.md, Hidden garage sales).
+    private var tips: some View {
+        DetailBox(title: "Follower tips") {
+            ForEach(store.saleTips) { sale in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Garage sale · \(sale.address)").font(.subheadline.weight(.semibold))
+                        Spacer()
+                        Text(sale.startDay == store.day ? "Today" : sale.startDay == store.day + 1 ? "Tomorrow" : GameStore.weekdays[sale.startDay % 7])
+                            .font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+                    }
+                    Text("“\(sale.hint).” \(sale.hoursText)\(sale.far ? " · far" : "")").font(.caption).foregroundStyle(Theme.muted)
+                    HStack {
+                        Button("Add to calendar") { store.answerTip(sale.id, add: true) }
+                            .buttonStyle(.borderedProminent)
+                            .foregroundStyle(.black)
+                        Button("Ignore") { store.answerTip(sale.id, add: false) }.buttonStyle(.bordered)
+                    }
+                    .controlSize(.small)
                 }
                 .padding(.vertical, 4)
             }

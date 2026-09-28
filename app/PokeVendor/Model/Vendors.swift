@@ -4,6 +4,8 @@ import Foundation
 
 enum VendorKind: CaseIterable, Hashable {
     case vintageDealer, modernDealer, gameShop, collector, mysteryPacks
+    /// The lot at a garage sale or an estate sale (docs/17-calendar-and-events.md, Posted entries).
+    case garageSale, estateSale
 
     var label: String {
         switch self {
@@ -12,6 +14,8 @@ enum VendorKind: CaseIterable, Hashable {
         case .gameShop: "Game shop booth"
         case .collector: "Collector clearing out"
         case .mysteryPacks: "Mystery packs"
+        case .garageSale: "Garage sale"
+        case .estateSale: "Estate sale"
         }
     }
 
@@ -22,6 +26,8 @@ enum VendorKind: CaseIterable, Hashable {
         case .gameShop: "storefront"
         case .collector: "person.crop.square"
         case .mysteryPacks: "questionmark.square.dashed"
+        case .garageSale: "house"
+        case .estateSale: "house.and.flag"
         }
     }
 
@@ -33,6 +39,8 @@ enum VendorKind: CaseIterable, Hashable {
         case .gameShop: 0.95...1.12
         case .collector: 0.6...0.95
         case .mysteryPacks: 1.0...1.3
+        case .garageSale: Balance.garagePriceRange
+        case .estateSale: Balance.estatePriceRange
         }
     }
 
@@ -44,6 +52,8 @@ enum VendorKind: CaseIterable, Hashable {
         case .gameShop: 0.4
         case .collector: 0.7
         case .mysteryPacks: 0.2
+        case .garageSale: 0.6
+        case .estateSale: 0.35
         }
     }
 
@@ -54,6 +64,8 @@ enum VendorKind: CaseIterable, Hashable {
         case .gameShop: "A local shop's booth. Mostly sealed."
         case .collector: "Selling off a collection. Cheap, mixed, and often worn. Likes to deal."
         case .mysteryPacks: "Repacks: mostly filler, one guaranteed hit."
+        case .garageSale: "A box of old cards on a folding table. The seller does not know card values."
+        case .estateSale: "A collection priced by the estate company. Fair to the market, and lower each day."
         }
     }
 
@@ -80,6 +92,10 @@ enum VendorKind: CaseIterable, Hashable {
                     "\(person)'s shoebox of cards", "\(person) and family, selling binders"].randomElement() ?? person
         case .mysteryPacks:
             return businesses[kind]?.randomElement() ?? "Repacks"
+        case .garageSale:
+            return "\(person)'s garage sale"
+        case .estateSale:
+            return "The \(person) estate"
         }
     }
 
@@ -243,6 +259,9 @@ enum VendorFloor {
         case .mysteryPacks:
             items += MysteryPack.catalog.map { VendorItem(goods: .mystery($0), price: $0.price, market: nil) }
             add(3...6) { single(from: Balance.modernSets + Balance.vintageSets, minMarket: 5, kind: kind) }
+        case .garageSale, .estateSale:
+            // `lot(kind:count:priceFactor:)` builds a sale. This is the plain fallback.
+            return lot(kind: kind, count: 10, priceFactor: 1)
         }
         // The same product can show up twice. A table shows each product once.
         var seen: Set<String> = []
@@ -255,6 +274,34 @@ enum VendorFloor {
 
     private static func price(_ market: Double, _ kind: VendorKind) -> Double {
         ShowSession.round(max(0.5, market * Double.random(in: kind.priceRange)))
+    }
+
+    /// The lot at a garage sale or an estate sale: mostly old singles, some worn, and now and then old sealed
+    /// product. `count` is how many good cards are left when the player arrives. `priceFactor` is the estate
+    /// sale's markdown for the day.
+    static func lot(kind: VendorKind, count: Int, priceFactor: Double) -> [VendorItem] {
+        var items: [VendorItem] = []
+        let old = Balance.vintageSets + Balance.olderSets
+        for _ in 0..<count {
+            let pool = Double.random(in: 0..<1) < 0.7 ? old : Balance.modernSets
+            if var item = single(from: pool, minMarket: kind == .estateSale ? 2 : 1, kind: kind, vintage: true) {
+                item.price = ShowSession.round(max(0.5, item.price * priceFactor))
+                items.append(item)
+            }
+        }
+        let sealedCount = kind == .estateSale ? Int.random(in: 0...3) : Int.random(in: 0...2)
+        for _ in 0..<sealedCount where Double.random(in: 0..<1) < 0.6 {
+            if var item = sealed(from: old, kind: kind) {
+                item.price = ShowSession.round(max(1, item.price * priceFactor))
+                items.append(item)
+            }
+        }
+        var seen: Set<String> = []
+        items = items.filter { item in
+            guard case .sealed(let p) = item.goods else { return true }
+            return seen.insert(p.id).inserted
+        }
+        return items.sorted { ($0.market ?? $0.price) > ($1.market ?? $1.price) }
     }
 
     private static func single(from sets: [String], minMarket: Double, kind: VendorKind, vintage: Bool = false) -> VendorItem? {

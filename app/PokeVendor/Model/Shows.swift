@@ -35,13 +35,15 @@ struct CardShow: Codable, Identifiable, Hashable {
 
 /// One line on the calendar.
 struct CalendarEntry: Identifiable {
-    enum Kind { case work, paycheck, rent, show, delivery, grading, auction }
+    enum Kind { case work, paycheck, rent, show, delivery, grading, auction, meet, league, sale, restock, stream, timeOff, meetup }
 
     let id = UUID()
     let kind: Kind
     let title: String
     var detail: String = ""
     var showID: UUID?
+    /// A garage or estate sale, or another event with its own screen.
+    var eventID: UUID?
 
     var icon: String {
         switch kind {
@@ -52,6 +54,13 @@ struct CalendarEntry: Identifiable {
         case .delivery: "shippingbox"
         case .grading: "seal"
         case .auction: "hammer"
+        case .meet: "person.2"
+        case .league: "gamecontroller"
+        case .sale: "house.and.flag"
+        case .restock: "cart.badge.clock"
+        case .stream: "dot.radiowaves.left.and.right"
+        case .timeOff: "sun.max"
+        case .meetup: "figure.wave"
         }
     }
 }
@@ -157,7 +166,8 @@ extension GameStore {
         ((data.raw + data.slabs).filter { $0.status == nil && !$0.keep }, data.sealed.filter { $0.status == nil && !$0.keep })
     }
 
-    func sellAtShow(_ item: ShowItem, price: Double, show: CardShow) {
+    /// `venue` is the name of the place: a show, a meet, or a sale.
+    func sellAtShow(_ item: ShowItem, price: Double, at venue: String) {
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -165,35 +175,36 @@ extension GameStore {
         case .sealed:
             data.sealed.removeAll { $0.id == item.id }
         }
-        addLedger(price, .sale, "\(item.name) · \(show.name)")
-        log("Sold \(item.name) at \(show.name) for \(money(price)).", cash: price)
+        addLedger(price, .sale, "\(item.name) · \(venue)")
+        log("Sold \(item.name) at \(venue) for \(money(price)).", cash: price)
         save()
     }
 
-    func buyCardAtShow(_ card: OwnedCard, price: Double, vendor: String, show: CardShow) {
+    func buyCardAtShow(_ card: OwnedCard, price: Double, vendor: String, at venue: String) {
         var card = card
         card.acquiredDay = data.day
         addLedger(-price, .singles, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(vendor)")
         if card.grade == nil { data.raw.append(card) } else { data.slabs.append(card) }
-        log("Bought \(card.print.name)\(card.grade.map { " (\($0.label))" } ?? "") from \(vendor) at \(show.name) for \(money(price)).",
+        log("Bought \(card.print.name)\(card.grade.map { " (\($0.label))" } ?? "") from \(vendor) at \(venue) for \(money(price)).",
             cash: -price)
         save()
     }
 
     @discardableResult
-    func buySealedAtShow(_ product: Product, price: Double, vendor: String, show: CardShow) -> SealedItem {
+    func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil) -> SealedItem {
         addLedger(-price, .sealed, "\(product.name) · \(vendor)")
-        let item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
-                              acquired: .now, source: "\(vendor), \(show.name)", productID: product.id, acquiredDay: data.day)
+        var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
+                              acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: data.day)
+        item.fake = fake
         data.sealed.append(item)
-        log("Bought \(product.name) from \(vendor) at \(show.name) for \(money(price)).", cash: -price)
+        log("Bought \(product.name) from \(vendor) at \(venue) for \(money(price)).", cash: -price)
         save()
         return item
     }
 
     /// A mystery pack: the hit goes to Raw or Slabs with the price as its cost, and the filler goes to bulk.
     func buyMysteryAtShow(_ pack: MysteryPack, hit: OwnedCard, filler: [CardPrint], fillerSlug: String, price: Double,
-                          vendor: String, show: CardShow) {
+                          vendor: String, at venue: String) {
         var hit = hit
         hit.acquiredDay = data.day
         addLedger(-price, .singles, "\(pack.name) · \(vendor)")
@@ -207,7 +218,7 @@ extension GameStore {
     }
 
     /// A trade: the player's item goes, and the other person's cards plus any cash come in.
-    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, show: CardShow) {
+    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String) {
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -217,14 +228,54 @@ extension GameStore {
         }
         // Each card that came in carries its value as its cost, so the portfolio header stays honest.
         for card in cards {
-            data.raw.append(OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.market, ripID: nil,
-                                      condition: card.condition, acquiredDay: data.day))
+            var owned = OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.market, ripID: nil,
+                                  condition: card.condition, acquiredDay: data.day)
+            owned.fake = card.fake
+            data.raw.append(owned)
         }
-        if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(show.name)") }
-        if cash < 0 { addLedger(cash, .singles, "Cash added in a trade at \(show.name)") }
+        if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(venue)") }
+        if cash < 0 { addLedger(cash, .singles, "Cash added in a trade at \(venue)") }
         let extra = cash > 0 ? " plus \(money(cash))" : cash < 0 ? ", adding \(money(-cash)) of your own" : ""
-        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(extra) at \(show.name).",
+        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(extra) at \(venue).",
             cash: cash != 0 ? cash : nil)
+        save()
+    }
+
+    /// The end of any encounter. A show fills the day. A meet ends when the doors close. A sale or an opportunity
+    /// takes its hours from the moment the player arrived.
+    func finishEncounter(_ session: ShowSession) {
+        let venue = session.venue
+        let count = session.sold.count + session.bought.count + session.trades.count
+        let deals = "\(count) deal\(count == 1 ? "" : "s"), \(money(session.soldTotal)) in sales, \(money(session.boughtTotal)) spent"
+        switch venue.kind {
+        case .show:
+            if let show = session.show {
+                finishShowDay(show, sold: session.soldTotal, bought: session.boughtTotal, count: count)
+            }
+            return
+        case .meet:
+            data.hour = max(data.hour, venue.close)
+            recordMeet(venue)
+            log("Went to \(venue.name): \(deals).")
+        case .leagueNight:
+            data.hour = max(data.hour, venue.close)
+            recordMeet(venue)
+            if let shop = venue.shop {
+                addPoints(shopContactID(shop), Balance.leagueStandingPoints)
+                var state = self.shop(shop)
+                state.lastVisitDay = data.day
+                data.shops[shop.rawValue] = state
+            }
+            log("League night at \(venue.name): \(deals). Standing +\(Balance.leagueStandingPoints).")
+        case .garageSale, .estateSale:
+            // Travel is inside the hours, so the visit always takes them all.
+            data.hour = min(Balance.dayEnd, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
+            if let id = venue.eventID { recordSaleVisit(id) }
+            log("\(venue.name): \(deals).")
+        case .opportunity:
+            data.hour = min(Balance.dayEnd, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
+            log("\(venue.name): \(deals).")
+        }
         save()
     }
 
@@ -249,6 +300,13 @@ extension GameStore {
                                      detail: "\(show.size.label)\(dayText) · \(show.booked ? "table booked" : "no table")",
                                      showID: show.id))
         }
+        for kind in MeetKind.allCases where kind.weekday == weekday {
+            let place = kind == .leagueNight ? leagueShop(day: day).rawValue : kind.place
+            let lock = meetUnlocked(kind) ? "" : " · invite only"
+            out.append(CalendarEntry(kind: kind == .leagueNight ? .league : .meet, title: kind.label,
+                                     detail: "\(kind.hoursText) · \(place)\(lock)"))
+        }
+        out += eventEntries(day: day)
         let offset = day - data.day
         guard offset > 0 else { return out }
         let arriving = data.sealed.filter { if case .onTheWay(let d, _) = $0.status { return d == offset }; return false }
@@ -310,6 +368,10 @@ struct FloorListing: Identifiable, Hashable {
     let setSlug: String
     let condition: Condition
     let price: Double
+    /// Hidden: the card is a fake (docs/14-counterfeit-risk.md).
+    var fake: FakeTier?
+    /// The eyeball check caught something.
+    var looksOff = false
 
     /// The card's value in its condition.
     var market: Double { (print.market ?? 0) * condition.wear.valueFactor }
@@ -388,20 +450,61 @@ struct Visitor: Identifiable {
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
 
-/// One day at a card show: the table, the visitors, and the floor.
+/// Where an encounter happens: a card show, a meet, league night, a garage or estate sale, or a surprise
+/// opportunity. The venue sets the hours, how many people come, and what the player can do there.
+struct Venue: Hashable {
+    enum Kind: Hashable { case show, meet, leagueNight, garageSale, estateSale, opportunity }
+
+    let kind: Kind
+    let name: String
+    /// A second line under the name, for example "Local show · your table".
+    var detail: String = ""
+    /// The clock hours when the doors open and close.
+    let open: Double
+    let close: Double
+    /// The most hours the visit can take from the moment the player arrives.
+    let hours: Double
+    /// The mean number of people who come to the player's table in a full day.
+    let visitorsMean: Double
+    /// The share of visitors who want to sell to the player, at reputation tier 0.
+    var sellerShare = 0.22
+    /// The chance that a visitor is a regular who the game remembers.
+    var regularShare = 0.35
+    let hasFloor: Bool
+    let hasTable: Bool
+    /// The chance that someone stops the player on the way to a table.
+    var approachChance = 0.25
+    /// True when the person who stops the player is the host of a sale: someone clearing out, often naive.
+    var hostSells = false
+    /// Where a fake could come from at this venue (docs/14-counterfeit-risk.md).
+    var fakeSource = FakeSource.none
+    var showID: UUID?
+    /// The game shop that runs league night.
+    var shop: LocalStore?
+    /// A sale or an opportunity that the venue belongs to.
+    var eventID: UUID?
+
+    var isShow: Bool { kind == .show }
+}
+
+/// One day at a card show, or one visit to another venue: the table, the visitors, and the floor.
 @MainActor @Observable
 final class ShowSession {
     enum Phase { case setup, table, floor, summary }
 
-    let show: CardShow
+    let venue: Venue
+    /// The card show, when the venue is one.
+    let show: CardShow?
     let dayIndex: Int
-    let hasTable: Bool
+    var hasTable: Bool { venue.hasTable }
     private let store: GameStore
 
     var phase: Phase
-    /// Minutes since the doors opened at 9 AM.
+    /// Minutes since the doors opened.
     private(set) var minute: Double
-    let closeMinute = (Balance.showClose - Balance.showOpen) * 60
+    /// The minute when the player arrived.
+    let startMinute: Double
+    let closeMinute: Double
     var markup = 1.10
     var bring: Set<UUID> = []
     private(set) var table: [ShowItem] = []
@@ -425,31 +528,47 @@ final class ShowSession {
     private(set) var opened = false
     var note: String?
 
-    init(show: CardShow, store: GameStore) {
+    convenience init(show: CardShow, store: GameStore) {
+        let venue = Venue(kind: .show, name: show.name,
+                          detail: "\(show.size.label)\(show.size.days > 1 ? " · day \(store.day - show.startDay + 1) of 2" : "") · \(show.booked ? "your table" : "walk-in")",
+                          open: Balance.showOpen, close: Balance.showClose, hours: Balance.showClose - Balance.showOpen,
+                          visitorsMean: show.size.buyersPerDay, hasFloor: true, hasTable: show.booked, showID: show.id)
+        store.seedContacts()
+        self.init(venue: venue, store: store, show: show,
+                  vendors: VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show)),
+                  regulars: store.attendingRegulars(show).map(\.id).shuffled())
+    }
+
+    /// Any venue. `vendors` are the tables on the floor, and `regulars` are the contacts who can come by.
+    init(venue: Venue, store: GameStore, show: CardShow? = nil, vendors: [Vendor], regulars: [String]) {
+        self.venue = venue
         self.show = show
         self.store = store
-        dayIndex = store.day - show.startDay
-        hasTable = show.booked
-        phase = show.booked ? .setup : .floor
+        dayIndex = show.map { store.day - $0.startDay } ?? 0
+        phase = venue.hasTable ? .setup : .floor
         // A player who arrives late loses the hours before they came.
-        minute = max(0, (store.data.hour - Balance.showOpen) * 60)
+        let start = max(0, (store.data.hour - venue.open) * 60)
+        minute = start
+        startMinute = start
+        closeMinute = min((venue.close - venue.open) * 60, start + venue.hours * 60)
         let stock = store.showStock
         bring = Set(stock.cards.map(\.id) + stock.sealed.map(\.id))
-        store.seedContacts()
-        vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show))
-        regulars = store.attendingRegulars(show).map(\.id).shuffled()
+        self.vendors = vendors
+        self.regulars = regulars
         // A recurring vendor prices better for a player they know.
-        for i in vendors.indices {
-            let bonus = store.level(vendors[i].contactID).priceBonus
+        for i in self.vendors.indices {
+            let bonus = store.level(self.vendors[i].contactID).priceBonus
             guard bonus > 0 else { continue }
-            for j in vendors[i].items.indices { vendors[i].items[j].price = Self.round(vendors[i].items[j].price * (1 - bonus)) }
+            for j in self.vendors[i].items.indices {
+                self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus))
+            }
         }
     }
 
-    /// The regulars at this show who have not come by yet.
+    /// The regulars at this venue who have not come by yet.
     private var regulars: [String] = []
 
-    var clock: String { GameStore.clock(Balance.showOpen + minute / 60) }
+    var clock: String { GameStore.clock(venue.open + minute / 60) }
     var isOver: Bool { minute >= closeMinute }
     var soldTotal: Double { sold.reduce(0) { $0 + $1.price } }
     var boughtTotal: Double { bought.reduce(0) { $0 + $1.price } }
@@ -480,7 +599,7 @@ final class ShowSession {
     func openTable() {
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
         // More value on the table draws more people, up to a point.
-        var mean = show.size.buyersPerDay * (1 - minute / closeMinute)
+        var mean = venue.visitorsMean * (1 - minute / closeMinute)
         mean *= min(1.3, 0.7 + Double(table.count) / 30)
         let count = max(0, Int((mean + Double.random(in: -2...2)).rounded()))
         arrivals = (0..<count).map { _ in Double.random(in: minute..<closeMinute) }.sorted()
@@ -515,13 +634,13 @@ final class ShowSession {
     /// higher reputation, because word gets around that the player pays fair. Some visitors are regulars.
     private func makeVisitor() -> Visitor? {
         let roll = Double.random(in: 0..<1)
-        let sellers = 0.22 + 0.03 * Double(store.reputationTier)
+        let sellers = venue.sellerShare + 0.03 * Double(store.reputationTier)
         var v: Visitor?
         if table.isEmpty || roll < sellers { v = makeSeller() }
         else if roll < sellers + 0.18, let trader = makeTrader() { v = trader }
         else { v = makeBuyer() }
         guard var visitor = v else { return nil }
-        if Double.random(in: 0..<1) < 0.35, let id = regulars.popLast() {
+        if Double.random(in: 0..<1) < venue.regularShare, let id = regulars.popLast() {
             personalize(&visitor, id)
         } else {
             strangerReputation(&visitor)
@@ -642,8 +761,8 @@ final class ShowSession {
     }
 
     /// Someone who wants to sell to the player: often an old collection, with vintage in it.
-    private func makeSeller() -> Visitor? {
-        let type = [VisitorType.closetCleaner, .closetCleaner, .collector, .dealer].randomElement() ?? .closetCleaner
+    private func makeSeller(type forced: VisitorType? = nil) -> Visitor? {
+        let type = forced ?? [VisitorType.closetCleaner, .closetCleaner, .collector, .dealer].randomElement() ?? .closetCleaner
         // Most sellers bring something the player can pay for. Now and then, someone brings a big item.
         let budget = max(40, store.cash * 1.3)
         let stretch = Double.random(in: 0..<1) < 0.15
@@ -719,7 +838,7 @@ final class ShowSession {
         switch v.intent {
         case .buy:
             guard let item = v.item else { return }
-            store.sellAtShow(item, price: v.offer, show: show)
+            store.sellAtShow(item, price: v.offer, at: venue.name)
             sold.append((item.name, v.offer))
             table.removeAll { $0.id == item.id }
             store.recordDeal(v.contactID, what: "Sold them \(item.name)", price: v.offer, market: item.market, slug: item.setSlug)
@@ -729,7 +848,7 @@ final class ShowSession {
                 note = "You do not have \(money(-v.tradeCash))."
                 return
             }
-            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, show: show)
+            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name)
             let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
             trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
             table.removeAll { $0.id == item.id }
@@ -942,7 +1061,9 @@ final class ShowSession {
         if !vendors[i].visited {
             vendors[i].visited = true
             spend(Balance.vendorVisitMinutes)
-            if !isOver, approach == nil, Double.random(in: 0..<1) < 0.25 { approach = makeSeller() }
+            if !isOver, approach == nil, Double.random(in: 0..<1) < venue.approachChance {
+                approach = makeSeller(type: venue.hostSells ? .closetCleaner : nil)
+            }
         }
         openVendorID = vendor.id
     }
@@ -994,16 +1115,16 @@ final class ShowSession {
         switch goods {
         case .single(let print, let slug, let condition):
             store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil,
-                                          condition: condition), price: price, vendor: seller, show: show)
+                                          condition: condition), price: price, vendor: seller, at: venue.name)
         case .slab(let print, let slug, let grade):
             store.buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade),
-                                price: price, vendor: seller, show: show)
+                                price: price, vendor: seller, at: venue.name)
         case .sealed(let product):
-            justBought = store.buySealedAtShow(product, price: price, vendor: seller, show: show)
+            justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
-                                   price: price, vendor: seller, show: show)
+                                   price: price, vendor: seller, at: venue.name)
             reveal = MysteryReveal(pack: pack, price: price, filler: contents.filler, hit: contents.hit)
         }
         bought.append((name, price))
@@ -1011,7 +1132,7 @@ final class ShowSession {
 
     /// Items that a recurring vendor saved for the player at this show.
     func saved(at vendor: Vendor) -> [SavedItem] {
-        guard let id = vendor.contactID else { return [] }
+        guard let id = vendor.contactID, let show else { return [] }
         return store.savedAtShow(show.id, vendor: id)
     }
 

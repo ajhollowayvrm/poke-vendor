@@ -1,0 +1,22 @@
+import Foundation
+
+// The calendar rows for sales, restocks, and opportunities. Shows and meets have their own rows in
+// `calendarEntries(day:)`.
+
+@MainActor
+extension GameStore {
+    func eventEntries(day: Int) -> [CalendarEntry] {
+        var out: [CalendarEntry] = []
+        for sale in visibleSales where sale.covers(day) {
+            let dayText = sale.kind == .estate ? " · day \(sale.dayIndex(day) + 1) of 3 · \(Int(Balance.estatePriceFactor[sale.dayIndex(day)] * 100))% prices" : ""
+            out.append(CalendarEntry(kind: .sale, title: sale.name,
+                                     detail: "\(sale.hoursText) · \(formatHours(saleHours(sale)))\(sale.far ? " · far" : "")\(dayText)\(sale.visited.contains(day) ? " · been" : "")",
+                                     eventID: sale.id))
+        }
+        out += restockEntries(day: day)
+        for o in data.opportunities where o.day == day && !o.answered && o.postedDay <= data.day {
+            out.append(CalendarEntry(kind: .meetup, title: o.title, detail: o.hours > 0 ? formatHours(o.hours) : "Answer from the hub"))
+        }
+        return out
+    }
+}
