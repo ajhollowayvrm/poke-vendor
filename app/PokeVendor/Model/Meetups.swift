@@ -93,9 +93,11 @@ extension GameStore {
     func acceptFBOffer(_ id: UUID) {
         guard let i = data.fbOffers.firstIndex(where: { $0.id == id }) else { return }
         let o = data.fbOffers.remove(at: i)
-        data.meetups.append(Meetup(day: o.meetupDay, isPickup: false, name: o.itemName, price: o.offer, who: o.buyer, itemID: o.itemID,
+        // An offer waits 2 days. A buyer whose day passed meets today.
+        let day = max(o.meetupDay, data.day)
+        data.meetups.append(Meetup(day: day, isPickup: false, name: o.itemName, price: o.offer, who: o.buyer, itemID: o.itemID,
                                    sealed: o.sealed))
-        log("Agreed to meet \(o.buyer) for the \(o.itemName) at \(money(o.offer))\(o.meetupDay == data.day ? " today" : " on day \(o.meetupDay + 1)").")
+        log("Agreed to meet \(o.buyer) for the \(o.itemName) at \(money(o.offer))\(day == data.day ? " today" : " on day \(day + 1)").")
         save()
     }
 
@@ -108,6 +110,18 @@ extension GameStore {
     func doMeetup(_ id: UUID) -> String? {
         guard let i = data.meetups.firstIndex(where: { $0.id == id }), !data.meetups[i].done else { return nil }
         let m = data.meetups[i]
+        // The item must still be up on Facebook. A card that went to a grader, the case, or Keep is not for sale.
+        if let itemID = m.itemID {
+            let status = card(itemID)?.status ?? data.sealed.first { $0.id == itemID }?.status
+            var listed = false
+            if case .listed(let l) = status, l.channel == .facebook { listed = true }
+            guard listed else {
+                data.meetups.remove(at: i)
+                log("The meetup with \(m.who) is off: the \(m.name) is no longer up on Facebook Marketplace.")
+                save()
+                return "The \(m.name) is no longer up on Facebook Marketplace, so the meetup is off."
+            }
+        }
         guard spendHours(Balance.facebookPickupHours) else { return "You have no free hour left today." }
         if m.isPickup {
             data.meetups[i].done = true

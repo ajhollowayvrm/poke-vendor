@@ -297,12 +297,12 @@ extension GameStore {
             }
             log("\(venue.name): \(deals). Standing +\(Balance.leagueStandingPoints).")
         case .garageSale, .estateSale:
-            // Travel is inside the hours, so the visit always takes them all.
-            data.hour = min(Balance.dayEnd, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
+            // Travel is inside the hours, so the visit always takes them all. Past 11 PM comes out of sleep.
+            data.hour = min(Balance.lateNightLimit, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
             if let id = venue.eventID { recordSaleVisit(id) }
             log("\(venue.name): \(deals).")
         case .opportunity:
-            data.hour = min(Balance.dayEnd, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
+            data.hour = min(Balance.lateNightLimit, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
             log("\(venue.name): \(deals).")
         }
         save()

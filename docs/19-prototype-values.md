@@ -204,7 +204,7 @@ for CGC, and $30 for BGS.
 
 | Value | Prototype value |
 | --- | --- |
-| Stop rule | $20 by default, and the rarities picked for each set. With none picked, a hit stops the rip |
+| Stop rule | Two parts, each with its own switch: $20 by default, and the rarities picked for each set. With none picked, a hit stops the rip. Both parts off: Sift runs straight to the summary |
 | Speed | Fast 0.45 seconds a card. Sift 0.08 |
 
 ## The job and late nights

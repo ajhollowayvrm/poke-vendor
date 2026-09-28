@@ -9,6 +9,8 @@ struct StreamView: View {
     let onClose: () -> Void
     @State private var pick: PickMode?
     @State private var rip: RipSession?
+    /// The product picked for a rip. The cover opens after the pick sheet is gone.
+    @State private var pendingRip: SealedItem?
     @State private var confirmEnd = false
 
     enum PickMode: Identifiable {
@@ -31,12 +33,17 @@ struct StreamView: View {
                 if scenePhase == .active, session.ripping == nil, pick == nil { session.tick() }
             }
         }
-        .sheet(item: $pick) { mode in
+        .sheet(item: $pick, onDismiss: {
+            if let sealed = pendingRip {
+                pendingRip = nil
+                rip = RipSession(items: [sealed])
+            }
+        }) { mode in
             StreamPickSheet(session: session, mode: mode) { item, price in
                 switch mode {
                 case .show: session.showCard(item)
                 case .giveaway: session.giveaway(item)
-                case .rip: if let sealed = session.ripNow(item) { rip = RipSession(items: [sealed]) }
+                case .rip: pendingRip = session.ripNow(item)
                 case .auction: session.startAuction(item, startShare: price / max(item.market, 0.01))
                 case .buyNow: session.offerBuyNow(item, price: price)
                 }

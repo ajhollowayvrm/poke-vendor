@@ -35,18 +35,24 @@ struct SettingsView: View {
                 Text("Fast and Sift stop on a card worth this much or more. It applies to every set.")
             }
             Section {
-                ForEach(ownedSets, id: \.slug) { info in
-                    setRow(info)
+                Toggle("Stop on rarities", isOn: Binding(get: { rule.raritiesOn }, set: { store.setRaritiesOn($0) }))
+                if rule.raritiesOn {
+                    ForEach(ownedSets, id: \.slug) { info in
+                        setRow(info)
+                    }
                 }
             } header: {
                 Text("Stop rule · rarities · your sets")
             } footer: {
-                Text("Pick the rarities that stop the rip, for each set. With no rarities picked, a hit stops it: rare or higher, or $1 or more. A rip always stops on a resealed pack.")
+                Text(rule.isEmpty ? "Both parts are off. Sift runs straight to the summary, and Fast never stops."
+                     : "Pick the rarities that stop the rip, for each set. With no rarities picked, a hit stops it: rare or higher, or $1 or more. A rip always stops on a resealed pack.")
             }
-            Section("All sets") {
-                TextField("Search sets", text: $search)
-                ForEach(allSets, id: \.slug) { info in
-                    setRow(info)
+            if rule.raritiesOn {
+                Section("All sets") {
+                    TextField("Search sets", text: $search)
+                    ForEach(allSets, id: \.slug) { info in
+                        setRow(info)
+                    }
                 }
             }
         }

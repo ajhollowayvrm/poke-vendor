@@ -437,6 +437,17 @@ final class GameStore {
         return Array(repeating: item.setSlug, count: item.packs)
     }
 
+    /// A loose pack out of an opened product. A resealed product's packs are resealed too (docs/14).
+    private func loosePack(_ slug: String, from item: SealedItem) -> SealedItem {
+        var pack = SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
+                              paid: item.paidPerPack, acquired: item.acquired,
+                              source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
+                              brokenFrom: item.id, acquiredDay: data.day)
+        pack.fake = item.fake
+        pack.fakeKnown = item.fakeKnown
+        return pack
+    }
+
     /// Opens a sealed product before its packs: the seal breaks, every pack goes back as a loose pack, and the
     /// promo cards go to Raw. Returns the promo cards.
     @discardableResult
@@ -444,10 +455,7 @@ final class GameStore {
         guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
         let item = data.sealed.remove(at: i)
         for slug in packSlugs(of: item) {
-            data.sealed.append(SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
-                                          paid: item.paidPerPack, acquired: item.acquired,
-                                          source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
-                                          brokenFrom: item.id, acquiredDay: data.day))
+            data.sealed.append(loosePack(slug, from: item))
         }
         var extras: [CardPrint] = []
         if let product = SetLibrary.product(item.productID) {
@@ -474,10 +482,7 @@ final class GameStore {
             var rest = packSlugs(of: item)
             if let first = rest.firstIndex(of: setSlug) { rest.remove(at: first) } else if !rest.isEmpty { rest.removeFirst() }
             for slug in rest {
-                data.sealed.append(SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
-                                              paid: item.paidPerPack, acquired: item.acquired,
-                                              source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
-                                              brokenFrom: item.id, acquiredDay: data.day))
+                data.sealed.append(loosePack(slug, from: item))
             }
             if item.brokenFrom == nil, let product = SetLibrary.product(item.productID) {
                 let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos

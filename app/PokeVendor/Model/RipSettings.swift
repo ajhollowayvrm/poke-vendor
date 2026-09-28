@@ -31,10 +31,15 @@ enum RipMode: String, Codable, CaseIterable, Hashable {
 struct StopRule: Codable, Hashable {
     /// Stop on a card worth at least this much. Nil turns the part off.
     var dollar: Double? = Balance.defaultStopDollar
+    /// The rarity part. Off, and no rarity stops the rip.
+    var raritiesOn = true
     /// The rarity entries to stop on, by set slug. A set with no entries uses the hit definition.
     var rarities: [String: [String]] = [:]
 
     func entries(for slug: String) -> Set<String> { Set(rarities[slug] ?? []) }
+
+    /// Both parts off: Sift goes straight to the summary (docs/18, Rip modes).
+    var isEmpty: Bool { dollar == nil && !raritiesOn }
 }
 
 /// The player's settings.
@@ -109,6 +114,11 @@ extension GameStore {
         save()
     }
 
+    func setRaritiesOn(_ on: Bool) {
+        data.settings.stopRule.raritiesOn = on
+        save()
+    }
+
     func setStopEntries(_ entries: [String], for slug: String) {
         if entries.isEmpty { data.settings.stopRule.rarities[slug] = nil } else { data.settings.stopRule.rarities[slug] = entries }
         save()
@@ -120,6 +130,7 @@ extension GameStore {
         guard let print = card.print else { return false }
         let rule = data.settings.stopRule
         if let dollar = rule.dollar, card.market >= dollar { return true }
+        guard rule.raritiesOn else { return false }
         let picked = rule.entries(for: slug)
         // No rarities picked for this set: a hit stops the rip.
         if picked.isEmpty { return card.isHit }

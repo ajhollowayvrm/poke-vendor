@@ -99,6 +99,22 @@ struct HubView: View {
     }
 
     @ViewBuilder private var alerts: some View {
+        // The late-night choice waits here too, in case the morning report is gone (a relaunch).
+        if store.data.lateHours > 0, store.report == nil {
+            DetailBox(title: "You were up until \(GameStore.clock(Balance.dayEnd + store.data.lateHours))") {
+                Text("Start tired, or sleep in. Nothing else happens until you choose.").font(.caption).foregroundStyle(Theme.muted)
+                HStack(spacing: 8) {
+                    Button("Start tired") { store.chooseMorning(sleepIn: false) }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.orange)
+                    Button("Sleep in until \(GameStore.clock(Balance.dayStart + store.data.lateHours))") { store.chooseMorning(sleepIn: true) }
+                        .buttonStyle(.borderedProminent)
+                        .foregroundStyle(.black)
+                }
+                .controlSize(.regular)
+            }
+            .overlay(Rectangle().stroke(Theme.orange.opacity(0.6)))
+        }
         if store.daysUntilRent <= Balance.rentWarningDays {
             Banner(text: "Rent of \(money(Balance.rent)) is due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s"). You have \(money(store.cash)).",
                    color: store.canAfford(Balance.rent) ? Theme.cyan : Theme.orange)

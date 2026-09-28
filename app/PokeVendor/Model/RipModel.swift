@@ -223,11 +223,12 @@ final class RipModel {
         ImageStore.shared.prefetch(stack.compactMap(\.imageURL))
     }
 
-    /// Turning the stack over reverses its order.
-    func setFaceUp(_ value: Bool) {
+    /// Turning the stack over reverses its order. `remember` saves the choice for the next rip. Sift turns the
+    /// cards up for itself and does not save it.
+    func setFaceUp(_ value: Bool, remember: Bool = true) {
         guard value != faceUp else { return }
         faceUp = value
-        UserDefaults.standard.set(value, forKey: "rip.faceUp")
+        if remember { UserDefaults.standard.set(value, forKey: "rip.faceUp") }
         stack.reverse()
         showcaseID = nil
         markFrontSeen()
@@ -321,10 +322,11 @@ final class RipModel {
 
     // MARK: - Fast and Sift
 
-    /// True when Fast or Sift must stop on this card (docs/18, The stop rule). A resealed pack always stops.
+    /// True when Fast or Sift must stop on this card (docs/18, The stop rule). A resealed pack stops once, on
+    /// its first card.
     func shouldStop(_ card: RipCard) -> Bool {
         if card.id == stoppedID { return false }
-        if resealed { return true }
+        if resealed { return pile.isEmpty }
         guard let slug = currentPack?.setSlug else { return card.isHit }
         return store?.stops(card, in: slug) ?? card.isHit
     }
@@ -350,8 +352,8 @@ final class RipModel {
             startPacks()
         }
         if phase == .sealed { startOpening() }
-        if phase == .opening { phase = .open }
-        if !faceUp { setFaceUp(true) }
+        if phase == .opening { finishOpening() }
+        if !faceUp { setFaceUp(true, remember: false) }
         trickDone = true
         while phase == .open, let front = stack.first {
             if front.print != nil, shouldStop(front) {

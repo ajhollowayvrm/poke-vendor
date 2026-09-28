@@ -16,6 +16,8 @@ struct JobState: Codable, Hashable {
     /// Unpaid days since the last paycheck.
     var unpaidDays = 0
     var hiredDay = 0
+    /// The last day the player quit or was fired. Sick days do not refill on a quick rehire.
+    var quitDay = -1000
 }
 
 extension Job {
@@ -83,13 +85,16 @@ extension GameStore {
         let hired = Double.random(in: 0..<1) < job.hireChance
         if hired {
             data.jobIndex = index
-            data.sickDaysLeft = job.sickDays
+            // A quit and a new hire inside 8 weeks does not refill the sick days.
+            let recentQuit = data.day - data.jobState.quitDay < Balance.jobOpensAfterDays
+            data.sickDaysLeft = recentQuit ? min(data.sickDaysLeft, job.sickDays) : job.sickDays
             data.jobState.timeOff = 0
             data.jobState.timeOffBooked = []
             data.jobState.unexcused = []
-            data.jobState.unpaidDays = 0
+            // The first paycheck covers the days from the hire, not the whole week.
+            data.jobState.unpaidDays = min(5, weekday)
             data.jobState.hiredDay = data.day
-            log("You got the job: \(job.title), \(money(job.weeklyPay)) a week. You start on the next work day.")
+            log("You got the job: \(job.title), \(money(job.weeklyPay)) a week. The next shift is yours.")
         } else {
             log("\(job.title): they went with someone else. You can apply again tomorrow.")
         }
@@ -101,7 +106,7 @@ extension GameStore {
     func quitJob() {
         guard let job else { return }
         data.jobIndex = nil
-        data.sickDaysLeft = 0
+        data.jobState.quitDay = data.day
         data.jobState.timeOff = 0
         data.jobState.timeOffBooked = []
         log("You quit your job as \(job.title.lowercased()). No more paychecks until you find another one.")
@@ -147,6 +152,7 @@ extension GameStore {
         if Double.random(in: 0..<1) < chance {
             data.jobIndex = nil
             data.sickDaysLeft = 0
+            data.jobState.quitDay = today
             data.jobState.timeOff = 0
             data.jobState.timeOffBooked = []
             line = "You skipped work again, and \(job.title.lowercased()) is over: they let you go."

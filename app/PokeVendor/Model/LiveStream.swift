@@ -423,8 +423,9 @@ extension GameStore {
         data.social.followers = max(0, data.social.followers + followers)
         data.social.burnout = min(1, data.social.burnout + Balance.streamBurnout)
         data.social.lastPostDay = data.day
+        // A stream can run past 11 PM. Those hours come out of sleep (docs/16, Late nights).
         let used = ceil(s.minute / 15) / 4
-        data.hour = min(Balance.dayEnd, s.startHour + used)
+        data.hour = min(Balance.lateNightLimit, s.startHour + used)
         let post = SocialPost(day: data.day, type: .stream, subject: "\(formatHours(s.hours)) · \(s.peakViewers) peak viewers",
                               views: s.peakViewers, followerChange: s.followersGained, likes: s.tipCount, quality: 1, timing: postTiming, luck: 1)
         data.social.posts.append(post)

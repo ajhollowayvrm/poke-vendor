@@ -225,6 +225,10 @@ extension GameStore {
             data.slabs.removeAll { $0.id == cardID }
             addLedger(o.price, .sale, "\(card.print.name) · private buyer")
             addReputation(2)
+            if let fake = card.fake {
+                recordBadSale(item: card.print.name, channel: "a private buyer", price: o.price, fake: fake, known: card.isKnownFake,
+                              refunds: false)
+            }
             log("Sold \(card.print.name) to a private buyer for \(money(o.price)).", cash: o.price)
             save()
             return .done("Sold for \(money(o.price)). Cash in hand.")
