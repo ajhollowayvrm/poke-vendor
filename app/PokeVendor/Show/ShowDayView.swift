@@ -79,7 +79,7 @@ struct ShowDayView: View {
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
             let args = ProcessInfo.processInfo.arguments
             if args.contains("floor") { session.walkFloor() }
-            for kind in ["seller", "trader"] where args.contains(kind) { session.debugVisitor(kind) }
+            for kind in ["seller", "trader", "naive"] where args.contains(kind) { session.debugVisitor(kind) }
             if args.contains("buysealed"), let v = session.vendors.first(where: { $0.kind == .gameShop }),
                let item = v.items.first(where: { if case .sealed(let p) = $0.goods { return p.market < 80 }; return false }) {
                 session.walkFloor()
@@ -376,6 +376,22 @@ private struct DealButtons: View {
             case .sell:
                 primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
                     .disabled(!store.canAfford(visitor.offer))
+                if visitor.naive {
+                    // They do not know what they have. The player chooses how to deal with that.
+                    HStack(spacing: 8) {
+                        Button { withAnimation { session.payFair() } } label: {
+                            Text("Pay fair · \(money(session.fairPrice(visitor)))").frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.green)
+                        .disabled(!store.canAfford(session.fairPrice(visitor)))
+                        Button { withAnimation { session.lieAboutValue() } } label: {
+                            Text("Say it's not worth much").frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.orange)
+                    }
+                }
                 CounterSlider(market: visitor.goodsMarket, offer: visitor.offer, range: 30...110, startAbove: false,
                               verb: "Offer", passTitle: "Pass", pass: { session.decline() }) { session.counter($0) }
                     .id(visitor.id)
@@ -400,6 +416,7 @@ private struct DealButtons: View {
 }
 
 private struct VisitorCard: View {
+    @Environment(GameStore.self) private var store
     let visitor: Visitor
     let asking: Double?
     let tool: Int
@@ -413,8 +430,16 @@ private struct VisitorCard: View {
                     .background(accent.opacity(0.15), in: Circle())
                     .foregroundStyle(accent)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(visitor.name).font(.headline)
+                    HStack(spacing: 6) {
+                        Text(visitor.name).font(.headline)
+                        if let c = store.contact(visitor.contactID) {
+                            LevelBadge(level: store.level(c.id))
+                        }
+                    }
                     Text(visitor.type.label).font(.caption).foregroundStyle(Theme.muted)
+                    if let memory = store.contact(visitor.contactID)?.memory.first {
+                        Text("Last time: \(memory)").font(.caption2).foregroundStyle(Theme.muted).lineLimit(1)
+                    }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
@@ -605,6 +630,7 @@ private struct FloorStage: View {
 }
 
 private struct FloorList: View {
+    @Environment(GameStore.self) private var store
     let session: ShowSession
 
     var body: some View {
@@ -629,6 +655,9 @@ private struct FloorList: View {
                                     Text(vendor.tags).font(.caption2.monospaced()).foregroundStyle(Theme.muted).lineLimit(1)
                                 }
                                 Spacer()
+                                if let id = vendor.contactID {
+                                    LevelBadge(level: store.level(id))
+                                }
                                 if vendor.visited {
                                     Text("SEEN").font(.system(size: 9, weight: .bold, design: .monospaced)).foregroundStyle(Theme.muted)
                                 }
@@ -693,6 +722,39 @@ private struct VendorStage: View {
                         }
                     }
                     Text(vendor.kind.tagline).font(.subheadline).foregroundStyle(Theme.muted)
+                    if let id = vendor.contactID {
+                        HStack(spacing: 6) {
+                            LevelBadge(level: store.level(id))
+                            if let memory = store.contact(id)?.memory.first {
+                                Text("Last time: \(memory)").font(.caption).foregroundStyle(Theme.muted).lineLimit(1)
+                            }
+                        }
+                    }
+                    let saved = session.saved(at: vendor)
+                    if !saved.isEmpty {
+                        TitledGroup(title: "Saved for you", count: saved.count, list: "show") {
+                            ForEach(saved) { item in
+                                HStack(alignment: .top, spacing: 10) {
+                                    GoodsImage(item: VendorItem(goods: item.goods, price: item.price, market: item.market))
+                                        .frame(width: 44, height: 62)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(item.name).font(.subheadline.weight(.semibold))
+                                        GoodsDetail(goods: item.goods, tool: store.data.centeringTool)
+                                        Text("mkt \(money(item.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                    }
+                                    Spacer()
+                                    Button(money(item.price)) { withAnimation { session.pickUp(item) } }
+                                        .buttonStyle(.borderedProminent)
+                                        .tint(Theme.green)
+                                        .foregroundStyle(.black)
+                                        .controlSize(.small)
+                                        .disabled(!store.canAfford(item.price))
+                                }
+                                .padding(12)
+                            }
+                        }
+                        .overlay(Rectangle().stroke(Theme.green.opacity(0.5)))
+                    }
                     Picker("Aisle", selection: $tab) {
                         ForEach(Aisle.allCases, id: \.self) { aisle in
                             Text("\(aisle.rawValue) · \(vendor.items.filter { inAisle($0, aisle) }.count)").tag(aisle)

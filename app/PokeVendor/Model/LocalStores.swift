@@ -52,10 +52,11 @@ struct ShopState: Codable, Hashable {
 }
 
 enum StandingLevel: String {
-    case stranger = "Stranger", familiar = "Familiar", regular = "Regular", trusted = "Trusted"
+    case stranger = "Stranger", familiar = "Familiar", regular = "Regular", trusted = "Trusted", friend = "Friend"
 
     init(points: Int) {
         switch points {
+        case 90...: self = .friend
         case 60...: self = .trusted
         case 30...: self = .regular
         case 10...: self = .familiar
@@ -70,6 +71,7 @@ enum StandingLevel: String {
         case .familiar: 0.55
         case .regular: 0.60
         case .trusted: 0.70
+        case .friend: 0.75
         }
     }
 }
@@ -83,11 +85,16 @@ extension Balance {
 
 @MainActor
 extension Market {
-    static func shelf(_ store: LocalStore, day: Int) -> [ShelfItem] {
+    /// `discount` is the relationship price bonus at a game shop (docs/21-relationships-and-reputation.md).
+    static func shelf(_ store: LocalStore, day: Int, discount: Double = 0) -> [ShelfItem] {
         let salt = UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0) + 11
         var r = SeededRandom(seed: UInt64(day + 1) &* 15_485_863 &+ salt &* 3_571)
         guard r.double(0...1) < store.stockChance else { return [] }
-        if store.isGameShop { return gameShopShelf(store, day: day, &r) }
+        if store.isGameShop {
+            return gameShopShelf(store, day: day, &r).map {
+                ShelfItem(id: $0.id, product: $0.product, price: retail($0.price * (1 - discount)), quantity: $0.quantity)
+            }
+        }
         let kinds = ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection"]
         let options = SetLibrary.catalog.filter {
             ($0.inPrint ?? true) &&
@@ -130,7 +137,7 @@ extension Market {
     /// What a game shop bought from local sellers this week. It changes once a week, leans vintage, and now and
     /// then holds a real find. The shop knows values: it prices at or over market, but about 1 time in 7 it prices
     /// something to move.
-    static func buyIns(_ store: LocalStore, day: Int) -> [BuyIn] {
+    static func buyIns(_ store: LocalStore, day: Int, discount: Double = 0) -> [BuyIn] {
         guard store.isGameShop else { return [] }
         let week = day / 7
         var r = SeededRandom(seed: UInt64(week + 1) &* 49_979_687 &+ (store == .castle ? 3 : 5))
@@ -164,7 +171,7 @@ extension Market {
             }
             guard let goods, market > 0 else { continue }
             let steal = r.double(0...1) < 0.15
-            let price = retail(market * (steal ? r.double(0.7...0.85) : r.double(1.0...1.2)))
+            let price = retail(market * (steal ? r.double(0.7...0.85) : r.double(1.0...1.2)) * (1 - discount))
             out.append(BuyIn(id: "w\(week)-\(store.rawValue)-in-\(i)", goods: goods, price: price, market: market, steal: steal))
         }
         return out
@@ -195,7 +202,7 @@ extension Market {
                          surface: wear[r.int(0...(wear.count - 1))])
     }
 
-    static func displayCase(_ store: LocalStore, day: Int) -> [CaseSingle] {
+    static func displayCase(_ store: LocalStore, day: Int, discount: Double = 0) -> [CaseSingle] {
         guard store.isGameShop else { return [] }
         // The case changes once a week.
         var r = SeededRandom(seed: UInt64(day / 7 + 1) &* 32_452_843 &+ (store == .castle ? 1 : 2))
@@ -208,7 +215,7 @@ extension Market {
             guard !singles.isEmpty else { return nil }
             let c = singles[r.int(0...(singles.count - 1))]
             return CaseSingle(id: "\(day / 7)-\(store.rawValue)-case-\(i)", print: c, setSlug: slug,
-                              price: retail((c.market ?? 0) * Balance.displayCaseMarkup))
+                              price: retail((c.market ?? 0) * Balance.displayCaseMarkup * (1 - discount)))
         }
     }
 }

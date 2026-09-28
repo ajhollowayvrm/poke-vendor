@@ -100,7 +100,7 @@ struct StoreRunView: View {
     }
 
     private func stopView(_ s: LocalStore) -> some View {
-        let shelf = Market.shelf(s, day: store.day)
+        let shelf = Market.shelf(s, day: store.day, discount: store.shopDiscount(s))
         return ScrollView {
             VStack(spacing: 14) {
                 HStack {
@@ -118,7 +118,10 @@ struct StoreRunView: View {
                         Text("Credit").font(.caption)
                     }
                 }
-                if s.isGameShop { BuyInBox(shop: s, useCredit: useCredit) }
+                if s.isGameShop {
+                    SavedBox(shop: s, useCredit: useCredit)
+                    BuyInBox(shop: s, useCredit: useCredit)
+                }
                 DetailBox(title: "The shelf") {
                     if shelf.isEmpty {
                         Text("The shelf is empty. This stop is a bust.").font(.subheadline).foregroundStyle(Theme.muted)
@@ -264,10 +267,11 @@ struct ShopView: View {
                         .font(.caption)
                         .foregroundStyle(Theme.muted)
                 }
+                SavedBox(shop: shop, useCredit: useCredit)
                 BuyInBox(shop: shop, useCredit: useCredit)
                 DetailBox(title: "Display case · changes weekly") {
                     Toggle("Pay with store credit", isOn: $useCredit).font(.subheadline)
-                    ForEach(Market.displayCase(shop, day: store.day)) { single in
+                    ForEach(Market.displayCase(shop, day: store.day, discount: store.shopDiscount(shop))) { single in
                         let bought = store.data.weekBought.contains(single.id)
                         HStack(spacing: 10) {
                             RemoteCardImage(url: single.print.image.flatMap(URL.init(string:)), name: "")
@@ -308,7 +312,7 @@ struct BuyInBox: View {
     let useCredit: Bool
 
     var body: some View {
-        let items = Market.buyIns(shop, day: store.day)
+        let items = Market.buyIns(shop, day: store.day, discount: store.shopDiscount(shop))
         DetailBox(title: "Just came in · changes weekly") {
             Text("People sell their collections to the shop. Sometimes it is old and good.")
                 .font(.caption)
@@ -342,6 +346,40 @@ struct BuyInBox: View {
                     .controlSize(.small)
                     .disabled(bought)
                 }
+            }
+        }
+    }
+}
+
+/// What a game shop set aside for the player, at Regular and up (docs/21-relationships-and-reputation.md).
+struct SavedBox: View {
+    @Environment(GameStore.self) private var store
+    let shop: LocalStore
+    let useCredit: Bool
+
+    var body: some View {
+        let items = store.savedAtShop(shop)
+        if !items.isEmpty {
+            DetailBox(title: "Saved for you") {
+                ForEach(items) { item in
+                    HStack(alignment: .top, spacing: 10) {
+                        GoodsImage(item: VendorItem(goods: item.goods, price: item.price, market: item.market))
+                            .frame(width: 44, height: 62)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(item.name).font(.subheadline).lineLimit(2)
+                            GoodsDetail(goods: item.goods, tool: store.data.centeringTool)
+                            Text("mkt \(money(item.market)) · held until day \(item.untilDay + 1)")
+                                .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        Spacer()
+                        Button(money(item.price)) { store.pickUp(item, credit: useCredit) }
+                            .buttonStyle(.borderedProminent)
+                            .tint(Theme.green)
+                            .foregroundStyle(.black)
+                            .controlSize(.small)
+                    }
+                }
+                Text("A hold you do not pick up costs standing.").font(.caption2).foregroundStyle(Theme.muted)
             }
         }
     }

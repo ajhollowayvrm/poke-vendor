@@ -134,7 +134,12 @@ set the level. Every player starts at 0 with each shop.
 | Stranger | 0–9 | 50% of market | No | No |
 | Familiar | 10–29 | 55% of market | No | No |
 | Regular | 30–59 | 60% of market | Yes | Yes; the shop keeps 20% |
-| Trusted | 60–100 | 70% of market | Yes, and first pick on hot product | Yes; the shop keeps 12% |
+| Trusted | 60–89 | 70% of market | Yes, and first pick on hot product | Yes; the shop keeps 12% |
+| Friend | 90–100 | 75% of market | Yes, and private offers | Yes; the shop keeps 12% |
+
+A shop's standing is also its relationship with the player, with the
+price bonus and saved items of each level (see
+[21-relationships-and-reputation.md](21-relationships-and-reputation.md#relationship-levels)).
 
 ##### How standing changes
 

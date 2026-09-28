@@ -15,6 +15,7 @@ enum AppRoute: Hashable {
     case bulk(UUID)
     case calendar
     case show(UUID)
+    case contacts
 }
 
 struct StoreRunSession: Identifiable {
@@ -64,6 +65,7 @@ extension View {
             case .bulk(let id): BulkDetailView(id: id)
             case .calendar: CalendarView()
             case .show(let id): ShowDetailView(id: id)
+            case .contacts: ContactsView()
             }
         }
     }

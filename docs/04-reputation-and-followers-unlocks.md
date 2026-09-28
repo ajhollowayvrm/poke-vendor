@@ -32,6 +32,9 @@ shop keeps its own standing with the player. Big retail stores and the
 Pokemon Center have no standing (see
 [12-acquiring-product.md](12-acquiring-product.md#the-local-game-shop)).
 
+The points for each tier, and what raises and lowers reputation, are in
+[21-relationships-and-reputation.md](21-relationships-and-reputation.md#reputation).
+
 ## Follower tiers
 
 Five tiers, read directly off the raw follower count the social media

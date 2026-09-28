@@ -380,6 +380,10 @@ struct Visitor: Identifiable {
     /// What they sell, and what it is worth.
     var goods: VendorGoods?
     var goodsMarket: Double = 0
+    /// A contact that the game remembers. Nil for a stranger.
+    var contactID: String?
+    /// A seller who does not know what they have: they ask far under market.
+    var naive = false
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
@@ -431,8 +435,19 @@ final class ShowSession {
         minute = max(0, (store.data.hour - Balance.showOpen) * 60)
         let stock = store.showStock
         bring = Set(stock.cards.map(\.id) + stock.sealed.map(\.id))
-        vendors = VendorFloor.tables(for: show.size)
+        store.seedContacts()
+        vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show))
+        regulars = store.attendingRegulars(show).map(\.id).shuffled()
+        // A recurring vendor prices better for a player they know.
+        for i in vendors.indices {
+            let bonus = store.level(vendors[i].contactID).priceBonus
+            guard bonus > 0 else { continue }
+            for j in vendors[i].items.indices { vendors[i].items[j].price = Self.round(vendors[i].items[j].price * (1 - bonus)) }
+        }
     }
+
+    /// The regulars at this show who have not come by yet.
+    private var regulars: [String] = []
 
     var clock: String { GameStore.clock(Balance.showOpen + minute / 60) }
     var isOver: Bool { minute >= closeMinute }
@@ -496,12 +511,55 @@ final class ShowSession {
         if visitor == nil { nextVisitor() }
     }
 
-    /// Most people want to buy. Some want to trade, and some want to sell to the player.
+    /// Most people want to buy. Some want to trade, and some want to sell to the player. More sellers come at a
+    /// higher reputation, because word gets around that the player pays fair. Some visitors are regulars.
     private func makeVisitor() -> Visitor? {
         let roll = Double.random(in: 0..<1)
-        if table.isEmpty || roll < 0.22 { return makeSeller() }
-        if roll < 0.40, let trader = makeTrader() { return trader }
-        return makeBuyer()
+        let sellers = 0.22 + 0.03 * Double(store.reputationTier)
+        var v: Visitor?
+        if table.isEmpty || roll < sellers { v = makeSeller() }
+        else if roll < sellers + 0.18, let trader = makeTrader() { v = trader }
+        else { v = makeBuyer() }
+        guard var visitor = v else { return nil }
+        if Double.random(in: 0..<1) < 0.35, let id = regulars.popLast() {
+            personalize(&visitor, id)
+        } else {
+            strangerReputation(&visitor)
+        }
+        return visitor
+    }
+
+    /// A regular: their own name, more patience, and better prices for a player they know. A regular at Trusted or
+    /// higher sometimes brings a want list card to sell.
+    private func personalize(_ v: inout Visitor, _ id: String) {
+        guard let c = store.contact(id) else { return }
+        let lvl = store.level(id)
+        v = Visitor(type: v.type, name: c.name, intent: v.intent, item: v.item, limit: v.limit, offer: v.offer,
+                    patience: v.patience + lvl.patienceBonus, line: v.line, tradeCards: v.tradeCards, tradeCash: v.tradeCash,
+                    goods: v.goods, goodsMarket: v.goodsMarket, contactID: id, naive: false)
+        switch v.intent {
+        case .buy, .trade: v.limit *= 1 + lvl.priceBonus
+        case .sell:
+            v.limit *= 1 - lvl.priceBonus
+            v.offer = Self.round(max(v.limit, v.offer * (1 - lvl.priceBonus)))
+        }
+        if lvl.rank >= StandingLevel.trusted.rank, Double.random(in: 0..<1) < 0.4, let (goods, market) = store.findForPlayer(c),
+           store.isWanted(goods) {
+            let price = Self.round(market * (1 - lvl.priceBonus))
+            v = Visitor(type: .collector, name: c.name, intent: .sell, item: nil, limit: price * 0.95, offer: price,
+                        patience: 2, line: "I found the \(VendorItem(goods: goods, price: price, market: market).name) you were after. It's yours for \(money(price)).",
+                        goods: goods, goodsMarket: market, contactID: id)
+        }
+    }
+
+    /// A stranger reads the player's reputation: they pay a little more and ask a little less at a higher tier.
+    private func strangerReputation(_ v: inout Visitor) {
+        let bonus = 0.02 * Double(store.reputationTier)
+        guard bonus > 0 else { return }
+        switch v.intent {
+        case .buy, .trade: v.limit *= 1 + bonus
+        case .sell: v.limit *= 1 - bonus
+        }
     }
 
     private func makeBuyer() -> Visitor? {
@@ -613,6 +671,7 @@ final class ShowSession {
                         offer: ask, patience: type == .closetCleaner ? 2 : 1, line: line)
         v.goods = goods
         v.goodsMarket = market
+        v.naive = type == .closetCleaner && ask <= market * 0.65
         return v
     }
 
@@ -663,6 +722,7 @@ final class ShowSession {
             store.sellAtShow(item, price: v.offer, show: show)
             sold.append((item.name, v.offer))
             table.removeAll { $0.id == item.id }
+            store.recordDeal(v.contactID, what: "Sold them \(item.name)", price: v.offer, market: item.market, slug: item.setSlug)
         case .trade:
             guard let item = v.item else { return }
             if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
@@ -673,6 +733,8 @@ final class ShowSession {
             let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
             trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
             table.removeAll { $0.id == item.id }
+            store.recordDeal(v.contactID, what: "Traded \(item.name)", price: tradeCardsValue(v) + v.tradeCash, market: item.market,
+                             slug: item.setSlug)
         case .sell:
             guard let goods = v.goods else { return }
             guard store.canAfford(v.offer) else {
@@ -680,15 +742,83 @@ final class ShowSession {
                 return
             }
             buyGoods(goods, price: v.offer, from: v.name)
+            store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
+                             market: v.goodsMarket, slug: goodsSlug(goods))
         }
+        maybePromote(v, points: 12)
         finish(minutes: .random(in: 6...12))
         Haptics.hit()
+    }
+
+    /// A stranger who had a good deal with the player sometimes gives their number.
+    private func maybePromote(_ v: Visitor, points: Int, chance: Double = 0.25) {
+        guard v.contactID == nil, Double.random(in: 0..<1) < chance else { return }
+        let kind: ContactKind = switch v.intent {
+        case .buy: .buyer
+        case .trade: .trader
+        case .sell: .collector
+        }
+        let interest: Interest? = v.item.map { .set($0.setSlug) } ?? v.goods.flatMap(goodsSlug).map { .set($0) }
+        if store.promote(name: v.name, kind: kind, interest: interest, points: points) != nil {
+            note = "\(v.name) gave you their number."
+        }
+    }
+
+    private func goodsSlug(_ goods: VendorGoods) -> String? {
+        switch goods {
+        case .single(_, let s, _), .slab(_, let s, _): s
+        case .sealed(let p): p.homeSlug
+        case .mystery: nil
+        }
+    }
+
+    // MARK: Fair dealing
+
+    /// The fair price for a naive seller's item: 90% of market.
+    func fairPrice(_ v: Visitor) -> Double { Self.round(v.goodsMarket * 0.9) }
+
+    /// Tells a naive seller what the item is worth and pays fair. It costs money now. The seller is grateful, gives
+    /// their number, and word gets around.
+    func payFair() {
+        guard var v = current, v.intent == .sell, let goods = v.goods else { return }
+        let price = fairPrice(v)
+        guard store.canAfford(price) else {
+            note = "You do not have \(money(price))."
+            return
+        }
+        buyGoods(goods, price: price, from: v.name)
+        store.addReputation(5)
+        if let id = v.contactID {
+            store.addPoints(id, 4)
+        } else {
+            v.contactID = store.promote(name: v.name, kind: .collector, interest: goodsSlug(goods).map { .set($0) }, points: 20)
+        }
+        store.recordDeal(v.contactID, what: "Paid fair for \(VendorItem(goods: goods, price: price, market: nil).name)", price: price,
+                         market: v.goodsMarket, slug: goodsSlug(goods))
+        note = "\(v.name) couldn't believe it. Word will get around."
+        finish(minutes: .random(in: 6...10))
+        Haptics.hit()
+    }
+
+    /// Tells a naive seller that the item is not worth much, and buys it for half of what they asked. It works now.
+    /// About 1 time in 3 the seller finds out later, and the player's reputation takes the hit.
+    func lieAboutValue() {
+        guard let v = current, v.intent == .sell, let goods = v.goods else { return }
+        let price = max(1, Self.round(v.offer * 0.5))
+        guard store.canAfford(price) else { return }
+        buyGoods(goods, price: price, from: v.name)
+        let name = VendorItem(goods: goods, price: price, market: nil).name
+        store.recordScam(seller: v.name, contactID: v.contactID, item: name)
+        note = "\(v.name) took \(money(price)) and thanked you."
+        finish(minutes: .random(in: 4...8))
     }
 
     /// A counter. To a buyer: the player asks for more. To a seller: the player offers less. Past the hidden limit,
     /// the other side moves part of the way, or walks away when their patience runs out.
     func counter(_ price: Double) {
         guard var v = current else { return }
+        // An offer under 60% of market to a seller is a lowball. A contact remembers it.
+        if v.intent == .sell, v.goodsMarket > 0, price < v.goodsMarket * 0.6, !v.naive { store.lowballed(v.contactID) }
         let fits = v.intent == .sell ? price >= v.limit - 0.001 : price <= v.limit + 0.001
         if fits {
             v.offer = price
@@ -700,6 +830,7 @@ final class ShowSession {
         if v.patience <= 0 {
             v.line = v.intent == .sell ? "No, that's too low. I'll find someone else." : "That's too much for me. Good luck!"
             setCurrent(v)
+            store.walkedAway(v.contactID)
             walkedAway += 1
             note = "\(v.name) walked away."
             finish(minutes: .random(in: 4...8))
@@ -850,6 +981,8 @@ final class ShowSession {
             return
         }
         buyGoods(item.goods, price: item.price, from: vendor.name)
+        store.recordDeal(vendor.contactID, what: "Bought \(item.name)", price: item.price, market: item.market ?? item.price,
+                         slug: goodsSlug(item.goods))
         // Mystery packs do not run out. Everything else leaves the table.
         if case .mystery = item.goods {} else { vendors[v].items.remove(at: i) }
         spend(5)
@@ -876,11 +1009,28 @@ final class ShowSession {
         bought.append((name, price))
     }
 
+    /// Items that a recurring vendor saved for the player at this show.
+    func saved(at vendor: Vendor) -> [SavedItem] {
+        guard let id = vendor.contactID else { return [] }
+        return store.savedAtShow(show.id, vendor: id)
+    }
+
+    func pickUp(_ item: SavedItem) {
+        guard store.pickUp(item) else {
+            note = "You do not have enough cash."
+            return
+        }
+        bought.append((item.name, item.price))
+        spend(5)
+        Haptics.hit()
+    }
+
     /// Asks the vendor for 10% off. How often it works depends on the vendor. Each item can be asked about once.
     func askForDeal(_ item: VendorItem, from vendor: Vendor) {
         guard let v = vendors.firstIndex(where: { $0.id == vendor.id }),
               let i = vendors[v].items.firstIndex(where: { $0.id == item.id }), !vendors[v].items[i].askedForDeal else { return }
-        let yes = Double.random(in: 0..<1) < vendor.kind.dealChance
+        // A vendor who knows the player says yes more often.
+        let yes = Double.random(in: 0..<1) < vendor.kind.dealChance + 0.1 * Double(store.level(vendor.contactID).rank)
         vendors[v].items[i].askedForDeal = true
         if yes { vendors[v].items[i].price = Self.round(item.price * 0.9) }
         note = yes ? "\(vendor.name) took 10% off." : "\(vendor.name) said the price is firm."
@@ -905,6 +1055,13 @@ final class ShowSession {
         switch kind {
         case "seller": visitor = makeSeller()
         case "trader": visitor = makeTrader() ?? visitor
+        case "naive":
+            for _ in 0..<60 {
+                if let v = makeSeller(), v.naive {
+                    visitor = v
+                    break
+                }
+            }
         default: approach = makeSeller()
         }
     }

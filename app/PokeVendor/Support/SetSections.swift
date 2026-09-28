@@ -99,3 +99,24 @@ private struct FoldingGroup<Content: View>: View {
         .clipped()
     }
 }
+
+/// A contact's relationship level, as a small tag.
+struct LevelBadge: View {
+    let level: StandingLevel
+
+    var body: some View {
+        let color: Color = switch level {
+        case .stranger: Theme.muted
+        case .familiar: Theme.cyan
+        case .regular: Theme.green
+        case .trusted: Color(red: 0.7, green: 0.55, blue: 1)
+        case .friend: Color(red: 1, green: 0.8, blue: 0.3)
+        }
+        Text(level.rawValue.uppercased())
+            .font(.system(size: 9, weight: .bold, design: .monospaced))
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.18))
+            .foregroundStyle(color)
+    }
+}

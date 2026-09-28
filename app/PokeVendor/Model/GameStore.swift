@@ -35,6 +35,12 @@ struct GameData: Codable {
     var vendorKit = false
     /// Weekly shop items the player bought this week: display case singles and buy-ins.
     var weekBought: [String] = []
+    /// Relationships and reputation (docs/21-relationships-and-reputation.md).
+    var contacts: [Contact] = []
+    var reputation = 0
+    var wantList: [WantItem] = []
+    var saved: [SavedItem] = []
+    var scams: [ScamRecord] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -69,6 +75,11 @@ extension GameData {
         showsPlannedThrough = v(.showsPlannedThrough, showsPlannedThrough)
         vendorKit = v(.vendorKit, vendorKit)
         weekBought = v(.weekBought, weekBought)
+        contacts = v(.contacts, contacts)
+        reputation = v(.reputation, reputation)
+        wantList = v(.wantList, wantList)
+        saved = v(.saved, saved)
+        scams = v(.scams, scams)
     }
 }
 
@@ -95,6 +106,7 @@ final class GameStore {
             startRun()
         }
         scheduleShows()
+        seedContacts()
     }
 
     // MARK: - Calendar and clock
@@ -312,6 +324,7 @@ final class GameStore {
         addLedger(Balance.startingCash, .startingCapital, "Starting capital")
         log("Day 1. You have \(money(Balance.startingCash)) and a job as a retail associate.")
         scheduleShows()
+        seedContacts()
         save()
     }
 
@@ -503,6 +516,8 @@ final class GameStore {
     func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
         guard shelfLeft(item) > 0, pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
         data.shelfBought[item.id, default: 0] += 1
+        recordDeal(shopContactID(store), what: "Bought \(item.product.name)", price: item.price, market: item.product.market,
+                   slug: item.product.homeSlug)
         data.sealed.append(SealedItem(setSlug: item.product.homeSlug, name: item.product.name, packs: item.product.packs, paid: item.price,
                                       acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
                                       acquiredDay: data.day))
@@ -517,6 +532,8 @@ final class GameStore {
         guard !data.weekBought.contains(single.id),
               pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
         data.weekBought.append(single.id)
+        recordDeal(shopContactID(store), what: "Bought \(single.print.name)", price: single.price, market: single.print.market ?? 0,
+                   slug: single.setSlug)
         data.raw.append(OwnedCard(print: single.print, setSlug: single.setSlug, acquired: .now, paid: single.price, ripID: nil,
                                   condition: .secondHand(), acquiredDay: data.day))
         log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
@@ -532,6 +549,7 @@ final class GameStore {
               pay(item.price, at: store, credit: credit, label: "\(item.name) · \(store.rawValue)",
                   category: item.isSealed ? .sealed : .singles) else { return false }
         data.weekBought.append(item.id)
+        recordDeal(shopContactID(store), what: "Bought \(item.name)", price: item.price, market: item.market, slug: nil)
         switch item.goods {
         case .single(let print, let slug, let condition):
             data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil,
@@ -583,6 +601,7 @@ final class GameStore {
         data.raw.removeAll { $0.id == id }
         data.slabs.removeAll { $0.id == id }
         addLedger(price, .sale, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(store.rawValue) buylist")
+        recordDeal(shopContactID(store), what: "Sold them \(card.print.name)", price: price, market: card.market, slug: card.setSlug)
         log("Sold \(card.print.name) to \(store.rawValue) for \(money(price)) cash.", cash: price)
         save()
     }
@@ -705,7 +724,10 @@ final class GameStore {
             lines.append("Payday: \(money(job.weeklyPay)) from your job.")
         }
 
-        if let line = missedShowLine() { lines.append(line) }
+        if let line = missedShowLine() {
+            lines.append(line)
+            addReputation(-5)
+        }
 
         data.day += 1
         data.hour = Balance.dayStart
@@ -721,6 +743,7 @@ final class GameStore {
         lines += advanceCards()
         lines += advanceSocial()
         scheduleShows()
+        lines += relationshipsEndDay()
 
         if data.day % Balance.rentCycleDays == 0 {
             if canAfford(Balance.rent) {

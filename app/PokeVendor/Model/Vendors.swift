@@ -94,8 +94,8 @@ enum VendorKind: CaseIterable, Hashable {
 }
 
 /// A mystery pack: filler cards and one guaranteed hit from a pool. The hit is usually worth less than the price.
-struct MysteryPack: Hashable {
-    enum Tier: Hashable { case modern, vintage, slab }
+struct MysteryPack: Codable, Hashable {
+    enum Tier: Codable, Hashable { case modern, vintage, slab }
 
     let tier: Tier
     let price: Double
@@ -121,7 +121,7 @@ struct MysteryPack: Hashable {
     ]
 }
 
-enum VendorGoods: Hashable {
+enum VendorGoods: Codable, Hashable {
     case single(CardPrint, slug: String, condition: Condition)
     case slab(CardPrint, slug: String, grade: SlabGrade)
     case sealed(Product)
@@ -159,6 +159,8 @@ struct Vendor: Identifiable, Hashable {
     let kind: VendorKind
     var items: [VendorItem]
     var visited = false
+    /// A recurring vendor that the game remembers (docs/21-relationships-and-reputation.md).
+    var contactID: String?
 
     /// Short tags for the floor list, for example "Vintage · Slabs · Sealed".
     var tags: String {
@@ -179,6 +181,19 @@ struct Vendor: Identifiable, Hashable {
 @MainActor
 enum VendorFloor {
     /// Local shows are small. Regional shows are big, and they are where the vintage is.
+    /// Recurring vendors take some of the tables. The rest are strangers.
+    static func tables(for size: ShowSize, recurring: [Contact]) -> [Vendor] {
+        var vendors = recurring.map { Vendor(name: $0.name, kind: $0.kind.vendorKind, items: stock($0.kind.vendorKind), contactID: $0.id) }
+        var fill = tables(for: size)
+        // Drop one stranger of the same kind for each recurring vendor, so the table count stays the same.
+        for v in vendors {
+            if let i = fill.firstIndex(where: { $0.kind == v.kind && $0.contactID == nil }) { fill.remove(at: i) }
+        }
+        let names = Set(vendors.map(\.name))
+        vendors += fill.filter { !names.contains($0.name) }
+        return vendors.shuffled()
+    }
+
     static func tables(for size: ShowSize) -> [Vendor] {
         let plan: [(VendorKind, Int)] = size == .regional
             ? [(.vintageDealer, 8), (.modernDealer, 8), (.gameShop, 4), (.collector, 7), (.mysteryPacks, 3)]

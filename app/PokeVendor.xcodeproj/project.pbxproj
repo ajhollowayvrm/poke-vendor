@@ -109,6 +109,7 @@
 		A2ABE55803E391A9A17B15FA /* cosmic-eclipse.json in Resources */ = {isa = PBXBuildFile; fileRef = 7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */; };
 		A2BAE1FE55F4408A11D999E0 /* brilliant-stars.json in Resources */ = {isa = PBXBuildFile; fileRef = DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */; };
 		A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */ = {isa = PBXBuildFile; fileRef = 77CD37AEDEDAD5767A419067 /* Effects.metal */; };
+		A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */; };
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
 		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
@@ -154,6 +155,7 @@
 		DBFC167DB548632A66CAD0CC /* team-up.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E647BE8C027106C56398C6 /* team-up.json */; };
 		DCAB7F71458A848ECE4C2955 /* call-of-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 9585374A5165787745D53792 /* call-of-legends.json */; };
 		DE127BF53B694C9C1ADE6494 /* pokemon-go.json in Resources */ = {isa = PBXBuildFile; fileRef = 26D896AE01B12460672CC225 /* pokemon-go.json */; };
+		E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3BA8BD31DC2985216CD192 /* ContactsView.swift */; };
 		E2DE7F1C1A266CD5F832269C /* paradox-rift.json in Resources */ = {isa = PBXBuildFile; fileRef = DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */; };
 		E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */ = {isa = PBXBuildFile; fileRef = 5430A1321F8CBDA7347D1045 /* fusion-strike.json */; };
 		E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */ = {isa = PBXBuildFile; fileRef = 47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */; };
@@ -190,6 +192,7 @@
 		1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "majestic-dawn.json"; sourceTree = "<group>"; };
 		1DE952F8C0F15F72F0C42913 /* paldea-evolved.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paldea-evolved.json"; sourceTree = "<group>"; };
 		1E4991D07DE453E2A0BC35E7 /* SetSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetSections.swift; sourceTree = "<group>"; };
+		1F3BA8BD31DC2985216CD192 /* ContactsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsView.swift; sourceTree = "<group>"; };
 		201CF0C8665BF1729BF4B106 /* paldean-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paldean-fates.json"; sourceTree = "<group>"; };
 		22DCF071A80BA4398E968082 /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
 		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
@@ -220,6 +223,7 @@
 		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
 		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
 		49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboxView.swift; sourceTree = "<group>"; };
+		4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relationships.swift; sourceTree = "<group>"; };
 		4DB852494E5092892E066499 /* crimson-invasion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crimson-invasion.json"; sourceTree = "<group>"; };
 		4DD5E1F23E40B91260779107 /* chaos-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "chaos-rising.json"; sourceTree = "<group>"; };
 		50F97256E10C06386BD90E19 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
@@ -540,6 +544,7 @@
 				DFA05E48B4793E422BDD8455 /* LocalStores.swift */,
 				642F08591A3569F0A27BA0D1 /* Market.swift */,
 				15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */,
+				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
@@ -580,6 +585,7 @@
 			isa = PBXGroup;
 			children = (
 				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
+				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
 				22DCF071A80BA4398E968082 /* HubView.swift */,
 				50F97256E10C06386BD90E19 /* WalletView.swift */,
 			);
@@ -837,6 +843,7 @@
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
+				E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				57856FEC663D96592E925B4F /* GameStore.swift in Sources */,
@@ -850,6 +857,7 @@
 				8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */,
 				5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */,
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
+				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */,
 				24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */,
 				EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */,

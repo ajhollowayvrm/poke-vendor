@@ -35,6 +35,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [17-calendar-and-events.md](17-calendar-and-events.md) — the weekly calendar: recurring entries (work shift, Friday paycheck, league night, fixed weekly meets), posted entries 2–3 days ahead (garage sales, estate sales, store restock days) where early arrival gets the best cards, scheduled entries (card shows, rent), surprise entries (Pokemon Center drops, store run stock, alert-banner events), and the fixed set list with no new releases.
 - [18-ripping.md](18-ripping.md) — the rip screen: a rip queue of any products as one rip, three modes (Normal, Fast, Sift), a stop rule of a dollar amount or per-set rarities, the animated pack trick, the pile of seen cards, running pack and rip totals, and the summary.
 - [20-card-shows.md](20-card-shows.md) — card shows on the calendar: booking a table, setting up, live buyers who haggle and trade, walking the floor, and the summary.
+- [21-relationships-and-reputation.md](21-relationships-and-reputation.md) — contacts (game shops, recurring show vendors, regulars, and strangers who become contacts), relationship levels, saved items, the want list, fair dealing, and the reputation tiers.
 
 ## Open topics (not yet explored)
 

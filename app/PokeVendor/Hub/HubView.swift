@@ -91,7 +91,10 @@ struct HubView: View {
                  detail: "Inventory \(money(store.marketValue))") { nav.path.append(.inventory(.sealed)) }
             Tile(label: "Followers", value: store.hasAccount ? store.social.followers.formatted() : "Start posting",
                  detail: store.hasAccount ? "Tier \(store.followerTier) · \(store.social.handle ?? "")" : "Social media") { nav.path.append(.social) }
-            Tile(label: "Reputation", value: "Unknown", detail: "Not built yet", action: nil)
+            Tile(label: "Reputation", value: store.reputationName,
+                 detail: store.pendingOffers.isEmpty ? "\(store.data.contacts.count) contacts" : "\(store.pendingOffers.count) new offer\(store.pendingOffers.count == 1 ? "" : "s")") {
+                nav.path.append(.contacts)
+            }
         }
     }
 
@@ -265,6 +268,10 @@ struct HubView: View {
                 Button("Local show, table booked") { store.addTestShow(.local) }
                 Button("Regional show, table booked") { store.addTestShow(.regional) }
             }
+            Menu("Relationships") {
+                Button("Make every contact Regular") { store.testMakeRegular() }
+                Button("Add 100 reputation") { store.addReputation(100); store.save() }
+            }
             Divider()
             Button("Add $500 test cash") { store.addTestCash(500) }
             Button("Start a new run", role: .destructive) { store.startRun() }
@@ -283,6 +290,8 @@ struct HubView: View {
     /// Screenshot aid: `-demo` rips a pack at launch.
     private func runDemo() {
         let args = ProcessInfo.processInfo.arguments
+        // Screenshot aid: `-regular` makes every contact Regular first.
+        if args.contains("-regular") { store.testMakeRegular() }
         if let i = args.firstIndex(of: "-route"), i + 1 < args.count {
             switch args[i + 1] {
             case "wallet": nav.path = [.wallet]
@@ -296,6 +305,7 @@ struct HubView: View {
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
             case "calendar": nav.path = [.calendar]
+            case "contacts": nav.path = [.contacts]
             case "nextshow": nav.path = [.calendar] + (store.upcomingShows.first(where: { $0.startDay > store.day }).map { [.show($0.id)] } ?? [])
             case "sealed": nav.path = [.inventory(.sealed)]
             default: break
