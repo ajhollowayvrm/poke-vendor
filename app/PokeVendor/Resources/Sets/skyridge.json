@@ -504,12 +504,12 @@
   "Common",
   "Common",
   "Common/Holo",
-  "Uncommon",
-  "Uncommon",
+  "Reverse holo",
   "Rare slot",
-  "Reverse holo"
+  "Uncommon",
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 2,
  "prints": [
   {
    "num": "46/144",

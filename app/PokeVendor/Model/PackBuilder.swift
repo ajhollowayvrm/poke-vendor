@@ -1,7 +1,7 @@
 import Foundation
 
 /// Builds one pack from the slot map, in the set's physical pack order: the front card first
-/// (tools/export/rip_set.py, ERA_PACKS). The player moves the back cards with the pack trick.
+/// (tools/export/rip_set.py, ERA_ORDERS). The player moves the back cards with the pack trick.
 /// A rare special pack, for example a god pack, replaces the slot map (SPECIAL_PACKS).
 struct PackBuilder {
     let cardSet: SetData

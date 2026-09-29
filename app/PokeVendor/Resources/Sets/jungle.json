@@ -125,12 +125,12 @@
   "Common",
   "Common",
   "Common",
+  "Rare slot",
   "Uncommon",
   "Uncommon",
-  "Uncommon",
-  "Rare slot"
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 3,
  "prints": [
   {
    "num": "49/64",

@@ -191,7 +191,7 @@
   "Base card",
   "Base or Classic card"
  ],
- "trick": 1,
+ "trick": 0,
  "prints": [
   {
    "num": "1/25",

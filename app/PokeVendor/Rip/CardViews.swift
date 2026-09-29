@@ -55,11 +55,14 @@ struct CardFace: View {
 struct RemoteCardImage: View {
     let url: URL?
     let name: String
+    /// True for a card: a sideways scan (a BREAK card) turns to portrait. False for a product image.
+    let upright: Bool
     @State private var image: UIImage?
 
-    init(url: URL?, name: String) {
+    init(url: URL?, name: String, upright: Bool = true) {
         self.url = url
         self.name = name
+        self.upright = upright
         _image = State(initialValue: url.flatMap { ImageStore.shared.cached($0) })
     }
 
@@ -79,7 +82,7 @@ struct RemoteCardImage: View {
         }
         .task(id: url) {
             guard image == nil, let url else { return }
-            image = await ImageStore.shared.load(url)
+            image = await ImageStore.shared.load(url, upright: upright)
         }
     }
 }

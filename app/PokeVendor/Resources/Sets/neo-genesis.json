@@ -192,12 +192,12 @@
   "Common",
   "Common",
   "Energy",
+  "Rare slot",
   "Uncommon",
   "Uncommon",
-  "Uncommon",
-  "Rare slot"
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 3,
  "prints": [
   {
    "num": "53/111",

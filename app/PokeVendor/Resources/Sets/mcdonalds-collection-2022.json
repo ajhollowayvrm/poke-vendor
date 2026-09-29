@@ -58,12 +58,12 @@
   }
  ],
  "order": [
-  "Holofoil",
   "Non-Holofoil",
   "Non-Holofoil",
-  "Non-Holofoil"
+  "Non-Holofoil",
+  "Holofoil"
  ],
- "trick": 1,
+ "trick": 0,
  "prints": [
   {
    "num": "1/15",

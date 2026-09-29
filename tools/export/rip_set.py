@@ -25,18 +25,42 @@ import join as J  # noqa: E402
 
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 
-# The physical card order of a pack, front card first, and the pack trick: how many cards the player moves
-# from the back to the front so the hits come last. "ENERGY" is the extra Basic Energy card.
-# Sources: docs/sets/eras/scarlet-violet.md (Conflicts in the template), docs/sets/eras/sun-moon.md (Pack order,
-# which also covers Sword & Shield), and docs/sets/eras/wizards-of-the-coast.md (Pack order, low confidence).
-SM_SWSH = (["Common"] * 5 + ["Reverse holo", "Rare slot", "ENERGY"] + ["Uncommon"] * 3, 4)
-ERA_PACKS = {
-    "scarlet-violet": (["Common"] * 4 + ["Uncommon"] * 3 + ["Reverse holo slot 1", "Reverse holo slot 2", "Rare slot", "ENERGY"], 1,
-                       "Scarlet & Violet"),
-    "sword-shield": SM_SWSH + ("Sword & Shield",),
-    "sun-moon": SM_SWSH + ("Sun & Moon",),
-    "wizards-of-the-coast": (["Common"] * 5 + ["Energy"] * 2 + ["Rare slot"] + ["Uncommon"] * 3, 3, "Wizards of the Coast"),
+# The physical card order of a pack for each era, front card first, as slot kinds. "energy" is the Basic Energy card.
+# The pack trick moves every card behind the rare slot from the back to the front, so the rare slot comes last.
+# Sources: docs/sets/eras/<era>.md, section "Pack order". The confidence is low before Sun & Moon.
+# - Scarlet & Violet, Mega Evolution: 4 commons, 3 uncommons, reverse holo 1, reverse holo 2, rare slot, Energy.
+# - Sun & Moon, Sword & Shield: 5 commons, reverse holo, rare slot, Energy, 3 uncommons (trick 4).
+# - XY, Black & White, HeartGold & SoulSilver, Diamond & Pearl: 5 commons, reverse holo, rare slot, 3 uncommons (trick 3).
+# - Wizards of the Coast: commons, Energy, rare slot, 3 uncommons (trick 3).
+# - e-Card: commons, reverse holo, rare slot, 2 uncommons (trick 2; Skyridge has one source for 3).
+# - EX: the reverse holo and the rare slot are the last two cards, so the pack needs no trick.
+SV_ME = ["common", "uncommon", "extra", "reverse", "rare", "energy"]
+SM_SWSH = ["common", "extra", "reverse", "rare", "energy", "uncommon"]
+BW_XY = ["common", "extra", "reverse", "rare", "uncommon"]
+ERA_ORDERS = {
+    "scarlet-violet": SV_ME, "mega-evolution": SV_ME,
+    "sun-moon": SM_SWSH, "sword-shield": SM_SWSH,
+    "xy": BW_XY, "black-white": BW_XY, "heartgold-soulsilver": BW_XY, "diamond-pearl-platinum": BW_XY,
+    "wizards-of-the-coast": ["common", "energy", "extra", "reverse", "rare", "uncommon"],
+    "e-card": BW_XY,
+    "ex": ["common", "uncommon", "extra", "reverse", "rare"],
 }
+
+
+def slot_kind(name):
+    """The kind of a slot in ERA_ORDERS. A slot with no known kind is "extra"."""
+    n = name.lower()
+    if name == "ENERGY" or n in ("energy", "basic energy"):
+        return "energy"
+    if n.startswith("rare") or n in ("holofoil", "confetti holofoil"):
+        return "rare"
+    if n.startswith("reverse holo"):
+        return "reverse"
+    if n.startswith("uncommon"):
+        return "uncommon"
+    if n.startswith("common") or n in ("regular", "card", "base card", "non-holofoil"):
+        return "common"
+    return "extra"
 
 
 # Rare pack types that replace the slot map. Sources and confidence: docs/sets/<set>.md (Where an ex can be).
@@ -89,21 +113,21 @@ SERIES = {"wizards-of-the-coast": "Wizards of the Coast", "e-card": "e-Card", "e
 
 
 def pack_order(era, slots, has_energy_row):
-    """Return (order, trick, series). The order must use each slot exactly as often as the slot map says."""
-    order, trick, series = ERA_PACKS.get(era, (None, 1, SERIES.get(era, era.replace("-", " ").title() if era else "")))
-    want = {}
-    for s in slots:
-        want[s["name"]] = s["count"]
-    if order:
-        got = {}
-        for name in order:
-            if name != "ENERGY":
-                got[name] = got.get(name, 0) + 1
-        if got == want and (("ENERGY" in order) == has_energy_row):
-            return order, trick, series
-        print(f"  pack order of era {era} does not fit the slot map {want}; using the slot map order")
-    order = [s["name"] for s in slots for _ in range(s["count"])] + (["ENERGY"] if has_energy_row else [])
-    return order, 1, series
+    """Return (order, trick, series). The order uses each slot exactly as often as the slot map says. The trick is
+    the number of cards behind the last rare slot, so the rare slot is the last card after the trick. A pack with
+    no rare slot, or with the rare slot at the back, has a trick of 0."""
+    series = SERIES.get(era, era.replace("-", " ").title() if era else "")
+    names = [s["name"] for s in slots for _ in range(s["count"])] + (["ENERGY"] if has_energy_row else [])
+    kinds = ERA_ORDERS.get(era)
+    if kinds:
+        order = [n for kind in kinds for n in names if slot_kind(n) == kind]
+    else:
+        order = names
+    rares = [i for i, n in enumerate(order) if slot_kind(n) == "rare"]
+    trick = len(order) - 1 - rares[-1] if rares else 0
+    return order, trick, series
+
+
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 GRADES = ("cgc10", "cgc9_5", "cgc9", "cgc8_5", "cgc8", "psa10", "psa9", "psa8", "psa7", "psa6",
           "bgs10", "bgs9_5", "bgs9", "bgs8_5", "bgs8")

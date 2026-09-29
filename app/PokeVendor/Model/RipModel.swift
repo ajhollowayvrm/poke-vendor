@@ -197,6 +197,11 @@ final class RipModel {
            let sir = cardSet.prints.filter({ $0.rarity == "Special illustration rare" }).randomElement() {
             cards[cards.count - 2] = RipCard(print: sir, energy: nil)
         }
+        // Screenshot aid: `-break` puts a BREAK card at the front, to check the sideways image.
+        if ProcessInfo.processInfo.arguments.contains("-break"),
+           let card = cardSet.prints.filter({ $0.name.hasSuffix(" BREAK") }).randomElement() {
+            cards[0] = RipCard(print: card, energy: nil)
+        }
         #endif
         // A resealed product was opened and searched. Every hit is gone, and filler took its place.
         resealed = currentPack.flatMap { store?.fakeOf(sourceID: $0.sourceID) } != nil
@@ -220,7 +225,7 @@ final class RipModel {
         lastReveal = nil
         unboxing = unboxProduct
         phase = unboxing == nil ? .sealed : .unbox
-        ImageStore.shared.prefetch(stack.compactMap(\.imageURL))
+        ImageStore.shared.prefetch(stack.compactMap(\.imageURL), upright: true)
     }
 
     /// Turning the stack over reverses its order. `remember` saves the choice for the next rip. Sift turns the
@@ -288,12 +293,15 @@ final class RipModel {
         phase = .open
     }
 
-    /// How many cards this set's pack trick moves.
-    var trickCount: Int { max(1, min(cardSet.trick ?? 1, stack.count - 1)) }
+    /// False when the set's rare slot is already the back card, for example in an EX-era pack (trick 0).
+    var trickNeeded: Bool { (cardSet.trick ?? 0) > 0 }
+
+    /// How many cards this set's pack trick moves: every card behind the rare slot (tools/export/rip_set.py).
+    var trickCount: Int { max(0, min(cardSet.trick ?? 0, stack.count - 1)) }
 
     /// Starts the pack trick. It works once for each pack.
     func beginTrick() -> Bool {
-        guard phase == .open, stack.count > 1, tuckingID == nil, !trickDone else { return false }
+        guard phase == .open, trickCount > 0, tuckingID == nil, !trickDone else { return false }
         trickDone = true
         return true
     }

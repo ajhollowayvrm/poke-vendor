@@ -264,9 +264,18 @@ back to the front (or from the top to the bottom when face down).
 
 | Era | Physical order, front card first | Pack trick | Source |
 | --- | --- | --- | --- |
-| Scarlet & Violet | 4 commons, 3 uncommons, reverse holo 1, reverse holo 2, rare slot, Basic Energy | 1 card | [sets/eras/scarlet-violet.md](sets/eras/scarlet-violet.md#conflicts-in-the-template) |
+| Scarlet & Violet, Mega Evolution | 4 commons, 3 uncommons, reverse holo 1, reverse holo 2, rare slot, Basic Energy | 1 card | [sets/eras/scarlet-violet.md](sets/eras/scarlet-violet.md#pack-order) |
 | Sword & Shield, Sun & Moon | 5 commons, reverse holo, rare slot, Basic Energy, 3 uncommons | 4 cards | [sets/eras/sun-moon.md](sets/eras/sun-moon.md#pack-order) |
-| Wizards of the Coast | 5 commons, 2 Energy, rare slot, 3 uncommons | 3 cards | [sets/eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md#pack-order) (low confidence) |
+| XY, Black & White, HeartGold & SoulSilver, Diamond & Pearl | 5 commons, reverse holo, rare slot, 3 uncommons | 3 cards | [sets/eras/xy.md](sets/eras/xy.md#pack-order) |
+| e-Card | commons, reverse holo, rare slot, 2 uncommons | 2 cards | [sets/eras/e-card.md](sets/eras/e-card.md#pack-order) (low confidence) |
+| EX | commons, uncommons, reverse holo, rare slot | none | [sets/eras/ex.md](sets/eras/ex.md#pack-order) (very low confidence) |
+| Wizards of the Coast | commons, Energy, rare slot, 3 uncommons | 3 cards | [sets/eras/wizards-of-the-coast.md](sets/eras/wizards-of-the-coast.md#pack-order) (low confidence) |
+
+The export tool (tools/export/rip_set.py, ERA_ORDERS) sorts each set's
+slots into its era's order. The trick moves every card behind the rare
+slot. When the rare slot is already the back card, for example in an EX
+pack, the Pack trick button says "rare is last" and does nothing, and
+Fast skips the trick.
 
 After the trick, the rare slot is the last card in every era. In
 Sword & Shield, most cards have a yellow border, so the peek gives

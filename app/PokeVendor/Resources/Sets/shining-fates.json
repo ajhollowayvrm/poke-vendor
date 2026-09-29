@@ -369,14 +369,14 @@
   "Common",
   "Common",
   "Common",
-  "Uncommon",
-  "Uncommon",
-  "Uncommon",
   "Reverse holo slot",
   "Rare slot",
-  "ENERGY"
+  "ENERGY",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 4,
  "prints": [
   {
    "num": "1/72",

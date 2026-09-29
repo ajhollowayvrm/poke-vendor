@@ -468,13 +468,13 @@
   "Common",
   "Common",
   "Common",
-  "Uncommon",
-  "Uncommon",
-  "Uncommon",
   "Reverse holo slot",
-  "Rare slot"
+  "Rare slot",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 3,
  "prints": [
   {
    "num": "001/172",

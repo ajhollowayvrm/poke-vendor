@@ -46,18 +46,34 @@ final class ImageStore: @unchecked Sendable {
         cache.object(forKey: url as NSURL)
     }
 
-    func load(_ url: URL) async -> UIImage? {
+    /// `upright` turns a sideways card scan to portrait. Pass it only for card images, never for product images.
+    func load(_ url: URL, upright: Bool = false) async -> UIImage? {
         if let image = cached(url) { return image }
         guard let (data, _) = try? await URLSession.shared.data(from: url),
-              let image = UIImage(data: data) else { return nil }
+              let loaded = UIImage(data: data) else { return nil }
+        let image = upright ? Self.upright(loaded) : loaded
         let prepared = await image.byPreparingForDisplay() ?? image
         cache.setObject(prepared, forKey: url as NSURL)
         return prepared
     }
 
-    func prefetch(_ urls: [URL]) {
+    /// A sideways card, for example a BREAK card, has a landscape scan. This turns it 90° counterclockwise so it
+    /// fills a portrait card frame. The ratio test keeps square product images as they are.
+    static func upright(_ image: UIImage) -> UIImage {
+        let w = image.size.width, h = image.size.height
+        guard h > 0, (1.25...1.55).contains(w / h) else { return image }
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = image.scale
+        return UIGraphicsImageRenderer(size: CGSize(width: h, height: w), format: format).image { ctx in
+            ctx.cgContext.translateBy(x: 0, y: w)
+            ctx.cgContext.rotate(by: -.pi / 2)
+            image.draw(in: CGRect(x: 0, y: 0, width: w, height: h))
+        }
+    }
+
+    func prefetch(_ urls: [URL], upright: Bool = false) {
         for url in urls {
-            Task.detached(priority: .userInitiated) { _ = await self.load(url) }
+            Task.detached(priority: .userInitiated) { _ = await self.load(url, upright: upright) }
         }
     }
 }

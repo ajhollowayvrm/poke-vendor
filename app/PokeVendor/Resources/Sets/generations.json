@@ -305,14 +305,14 @@
   "Common",
   "Common",
   "Common",
-  "Uncommon",
-  "Uncommon",
+  "Radiant Collection common",
+  "Radiant Collection slot",
   "Reverse holo",
   "Rare slot",
-  "Radiant Collection common",
-  "Radiant Collection slot"
+  "Uncommon",
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 2,
  "prints": [
   {
    "num": "3/83",

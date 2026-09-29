@@ -254,7 +254,7 @@ struct UnboxView: View {
         TimelineView(.animation) { timeline in
             let t = timeline.date.timeIntervalSinceReferenceDate
             let shift = sin(t * 0.7) * 0.3 + Motion.shared.roll * 0.7
-            RemoteCardImage(url: product.image.flatMap(URL.init(string:)), name: product.name)
+            RemoteCardImage(url: product.image.flatMap(URL.init(string:)), name: product.name, upright: false)
                 .aspectRatio(contentMode: .fit)
                 .padding(8)
                 .frame(width: w, height: w)

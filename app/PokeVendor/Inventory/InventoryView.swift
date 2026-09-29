@@ -417,7 +417,7 @@ struct ProductImage: View {
 
     var body: some View {
         if let url, let u = URL(string: url) {
-            RemoteCardImage(url: u, name: "")
+            RemoteCardImage(url: u, name: "", upright: false)
                 .aspectRatio(contentMode: .fit)
                 .padding(2)
                 .background(Color.white)

@@ -383,13 +383,13 @@
   "Common",
   "Common",
   "Common",
-  "Uncommon",
-  "Uncommon",
-  "Uncommon",
   "Reverse holo/ACE SPEC",
-  "Rare slot"
+  "Rare slot",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon"
  ],
- "trick": 1,
+ "trick": 3,
  "prints": [
   {
    "num": "1/149",

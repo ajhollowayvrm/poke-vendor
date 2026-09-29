@@ -203,7 +203,7 @@ struct OfferRow: View {
                     RemoteCardImage(url: offer.imageURL, name: "")
                         .clipShape(RoundedRectangle(cornerRadius: 3))
                 } else {
-                    RemoteCardImage(url: offer.imageURL, name: "")
+                    RemoteCardImage(url: offer.imageURL, name: "", upright: false)
                         .aspectRatio(contentMode: .fit)
                         .padding(2)
                         .background(Color.white)

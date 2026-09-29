@@ -472,16 +472,17 @@ struct RipView: View {
                     VStack(spacing: 1) {
                         Label("Pack trick", systemImage: "arrow.uturn.down")
                             .font(.subheadline.weight(.semibold))
-                        Text(model.trickDone ? "done" : "\(model.trickCount) · \(model.faceUp ? "back → front" : "top → bottom")")
+                        Text(model.trickDone ? "done" : !model.trickNeeded ? "rare is last"
+                             : "\(model.trickCount) · \(model.faceUp ? "back → front" : "top → bottom")")
                             .font(.caption2.monospaced())
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.cyan)
-                .foregroundStyle(model.trickDone ? Theme.muted : .black)
+                .foregroundStyle(model.trickDone || !model.trickNeeded ? Theme.muted : .black)
                 .controlSize(.large)
-                .disabled(model.phase != .open || model.stack.count < 2 || model.trickDone)
+                .disabled(model.phase != .open || model.trickCount == 0 || model.trickDone)
             }
         }
         .padding(.horizontal, 16)
@@ -564,7 +565,7 @@ struct RipView: View {
                         continue
                     }
                     // The pack trick always plays in Fast (docs/18).
-                    if !model.trickDone, model.stack.count > 1 {
+                    if !model.trickDone, model.trickCount > 0 {
                         moveToBack()
                         while (model.tuckingID != nil || !model.faceUp || flipping), !Task.isCancelled {
                             try? await Task.sleep(for: .milliseconds(120))

@@ -132,7 +132,7 @@ struct StoreRunView: View {
                             ForEach(group.items) { item in
                                 let left = store.shelfLeft(item)
                                 HStack(spacing: 10) {
-                                    RemoteCardImage(url: item.product.image.flatMap(URL.init(string:)), name: "")
+                                    RemoteCardImage(url: item.product.image.flatMap(URL.init(string:)), name: "", upright: false)
                                         .aspectRatio(contentMode: .fit)
                                         .padding(2)
                                         .background(Color.white)
