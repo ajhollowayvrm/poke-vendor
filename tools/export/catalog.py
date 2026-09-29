@@ -7,7 +7,7 @@ Run tools/export/rip_set.py for each set first, and tools/ppt/sealed_contents.py
 Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game sells, with
 - the pack mix by set (only sets that the app has, see SETS);
 - the promo cards, with the market price, the graded prices, and the image. An SVP promo gets its price from
-  TCGCSV group 22872, and a SWSH promo from group 2545 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
+  its promo set's TCGCSV group (PROMO_GROUPS, tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
   Surprise Box promo has a Prismatic Evolutions stamp, so it gets the stamped print from TCGCSV group 2374
   (Miscellaneous Cards & Products), with its own price and image, and no graded prices;
 - the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none), an estimated MSRP, and the image;
@@ -31,6 +31,18 @@ TCGDEX_MAP = os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")
 TCGDEX_SETS = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgdex", "sets")
 SVP_GROUP = "22872"
 SWSH_GROUP = "2545"
+# The promo sets that the promo text names, for example "Rowlet (SM Promo 1)": (TCGCSV group, set name, number format).
+PROMO_GROUPS = {
+    "SVP Promo": (SVP_GROUP, "SVP Black Star Promos", "SVP {:03d}"),
+    "SWSH Promo": (SWSH_GROUP, "SWSH Black Star Promos", "SWSH{:03d}"),
+    "SM Promo": ("1861", "SM Black Star Promos", "SM{:02d}"),
+    "XY Promo": ("1451", "XY Black Star Promos", "XY{:02d}"),
+    "BW Promo": ("1407", "BW Black Star Promos", "BW{:02d}"),
+    "DP Promo": ("1421", "DP Black Star Promos", "DP{:02d}"),
+    "MEP Promo": ("24451", "Mega Evolution Black Star Promos", "MEP {:03d}"),
+    "SVE Energy": ("24382", "Scarlet & Violet Energies", "SVE {:03d}"),
+    "Nintendo Promo": ("1423", "Nintendo Black Star Promos", "{:03d}"),
+}
 MISC_GROUP = "2374"
 STAMP = "Prismatic Evolutions Stamp"
 HOME = "prismatic-evolutions"
@@ -201,22 +213,67 @@ def guess_mix(it, sets, releases):
     return out
 
 
-def resolve_promo(text, sets, svp, stamped=None, swsh=None):
-    m = re.match(r"^(.*) \((.+) (\d+)\)$", text)
+ALT_GROUP = "1938"
+
+
+def alternate_prints():
+    """The alternate prints with a letter after the number, for example "Aegislash EX - 65a/119", from the TCGCSV
+    Alternate Art Promos group: {(number, letter): [products]}."""
+    products = json.load(open(os.path.join(TCGCSV, f"{ALT_GROUP}-products.json")))
+    prices = json.load(open(os.path.join(TCGCSV, f"{ALT_GROUP}-prices.json")))
+    products = products.get("results", products) if isinstance(products, dict) else products
+    prices = prices.get("results", prices) if isinstance(prices, dict) else prices
+    price = {}
+    for r in prices:
+        price[r["productId"]] = price.get(r["productId"]) or r.get("marketPrice")
+    out = {}
+    for p in products:
+        m = re.search(r"(\d+)([a-z])(?:/|$)", p["name"].split(" - ")[-1])
+        if m:
+            out.setdefault((int(m.group(1)), m.group(2)), []).append(
+                {"name": p["name"].split(" - ")[0], "market": price.get(p["productId"]),
+                 "image": f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg"})
+    return out
+
+
+def norm(name):
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def resolve_alternate(text, sets, alternates):
+    """A promo text with a letter number, for example "Aegislash-EX (Phantom Forces 65a)"."""
+    m = re.match(r"^(.*) \((.+) (\d+)([a-z])\)$", text)
     if not m:
         return None
+    name, source, num, letter = m.group(1), m.group(2), int(m.group(3)), m.group(4)
+    hits = [p for p in alternates.get((num, letter), []) if norm(p["name"]).startswith(norm(name)[:6])]
+    priced = [p for p in hits if p["market"] is not None]
+    if not priced:
+        return None
+    p = priced[0]
+    total = next((pr["num"].split("/")[1] for s in sets.values() if s["name"] == source for pr in s["prints"] if "/" in pr["num"]), None)
+    return {"name": name, "num": f"{num}{letter}" + (f"/{total}" if total else ""), "setName": source, "rarity": "Promo",
+            "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
+
+
+def promo_groups():
+    """{promo set name in the promo text: {number: product}} for every set in PROMO_GROUPS."""
+    out = {source: svp_promos(group) for source, (group, _, _) in PROMO_GROUPS.items()}
+    out["alternates"] = alternate_prints()
+    return out
+
+
+def resolve_promo(text, sets, promos, stamped=None):
+    m = re.match(r"^(.*) \((.+) (\d+)\)$", text)
+    if not m:
+        return resolve_alternate(text, sets, promos["alternates"])
     name, source, num = m.group(1), m.group(2), int(m.group(3))
-    if source == "SVP Promo":
-        p = svp.get(num)
+    if source in PROMO_GROUPS:
+        _, set_name, fmt = PROMO_GROUPS[source]
+        p = promos[source].get(num)
         if not p or p["market"] is None:
             return None
-        return {"name": name, "num": f"SVP {num:03d}", "setName": "SVP Black Star Promos", "rarity": "Promo",
-                "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
-    if source == "SWSH Promo":
-        p = (swsh or {}).get(num)
-        if not p or p["market"] is None:
-            return None
-        return {"name": name, "num": f"SWSH{num:03d}", "setName": "SWSH Black Star Promos", "rarity": "Promo",
+        return {"name": name, "num": fmt.format(num), "setName": set_name, "rarity": "Promo",
                 "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
     for s in sets.values():
         if s["name"] != source:
@@ -243,8 +300,10 @@ def named_promos(name, raw_promos):
     bracket = re.search(r"\[([^\]]+)\]", name)
     if not bracket:
         return None
-    want = bracket.group(1)
-    named = [t for t in raw_promos if t.split(" (")[0] == want or t.split(" (")[0].endswith(" " + want)]
+    # "[Reshiram/Moltres]" and "[Cufant & Copperajah]" name two promos.
+    wants = [w for w in re.split(r"\s*(?:/|&|,)\s*", bracket.group(1)) if w]
+    # "Xerneas EX" matches "Xerneas-EX", and "Basculin" matches "Hisuian Basculin".
+    named = [t for t in raw_promos if any(norm(t.split(" (")[0]).endswith(norm(w)) for w in wants)]
     return named or None
 
 
@@ -257,8 +316,7 @@ def base_name(name):
 def main():
     sets = load_sets()
     prices = sealed_prices()
-    svp = svp_promos()
-    swsh = svp_promos(SWSH_GROUP)
+    promos_by_set = promo_groups()
     stamped = stamped_promos()
     releases = set_releases(sets)
     out, skipped = [], []
@@ -309,7 +367,7 @@ def main():
             raw_promos = named_promos(it["name"], raw_promos) or raw_promos
         # A Surprise Box promo has a Prismatic Evolutions stamp.
         stamp = stamped if "Surprise Box" in it["name"] else None
-        promos = [resolve_promo(t, sets, svp, stamp, swsh) for t in raw_promos]
+        promos = [resolve_promo(t, sets, promos_by_set, stamp) for t in raw_promos]
         if any(x is None for x in promos):
             skipped.append(f"{it['name']}: promo not found in {raw_promos}")
             promos = [x for x in promos if x]
@@ -322,6 +380,18 @@ def main():
                     "mix": [{"slug": s, "packs": n} for s, n in order],
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,
                     "market": market, "msrp": msrp, "image": image, "mixGuess": guess})
+    # A "[Set of N]" holds one box of each variant, so it gets the promos of its variants in the catalog, each print once.
+    for x in out:
+        if x["id"] in researched or not re.search(r"\[Set of \d+\]", x["name"]):
+            continue
+        variants = [v for v in out if v is not x and not re.search(r"\[Set of \d+\]", v["name"])
+                    and base_name(v["name"]) == base_name(x["name"]) and v["name"].endswith("(International Version)") == x["name"].endswith("(International Version)")]
+        if variants:
+            union = []
+            for p in (p for v in variants for p in v["promos"]):
+                if all((p["name"], p["num"]) != (q["name"], q["num"]) for q in union):
+                    union.append(p)
+            x["promos"] = union
     out.sort(key=lambda x: (x["mix"][0]["slug"] != HOME, x["kind"], x["name"]))
     json.dump(out, open(OUT, "w"), ensure_ascii=False, indent=1)
     print(f"{len(out)} products ({guessed} with a guessed pack mix) -> {os.path.relpath(OUT, ROOT)}")
