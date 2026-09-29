@@ -44,14 +44,17 @@ struct HubView: View {
             .appDestinations()
         }
         .tint(Theme.cyan)
+        .saleReceipts(active: store.report == nil && haul == nil && streamSetup == nil)
         .fullScreenCover(item: $nav.rip) { session in
             RipView(items: session.items, store: store) { nav.rip = nil }
         }
         .fullScreenCover(item: $nav.showDay) { session in
             ShowDayView(show: session.show, store: store) { nav.showDay = nil }
+                .saleReceipts()
         }
         .fullScreenCover(item: $nav.encounter) { encounter in
             ShowDayView(session: encounter.session) { nav.encounter = nil }
+                .saleReceipts()
         }
         .fullScreenCover(item: $nav.stream) { cover in
             StreamView(session: cover.session) { nav.stream = nil }
@@ -61,6 +64,7 @@ struct HubView: View {
         }
         .fullScreenCover(item: $nav.storeRun) { session in
             StoreRunView(stops: session.stops) { nav.storeRun = nil }
+                .saleReceipts()
         }
         .sheet(item: Binding(get: { store.report }, set: { store.report = $0 })) { report in
             DayReportView(report: report)

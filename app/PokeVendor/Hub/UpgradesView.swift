@@ -22,7 +22,12 @@ struct UpgradesView: View {
                     row(name: "Vendor kit", detail: Balance.vendorKitDetail, cost: Balance.vendorKitCost, owned: store.data.vendorKit,
                         icon: "tablecells", canBuy: store.canAfford(Balance.vendorKitCost)) { store.buyVendorKit() }
                     upgradeRow(.evReadout)
+                    upgradeRow(.salesAnalytics)
                     upgradeRow(.authTool)
+                }
+                DetailBox(title: "Contacts") {
+                    upgradeRow(.contactBook)
+                    upgradeRow(.bigContactBook)
                 }
                 DetailBox(title: "Buying") {
                     upgradeRow(.betterCar)

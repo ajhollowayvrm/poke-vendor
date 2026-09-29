@@ -71,6 +71,23 @@ struct SellSheet: View {
 
     private var tcgAllowed: Bool { lines.allSatisfy(\.isRaw) }
 
+    /// What the player paid for each chosen item of a stack, on average. Nil when every one was pulled from a pack.
+    private func paidEach(_ line: Line) -> Double? {
+        let paid = line.ids.prefix(count(line)).map { store.paidFor($0) }
+        guard paid.contains(where: { $0 != nil }) else { return nil }
+        return paid.reduce(0) { $0 + ($1 ?? 0) } / Double(paid.count)
+    }
+
+    /// The profit on every chosen item, after fees and shipping.
+    private var totalProfit: Double {
+        lines.reduce(0) { sum, line in
+            let p = channel == .ebayAuction ? reference(line) : price(line)
+            let costs = GameStore.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
+            let net = p - costs.fees - costs.shipping - costs.insurance
+            return sum + (net - (paidEach(line) ?? 0)) * Double(count(line))
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -118,6 +135,21 @@ struct SellSheet: View {
                         Toggle("Shipping insurance", isOn: $insured)
                     }
                 }
+                if store.hasSalesAnalytics {
+                    Section("Sales analytics") {
+                        let total = totalProfit
+                        HStack {
+                            Text(total >= 0 ? "You make money" : "You lose money")
+                            Spacer()
+                            Text(signedMoney(total))
+                                .font(.title3.monospaced().weight(.semibold))
+                                .foregroundStyle(total >= 0 ? Theme.green : Theme.orange)
+                        }
+                        Text("The profit on all \(chosenIDs.count) item\(chosenIDs.count == 1 ? "" : "s") at this price, after fees and shipping, against what you paid. A pulled card counts as free.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
                 Section("Items") {
                     ForEach(lines) { line in
                         let p = channel == .ebayAuction ? reference(line) : price(line)
@@ -139,6 +171,9 @@ struct SellSheet: View {
                             Text("Fees \(money(costs.fees)) · shipping \(money(costs.shipping))\(insured ? " · insurance \(money(costs.insurance))" : "")")
                                 .font(.caption2.monospaced())
                                 .foregroundStyle(Theme.muted)
+                            if store.hasSalesAnalytics {
+                                ProfitLine(net: p - costs.fees - costs.shipping - costs.insurance, paid: paidEach(line), each: each)
+                            }
                         }
                     }
                 }
@@ -261,5 +296,24 @@ struct GradeSheet: View {
         case .bgs: "Mid speed and cost. Prints all four subgrades. All 10s is a Black Label."
         case .cgc: "Fastest and cheapest. Less resale value for the same grade."
         }
+    }
+}
+
+/// The sales analytics line under an item: what the player paid, and the profit at this price.
+struct ProfitLine: View {
+    let net: Double
+    let paid: Double?
+    var each = ""
+
+    var body: some View {
+        let profit = net - (paid ?? 0)
+        HStack {
+            Text(paid.map { "Paid \(money($0))\(each)" } ?? "Pulled from a pack")
+                .foregroundStyle(Theme.muted)
+            Spacer()
+            Text("\(profit >= 0 ? "Profit" : "Loss") \(signedMoney(profit))\(each)")
+                .foregroundStyle(profit >= 0 ? Theme.green : Theme.orange)
+        }
+        .font(.caption.monospaced())
     }
 }

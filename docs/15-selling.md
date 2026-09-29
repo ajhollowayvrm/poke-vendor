@@ -201,6 +201,20 @@ The player can buy **shipping insurance** for a sale.
   their money back. Nothing else happens. A lost package is not a bad
   sale, and it does not cause a scam accusation.
 
+## The sale receipt
+
+After every sale, a receipt screen shows. It lists each item that sold:
+the price, what the player got after fees and shipping, what the player
+paid, and the profit. At the bottom, it shows the total profit.
+
+- A pulled card has no cost of its own. The receipt says "pulled from a
+  pack" and counts the cost as $0.
+- A sale at End Day (a listing or a consignment) shows its receipt after
+  the player closes the End Day report.
+- Sales on a live stream show one receipt after the stream ends.
+- A trade is not a sale, so it shows no receipt.
+- A lost package with no insurance changes the receipt to a loss.
+
 ## Bad sales and scam accusations
 
 **A fake sold without knowing.** The result depends on the channel:

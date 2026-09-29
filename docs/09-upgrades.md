@@ -56,6 +56,16 @@ Without it, the player can only walk in and buy on the floor. It costs
 $200, and the player buys it from the detail screen of any card show
 (see [20-card-shows.md](20-card-shows.md#shows-on-the-calendar)).
 
+## Contacts and selling
+
+| Upgrade | Cost | What it does |
+|---|---|---|
+| Sales analytics | $150 | The sell screen and the consign screen show what the player paid for each item, the profit after fees and shipping, and the total profit, before the player lists. A pulled card counts as free. |
+| Contact book | $200 | Room for 8 contacts in the contact book instead of 4. |
+| Big contact book | $600 | Room for 15 contacts. Needs the contact book. |
+
+See [21-relationships-and-reputation.md](21-relationships-and-reputation.md#the-contact-book).
+
 ## Open questions
 
 - How upgrades are purchased (cash only, or gated by other currencies

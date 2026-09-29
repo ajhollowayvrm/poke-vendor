@@ -134,13 +134,18 @@ struct ConsignSheet: View {
                         Button {
                             if chosen.contains(card.id) { chosen.remove(card.id) } else { chosen.insert(card.id) }
                         } label: {
-                            HStack {
-                                Image(systemName: chosen.contains(card.id) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(chosen.contains(card.id) ? Theme.cyan : Theme.muted)
-                                Text(card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name).foregroundStyle(Theme.text).lineLimit(1)
-                                Spacer()
-                                Text("\(money(card.realMarket * percent / 100)) · you get \(money(card.realMarket * percent / 100 * (1 - cut)))")
-                                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    Image(systemName: chosen.contains(card.id) ? "checkmark.circle.fill" : "circle")
+                                        .foregroundStyle(chosen.contains(card.id) ? Theme.cyan : Theme.muted)
+                                    Text(card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name).foregroundStyle(Theme.text).lineLimit(1)
+                                    Spacer()
+                                    Text("\(money(card.realMarket * percent / 100)) · you get \(money(card.realMarket * percent / 100 * (1 - cut)))")
+                                        .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                }
+                                if store.hasSalesAnalytics {
+                                    ProfitLine(net: card.realMarket * percent / 100 * (1 - cut), paid: card.paid)
+                                }
                             }
                         }
                     }

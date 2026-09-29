@@ -17,6 +17,10 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case cornerLoupe, edgeLight, surfaceLamp
     /// Production value for streams and posts (docs/06).
     case studioLights, cameraKit
+    /// Shows the cost and the profit of each item on the sell and consign screens (docs/09, Sales analytics).
+    case salesAnalytics
+    /// More room in the contact book (docs/21, The contact book).
+    case contactBook, bigContactBook
 
     var name: String {
         switch self {
@@ -30,6 +34,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .surfaceLamp: "Raking lamp"
         case .studioLights: "Studio lights"
         case .cameraKit: "Camera kit"
+        case .salesAnalytics: "Sales analytics"
+        case .contactBook: "Contact book"
+        case .bigContactBook: "Big contact book"
         }
     }
 
@@ -45,6 +52,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .surfaceLamp: "Shows the surface subgrade on every raw card."
         case .studioLights: "Better video. Posts and streams reach 25% more people."
         case .cameraKit: "Much better video. Posts and streams reach 50% more people. Needs the studio lights."
+        case .salesAnalytics: "When you list or consign, each item shows what you paid and your profit after fees, before you commit."
+        case .contactBook: "Room for \(Balance.contactBookSizes[1]) contacts instead of \(Balance.contactBookSizes[0])."
+        case .bigContactBook: "Room for \(Balance.contactBookSizes[2]) contacts."
         }
     }
 
@@ -62,18 +72,30 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .surfaceLamp: "lamp.desk"
         case .studioLights: "lightbulb"
         case .cameraKit: "video"
+        case .salesAnalytics: "chart.line.uptrend.xyaxis"
+        case .contactBook: "person.crop.rectangle.stack"
+        case .bigContactBook: "books.vertical"
         }
     }
 
     /// An upgrade that must come first.
-    var requires: Upgrade? { self == .cameraKit ? .studioLights : nil }
+    var requires: Upgrade? {
+        switch self {
+        case .cameraKit: .studioLights
+        case .bigContactBook: .contactBook
+        default: nil
+        }
+    }
 }
 
 extension Balance {
     static let upgradeCosts: [Upgrade: Double] = [
         .evReadout: 120, .betterCar: 900, .dropDiscord: 60, .restockBot: 150, .authTool: 350,
         .cornerLoupe: 60, .edgeLight: 90, .surfaceLamp: 140, .studioLights: 250, .cameraKit: 600,
+        .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600,
     ]
+    /// Contact book room: no upgrade, the contact book, and the big contact book.
+    static let contactBookSizes = [4, 8, 15]
     static let restockBotBonus = 0.25
     static let betterCarStopHours = 30.0 / 60.0
     static let betterCarFarSaleHours = 6.0

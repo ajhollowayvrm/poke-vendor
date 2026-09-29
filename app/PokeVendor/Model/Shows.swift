@@ -194,6 +194,7 @@ extension GameStore {
 
     /// `venue` is the name of the place: a show, a meet, or a sale.
     func sellAtShow(_ item: ShowItem, price: Double, at venue: String) {
+        addReceipt(name: item.name, venue: venue, price: price, net: price, paid: paidFor(item.id))
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -1010,7 +1011,7 @@ final class ShowSession {
         }
         let interest: Interest? = v.item.map { .set($0.setSlug) } ?? v.goods.flatMap(goodsSlug).map { .set($0) }
         if store.promote(name: v.name, kind: kind, interest: interest, points: points) != nil {
-            note = "\(v.name) gave you their number."
+            note = "\(v.name) wants to keep in touch. You can add them to your contact book."
         }
     }
 

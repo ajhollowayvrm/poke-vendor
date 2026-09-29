@@ -120,6 +120,11 @@ struct Contact: Codable, Identifiable, Hashable {
     var rewardedLevel = 0
     /// For a game shop.
     var shop: LocalStore?
+    /// True when the player put them in the contact book. Only a contact in the book saves things, holds things, and
+    /// offers to bring things to a show. Nil in a save from before the contact book.
+    var registered: Bool?
+
+    var inBook: Bool { registered == true }
 }
 
 /// Something a contact set aside for the player.
@@ -229,6 +234,41 @@ extension GameStore {
         }
     }
 
+    // MARK: - Contact book
+
+    /// How many contacts fit in the book, from the contact book upgrades.
+    var contactBookSize: Int {
+        Balance.contactBookSizes[hasUpgrade(.bigContactBook) ? 2 : hasUpgrade(.contactBook) ? 1 : 0]
+    }
+
+    var bookContacts: [Contact] { data.contacts.filter(\.inBook) }
+
+    /// People the player dealt with who are not in the book yet. A stranger with no deal and no points stays hidden.
+    var knownContacts: [Contact] {
+        data.contacts.filter { !$0.inBook && ($0.deals > 0 || points(of: $0) > 0) }
+    }
+
+    /// A person gives their number at Familiar and up, and only when the book has room.
+    func canRegister(_ c: Contact) -> Bool {
+        !c.inBook && StandingLevel(points: points(of: c)).rank >= Balance.registerLevel.rank && bookContacts.count < contactBookSize
+    }
+
+    func register(_ id: String) {
+        guard let i = data.contacts.firstIndex(where: { $0.id == id }), canRegister(data.contacts[i]) else { return }
+        data.contacts[i].registered = true
+        log("Added \(data.contacts[i].name) to your contact book.")
+        save()
+    }
+
+    /// Takes a contact out of the book. The relationship stays. Their holds and offers go away.
+    func unregister(_ id: String) {
+        guard let i = data.contacts.firstIndex(where: { $0.id == id }) else { return }
+        data.contacts[i].registered = false
+        data.saved.removeAll { $0.contactID == id }
+        log("Took \(data.contacts[i].name) out of your contact book.")
+        save()
+    }
+
     func contact(_ id: String?) -> Contact? {
         guard let id else { return nil }
         return data.contacts.first { $0.id == id }
@@ -303,7 +343,7 @@ extension GameStore {
         let id = "met:\(UUID().uuidString.prefix(8))"
         data.contacts.append(Contact(id: id, name: name, kind: kind, points: points, interests: interest.map { [$0] } ?? [],
                                      atLocalShows: true, atRegionalShows: true))
-        log("\(name) gave you their number.")
+        log("\(name) wants to keep in touch. Add them to your contact book in Contacts.")
         save()
         return id
     }
@@ -446,12 +486,14 @@ extension GameStore {
         return true
     }
 
-    /// Test tool: every contact goes to Regular (40 points), and the game shops save something now.
+    /// Test tool: every contact goes to Regular (40 points), the game shops go in the contact book, and they save
+    /// something now.
     func testMakeRegular() {
         seedContacts()
         for c in data.contacts where points(of: c) < 40 { addPoints(c.id, 40 - points(of: c)) }
         for shop in LocalStore.allCases where shop.isGameShop {
             let id = shopContactID(shop)
+            register(id)
             if let c = contact(id), data.saved.filter({ $0.contactID == id }).isEmpty, let (goods, market) = findForPlayer(c) {
                 data.saved.append(SavedItem(contactID: id, goods: goods, price: Market.retail(market * 0.9), market: market,
                                             untilDay: data.day + 3, showID: nil, accepted: true))
@@ -484,7 +526,7 @@ extension GameStore {
         // Game shops save things for regulars.
         for shop in LocalStore.allCases where shop.isGameShop {
             let id = shopContactID(shop)
-            guard let c = contact(id) else { continue }
+            guard let c = contact(id), c.inBook else { continue }
             let lvl = level(id)
             let now = data.saved.filter { $0.contactID == id }.count
             guard now < lvl.savedCount, Double.random(in: 0..<1) < 0.25, let (goods, market) = findForPlayer(c) else { continue }
@@ -495,7 +537,7 @@ extension GameStore {
         }
         // Show vendors at Regular and up offer to bring something, 3 days before a show.
         for show in data.shows where show.startDay - data.day == 3 {
-            for c in attendingVendors(show) where level(c.id).rank >= StandingLevel.regular.rank {
+            for c in attendingVendors(show) where c.inBook && level(c.id).rank >= StandingLevel.regular.rank {
                 let lvl = level(c.id)
                 guard data.saved.filter({ $0.contactID == c.id && $0.showID == show.id }).count < lvl.savedCount,
                       let (goods, market) = findForPlayer(c) else { continue }
@@ -562,6 +604,8 @@ extension SavedItem {
 
 extension Balance {
     static let maxContacts = 60
+    /// The lowest standing at which a person gives their number for the contact book.
+    static let registerLevel = StandingLevel.familiar
     static let wantListSize = 10
     static let scamFoundChance = 0.35
     static let scamReputationCost = 30

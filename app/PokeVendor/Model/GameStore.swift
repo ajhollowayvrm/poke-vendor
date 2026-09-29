@@ -147,6 +147,8 @@ struct DayReport: Identifiable {
 final class GameStore {
     var data: GameData
     var report: DayReport?
+    /// Sales that the receipt screen has not shown yet.
+    var receipts: [SaleReceipt] = []
     private let url: URL
 
     init() {
@@ -697,6 +699,8 @@ final class GameStore {
         data.raw.removeAll { $0.id == id }
         data.slabs.removeAll { $0.id == id }
         addLedger(price, .sale, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(store.rawValue) buylist")
+        addReceipt(name: card.print.name + (card.grade.map { " " + $0.label } ?? ""), venue: "\(store.rawValue) buylist",
+                   price: price, net: price, paid: card.paid)
         recordDeal(shopContactID(store), what: "Sold them \(card.print.name)", price: price, market: card.realMarket, slug: card.setSlug)
         if let fake = card.fake {
             recordBadSale(item: card.print.name, channel: "\(store.rawValue) buylist", price: price, fake: fake, known: card.isKnownFake,
@@ -913,7 +917,7 @@ final class GameStore {
                 }
             case .listed(let listing):
                 if let sale = rollSale(listing, market: realMarket(of: item), sealed: true) {
-                    lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true,
+                    lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid,
                                               fake: item.fake, known: item.isKnownFake))
                     continue
                 } else if listingExpired(listing) {
@@ -999,7 +1003,7 @@ final class GameStore {
                 }
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
-                    lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false,
+                    lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false, paid: card.paid,
                                               fake: card.fake, known: card.isKnownFake))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
@@ -1018,7 +1022,7 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
-                                              price: sale, sealed: false, fake: card.fake, known: card.isKnownFake))
+                                              price: sale, sealed: false, paid: card.paid, fake: card.fake, known: card.isKnownFake))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -1098,8 +1102,10 @@ final class GameStore {
     }
 
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
-    private func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, fake: FakeTier? = nil, known: Bool = false) -> String {
-        var line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured)
+    private func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
+                              known: Bool = false) -> String {
+        var line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
+                                   paid: paid)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
@@ -1109,6 +1115,10 @@ final class GameStore {
                 line += " The package got lost, and the insurance paid you back."
             } else {
                 addLedger(-price, .refund, "Lost package · \(name)")
+                if let last = receipts.popLast() {
+                    addReceipt(name: last.name + " (lost in the mail)", venue: last.venue, price: last.price, net: last.net - price,
+                               paid: last.paid)
+                }
                 line += " The package got lost with no insurance, so the buyer got a refund of \(money(price))."
             }
         }
@@ -1116,10 +1126,12 @@ final class GameStore {
     }
 
     /// Takes the money for a sale on a channel, less its fees and shipping. Returns the line for the report.
-    func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool) -> String {
+    /// `paid` is what the player paid for the item, for the receipt. Nil for a pulled card.
+    func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?) -> String {
         let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
+        addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid)
         let after = channel.ships ? "after fees and shipping" : "in cash"
         return "Sold \(name) on \(channel.rawValue) for \(money(price)). You got \(money(net)) \(after)."
     }

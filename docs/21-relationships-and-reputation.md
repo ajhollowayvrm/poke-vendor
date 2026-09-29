@@ -60,6 +60,25 @@ to meets). A show still fills its other tables and visitors with
 strangers. A stranger who deals with the player well enough can become a
 contact.
 
+## The contact book
+
+The player starts with an **empty contact book**. The roster exists in
+the world, but the player must build each relationship first.
+
+- A person shows in **People you know** after one deal, or when the
+  relationship is above 0. A stranger with no deal stays hidden.
+- At **Familiar** and up, the person gives their number. The player
+  taps **Add to the contact book** to register them.
+- Only a contact **in the book** saves things for the player, holds
+  things, and offers to bring things to a show. Prices and levels work
+  for everyone the player knows, in the book or not.
+- The book has room for **4** contacts. The **Contact book** upgrade
+  gives room for 8. The **Big contact book** upgrade gives room for 15
+  (see [09-upgrades.md](09-upgrades.md#contacts-and-selling)).
+- The player can remove a contact from the book to make room. The
+  relationship stays. The contact's holds and offers go away.
+- A save from before the contact book starts with an empty book.
+
 ## Relationship levels
 
 The game shop levels stay as they are, and every contact uses them.

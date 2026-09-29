@@ -140,6 +140,7 @@ extension GameStore {
         guard let itemID = m.itemID else { return nil }
         var fake: FakeTier?
         var known = false
+        let paid = paidFor(itemID)
         if let card = card(itemID) {
             fake = card.fake
             known = card.isKnownFake
@@ -153,7 +154,7 @@ extension GameStore {
         data.raw.removeAll { $0.id == itemID }
         data.slabs.removeAll { $0.id == itemID }
         data.sealed.removeAll { $0.id == itemID }
-        let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false)
+        let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false, paid: paid)
         if let fake {
             recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known, refunds: false)
         }

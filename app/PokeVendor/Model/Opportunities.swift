@@ -224,6 +224,7 @@ extension GameStore {
             data.raw.removeAll { $0.id == cardID }
             data.slabs.removeAll { $0.id == cardID }
             addLedger(o.price, .sale, "\(card.print.name) · private buyer")
+            addReceipt(name: card.print.name, venue: "A private buyer", price: o.price, net: o.price, paid: card.paid)
             addReputation(2)
             if let fake = card.fake {
                 recordBadSale(item: card.print.name, channel: "a private buyer", price: o.price, fake: fake, known: card.isKnownFake,

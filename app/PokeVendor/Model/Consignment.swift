@@ -53,6 +53,7 @@ extension GameStore {
         if c.sellDay == data.day {
             let net = (c.price * (1 - c.cut) * 100).rounded() / 100
             addLedger(net, .sale, "\(name) · consignment at \(c.shop.rawValue) · sold \(money(c.price))")
+            addReceipt(name: name, venue: "\(c.shop.rawValue) consignment", price: c.price, net: net, paid: card.paid)
             addPoints(shopContactID(c.shop), Balance.consignStandingPoints)
             if let fake = card.fake {
                 recordBadSale(item: name, channel: "\(c.shop.rawValue) consignment", price: c.price, fake: fake, known: card.isKnownFake,
