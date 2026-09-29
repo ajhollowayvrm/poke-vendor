@@ -6449,7 +6449,7 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "dragon-vault",
+    "slug": "next-destinies",
     "packs": 1
    },
    {
@@ -6541,7 +6541,7 @@
   "market": 1899.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/99153_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": false
  },
  {
   "id": "277329",
@@ -8750,52 +8750,12 @@
   ],
   "promos": [
    {
-    "name": "Cottonee",
-    "num": "MEP 018",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.28,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664051_in_800x800.jpg"
-   },
-   {
-    "name": "Whimsicott",
-    "num": "MEP 019",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.29,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664054_in_800x800.jpg"
-   },
-   {
-    "name": "Sneasel",
-    "num": "MEP 020",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.37,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664055_in_800x800.jpg"
-   },
-   {
-    "name": "Weavile",
-    "num": "MEP 021",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.35,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664063_in_800x800.jpg"
-   },
-   {
-    "name": "Applin",
-    "num": "016/182",
+    "name": "Arven's Skwovet",
+    "num": "158/182",
     "setName": "Destined Rivals",
     "rarity": "Common",
     "variant": "Normal",
-    "market": 0.21,
+    "market": 0.04,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
@@ -8813,41 +8773,15 @@
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632842_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632960_in_800x800.jpg"
    },
    {
-    "name": "Dipplin",
-    "num": "017/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.1,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632843_in_800x800.jpg"
-   },
-   {
-    "name": "Hydrapple",
-    "num": "018/182",
+    "name": "Arven's Greedent",
+    "num": "159/182",
     "setName": "Destined Rivals",
     "rarity": "Rare",
     "variant": "Holo",
-    "market": 0.19,
+    "market": 0.11,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
@@ -8865,85 +8799,7 @@
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632844_in_800x800.jpg"
-   },
-   {
-    "name": "Torchic",
-    "num": "040/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.23,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632859_in_800x800.jpg"
-   },
-   {
-    "name": "Combusken",
-    "num": "041/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.27,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632860_in_800x800.jpg"
-   },
-   {
-    "name": "Blaziken",
-    "num": "042/182",
-    "setName": "Destined Rivals",
-    "rarity": "Rare",
-    "variant": "Holo",
-    "market": 0.23,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632861_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632961_in_800x800.jpg"
    }
   ],
   "pickOnePromo": false,
@@ -9012,52 +8868,12 @@
   ],
   "promos": [
    {
-    "name": "Cottonee",
-    "num": "MEP 018",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.28,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664051_in_800x800.jpg"
-   },
-   {
-    "name": "Whimsicott",
-    "num": "MEP 019",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.29,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664054_in_800x800.jpg"
-   },
-   {
-    "name": "Sneasel",
-    "num": "MEP 020",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.37,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664055_in_800x800.jpg"
-   },
-   {
-    "name": "Weavile",
-    "num": "MEP 021",
-    "setName": "Mega Evolution Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 0.35,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/664063_in_800x800.jpg"
-   },
-   {
-    "name": "Applin",
-    "num": "016/182",
+    "name": "Ethan's Slugma",
+    "num": "035/182",
     "setName": "Destined Rivals",
     "rarity": "Common",
     "variant": "Normal",
-    "market": 0.21,
+    "market": 0.07,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
@@ -9075,41 +8891,15 @@
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632842_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/630810_in_800x800.jpg"
    },
    {
-    "name": "Dipplin",
-    "num": "017/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.1,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632843_in_800x800.jpg"
-   },
-   {
-    "name": "Hydrapple",
-    "num": "018/182",
+    "name": "Ethan's Magcargo",
+    "num": "036/182",
     "setName": "Destined Rivals",
     "rarity": "Rare",
     "variant": "Holo",
-    "market": 0.19,
+    "market": 0.15,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
@@ -9127,85 +8917,7 @@
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632844_in_800x800.jpg"
-   },
-   {
-    "name": "Torchic",
-    "num": "040/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.23,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632859_in_800x800.jpg"
-   },
-   {
-    "name": "Combusken",
-    "num": "041/182",
-    "setName": "Destined Rivals",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.27,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632860_in_800x800.jpg"
-   },
-   {
-    "name": "Blaziken",
-    "num": "042/182",
-    "setName": "Destined Rivals",
-    "rarity": "Rare",
-    "variant": "Holo",
-    "market": 0.23,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/632861_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/630811_in_800x800.jpg"
    }
   ],
   "pickOnePromo": false,
@@ -13483,160 +13195,82 @@
   ],
   "promos": [
    {
-    "name": "Moltres",
-    "num": "14/99",
-    "setName": "Next Destinies",
+    "name": "Dragonite",
+    "num": "5/20",
+    "setName": "Dragon Vault",
     "rarity": "Rare",
     "variant": "Holo",
-    "market": 3.82,
+    "market": 33.71,
     "graded": {
-     "cgc10": null,
+     "cgc10": 515,
      "cgc9_5": null,
-     "cgc9": 35,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": 538.5,
-     "psa9": 74,
-     "psa8": 49.99,
-     "psa7": 7.27,
-     "psa6": 20.25,
+     "cgc9": 55.45,
+     "cgc8_5": 44,
+     "cgc8": 33,
+     "psa10": 6500,
+     "psa9": 400,
+     "psa8": 142.66,
+     "psa7": 68.99,
+     "psa6": 23.5,
      "bgs10": null,
      "bgs9_5": null,
      "bgs9": null,
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/87564_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84915_in_800x800.jpg"
    },
    {
-    "name": "Articuno",
-    "num": "27/99",
-    "setName": "Next Destinies",
+    "name": "Garchomp",
+    "num": "91/124",
+    "setName": "Dragons Exalted",
     "rarity": "Rare",
-    "variant": "Holo",
-    "market": 11.6,
+    "variant": "Normal",
+    "market": 1.72,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
-     "cgc9": 56,
+     "cgc9": null,
      "cgc8_5": null,
      "cgc8": null,
-     "psa10": 599.99,
-     "psa9": 111.75,
-     "psa8": 20,
-     "psa7": 29.74,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
      "psa6": null,
      "bgs10": null,
      "bgs9_5": null,
      "bgs9": null,
      "bgs8_5": null,
-     "bgs8": 16.5
+     "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/83652_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/85625_in_800x800.jpg"
    },
    {
-    "name": "Zapdos",
-    "num": "41/99",
-    "setName": "Next Destinies",
+    "name": "Hydreigon",
+    "num": "98/124",
+    "setName": "Dragons Exalted",
     "rarity": "Rare",
-    "variant": "Holo",
-    "market": 8.72,
+    "variant": "Normal",
+    "market": 0.83,
     "graded": {
      "cgc10": null,
      "cgc9_5": null,
-     "cgc9": 49.99,
+     "cgc9": null,
      "cgc8_5": null,
      "cgc8": null,
-     "psa10": 606.88,
-     "psa9": 49,
-     "psa8": 33.99,
-     "psa7": 12.5,
-     "psa6": 35,
+     "psa10": null,
+     "psa9": null,
+     "psa8": null,
+     "psa7": null,
+     "psa6": null,
      "bgs10": null,
      "bgs9_5": null,
      "bgs9": null,
      "bgs8_5": null,
      "bgs8": null
     },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90721_in_800x800.jpg"
-   },
-   {
-    "name": "Venusaur",
-    "num": "3/108",
-    "setName": "Dark Explorers",
-    "rarity": "Rare",
-    "variant": "Holo",
-    "market": 15.09,
-    "graded": {
-     "cgc10": 150,
-     "cgc9_5": null,
-     "cgc9": 20,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": 1675,
-     "psa9": 51.71,
-     "psa8": 21.5,
-     "psa7": 20,
-     "psa6": 25,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90322_in_800x800.jpg"
-   },
-   {
-    "name": "Charizard",
-    "num": "20/149",
-    "setName": "Boundaries Crossed",
-    "rarity": "Rare",
-    "variant": "Holo",
-    "market": 53.3,
-    "graded": {
-     "cgc10": 2500,
-     "cgc9_5": null,
-     "cgc9": 187.49,
-     "cgc8_5": 59.99,
-     "cgc8": 79.99,
-     "psa10": 4149.64,
-     "psa9": 600,
-     "psa8": 220.16,
-     "psa7": 162.5,
-     "psa6": 42.5,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": 96,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84192_in_800x800.jpg"
-   },
-   {
-    "name": "Blastoise",
-    "num": "16/101",
-    "setName": "Plasma Blast",
-    "rarity": "Rare",
-    "variant": "Holo",
-    "market": 24.54,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": 148.75,
-     "cgc8_5": 25.49,
-     "cgc8": null,
-     "psa10": 865,
-     "psa9": 116.96,
-     "psa8": 47,
-     "psa7": 35,
-     "psa6": 16,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/83898_in_800x800.jpg"
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/86242_in_800x800.jpg"
    }
   ],
   "pickOnePromo": false,
@@ -54410,38 +54044,7 @@
     "packs": 2
    }
   ],
-  "promos": [
-   {
-    "name": "Rowlet",
-    "num": "SM01",
-    "setName": "SM Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 2.78,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/126031_in_800x800.jpg"
-   },
-   {
-    "name": "Litten",
-    "num": "SM02",
-    "setName": "SM Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 2.18,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/126030_in_800x800.jpg"
-   },
-   {
-    "name": "Popplio",
-    "num": "SM03",
-    "setName": "SM Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 2.11,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/126029_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 23.91,
   "msrp": null,
@@ -54464,38 +54067,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Grookey",
-    "num": "SWSH001",
-    "setName": "SWSH Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 2.57,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/200300_in_800x800.jpg"
-   },
-   {
-    "name": "Scorbunny",
-    "num": "SWSH002",
-    "setName": "SWSH Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 4.0,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/200301_in_800x800.jpg"
-   },
-   {
-    "name": "Sobble",
-    "num": "SWSH003",
-    "setName": "SWSH Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 4.3,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/200302_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 30.48,
   "msrp": null,
@@ -54518,86 +54090,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Treecko",
-    "num": "76/109",
-    "setName": "EX Ruby & Sapphire",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 2.53,
-    "graded": {
-     "cgc10": 59.99,
-     "cgc9_5": 34.99,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": 500,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": 33,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90033_in_800x800.jpg"
-   },
-   {
-    "name": "Torchic",
-    "num": "74/109",
-    "setName": "EX Ruby & Sapphire",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 2.03,
-    "graded": {
-     "cgc10": 121.24,
-     "cgc9_5": 20.24,
-     "cgc9": 24.99,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": 51,
-     "psa8": 22.62,
-     "psa7": 31.95,
-     "psa6": 12.07,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/89950_in_800x800.jpg"
-   },
-   {
-    "name": "Mudkip",
-    "num": "59/109",
-    "setName": "EX Ruby & Sapphire",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 8.1,
-    "graded": {
-     "cgc10": 77.61,
-     "cgc9_5": 59.97,
-     "cgc9": 34.12,
-     "cgc8_5": 39.97,
-     "cgc8": null,
-     "psa10": 1500,
-     "psa9": 82.5,
-     "psa8": 67.14,
-     "psa7": 18,
-     "psa6": 15.58,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/87605_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 24.34,
   "msrp": null,
@@ -54620,86 +54113,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Chikorita",
-    "num": "54/111",
-    "setName": "Neo Genesis",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 1.99,
-    "graded": {
-     "cgc10": 54.99,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": 158.17,
-     "psa9": 20.23,
-     "psa8": null,
-     "psa7": 14,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84273_in_800x800.jpg"
-   },
-   {
-    "name": "Cyndaquil",
-    "num": "57/111",
-    "setName": "Neo Genesis",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 2.7,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": 15,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": 32,
-     "psa8": null,
-     "psa7": null,
-     "psa6": 11.05,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84544_in_800x800.jpg"
-   },
-   {
-    "name": "Totodile",
-    "num": "81/111",
-    "setName": "Neo Genesis",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 2.07,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": 45.15,
-     "psa8": 38.25,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/89992_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 55.5,
   "msrp": null,
@@ -54718,38 +54132,7 @@
     "packs": 2
    }
   ],
-  "promos": [
-   {
-    "name": "Chespin",
-    "num": "XY01",
-    "setName": "XY Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 5.3,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84270_in_800x800.jpg"
-   },
-   {
-    "name": "Fennekin",
-    "num": "XY02",
-    "setName": "XY Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 10.06,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/85410_in_800x800.jpg"
-   },
-   {
-    "name": "Froakie",
-    "num": "XY03",
-    "setName": "XY Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 17.33,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/85568_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 25.92,
   "msrp": null,
@@ -54772,86 +54155,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Bulbasaur",
-    "num": "44/102",
-    "setName": "Base Set",
-    "rarity": "Common",
-    "variant": "Normal (Unlimited)",
-    "market": 3.73,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": 52.5,
-     "cgc9": null,
-     "cgc8_5": 21.99,
-     "cgc8": null,
-     "psa10": 360,
-     "psa9": 41,
-     "psa8": 33,
-     "psa7": 29.99,
-     "psa6": 10.5,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/42387_in_800x800.jpg"
-   },
-   {
-    "name": "Charmander",
-    "num": "46/102",
-    "setName": "Base Set",
-    "rarity": "Common",
-    "variant": "Normal (Unlimited)",
-    "market": 3.82,
-    "graded": {
-     "cgc10": 68,
-     "cgc9_5": null,
-     "cgc9": 31.5,
-     "cgc8_5": null,
-     "cgc8": 26,
-     "psa10": 335,
-     "psa9": 41.33,
-     "psa8": 36,
-     "psa7": 16.06,
-     "psa6": 25,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": 50,
-     "bgs8_5": null,
-     "bgs8": 6
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/42389_in_800x800.jpg"
-   },
-   {
-    "name": "Squirtle",
-    "num": "63/102",
-    "setName": "Base Set",
-    "rarity": "Common",
-    "variant": "Normal (Unlimited)",
-    "market": 6.46,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": 18.75,
-     "cgc8_5": 18.74,
-     "cgc8": 20.39,
-     "psa10": 344.34,
-     "psa9": 69,
-     "psa8": 35.17,
-     "psa7": 28.38,
-     "psa6": 25,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": 92,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/42408_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 67.86,
   "msrp": null,
@@ -54874,86 +54178,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Turtwig",
-    "num": "103/130",
-    "setName": "Diamond & Pearl",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.52,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90071_in_800x800.jpg"
-   },
-   {
-    "name": "Chimchar",
-    "num": "76/130",
-    "setName": "Diamond & Pearl",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 0.57,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": null,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84282_in_800x800.jpg"
-   },
-   {
-    "name": "Piplup",
-    "num": "93/130",
-    "setName": "Diamond & Pearl",
-    "rarity": "Common",
-    "variant": "Normal",
-    "market": 1.86,
-    "graded": {
-     "cgc10": null,
-     "cgc9_5": null,
-     "cgc9": null,
-     "cgc8_5": null,
-     "cgc8": null,
-     "psa10": null,
-     "psa9": null,
-     "psa8": null,
-     "psa7": 1000,
-     "psa6": null,
-     "bgs10": null,
-     "bgs9_5": null,
-     "bgs9": null,
-     "bgs8_5": null,
-     "bgs8": null
-    },
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/88142_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 23.29,
   "msrp": null,
@@ -54976,38 +54201,7 @@
     "packs": 1
    }
   ],
-  "promos": [
-   {
-    "name": "Snivy",
-    "num": "BW01",
-    "setName": "BW Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 2.87,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/89377_in_800x800.jpg"
-   },
-   {
-    "name": "Tepig",
-    "num": "BW02",
-    "setName": "BW Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 3.34,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/89881_in_800x800.jpg"
-   },
-   {
-    "name": "Oshawott",
-    "num": "BW03",
-    "setName": "BW Black Star Promos",
-    "rarity": "Promo",
-    "variant": "Holo",
-    "market": 11.7,
-    "graded": {},
-    "image": "https://tcgplayer-cdn.tcgplayer.com/product/87892_in_800x800.jpg"
-   }
-  ],
+  "promos": [],
   "pickOnePromo": false,
   "market": 22.65,
   "msrp": null,
