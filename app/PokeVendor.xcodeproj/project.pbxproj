@@ -47,6 +47,7 @@
 		33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */ = {isa = PBXBuildFile; fileRef = 3300530D0D241B426A6EF827 /* supreme-victors.json */; };
 		351DC793C3969007906440D0 /* neo-genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */; };
 		36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */ = {isa = PBXBuildFile; fileRef = F608F1C0EB11E6D8282E4752 /* 151.json */; };
+		3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4C3DE0AE86F620B2D63227E /* Assets.xcassets */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
 		3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */ = {isa = PBXBuildFile; fileRef = 917BD5729F252442572920DA /* white-flare.json */; };
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
@@ -370,6 +371,7 @@
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20845FB5280BA69E0BC46DC /* ShowDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowDayView.swift; sourceTree = "<group>"; };
 		E389E8E864F1F2802B2B9E76 /* surging-sparks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "surging-sparks.json"; sourceTree = "<group>"; };
+		E4C3DE0AE86F620B2D63227E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E6189A16D1D0CA7A824D0A89 /* noble-victories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "noble-victories.json"; sourceTree = "<group>"; };
 		E7E9769BEE2452CE9114E599 /* breakpoint.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = breakpoint.json; sourceTree = "<group>"; };
 		E8745504DED211BC08CC284A /* steam-siege.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "steam-siege.json"; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 		DF36B80999FF4D50908317AF /* PokeVendor */ = {
 			isa = PBXGroup;
 			children = (
+				E4C3DE0AE86F620B2D63227E /* Assets.xcassets */,
 				9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */,
 				42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */,
 				A485DE642FFF23967DE56AC5 /* App */,
@@ -766,6 +769,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */,
+				3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */,
 				C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */,
 				A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */,
 				59E4448191D4B6B1C30434C9 /* arceus.json in Resources */,

@@ -27,4 +27,5 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.ajholloway.pokevendor
         DEVELOPMENT_TEAM: 2BY68WLT6R
         CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"
