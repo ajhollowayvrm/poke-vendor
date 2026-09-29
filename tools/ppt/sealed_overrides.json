@@ -187,5 +187,21 @@
   "note": "The parser did not read 'The booster packs came from XY and Flashfire'.", "sources": ["https://bulbapedia.bulbagarden.net/wiki/XY_TCG_Series_merchandise#XY_Knock_Out_Collection"]},
  "97781": {"name": "XY Knock Out Collection [Dragons]", "packs": 2, "mix": {"xy": 1, "flashfire": 1},
   "other": "1 coin",
-  "note": "The parser did not read 'The booster packs came from XY and Flashfire'.", "sources": ["https://bulbapedia.bulbagarden.net/wiki/XY_TCG_Series_merchandise#XY_Knock_Out_Collection"]}
+  "note": "The parser did not read 'The booster packs came from XY and Flashfire'.", "sources": ["https://bulbapedia.bulbagarden.net/wiki/XY_TCG_Series_merchandise#XY_Knock_Out_Collection"]},
+ "285784": {"name": "Silver Tempest Premium Checklane Blister [Gallade]", "promos": ["Ralts (Astral Radiance 60)", "Kirlia (Astral Radiance 61)", "Gallade (Astral Radiance 62)"],
+  "note": "The description says '3 cards with an evolution line'. The parser gave the promo list of the whole blister wave.", "sources": ["https://www.tcgplayer.com/product/285784"]},
+ "285783": {"name": "Silver Tempest Premium Checklane Blister [Magnezone]", "promos": ["Magnemite (Astral Radiance 105)", "Magneton (Astral Radiance 106)", "Magnezone (Astral Radiance 107)"],
+  "note": "The description says '3 cards with an evolution line'. The parser gave the promo list of the whole blister wave.", "sources": ["https://www.tcgplayer.com/product/285783"]},
+ "486327": {"name": "Silver Tempest Premium Checklane Blister [Hisuian Lilligant]", "promos": ["Petilil (Astral Radiance 15)", "Hisuian Lilligant (Astral Radiance 16)"],
+  "note": "The description says '2 cards with an evolution line'. The parser gave the promo list of the whole blister wave.", "sources": ["https://www.tcgplayer.com/product/486327"]},
+ "486325": {"name": "Silver Tempest Premium Checklane Blister [Hisuian Sneasler]", "promos": ["Hisuian Sneasel (Astral Radiance 92)", "Hisuian Sneasler (Astral Radiance 93)"],
+  "note": "The description says '2 cards with an evolution line'. The parser gave the promo list of the whole blister wave.", "sources": ["https://www.tcgplayer.com/product/486325"]},
+ "528079": {"name": "Paldean Fates Premium Collection [Meowscarada ex]", "promos": ["Sprigatito (SVP Promo 76)", "Floragato (SVP Promo 77)", "Meowscarada ex (SVP Promo 78)"],
+  "note": "The description says the Basic and Stage 1 Pok\u00e9mon come as promos with the shiny ex. The parser matched only the ex.", "sources": ["https://www.tcgplayer.com/product/528079"]},
+ "528080": {"name": "Paldean Fates Premium Collection [Skeledirge ex]", "promos": ["Fuecoco (SVP Promo 79)", "Crocalor (SVP Promo 80)", "Skeledirge ex (SVP Promo 81)"],
+  "note": "The description says the Basic and Stage 1 Pok\u00e9mon come as promos with the shiny ex. The parser matched only the ex.", "sources": ["https://www.tcgplayer.com/product/528080"]},
+ "528082": {"name": "Paldean Fates Premium Collection [Quaquaval ex]", "promos": ["Quaxly (SVP Promo 82)", "Quaxwell (SVP Promo 83)", "Quaquaval ex (SVP Promo 84)"],
+  "note": "The description says the Basic and Stage 1 Pok\u00e9mon come as promos with the shiny ex. The parser matched only the ex.", "sources": ["https://www.tcgplayer.com/product/528082"]},
+ "528324": {"name": "Paldean Fates Premium Collection [Set of 3]", "promos": ["Sprigatito (SVP Promo 76)", "Floragato (SVP Promo 77)", "Meowscarada ex (SVP Promo 78)", "Fuecoco (SVP Promo 79)", "Crocalor (SVP Promo 80)", "Skeledirge ex (SVP Promo 81)", "Quaxly (SVP Promo 82)", "Quaxwell (SVP Promo 83)", "Quaquaval ex (SVP Promo 84)"],
+  "note": "The description says the Basic and Stage 1 Pok\u00e9mon come as promos with the shiny ex. The parser matched only the ex. The set of 3 holds all three lines.", "sources": ["https://www.tcgplayer.com/product/528324"]}
 }

@@ -7,7 +7,7 @@ Run tools/export/rip_set.py for each set first, and tools/ppt/sealed_contents.py
 Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game sells, with
 - the pack mix by set (only sets that the app has, see SETS);
 - the promo cards, with the market price, the graded prices, and the image. An SVP promo gets its price from
-  TCGCSV group 22872 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
+  TCGCSV group 22872, and a SWSH promo from group 2545 (tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
   Surprise Box promo has a Prismatic Evolutions stamp, so it gets the stamped print from TCGCSV group 2374
   (Miscellaneous Cards & Products), with its own price and image, and no graded prices;
 - the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none), an estimated MSRP, and the image;
@@ -24,11 +24,13 @@ ROOT = os.path.join(HERE, "..", "..")
 APP_SETS = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "catalog.json")
 CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
+OVERRIDES = os.path.join(ROOT, "tools", "ppt", "sealed_overrides.json")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 TCGCSV = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv")
 TCGDEX_MAP = os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")
 TCGDEX_SETS = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgdex", "sets")
 SVP_GROUP = "22872"
+SWSH_GROUP = "2545"
 MISC_GROUP = "2374"
 STAMP = "Prismatic Evolutions Stamp"
 HOME = "prismatic-evolutions"
@@ -59,9 +61,10 @@ def sealed_prices():
     return out
 
 
-def svp_promos():
-    products = json.load(open(os.path.join(TCGCSV, f"{SVP_GROUP}-products.json")))
-    prices = json.load(open(os.path.join(TCGCSV, f"{SVP_GROUP}-prices.json")))
+def svp_promos(group=SVP_GROUP):
+    """The Black Star promos of one TCGCSV group, by number: SVP (22872) or SWSH (2545)."""
+    products = json.load(open(os.path.join(TCGCSV, f"{group}-products.json")))
+    prices = json.load(open(os.path.join(TCGCSV, f"{group}-prices.json")))
     products = products.get("results", products) if isinstance(products, dict) else products
     prices = prices.get("results", prices) if isinstance(prices, dict) else prices
     price = {p["productId"]: p.get("marketPrice") for p in prices}
@@ -198,7 +201,7 @@ def guess_mix(it, sets, releases):
     return out
 
 
-def resolve_promo(text, sets, svp, stamped=None):
+def resolve_promo(text, sets, svp, stamped=None, swsh=None):
     m = re.match(r"^(.*) \((.+) (\d+)\)$", text)
     if not m:
         return None
@@ -208,6 +211,12 @@ def resolve_promo(text, sets, svp, stamped=None):
         if not p or p["market"] is None:
             return None
         return {"name": name, "num": f"SVP {num:03d}", "setName": "SVP Black Star Promos", "rarity": "Promo",
+                "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
+    if source == "SWSH Promo":
+        p = (swsh or {}).get(num)
+        if not p or p["market"] is None:
+            return None
+        return {"name": name, "num": f"SWSH{num:03d}", "setName": "SWSH Black Star Promos", "rarity": "Promo",
                 "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
     for s in sets.values():
         if s["name"] != source:
@@ -228,15 +237,45 @@ def resolve_promo(text, sets, svp, stamped=None):
     return None
 
 
+def named_promos(name, raw_promos):
+    """The promos that match a variant name, for example "[Basculin]" matches "Hisuian Basculin". Nil when the name
+    has no variant in brackets or nothing matches."""
+    bracket = re.search(r"\[([^\]]+)\]", name)
+    if not bracket:
+        return None
+    want = bracket.group(1)
+    named = [t for t in raw_promos if t.split(" (")[0] == want or t.split(" (")[0].endswith(" " + want)]
+    return named or None
+
+
+def base_name(name):
+    """The product name without its variant: "Silver Tempest Single Pack Blister [Basculin]" gives
+    "Silver Tempest Single Pack Blister"."""
+    return re.sub(r"\s*\(International Version\)|\s*\[[^\]]*\]", "", name).strip()
+
+
 def main():
     sets = load_sets()
     prices = sealed_prices()
     svp = svp_promos()
+    swsh = svp_promos(SWSH_GROUP)
     stamped = stamped_promos()
     releases = set_releases(sets)
     out, skipped = [], []
     guessed = 0
-    for it in json.load(open(CONTENTS)):
+    contents = json.load(open(CONTENTS))
+    # A researched promo list (tools/ppt/sealed_overrides.json) is exact, so the name filter below does not touch it.
+    researched = {k for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_") and "promos" in v}
+    # A "[Set of N]" product holds one of each variant, so it gets the promos that its variants match.
+    variant_promos = {}
+    for it in contents:
+        if re.search(r"\[Set of \d+\]", it["name"]):
+            continue
+        named = named_promos(it["name"], it.get("promos", []))
+        if named:
+            key = base_name(it["name"])
+            variant_promos[key] = variant_promos.get(key, []) + [t for t in named if t not in variant_promos.get(key, [])]
+    for it in contents:
         mix = it.get("mix") or {}
         packs = it.get("packs")
         if not packs or it.get("kind") in ("Case or display", "Prize pack", "Deck") or "Dollar General" in it["name"]:
@@ -261,14 +300,16 @@ def main():
             continue
         raw_promos = it.get("promos", [])
         # A single variant, for example "[Glaceon]", holds only the promo that matches its name. The source often
-        # lists every promo of the product wave.
-        bracket = re.search(r"\[([^\]]+)\]", it["name"])
-        if bracket:
-            named = [t for t in raw_promos if t.split(" (")[0] == bracket.group(1)]
-            raw_promos = named or raw_promos
+        # lists every promo of the product wave. A "[Set of N]" holds the promos of its variants.
+        if str(it["id"]) in researched:
+            pass
+        elif re.search(r"\[Set of \d+\]", it["name"]):
+            raw_promos = variant_promos.get(base_name(it["name"])) or raw_promos
+        else:
+            raw_promos = named_promos(it["name"], raw_promos) or raw_promos
         # A Surprise Box promo has a Prismatic Evolutions stamp.
         stamp = stamped if "Surprise Box" in it["name"] else None
-        promos = [resolve_promo(t, sets, svp, stamp) for t in raw_promos]
+        promos = [resolve_promo(t, sets, svp, stamp, swsh) for t in raw_promos]
         if any(x is None for x in promos):
             skipped.append(f"{it['name']}: promo not found in {raw_promos}")
             promos = [x for x in promos if x]
