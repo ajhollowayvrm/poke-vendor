@@ -4,7 +4,7 @@
  "era": "e-card",
  "series": "e-Card",
  "packCost": null,
- "packImage": null,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/138151_in_800x800.jpg",
  "slots": [
   {
    "name": "Common",

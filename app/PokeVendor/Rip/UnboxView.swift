@@ -408,7 +408,7 @@ struct PackTile: View {
     var body: some View {
         let set = SetLibrary.set(slug)
         VStack(spacing: 4) {
-            PackArt(setName: set.name, sheen: 0, slug: slug, series: set.series, label: set.packLabel)
+            PackArt(setName: set.name, sheen: 0, slug: slug, series: set.series, label: set.packLabel, image: set.packImage)
                 .aspectRatio(0.6, contentMode: .fit)
                 .shadow(color: .black.opacity(0.45), radius: 4, y: 3)
             Text(set.name).font(.system(size: 9)).foregroundStyle(Theme.muted).lineLimit(1)
@@ -472,7 +472,7 @@ struct BlisterTray: View {
                     ZStack {
                         ForEach(packs, id: \.offset) { i, slug in
                             let set = SetLibrary.set(slug)
-                            PackArt(setName: set.name, sheen: 0, slug: slug, series: set.series, label: set.packLabel)
+                            PackArt(setName: set.name, sheen: 0, slug: slug, series: set.series, label: set.packLabel, image: set.packImage)
                                 .frame(width: w * 0.36, height: w * 0.6)
                                 .rotationEffect(.degrees(Double(i) * 5 - Double(packs.count - 1) * 2.5))
                                 .offset(x: CGFloat(i) * w * 0.05)

@@ -129,7 +129,9 @@ The rip must feel like opening a real pack.
 
 Normal is a manual rip. The player holds the cards like a real pack:
 
-1. The sealed pack shows, with a moving reflection.
+1. The sealed pack shows, with a moving reflection. The pack is the real
+   wrapper photo of the set (the set file's `packImage`). A set with no
+   photo, for example Southern Islands, shows a drawn wrapper.
 2. The player taps the top of the pack, or swipes across the top, to
    tear it open. A swipe can start at either edge. The strip tears
    under the finger: the torn part lifts, the torn foil edge shows

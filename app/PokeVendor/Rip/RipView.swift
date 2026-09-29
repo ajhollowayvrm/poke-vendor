@@ -171,7 +171,8 @@ struct RipView: View {
 
                 if model.phase == .sealed || model.phase == .opening {
                     PackView(setName: model.cardSet.name, slug: model.cardSet.slug, series: model.cardSet.series,
-                             label: model.cardSet.packLabel, tearProgress: tearProgress, torn: torn,
+                             label: model.cardSet.packLabel, image: model.cardSet.packImage,
+                             tearProgress: tearProgress, torn: torn,
                              fromLeft: tearFromLeft)
                         .frame(width: layout.packW, height: layout.packH)
                         .rotationEffect(.degrees(packGone ? 14 : 0))

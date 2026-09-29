@@ -201,6 +201,20 @@ def pack_cost(slug):
     return best or (None, None)
 
 
+def pack_image(slug):
+    """The image of a booster pack of the set from the TCGCSV product list, for a set whose pack has no price. A set
+    that was never sold in packs (Southern Islands) has none."""
+    for gid in J.TCGCSV_MAP.get(slug, []):
+        path = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv", f"{gid}-products.json")
+        if not os.path.exists(path):
+            continue
+        for p in json.load(open(path)).get("results", []):
+            name = p.get("name", "")
+            if re.search(r"Booster Pack|Pack\b", name) and not re.search(r"Box|Case|Display|Blister|Sleeved|Bundle|Code Card|Sampling|1st Edition", name):
+                return f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg"
+    return None
+
+
 def export(slug):
     sets, eras = O.load(), O.era_map()
     s = sets[slug]
@@ -239,10 +253,11 @@ def export(slug):
                     break
             outcomes.append({"name": r[2], "entry": r[3], "odds": round(p / 100, 6), "prints": ids})
         slots.append({"name": slot, "count": slot_count(slot, rows[0][0][1]), "outcomes": outcomes})
-    cost, pack_image = pack_cost(slug)
+    cost, image = pack_cost(slug)
+    image = image or pack_image(slug)
     os.makedirs(OUT, exist_ok=True)
     order, trick, series = pack_order(eras.get(slug), slots, has_energy_row)
-    out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": pack_image,
+    out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": image,
            "slots": slots, "order": order, "trick": trick, "prints": prints}
     specials = special_packs(slug, prints, index)
     if specials:

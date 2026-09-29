@@ -6,6 +6,8 @@ struct PackView: View {
     var slug: String?
     var series: String?
     var label: String?
+    /// The pack photo (the set file's `packImage`). Nil draws the wrapper.
+    var image: String?
     /// How far the tear has gone across the top, from 0 to 1.
     var tearProgress: Double
     var torn: Bool
@@ -13,6 +15,7 @@ struct PackView: View {
     var fromLeft = true
 
     static let tearLine: CGFloat = 0.11
+    @State private var photo: UIImage?
 
     var body: some View {
         TimelineView(.animation) { timeline in
@@ -53,14 +56,17 @@ struct PackView: View {
                     }
                 }
             }
+            // The frame takes the photo's shape, so the tear line sits on the photo's top seal.
+            .aspectRatio(photo.map { $0.size.width / $0.size.height }, contentMode: .fit)
             .rotation3DEffect(.degrees(motion.roll * 8 + sin(t * 0.5) * 2), axis: (x: 0, y: 1, z: 0), perspective: 0.6)
             .rotation3DEffect(.degrees(-motion.pitch * 6), axis: (x: 1, y: 0, z: 0), perspective: 0.6)
         }
         .shadow(color: .black.opacity(0.6), radius: 18, y: 12)
+        .task(id: image) { photo = await PackArt.photo(image) }
     }
 
     private func art(_ sheen: Double) -> some View {
-        PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label)
+        PackArt(setName: setName, sheen: sheen, slug: slug, series: series, label: label, image: image)
     }
 }
 
@@ -118,13 +124,44 @@ struct TearEdge: Shape {
     }
 }
 
-/// The artwork of the whole pack: foil, facets, title, crimps, and a moving reflection.
+/// The artwork of the whole pack. With a photo, the real wrapper with a moving reflection. Without one, or while it
+/// loads, a drawn wrapper: foil, facets, title, crimps, and the reflection.
 struct PackArt: View {
     let setName: String
     var sheen: Double
     var slug: String?
     var series: String?
     var label: String?
+    var image: String?
+    @State private var photo: UIImage?
+
+    init(setName: String, sheen: Double, slug: String? = nil, series: String? = nil, label: String? = nil, image: String? = nil) {
+        self.setName = setName
+        self.sheen = sheen
+        self.slug = slug
+        self.series = series
+        self.label = label
+        self.image = image
+        _photo = State(initialValue: image.flatMap(URL.init(string:)).flatMap { ImageStore.shared.cachedPack($0) })
+    }
+
+    static func photo(_ image: String?) async -> UIImage? {
+        guard let url = image.flatMap(URL.init(string:)) else { return nil }
+        return await ImageStore.shared.loadPack(url)
+    }
+
+    var body: some View {
+        Group {
+            if let photo {
+                PackPhoto(photo: photo, sheen: sheen)
+            } else {
+                drawn
+            }
+        }
+        .task(id: image) {
+            if photo == nil { photo = await Self.photo(image) }
+        }
+    }
 
     /// Each set gets its own wrapper colors.
     static func colors(_ slug: String?) -> [Color] {
@@ -170,7 +207,7 @@ struct PackArt: View {
                 Color(hue: hue, saturation: 0.8, brightness: 0.22)]
     }
 
-    var body: some View {
+    private var drawn: some View {
         GeometryReader { geo in
             let w = geo.size.width
             let h = geo.size.height
@@ -224,6 +261,25 @@ struct PackArt: View {
                     .blendMode(.screen)
             }
             .clipShape(PackOutline())
+        }
+    }
+}
+
+/// The real pack photo, with the same moving reflection as the drawn wrapper. The reflection stays inside the pack.
+struct PackPhoto: View {
+    let photo: UIImage
+    var sheen: Double
+
+    var body: some View {
+        let pack = Image(uiImage: photo).resizable().aspectRatio(contentMode: .fit)
+        pack.overlay {
+            LinearGradient(stops: [.init(color: .clear, location: 0.36),
+                                   .init(color: .white.opacity(0.4), location: 0.5),
+                                   .init(color: .clear, location: 0.64)],
+                           startPoint: UnitPoint(x: -0.5 + sheen, y: 0),
+                           endPoint: UnitPoint(x: 0.5 + sheen, y: 1))
+                .blendMode(.screen)
+                .mask(pack)
         }
     }
 }

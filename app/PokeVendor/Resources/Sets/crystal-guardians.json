@@ -4,7 +4,7 @@
  "era": "ex",
  "series": "EX",
  "packCost": null,
- "packImage": null,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/98566_in_800x800.jpg",
  "slots": [
   {
    "name": "Common",
