@@ -426,6 +426,8 @@ struct HubView: View {
         func play(_ session: ShowSession) {
             if session.phase == .setup { session.openTable() }
             var steps = 0
+            // A player with a table walks the floor once, past a few vendors, and comes back.
+            var floorVisits = 0
             while session.phase != .summary, steps < 80 {
                 steps += 1
                 if let v = session.current {
@@ -435,11 +437,24 @@ struct HubView: View {
                     case .sell: if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.6) }
                     }
                 } else if session.phase == .table {
-                    session.nextVisitor()
+                    if session.hasTable, floorVisits == 0, steps > 3 { session.walkFloor() } else { session.nextVisitor() }
                 } else if session.phase == .floor {
-                    if let vendor = session.vendors.first(where: { !$0.visited }) {
+                    if session.hasTable, floorVisits >= 4 {
+                        session.backToTable()
+                    } else if let vendor = session.vendors.first(where: { !$0.visited }) {
+                        floorVisits += 1
                         session.visit(vendor)
                         if let item = vendor.items.first(where: { $0.price < 60 }) { session.buy(item, from: vendor) }
+                        // A trade: the two best brought items for the dearest items that they pay for.
+                        if vendor.kind.trades, let now = session.vendors.first(where: { $0.id == vendor.id }) {
+                            let give = session.tradeStock.filter { $0.market >= Balance.tradeMinItem }.prefix(2)
+                            let worth = give.reduce(0) { $0 + session.tradeValue($1, at: now) }
+                            let goods = now.items.filter { if case .mystery = $0.goods { return false }; return true }.sorted { $0.price > $1.price }
+                            var want: [VendorItem] = []
+                            for item in goods where want.reduce(0, { $0 + $1.price }) + item.price <= worth { want.append(item) }
+                            if want.isEmpty, let cheapest = goods.last { want = [cheapest] }
+                            session.proposeVendorTrade(give: Set(give.map(\.id)), get: Set(want.map(\.id)), at: now)
+                        }
                         session.closeVendor()
                     } else {
                         session.packUp()
@@ -449,7 +464,7 @@ struct HubView: View {
                 }
             }
             store.finishEncounter(session)
-            log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought")
+            log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded")
         }
         for _ in 0..<days {
             store.report = nil

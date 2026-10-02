@@ -47,6 +47,12 @@ enum Balance {
     static let firstLookItems = 2
     /// On-site grading at a regional show: one tier, back the same day (docs/20-card-shows.md).
     static let onSiteGradingFee = 40.0
+    /// Vendor trades: a vendor pays out this share of the cash difference when the player's side is worth more.
+    static let vendorTradeCashFactor = 0.85
+    /// A vendor does not take a player item with a market under this value.
+    static let tradeMinItem = 5.0
+    /// "Ask for a better rate" adds this to the trade rate when the vendor says yes.
+    static let tradeRateAskBonus = 0.05
 
     // Selling (docs/15-selling.md)
     static let listingDays = 28

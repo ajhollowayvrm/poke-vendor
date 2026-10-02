@@ -271,6 +271,54 @@ extension GameStore {
         save()
     }
 
+    /// A trade at a vendor table: the player's items go, and the vendor's items come in. Only the cash goes to the
+    /// ledger. `cash` is positive when the player pays. A trade is not a sale, so it adds no receipt.
+    func tradeWithVendor(give: [ShowItem], get: [VendorItem], cash: Double, vendor: String, at venue: String) {
+        let giveIDs = Set(give.map(\.id))
+        let day = data.day
+        // Build every new item first, so the closures below do not read `data` while they change it.
+        var cards: [OwnedCard] = []
+        var slabs: [OwnedCard] = []
+        var sealed: [SealedItem] = []
+        for item in get {
+            let known: Bool? = item.looksOff && item.fake != nil ? true : nil
+            switch item.goods {
+            case .single(let print, let slug, let condition):
+                var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, condition: condition,
+                                     acquiredDay: day)
+                card.fake = item.fake
+                card.fakeKnown = known
+                cards.append(card)
+            case .slab(let print, let slug, let grade):
+                var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: item.price, ripID: nil, grade: grade,
+                                     acquiredDay: day)
+                card.fake = item.fake
+                card.fakeKnown = known
+                slabs.append(card)
+            case .sealed(let product):
+                var owned = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: item.price,
+                                       acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: day)
+                owned.fake = item.fake
+                owned.fakeKnown = known
+                sealed.append(owned)
+            case .mystery:
+                break
+            }
+        }
+        data.raw.removeAll { giveIDs.contains($0.id) }
+        data.slabs.removeAll { giveIDs.contains($0.id) }
+        data.sealed.removeAll { giveIDs.contains($0.id) }
+        data.raw += cards
+        data.slabs += slabs
+        data.sealed += sealed
+        if cash > 0 { addLedger(-cash, .singles, "Cash added in a trade · \(vendor)") }
+        if cash < 0 { addLedger(-cash, .sale, "Cash from a trade · \(vendor)") }
+        let extra = cash > 0 ? ", adding \(money(cash)) of your own" : cash < 0 ? " plus \(money(-cash))" : ""
+        log("Traded \(give.map(\.name).joined(separator: " and ")) to \(vendor) for \(get.map(\.name).joined(separator: " and "))\(extra) at \(venue).",
+            cash: cash != 0 ? -cash : nil)
+        save()
+    }
+
     /// The end of any encounter. A show fills the day. A meet ends when the doors close. A sale or an opportunity
     /// takes its hours from the moment the player arrived.
     func finishEncounter(_ session: ShowSession) {
@@ -543,6 +591,17 @@ struct Venue: Hashable {
     var eventID: UUID?
 
     var isShow: Bool { kind == .show }
+}
+
+/// What a vendor trade comes to. `cash` is positive when the player pays, and negative when the vendor pays.
+struct VendorTradeQuote {
+    var giveValue = 0.0
+    var getValue = 0.0
+    var cash = 0.0
+    /// The average trade rate on the player's items.
+    var rate = 0.0
+    /// Why the trade cannot go ahead. Nil when it can.
+    var problem: String?
 }
 
 /// One day at a card show, or one visit to another venue: the table, the visitors, and the floor.
@@ -944,15 +1003,20 @@ final class ShowSession {
         caught.line = "Hold on. This isn't real. I'm not buying a fake."
         caught.patience = 0
         setCurrent(caught)
-        store.addReputation(-Balance.fakeCaughtReputationCost)
-        store.addPoints(v.contactID, -Balance.fakeCaughtContactCost)
-        store.markFakeKnown(cardID: item.id)
-        store.markFakeKnown(sealedID: item.id)
-        table.removeAll { $0.id == item.id }
+        fakeCaught(item, contactID: v.contactID)
         walkedAway += 1
         note = "\(v.name) called your \(item.name) a fake and walked."
         finish(minutes: .random(in: 4...8))
         return true
+    }
+
+    /// What a fake that someone caught costs the player: reputation, standing with the contact, and the table spot.
+    private func fakeCaught(_ item: ShowItem, contactID: String?) {
+        store.addReputation(-Balance.fakeCaughtReputationCost)
+        store.addPoints(contactID, -Balance.fakeCaughtContactCost)
+        store.markFakeKnown(cardID: item.id)
+        store.markFakeKnown(sealedID: item.id)
+        table.removeAll { $0.id == item.id }
     }
 
     func accept() {
@@ -1295,6 +1359,91 @@ final class ShowSession {
         if yes { vendors[v].items[i].price = Self.round(item.price * 0.9) }
         note = yes ? "\(vendor.name) took 10% off." : "\(vendor.name) said the price is firm."
         spend(2)
+    }
+
+    // MARK: Vendor trades
+
+    /// What the vendor credits for one of the player's items: the kind's rate, the contact bonus, and a better rate
+    /// that the player asked for. It never goes over market.
+    func tradeValue(_ item: ShowItem, at vendor: Vendor) -> Double {
+        let rate = vendor.kind.tradeRate(for: item) + store.level(vendor.contactID).priceBonus + vendor.tradeRateBonus
+        return item.market * min(1, rate)
+    }
+
+    /// The player's items that the vendor can take: what the player brought.
+    var tradeStock: [ShowItem] { stockItems.filter { bring.contains($0.id) } }
+
+    /// The deal for these items. The vendor's items count at their price. The player's items count at the trade rate.
+    /// The difference is cash. When the vendor owes cash, the vendor pays `Balance.vendorTradeCashFactor` of it.
+    func tradeQuote(give: Set<UUID>, get: Set<UUID>, at vendor: Vendor) -> VendorTradeQuote {
+        let mine = tradeStock.filter { give.contains($0.id) }
+        let theirs = vendor.items.filter { get.contains($0.id) }.filter { if case .mystery = $0.goods { return false }; return true }
+        var quote = VendorTradeQuote()
+        quote.giveValue = mine.reduce(0) { $0 + tradeValue($1, at: vendor) }
+        quote.getValue = theirs.reduce(0) { $0 + $1.price }
+        let market = mine.reduce(0) { $0 + $1.market }
+        quote.rate = market > 0 ? quote.giveValue / market : 0
+        let difference = quote.getValue - quote.giveValue
+        quote.cash = difference > 0 ? Self.round(difference) : -Self.round(-difference * Balance.vendorTradeCashFactor)
+        if !vendor.kind.trades {
+            quote.problem = "\(vendor.name) does not trade."
+        } else if theirs.isEmpty {
+            quote.problem = "Pick at least one item from their table."
+        } else if mine.isEmpty {
+            quote.problem = "Pick at least one item from your stock."
+        } else if let low = mine.first(where: { $0.market < Balance.tradeMinItem }) {
+            quote.problem = "\(vendor.name) does not take \(low.name). It is worth less than \(money(Balance.tradeMinItem))."
+        } else if -quote.cash > vendor.kind.tradeCashCap + 0.001 {
+            quote.problem = "They can only add \(money(vendor.kind.tradeCashCap)). Take more from their table."
+        } else if quote.cash > 0, !store.canAfford(quote.cash) {
+            quote.problem = "You do not have \(money(quote.cash))."
+        }
+        return quote
+    }
+
+    /// Asks the vendor for 5% more on the trade rate. It works as often as a deal, and it can be asked once a visit.
+    func askForBetterRate(at vendor: Vendor) {
+        guard let v = vendors.firstIndex(where: { $0.id == vendor.id }), !vendors[v].askedForRate else { return }
+        let yes = Double.random(in: 0..<1) < vendor.kind.dealChance + 0.1 * Double(store.level(vendor.contactID).rank)
+        vendors[v].askedForRate = true
+        if yes { vendors[v].tradeRateBonus += Balance.tradeRateAskBonus }
+        note = yes ? "\(vendor.name) raised the trade rate." : "\(vendor.name) said the rate is firm."
+        spend(2)
+    }
+
+    /// The vendor looks over the player's items first. A fake that they see stops the trade. Returns true when the
+    /// trade went through.
+    @discardableResult
+    func proposeVendorTrade(give: Set<UUID>, get: Set<UUID>, at vendor: Vendor) -> Bool {
+        guard let v = vendors.firstIndex(where: { $0.id == vendor.id }) else { return false }
+        let quote = tradeQuote(give: give, get: get, at: vendors[v])
+        if let problem = quote.problem {
+            note = problem
+            return false
+        }
+        let mine = tradeStock.filter { give.contains($0.id) }
+        for item in mine {
+            guard let fake = item.fake, Counterfeit.eyeballCatches(fake) else { continue }
+            fakeCaught(item, contactID: vendor.contactID)
+            note = "\(vendor.name) called your \(item.name) a fake and turned down the trade."
+            spend(3)
+            return false
+        }
+        let theirs = vendors[v].items.filter { get.contains($0.id) }.filter { if case .mystery = $0.goods { return false }; return true }
+        store.tradeWithVendor(give: mine, get: theirs, cash: quote.cash, vendor: vendor.name, at: venue.name)
+        let theirIDs = Set(theirs.map(\.id))
+        vendors[v].items.removeAll { theirIDs.contains($0.id) }
+        table.removeAll { give.contains($0.id) }
+        bring.subtract(give)
+        let extra = quote.cash > 0 ? " + \(money(quote.cash))" : quote.cash < 0 ? ", they added \(money(-quote.cash))" : ""
+        trades.append("\(mine.map(\.name).joined(separator: " + ")) → \(theirs.map(\.name).joined(separator: " + "))\(extra)")
+        let best = theirs.max { ($0.market ?? $0.price) < ($1.market ?? $1.price) }
+        store.recordDeal(vendor.contactID, what: "Traded with \(vendor.name)",
+                         price: mine.reduce(0) { $0 + $1.market } + quote.cash,
+                         market: theirs.reduce(0) { $0 + ($1.market ?? $1.price) }, slug: best.flatMap { goodsSlug($0.goods) })
+        spend(10)
+        Haptics.tap(.medium)
+        return true
     }
 
     /// A card for a trade, worth no more than the value given. Traders often bring older cards.

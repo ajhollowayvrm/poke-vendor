@@ -143,6 +143,39 @@ because this is where most vintage turns up.
   to the player's table meanwhile leave after half an hour.
 - Each item can be asked about once.
 
+### Trading with vendors
+
+The player can trade with any vendor at a card show or a surprise
+opportunity, except mystery packs. Garage sales and estate sales take
+cash only. Each vendor with goods to trade has a **Trade with** button.
+
+The player picks items from the vendor's table (not mystery packs) and
+items from their own stock. The player can offer slabs, raw cards, and
+sealed product that they brought. A deal needs at least one item on each
+side. The vendor does not take a player item with a market under $5.
+
+- The vendor values their own items at the sticker price.
+- The vendor values the player's items at market times the trade rate.
+  The rate is 75% (85% for vintage and older sets) at a vintage dealer,
+  80% at a modern dealer, 75% (85% for sealed) at a game shop booth,
+  and 85% at a collector. A recurring vendor adds the same bonus that
+  they give on prices.
+- The difference is cash. When the vendor's side is worth more, the
+  player pays the difference. When the player's side is worth more, the
+  vendor pays 85% of the difference, up to a cap: $1,500 for a vintage
+  dealer, $1,000 for a modern dealer, $400 for a game shop booth, and
+  $250 for a collector. Above the cap, the player must take more from
+  the table.
+- **Ask for a better rate** adds 5 points to the rate. It works as often
+  as asking for a deal, and the player can ask once for each vendor.
+- The vendor looks over the player's items. A fake that the vendor sees
+  stops the trade. The player loses reputation and standing with the
+  vendor, and the item becomes a known fake.
+- A trade takes 10 minutes.
+
+The items that come in carry the sticker price as their cost. The wallet
+ledger shows only the cash.
+
 ### Mystery packs
 
 A mystery pack is mostly filler and one guaranteed hit. The player

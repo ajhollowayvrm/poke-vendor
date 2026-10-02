@@ -57,6 +57,36 @@ enum VendorKind: CaseIterable, Hashable {
         }
     }
 
+    /// True when the vendor trades. Mystery packs are never trade goods, and sales take cash only.
+    var trades: Bool {
+        switch self {
+        case .vintageDealer, .modernDealer, .gameShop, .collector: true
+        case .mysteryPacks, .garageSale, .estateSale: false
+        }
+    }
+
+    /// The share of market that the vendor credits for a player item in a trade.
+    func tradeRate(for item: ShowItem) -> Double {
+        switch self {
+        case .vintageDealer: item.isVintage ? 0.85 : 0.75
+        case .modernDealer: 0.80
+        case .gameShop: item.kind == .sealed ? 0.85 : 0.75
+        case .collector: 0.85
+        case .mysteryPacks, .garageSale, .estateSale: 0
+        }
+    }
+
+    /// The most cash that the vendor adds to one trade.
+    var tradeCashCap: Double {
+        switch self {
+        case .vintageDealer: 1500
+        case .modernDealer: 1000
+        case .gameShop: 400
+        case .collector: 250
+        case .mysteryPacks, .garageSale, .estateSale: 0
+        }
+    }
+
     var tagline: String {
         switch self {
         case .vintageDealer: "Knows what vintage is worth. Prices high and rarely deals."
@@ -203,6 +233,9 @@ struct Vendor: Identifiable, Hashable {
     var visited = false
     /// A recurring vendor that the game remembers (docs/21-relationships-and-reputation.md).
     var contactID: String?
+    /// What "Ask for a better rate" added to the trade rate (docs/20-card-shows.md, Trading with vendors).
+    var tradeRateBonus = 0.0
+    var askedForRate = false
 
     /// Short tags for the floor list, for example "Vintage · Slabs · Sealed".
     var tags: String {

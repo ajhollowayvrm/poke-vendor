@@ -212,7 +212,7 @@ paid, and the profit. At the bottom, it shows the total profit.
 - A sale at End Day (a listing or a consignment) shows its receipt after
   the player closes the End Day report.
 - Sales on a live stream show one receipt after the stream ends.
-- A trade is not a sale, so it shows no receipt.
+- A trade is not a sale, so it shows no receipt. This holds for a trade with a vendor too (docs/20-card-shows.md, Trading with vendors).
 - A lost package with no insurance changes the receipt to a loss.
 
 ## Bad sales and scam accusations
