@@ -462,6 +462,11 @@ def load_overrides():
     out = {k: v for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_")}
     series = {f"{s} Series" for s in SERIES.values()}
     for pid, o in out.items():
+        # An excluded product needs only a reason and its sources.
+        if o.get("exclude"):
+            if not o.get("sources"):
+                raise SystemExit(f"tools/ppt/sealed_overrides.json {pid}: an excluded product needs sources")
+            continue
         bad = [k for k in o.get("mix", {}) if k != "unknown" and k not in series and k not in SETS.values()]
         if bad or not o.get("sources") or sum(o.get("mix", {}).values()) > (o.get("packs") or 0):
             raise SystemExit(f"tools/ppt/sealed_overrides.json {pid}: bad mix keys {bad}, no sources, or more packs in the mix")

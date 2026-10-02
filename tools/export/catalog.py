@@ -13,6 +13,9 @@ Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game
 - the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none), an estimated MSRP, and the image;
 - "mixGuess": true when the contents name no set, or only a series. Then the packs come from the newest sets of that
   series (or of any series) that were out at the product's release (guess_mix).
+  When the name holds a set name, a set that released 0 to 2 years before the product wins (newest first). A series base
+  set, for example Scarlet & Violet, counts only when it released 0 to 6 months before. A product with no date borrows
+  the date of a product with the same base name. With no date at all, the name match is not used.
 
 A product is in the catalog when its pack mix is exact, every pack comes from a set the app has, and it has a
 price. "inPrint" is true when every pack is from a Scarlet & Violet set. Only in-print product sells at retail.
@@ -165,21 +168,55 @@ def series_era(label):
     return next((era for key, era in SERIES_ERAS if key in low), None)
 
 
-def named_set(name, sets):
-    """The set that a product's name starts with or holds, the longest name first. "Base Set 2" wins over "Base Set"."""
+# A series base set has the name of its series, so a product name often holds it only as the series name.
+SERIES_BASE_SETS = {"scarlet-violet", "sword-shield", "sun-moon", "xy", "black-white", "diamond-and-pearl",
+                    "heartgold-soulsilver", "mega-evolution"}
+
+
+def months_before(date, months):
+    """The date a number of months before an ISO date, for example 2025-12-31 minus 24 months gives 2023-12-31."""
+    y, m = divmod(int(date[:4]) * 12 + int(date[5:7]) - 1 - months, 12)
+    return f"{y:04d}-{m + 1:02d}-{date[8:10]}"
+
+
+def named_set(name, sets, releases, date):
+    """The set that a product's name holds, or None. A set matches only when it released 0 to 2 years before the
+    product date. A series base set matches only when it released 0 to 6 months before. The newest match wins, and
+    the longest name breaks a tie, so "Base Set 2" wins over "Base Set". The check uses whole months, because a
+    quarter date is only the end of the quarter. Without a date, no set matches."""
+    if date is None:
+        return None
     low = name.lower()
-    names = sorted(((d["name"].lower(), slug) for slug, d in sets.items() if not slug.startswith("mcdonalds")),
-                   key=lambda x: -len(x[0]))
-    for set_name, slug in names:
+    hits = []
+    for slug, d in sets.items():
+        release = releases.get(slug)
+        if not release or slug.startswith("mcdonalds"):
+            continue
+        window = 6 if slug in SERIES_BASE_SETS else 24
+        if not months_before(date, window)[:7] <= release[:7] <= date[:7]:
+            continue
+        set_name = d["name"].lower()
         if re.search(r"(?<![\w])" + re.escape(set_name) + r"(?![\w])", low):
-            return slug
-    return None
+            hits.append((release, len(set_name), slug))
+    return max(hits)[2] if hits else None
 
 
-def guess_mix(it, sets, releases):
+def base_dates(contents):
+    """{base_name: latest product date} for every product with a release, so a product with no date can borrow one."""
+    out = {}
+    for it in contents:
+        date = product_date(it.get("release"))
+        if date:
+            key = base_name(it["name"])
+            out[key] = max(out.get(key, date), date)
+    return out
+
+
+def guess_mix(it, sets, releases, dates=None):
     """A pack mix for a product whose contents name no set, or only a series. Real products like these hold
     assorted packs. The guess takes the packs from the newest sets of the named series (or of any series) that were
-    out when the product came out. The same product always gives the same guess. Returns None when no guess fits."""
+    out when the product came out. The same product always gives the same guess. Returns None when no guess fit.
+    "dates" is base_dates(): a product with no release borrows the date of a product with the same base name."""
     packs = it["packs"]
     mix = dict(it.get("mix") or {})
     known = {k: n for k, n in mix.items() if k in sets}
@@ -192,10 +229,10 @@ def guess_mix(it, sets, releases):
     if left:
         buckets["unknown"] = buckets.get("unknown", 0) + left
     # A product named for a set, for example "Darkness Ablaze 3 Pack Blister", holds packs of that set.
-    named = named_set(it["name"], sets)
+    date = product_date(it.get("release"))
+    named = named_set(it["name"], sets, releases, date or (dates or {}).get(base_name(it["name"])))
     if named and "unknown" in buckets:
         known[named] = known.get(named, 0) + buckets.pop("unknown")
-    date = product_date(it.get("release"))
     rng = random.Random(int(it["id"]))
     out = dict(known)
     for key, n in buckets.items():
@@ -322,8 +359,12 @@ def main():
     out, skipped = [], []
     guessed = 0
     contents = json.load(open(CONTENTS))
+    dates = base_dates(contents)
     # A researched promo list (tools/ppt/sealed_overrides.json) is exact, so the name filter below does not touch it.
-    researched = {k for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_") and "promos" in v}
+    overrides = {k: v for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_")}
+    researched = {k for k, v in overrides.items() if "promos" in v}
+    # An override with "exclude" names a product that the game cannot model, for example 3-card mini packs.
+    excluded = {k for k, v in overrides.items() if v.get("exclude")}
     # A "[Set of N]" product holds one of each variant, so it gets the promos that its variants match.
     variant_promos = {}
     for it in contents:
@@ -336,13 +377,14 @@ def main():
     for it in contents:
         mix = it.get("mix") or {}
         packs = it.get("packs")
-        if not packs or it.get("kind") in ("Case or display", "Prize pack", "Deck") or "Dollar General" in it["name"]:
+        if not packs or it.get("kind") in ("Case or display", "Prize pack", "Deck") or "Dollar General" in it["name"] \
+                or str(it["id"]) in excluded:
             continue
         # A product with no stated mix, or with only a series named, gets a guessed mix (guess_mix).
         guess = False
         if it.get("confidence") not in ("Exact", "Product set") or not mix or sum(mix.values()) != packs \
                 or any(slug not in sets for slug in mix):
-            mix = guess_mix(it, sets, releases)
+            mix = guess_mix(it, sets, releases, dates)
             if not mix or any(slug not in sets for slug in mix) or sum(mix.values()) != packs:
                 continue
             guess = True
