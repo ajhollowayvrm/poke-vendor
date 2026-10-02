@@ -314,6 +314,17 @@ final class GameStore {
 
     /// Moves raw cards into bulk. A pulled card joins the bulk group of its rip. A bought card keeps its
     /// amount paid in the portfolio header.
+    /// What a raw card nets on TCGplayer at this price, after the fees and the shipping.
+    static func tcgNet(price: Double) -> Double {
+        let costs = saleCosts(price: price, channel: .tcgplayer, sealed: false, insured: false)
+        return price - costs.fees - costs.shipping
+    }
+
+    /// The raw cards that make no money on TCGplayer: free, not kept, and not known fakes.
+    var unprofitableRaw: [OwnedCard] {
+        data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && Self.tcgNet(price: $0.market) <= 0 }
+    }
+
     func moveToBulk(_ ids: Set<UUID>) {
         let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.keep }
         guard !cards.isEmpty else { return }

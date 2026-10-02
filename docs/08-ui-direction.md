@@ -265,6 +265,10 @@ here, and the rip-or-hold decision happens here.
   back to the bulk group of its rip. A card with no rip goes to a group
   of the cards that the player moved that day. The detail screen for a
   raw card also has "Move to bulk".
+  The Raw tab has a "Send N to bulk" button. It moves every raw card
+  that makes no money on TCGplayer after the fees and the shipping.
+  With the current fees, that is a card with a market of about $1.46
+  or less. Kept cards, listed cards, and known fakes stay.
   "Rip" sends the selection to the rip queue (see
   [18-ripping.md](18-ripping.md#the-rip-queue)). "Grade" puts all the
   selected cards in one grading submission. "Add to store run" puts

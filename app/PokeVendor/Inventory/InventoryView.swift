@@ -23,6 +23,7 @@ struct InventoryView: View {
     @State private var selection: Set<UUID> = []
     @State private var sellIDs: SellRequest?
     @State private var gradeIDs: GradeRequest?
+    @State private var confirmBulk = false
 
     init(startTab: InventoryTab = .sealed) {
         _tab = State(initialValue: startTab)
@@ -85,6 +86,22 @@ struct InventoryView: View {
                 .foregroundStyle(keptOnly ? Theme.cyan : Theme.muted)
             }
             Spacer()
+            if tab == .raw, !selecting {
+                // Cards that make no money on TCGplayer after the fees and the shipping.
+                let losers = store.unprofitableRaw
+                if !losers.isEmpty {
+                    Button { confirmBulk = true } label: {
+                        Label("Send \(losers.count) to bulk", systemImage: "tray.and.arrow.down").font(.subheadline)
+                    }
+                    .foregroundStyle(Theme.cyan)
+                    .confirmationDialog("Move \(losers.count) card\(losers.count == 1 ? "" : "s") to bulk?", isPresented: $confirmBulk,
+                                        titleVisibility: .visible) {
+                        Button("Move to bulk") { store.moveToBulk(Set(store.unprofitableRaw.map(\.id))) }
+                    } message: {
+                        Text("These cards make no money on TCGplayer after the fees and the shipping. Kept cards stay.")
+                    }
+                }
+            }
             Menu {
                 Picker("Sort", selection: $sort) {
                     // Only raw cards have a condition to sort by.
