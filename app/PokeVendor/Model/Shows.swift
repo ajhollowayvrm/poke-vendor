@@ -1431,6 +1431,13 @@ final class ShowSession {
         }
         let theirs = vendors[v].items.filter { get.contains($0.id) }.filter { if case .mystery = $0.goods { return false }; return true }
         store.tradeWithVendor(give: mine, get: theirs, cash: quote.cash, vendor: vendor.name, at: venue.name)
+        // A fake that the vendor did not see can come out later, as with a visitor trade (docs/14-counterfeit-risk.md).
+        for item in mine {
+            if let fake = item.fake {
+                store.recordBadSale(item: item.name, channel: vendor.name, price: tradeValue(item, at: vendors[v]), fake: fake,
+                                    known: item.fakeKnown, refunds: false, contactID: vendor.contactID)
+            }
+        }
         let theirIDs = Set(theirs.map(\.id))
         vendors[v].items.removeAll { theirIDs.contains($0.id) }
         table.removeAll { give.contains($0.id) }

@@ -171,6 +171,9 @@ side. The vendor does not take a player item with a market under $5.
 - The vendor looks over the player's items. A fake that the vendor sees
   stops the trade. The player loses reputation and standing with the
   vendor, and the item becomes a known fake.
+- A fake that the vendor does not see can come out later, as with a
+  visitor trade. Then the player loses reputation and standing with the
+  vendor.
 - A trade takes 10 minutes.
 
 The items that come in carry the sticker price as their cost. The wallet
