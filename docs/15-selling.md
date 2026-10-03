@@ -9,8 +9,7 @@ loop, opposite of [12-acquiring-product.md](12-acquiring-product.md).
 
 - **In scope**: the selling channels below, shipping, and bad sales.
 - **Card shows**: see [20-card-shows.md](20-card-shows.md).
-- **Out of scope**: opening a real storefront (see
-  [01-premise-and-loop.md](01-premise-and-loop.md)).
+- **Your own store**: see [22-own-store.md](22-own-store.md).
 
 ## Channels at a glance
 

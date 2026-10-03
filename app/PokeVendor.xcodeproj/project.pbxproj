@@ -107,6 +107,7 @@
 		8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */ = {isa = PBXBuildFile; fileRef = 40AFA031CD12EA2F8CAF859A /* ultra-prism.json */; };
 		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
+		916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B97517632F808C60DEBC0 /* CardStoreView.swift */; };
 		918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8331C960F48E73F49D7795EA /* flashfire.json */; };
 		91F76C21C2B3ABFF49543E30 /* Wholesale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A0BCABB4AA9FD6C9E14979 /* Wholesale.swift */; };
 		94D4D216B5171391265B5753 /* Vendors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E045FCAD07023E23A8B677B4 /* Vendors.swift */; };
@@ -198,6 +199,7 @@
 		F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820C299F6D8FD690239ED0CC /* SocialViews.swift */; };
 		F905C1398E75C747E47A1439 /* StreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AB0D2FABBE0297520AD440 /* StreamView.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
+		FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3553A3A890986D3D87A796A8 /* CardStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -229,6 +231,7 @@
 		32DA09FC2EFE76D57AFC6910 /* SaleReceiptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleReceiptView.swift; sourceTree = "<group>"; };
 		3300530D0D241B426A6EF827 /* supreme-victors.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "supreme-victors.json"; sourceTree = "<group>"; };
 		33CED089D9AD4D92AB2AAA7C /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
+		3553A3A890986D3D87A796A8 /* CardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStore.swift; sourceTree = "<group>"; };
 		358CC15CDFF4392C2418EBCB /* Opportunities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Opportunities.swift; sourceTree = "<group>"; };
 		35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SellGradeSheets.swift; sourceTree = "<group>"; };
 		367966CB515F1D60E1380F07 /* Panels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panels.swift; sourceTree = "<group>"; };
@@ -285,6 +288,7 @@
 		687D38A7B84E86024E927A14 /* furious-fists.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "furious-fists.json"; sourceTree = "<group>"; };
 		689EB4A1DA309507FAA552BA /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2022.json"; sourceTree = "<group>"; };
+		693B97517632F808C60DEBC0 /* CardStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStoreView.swift; sourceTree = "<group>"; };
 		69B3B59FEFA22014368E0146 /* unleashed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = unleashed.json; sourceTree = "<group>"; };
 		6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "forbidden-light.json"; sourceTree = "<group>"; };
 		6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge.json"; sourceTree = "<group>"; };
@@ -593,6 +597,7 @@
 			children = (
 				3BE8F9A509ED85647311ACD5 /* Balance.swift */,
 				D85667450A30BCA2B91E3829 /* Camping.swift */,
+				3553A3A890986D3D87A796A8 /* CardStore.swift */,
 				3284779D32F44C664EE1950F /* Consignment.swift */,
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
@@ -652,6 +657,7 @@
 			isa = PBXGroup;
 			children = (
 				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
+				693B97517632F808C60DEBC0 /* CardStoreView.swift */,
 				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
 				22DCF071A80BA4398E968082 /* HubView.swift */,
 				772DBF76AEF228531662272E /* JobView.swift */,
@@ -917,6 +923,8 @@
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
 				AE80D65ED6605B15A934D2E7 /* Camping.swift in Sources */,
+				FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */,
+				916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
 				54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */,

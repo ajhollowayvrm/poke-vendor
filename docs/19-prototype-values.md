@@ -238,3 +238,22 @@ for CGC, and $30 for BGS.
 | Corner loupe, edge light, raking lamp | $60, $90, $140 |
 | Studio lights, camera kit | $250, $600 |
 
+## Your own store
+
+| Value | Prototype value |
+| --- | --- |
+| To sign | Reputation Trusted, $2,500 in sales over the run, and the first rent, a deposit of one rent, and the build-out |
+| Locations | Strip mall: rent $1,400, build-out $2,000, 12 customers. Main Street: $2,400, $3,500, 20. Mall: $3,800, $5,000, 32 |
+| Small-budget customers | 30% / 25% / 50%. They look only at items of $30 or less |
+| Build-out and grand opening | 7 days, then ×1.5 customers for 7 days |
+| Hours | 11 AM to 7 PM on the open days |
+| Customers | Weekday traffic × Mon–Thu 0.8, Fri 1.1, Sat 1.5, Sun 1.2. +6% a reputation tier, +8% a follower tier. Stock ×0.4 empty to ×1.2 at 40 items |
+| Buyers | 35% only look. A buyer pays 92% to 128% of market |
+| Shelf price | 95%, 100%, 110% (default), 120%, or 130% of market |
+| Room | 40 cards and 40 sealed. +60 with each fixture |
+| Clerk | $120 a day open |
+| At the counter | 60% of the day's customers come to the counter. 32% of them sell |
+| Fixtures | Second display case $500, sealed wall $400, play tables $700, security cameras $350, lighted sign $300 (×1.15 customers) |
+| Friday tournament | 8 to 16 players, +10% a reputation tier, $7 each after prizes, ×1.3 customers |
+| Shoplifting | 5% of clerk-only days, one card of $40 or less |
+| Eviction | Reputation −15, and the landlord keeps the deposit |

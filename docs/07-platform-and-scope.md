@@ -43,6 +43,8 @@ Every system in this folder is built. The list:
   streams with auctions, Buy Now, giveaways, and tips, scheduled
   streams, and the show promo post.
 - **Upgrades**: one screen with every upgrade.
+- **Your own store**: the lease, three locations, the shelves, the
+  clerk, working the counter, fixtures, store rent, and eviction.
 
 The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md).

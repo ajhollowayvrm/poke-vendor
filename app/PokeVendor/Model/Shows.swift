@@ -39,7 +39,7 @@ struct CardShow: Codable, Identifiable, Hashable {
 
 /// One line on the calendar.
 struct CalendarEntry: Identifiable {
-    enum Kind { case work, paycheck, rent, show, delivery, grading, auction, meet, league, sale, restock, stream, timeOff, meetup }
+    enum Kind { case work, paycheck, rent, show, delivery, grading, auction, meet, league, sale, restock, stream, timeOff, meetup, store }
 
     let id = UUID()
     let kind: Kind
@@ -65,6 +65,7 @@ struct CalendarEntry: Identifiable {
         case .stream: "dot.radiowaves.left.and.right"
         case .timeOff: "sun.max"
         case .meetup: "figure.wave"
+        case .store: "storefront"
         }
     }
 }
@@ -353,6 +354,8 @@ extension GameStore {
         case .opportunity:
             data.hour = min(Balance.lateNightLimit, max(data.hour, venue.open + session.startMinute / 60 + venue.hours))
             log("\(venue.name): \(deals).")
+        case .store:
+            finishCounter(session)
         }
         save()
     }
@@ -442,6 +445,25 @@ extension GameStore {
 }
 
 // MARK: - The show day
+
+@MainActor
+extension GameStore {
+    /// Items as a table shows them, dearest first. The price is the real one: buyers do not know a fake until they look.
+    func showItems(_ stock: (cards: [OwnedCard], sealed: [SealedItem])) -> [ShowItem] {
+        let cards = stock.cards.map { card in
+            ShowItem(id: card.id, kind: .card, name: card.print.name,
+                     detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.realMarket,
+                     image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
+                     setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake)
+        }
+        let sealed = stock.sealed.map { item in
+            ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
+                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
+                     fake: item.fake, fakeKnown: item.isKnownFake)
+        }
+        return (cards + sealed).sorted { $0.market > $1.market }
+    }
+}
 
 /// An item on the player's table.
 struct ShowItem: Identifiable, Hashable {
@@ -559,7 +581,7 @@ struct Visitor: Identifiable {
 /// Where an encounter happens: a card show, a meet, league night, a garage or estate sale, or a surprise
 /// opportunity. The venue sets the hours, how many people come, and what the player can do there.
 struct Venue: Hashable {
-    enum Kind: Hashable { case show, meet, leagueNight, garageSale, estateSale, opportunity }
+    enum Kind: Hashable { case show, meet, leagueNight, garageSale, estateSale, opportunity, store }
 
     let kind: Kind
     let name: String
@@ -668,7 +690,7 @@ final class ShowSession {
         minute = start
         startMinute = start
         closeMinute = min((venue.close - venue.open) * 60, start + venue.hours * 60)
-        let stock = store.showStock
+        let stock = venue.kind == .store ? store.storeStock : store.showStock
         bring = Set(stock.cards.map(\.id) + stock.sealed.map(\.id))
         self.vendors = vendors
         self.regulars = regulars
@@ -724,20 +746,8 @@ final class ShowSession {
     // MARK: Setup
 
     var stockItems: [ShowItem] {
-        let stock = store.showStock
-        // The table shows the real price: buyers do not know a fake until they look.
-        let cards = stock.cards.map { card in
-            ShowItem(id: card.id, kind: .card, name: card.print.name,
-                     detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.realMarket,
-                     image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
-                     setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake)
-        }
-        let sealed = stock.sealed.map { item in
-            ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: store.realMarket(of: item),
-                     image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
-                     fake: item.fake, fakeKnown: item.isKnownFake)
-        }
-        return (cards + sealed).sorted { $0.market > $1.market }
+        // At the player's own store, the table is the stock in the store.
+        store.showItems(venue.kind == .store ? store.storeStock : store.showStock)
     }
 
     func openTable() {

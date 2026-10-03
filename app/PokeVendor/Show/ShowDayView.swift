@@ -1255,7 +1255,8 @@ private struct SummaryStage: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     let twoDay = (session.show?.size.days ?? 1) > 1 && session.dayIndex == 0
-                    Text(twoDay ? "Day 1 is done" : session.venue.isShow ? "The show is over" : "\(session.venue.name) is over")
+                    Text(twoDay ? "Day 1 is done" : session.venue.isShow ? "The show is over"
+                         : session.venue.kind == .store ? "Closing time at \(session.venue.name)" : "\(session.venue.name) is over")
                         .font(.title2.bold())
                     if twoDay {
                         Text("Come back tomorrow for day 2. End the day from the hub.").font(.subheadline).foregroundStyle(Theme.muted)
@@ -1267,7 +1268,7 @@ private struct SummaryStage: View {
                                  color: session.soldTotal >= session.boughtTotal ? Theme.green : Theme.orange)
                     }
                     list("SOLD", session.sold.map { ($0.name, money($0.price)) })
-                    list("BOUGHT ON THE FLOOR", session.bought.map { ($0.name, money($0.price)) })
+                    list(session.venue.isShow ? "BOUGHT ON THE FLOOR" : "BOUGHT", session.bought.map { ($0.name, money($0.price)) })
                     list("TRADES", session.trades.map { ($0, "") })
                     if session.hasTable {
                         Text("\(session.missed) buyer\(session.missed == 1 ? "" : "s") missed · \(session.walkedAway) walked away")
@@ -1305,7 +1306,7 @@ private struct SummaryStage: View {
 
 // MARK: - Pieces
 
-private struct ItemLine: View {
+struct ItemLine: View {
     @Environment(GameStore.self) private var store
     let item: ShowItem
 
@@ -1324,7 +1325,7 @@ private struct ItemLine: View {
     }
 }
 
-private struct ItemImage: View {
+struct ItemImage: View {
     let item: ShowItem
 
     var body: some View {

@@ -24,6 +24,9 @@ follower count, moves this track.
 | 3 | Respected | Distributor/wholesale access at true wholesale pricing (see [12-acquiring-product.md](12-acquiring-product.md)). Invitations into case splits. Other traders start proactively bringing you pulls they know you want. |
 | 4 | Elite | Priority case allocation on the rarest splits. Private consignment offers — someone's whole vintage collection, offered directly before it ever reaches a public sale. |
 
+The player's own store also opens wholesale, from the day its
+build-out is done (see [22-own-store.md](22-own-store.md#wholesale)).
+
 This resolves the open question in
 [12-acquiring-product.md](12-acquiring-product.md#open-topics): wholesale
 and case-split access share the same reputation track as meet access, and

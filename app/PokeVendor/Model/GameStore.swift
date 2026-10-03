@@ -75,6 +75,8 @@ struct GameData: Codable {
     /// Facebook Marketplace offers and meetups (docs/15-selling.md).
     var fbOffers: [FBOffer] = []
     var meetups: [Meetup] = []
+    /// The player's own card store, after they sign a lease (docs/22-own-store.md).
+    var cardStore: CardStoreState?
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -133,6 +135,7 @@ extension GameData {
         splits = v(.splits, splits)
         fbOffers = v(.fbOffers, fbOffers)
         meetups = v(.meetups, meetups)
+        cardStore = v(.cardStore, cardStore)
     }
 }
 
@@ -851,6 +854,7 @@ final class GameStore {
             addReputation(-5)
         }
         lines += jobEndDay(endedDay: data.day)
+        lines += storeDayEnd()
 
         // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).
         data.lateHours = lateHoursSoFar
@@ -893,6 +897,7 @@ final class GameStore {
         } else if daysUntilRent == Balance.rentWarningDays {
             lines.append("Rent of \(money(Balance.rent)) is due in \(Balance.rentWarningDays) days.")
         }
+        if data.gameOver == nil { lines += storeRentDue() }
 
         if isPokemonCenterDropLive {
             lines.append("A Pokemon Center drop is live today.")

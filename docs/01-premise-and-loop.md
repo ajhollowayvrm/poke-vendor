@@ -15,7 +15,8 @@ business, only yourself.
 - Reputation starts as a personal thing — are you known as fair, or as a
   lowballer or a flake — not a business rating.
 - Opening a real storefront, later, should be a decision that feels earned,
-  not something that unlocks automatically at a number.
+  not something that unlocks automatically at a number. The player signs
+  a lease when they are ready (see [22-own-store.md](22-own-store.md)).
 
 ## What "making it" means
 

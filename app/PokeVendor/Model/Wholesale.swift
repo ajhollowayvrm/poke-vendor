@@ -48,8 +48,9 @@ extension Balance {
 
 @MainActor
 extension GameStore {
-    /// Wholesale opens at reputation Respected (docs/04).
-    var wholesaleOpen: Bool { reputationTier >= 3 }
+    /// Wholesale opens at reputation Respected (docs/04), or with a store of the player's own: a distributor opens
+    /// an account for a store (docs/22-own-store.md).
+    var wholesaleOpen: Bool { reputationTier >= 3 || storeIsBuilt }
 
     /// This week's cases: in-print product at 72% of MSRP. The same week always gives the same cases.
     var wholesaleOffers: [WholesaleOffer] {

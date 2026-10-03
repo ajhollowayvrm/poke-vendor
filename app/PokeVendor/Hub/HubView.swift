@@ -122,6 +122,13 @@ struct HubView: View {
             Banner(text: "Rent of \(money(Balance.rent)) is due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s"). You have \(money(store.cash)).",
                    color: store.canAfford(Balance.rent) ? Theme.cyan : Theme.orange)
         }
+        if let shop = store.cardStore, let days = store.daysUntilStoreRent, days <= Balance.rentWarningDays {
+            Button { nav.path.append(.cardStore) } label: {
+                Banner(text: "Store rent of \(money(shop.location.rent)) for \(shop.name) is due in \(days) day\(days == 1 ? "" : "s").",
+                       color: store.canAfford(Balance.rent + shop.location.rent) ? Theme.cyan : Theme.orange, icon: "storefront")
+            }
+            .buttonStyle(.plain)
+        }
         if store.isPokemonCenterDropLive && !store.data.pokemonCenterAttempted {
             Button { nav.path.append(.store(.pokemonCenter)) } label: {
                 Banner(text: "A Pokemon Center drop is live today. You get one attempt.", color: Theme.green)
@@ -250,6 +257,20 @@ struct HubView: View {
                     .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
             }
             Divider().overlay(Theme.line)
+            Button { nav.path.append(.cardStore) } label: {
+                HStack {
+                    Image(systemName: "storefront").foregroundStyle(Theme.cyan)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(store.cardStore?.name ?? "Open your own store").font(.subheadline)
+                        Text(storeDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            Divider().overlay(Theme.line)
             Button { nav.path.append(.upgrades) } label: {
                 HStack {
                     Image(systemName: "wrench.and.screwdriver").foregroundStyle(Theme.cyan)
@@ -262,6 +283,16 @@ struct HubView: View {
             }
             .buttonStyle(.plain)
         }
+    }
+
+    private var storeDetail: String {
+        guard let s = store.cardStore else {
+            let ready = store.storeRequirements.filter(\.met).count
+            return "\(ready) of \(store.storeRequirements.count) ready · a lease, a clerk, walk-ins"
+        }
+        if store.day < s.openDay { return "Building · opens day \(s.openDay + 1)" }
+        let stock = store.storeStock
+        return "\(store.storeOpenToday ? "Open today" : "Closed today")\(s.clerk ? " · clerk" : "") · \(stock.cards.count + stock.sealed.count) items · rent in \(store.daysUntilStoreRent ?? 0) d"
     }
 
     private var ownedUpgrades: Int {
@@ -354,6 +385,18 @@ struct HubView: View {
                     PlanRow(icon: "dot.radiowaves.left.and.right",
                             title: plan.map { "Scheduled stream at \(GameStore.clock($0.startHour))" } ?? "Go live",
                             detail: block ?? (plan.map { "\(formatHours($0.hours)) · followers are waiting" } ?? "2 or 3 hours · rip, sell, and talk to chat"),
+                            accent: block == nil)
+                }
+                .buttonStyle(.plain)
+                .disabled(block != nil)
+            }
+            if let shop = store.cardStore, store.storeOpenToday {
+                let block = store.counterBlock
+                Button {
+                    if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
+                } label: {
+                    PlanRow(icon: "storefront", title: "Work the counter at \(shop.name)",
+                            detail: block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(Balance.storeClose)) · walk-ins buy, trade, and sell",
                             accent: block == nil)
                 }
                 .buttonStyle(.plain)
@@ -467,6 +510,19 @@ struct HubView: View {
             log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded")
         }
         for _ in 0..<days {
+            // The store: open on day 3, stock it every few days, work the counter, buy fixtures, and close near the end.
+            if store.day == 3 { store.testOpenCardStore(.stripMall); store.setClerk(true) }
+            if store.cardStore != nil {
+                if store.day % 3 == 0 {
+                    let pick = store.stockable
+                    store.stockStore(Set(pick.cards.prefix(6).map(\.id) + pick.sealed.prefix(4).map(\.id)))
+                }
+                if store.day % 4 == 2, let s = store.startCounter() { play(s) }
+                if store.day == 10 { store.buyFixture(.playTables) }
+                if store.day == 12 { store.toggleOpenDay(1) }
+                if store.day % 9 == 0, let id = store.storeStock.cards.first?.id { store.takeBackFromStore([id]) }
+                if store.day == days - 4 { store.closeStore() }
+            }
             store.report = nil
             if store.data.lateHours > 0 { store.chooseMorning(sleepIn: Bool.random()) }
             for o in store.activeOpportunities where o.day == store.day {
@@ -518,6 +574,7 @@ struct HubView: View {
             if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
             store.endDay()
         }
+        print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales")
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
         for line in log.suffix(12) { print("SOAK", line) }
         for line in store.data.activity.suffix(30) { print("SOAK D\(line.day + 1)", line.text) }
@@ -553,9 +610,26 @@ struct HubView: View {
             case "settings": nav.path = [.settings]
             case "job": nav.path = [.job]
             case "upgrades": nav.path = [.upgrades]
+            case "cardstore": nav.path = [.cardStore]
             case "wholesale": store.addReputation(400); nav.path = [.buy, .wholesale]
             case "splits": store.addReputation(400); store.testSplitInvite(); nav.path = [.buy, .caseSplits]
             default: break
+            }
+        }
+        // Screenshot aid: `-cardstore` opens a stocked store with a clerk. `-route cardstore` opens its screen.
+        if args.contains("-cardstore") {
+            store.startRun()
+            store.addTestCash(3000)
+            store.testOpenCardStore()
+            store.setClerk(true)
+            for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 }).prefix(8) { store.addTestCard(print) }
+            for _ in 0..<6 { store.addTestPack() }
+            store.addTestProduct("576482")
+            let pick = store.stockable
+            store.stockStore(Set(pick.cards.map(\.id) + pick.sealed.map(\.id)))
+            if args.contains("-week") {
+                for _ in 0..<7 { store.endDay() }
+                store.report = nil
             }
         }
         if args.contains("-sim") {

@@ -343,6 +343,8 @@ enum ItemStatus: Codable, Hashable {
     case arriving(daysLeft: Int, from: String)
     /// In a game shop's display case on consignment (docs/15-selling.md, The local game shop).
     case consigned(Consignment)
+    /// On a shelf or in a case at the player's own store (docs/22-own-store.md).
+    case inStore(since: Int)
 
     var tag: String {
         switch self {
@@ -352,6 +354,7 @@ enum ItemStatus: Codable, Hashable {
         case .atAuthenticator(let days, _): "AUTHENTICATING · \(days)D"
         case .arriving(let days, _): "ARRIVING · \(days)D"
         case .consigned(let c): "CONSIGNED · \(c.shop.rawValue.uppercased())"
+        case .inStore: "IN YOUR STORE"
         }
     }
 }
@@ -462,6 +465,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case sealed = "Sealed product", singles = "Singles", grading = "Grading fees", rent = "Rent"
         case sponsorship = "Sponsorship", upgrade = "Upgrades", showFees = "Show fees", test = "Test"
         case authentication = "Authentication fees", tips = "Live-stream tips", wholesale = "Wholesale"
+        case storeRent = "Store rent", storeSetup = "Store setup", wages = "Wages", storeEvents = "Store events"
     }
 
     var id = UUID()

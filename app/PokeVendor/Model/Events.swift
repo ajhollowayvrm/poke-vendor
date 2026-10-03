@@ -21,6 +21,19 @@ extension GameStore {
             out.append(CalendarEntry(kind: .meetup, title: m.isPickup ? "Pick up \(m.name)" : "Meet \(m.who) · \(m.name)",
                                      detail: "Facebook Marketplace · 1 hour\(m.isPickup ? "" : " · \(money(m.price)) cash")"))
         }
+        if let s = data.cardStore {
+            if day == s.openDay {
+                out.append(CalendarEntry(kind: .store, title: "Grand opening", detail: s.name))
+            }
+            let since = day - s.leaseDay
+            if since > 0, since % Balance.rentCycleDays == 0 {
+                out.append(CalendarEntry(kind: .rent, title: "Store rent due", detail: "\(money(s.location.rent)) · \(s.name)"))
+            }
+            if day >= s.openDay, s.openDays.contains(day % 7) {
+                out.append(CalendarEntry(kind: .store, title: s.name,
+                                         detail: "Open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose))\(s.clerk ? " · clerk" : "")\(s.has(.playTables) && day % 7 == 4 ? " · Friday tournament" : "")"))
+            }
+        }
         if data.jobState.timeOffBooked.contains(day) {
             out.append(CalendarEntry(kind: .timeOff, title: "Time off", detail: "Booked · paid"))
         }

@@ -56,6 +56,12 @@ struct StatusBox: View {
                     Button("Take it back") { store.endConsignment(id) }
                         .buttonStyle(.bordered)
                 }
+            case .inStore(let since):
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("In \(store.cardStore?.name ?? "your store") since day \(since + 1)").font(.subheadline)
+                    Button("Take it back") { store.takeBackFromStore([id]) }
+                        .buttonStyle(.bordered)
+                }
             case .listed(let listing):
                 VStack(alignment: .leading, spacing: 6) {
                     if let end = listing.auctionEndDay {

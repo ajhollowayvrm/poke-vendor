@@ -17,7 +17,7 @@ struct WholesaleView: View {
                 }
                 if let message { Banner(text: message, color: Theme.cyan, icon: "info.circle.fill") }
                 if !store.wholesaleOpen {
-                    EmptyTab(text: "Wholesale opens at reputation Respected.")
+                    EmptyTab(text: "Wholesale opens at reputation Respected, or when your own store opens.")
                 }
                 ForEach(store.wholesaleOffers) { offer in
                     let n = cases[offer.id] ?? 1
