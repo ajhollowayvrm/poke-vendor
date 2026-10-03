@@ -349,6 +349,17 @@ account:
 The order history is in the save data. It counts from the first order,
 also before the store.
 
+## Accessories
+
+The store sells accessories with a margin: deck sleeves, binders, deck
+boxes, and playmats. The player stocks them from the distributor, on the
+Supplies screen. A store account pays 55% of the shelf price. The shelf
+prices are $9, $24, $12, and $25.
+
+Each open day, the clerk or the player at the counter sells a few
+accessories. The sales are small and steady. They do not use the card
+shelf. See [23-supplies.md](23-supplies.md#the-accessory-shelf-of-the-store).
+
 ## Store rent and eviction
 
 - Store rent and overhead are due every 28 days after the lease day.

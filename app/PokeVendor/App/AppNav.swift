@@ -23,6 +23,7 @@ enum AppRoute: Hashable {
     case wholesale
     case caseSplits
     case cardStore
+    case supplies
 }
 
 struct StoreRunSession: Identifiable {
@@ -94,6 +95,7 @@ extension View {
             case .wholesale: WholesaleView()
             case .caseSplits: CaseSplitsView()
             case .cardStore: CardStoreView()
+            case .supplies: SuppliesView()
             }
         }
     }

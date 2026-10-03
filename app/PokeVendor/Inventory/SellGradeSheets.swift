@@ -284,6 +284,8 @@ struct GradeSheet: View {
                         Spacer()
                         Text(money(total)).font(.body.monospaced().weight(.semibold))
                     }
+                    Text("Card savers: \(cards.count) needed, \(store.supplyCount(.cardSaver)) in hand. Missing ones cost \(money(SupplyItem.cardSaver.rushPrice)) each.")
+                        .font(.caption).foregroundStyle(Theme.muted)
                     if !store.canAfford(total) {
                         Text("You have \(money(store.cash)). That is not enough.").foregroundStyle(Theme.orange)
                     }

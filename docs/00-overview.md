@@ -41,6 +41,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [19-prototype-values.md](19-prototype-values.md) — the starting values for everything the design leaves to balancing.
 - [20-card-shows.md](20-card-shows.md) — card shows on the calendar: booking a table, setting up, live buyers who haggle and trade, walking the floor, the grading booth, and the summary.
 - [22-own-store.md](22-own-store.md) — the player's own card store: the requirements to sign a lease, three locations, the build-out and the grand opening, stock and one shelf price, the clerk and working the counter, open days, fixtures, the Friday tournament, shoplifting, wholesale for a store, store rent, eviction, and closing the store.
+- [23-supplies.md](23-supplies.md) — supplies and accessories: the Supplies storefront (penny sleeves, top loaders, team bags, card savers, mailers, magnetic cases), what a shipped sale, a grading submission, and a show table use, the rush price when the stock is empty, and the accessory shelf of the player's own store.
 - [21-relationships-and-reputation.md](21-relationships-and-reputation.md) — contacts (game shops, recurring show vendors, regulars, and strangers who become contacts), relationship levels, saved items, the want list, fair dealing, and the reputation tiers.
 
 ## Open topics

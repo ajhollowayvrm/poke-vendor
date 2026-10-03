@@ -758,6 +758,7 @@ final class ShowSession {
     }
 
     func openTable() {
+        if !opened, venue.kind != .store { store.useTableSupplies() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
         // More value on the table draws more people, up to a point.
         var mean = venue.visitorsMean * (1 - minute / closeMinute)

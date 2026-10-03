@@ -501,6 +501,11 @@ extension GameStore {
         } else if worked == 0 {
             lines.append("Nobody worked at \(s.name) today, so it stayed closed.")
         }
+        let accessories = storeAccessoryDay(coverage: s.clerk ? 1 : min(1, worked / hours), storeName: s.name,
+                                            casualShare: s.location.casualShare)
+        record.revenue += accessories.revenue
+        record.sold += accessories.sold
+        lines += accessories.lines
         lines += runStoreEvents(&s, record: &record, worked: worked, today: today)
         if s.clerk, share > 0, !s.has(.cameras), Double.random(in: 0..<1) < shopliftChance(for: s.location),
            let stolen = stealFromStore() {

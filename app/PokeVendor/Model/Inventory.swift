@@ -475,7 +475,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case sponsorship = "Sponsorship", upgrade = "Upgrades", showFees = "Show fees", test = "Test"
         case authentication = "Authentication fees", tips = "Live-stream tips", wholesale = "Wholesale"
         case storeRent = "Store rent", storeSetup = "Store setup", wages = "Wages", storeEvents = "Store events"
-        case storeOverhead = "Store overhead"
+        case storeOverhead = "Store overhead", supplies = "Supplies"
     }
 
     var id = UUID()

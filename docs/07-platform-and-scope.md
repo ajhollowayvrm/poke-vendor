@@ -47,6 +47,9 @@ Every system in this folder is built. The list:
 - **Upgrades**: one screen with every upgrade.
 - **Your own store**: the lease, three locations, the shelves, the
   clerk, working the counter, fixtures, store rent, and eviction.
+- **Supplies**: the Supplies storefront, use of supplies by shipped
+  sales, grading, and show tables, the rush price, and accessories for
+  the store.
 
 The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md).

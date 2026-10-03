@@ -274,3 +274,19 @@ for CGC, and $30 for BGS.
 | Store credit | 130% of the cash offer. 60% of sellers take it when the clerk offers it. Customers pay up to 25% of a day's sales with it |
 | Bulk box | $0.10 a card. 50% of small-budget customers buy a handful of 5 to 20 cards |
 | Eviction | Reputation −15, and the landlord keeps the deposit |
+
+## Supplies and accessories
+
+The values are in `app/PokeVendor/Model/Supplies.swift`.
+
+| Value | Prototype value |
+| --- | --- |
+| Packs and prices | Penny sleeves 100 for $3.50. Top loaders 25 for $6. Team bags 100 for $5. Card savers 50 for $14. Bubble mailers 25 for $13. Magnetic one-touch cases 10 for $18 |
+| Rush price | 3 times the piece price, paid at the action. The player pays what the cash allows |
+| Shipped single | 1 mailer, 1 penny sleeve, 1 top loader. At $100 or more: a magnetic case in place of the top loader |
+| Shipped slab or sealed product | 1 mailer |
+| Grading submission | 1 card saver for each card |
+| Show table | 30 penny sleeves, 15 top loaders, 6 team bags, at the set-up of a booked table. Not at the store counter |
+| Accessory shelf price | Deck sleeves $9, binder $24, deck box $12, playmat $25 |
+| Accessory case | Deck sleeves 24, binders 6, deck boxes 12, playmats 6. The distributor charges 55% of the shelf price |
+| Accessory sales | 10% of the customers, plus 15% times the small-budget share of the location. Mix: sleeves 45%, deck boxes 25%, binders 15%, playmats 15% |

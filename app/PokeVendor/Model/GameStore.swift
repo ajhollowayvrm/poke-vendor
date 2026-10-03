@@ -81,6 +81,8 @@ struct GameData: Codable {
     var cardStore: CardStoreState?
     /// The player's history with the distributor (docs/12-acquiring-product.md).
     var distributor = DistributorAccount()
+    /// Supplies in hand and the accessory shelf of the store (docs/23-supplies.md).
+    var supplies = SupplyState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -142,6 +144,7 @@ extension GameData {
         meetups = v(.meetups, meetups)
         cardStore = v(.cardStore, cardStore)
         distributor = v(.distributor, distributor)
+        supplies = v(.supplies, supplies)
     }
 }
 
@@ -818,6 +821,7 @@ final class GameStore {
             data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: tier.days, ledgerID: ledgerID)
         }
         log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days).", cash: -fee)
+        useGradingSupplies(cards: cards.count)
         save()
     }
 
@@ -1061,7 +1065,7 @@ final class GameStore {
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
                                               price: sale, sealed: false, paid: card.paid, fake: card.fake, known: card.isKnownFake,
-                                              card: card))
+                                              card: card, slab: true))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -1142,9 +1146,10 @@ final class GameStore {
 
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
     func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
-                              known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil) -> String {
+                              known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil,
+                              slab: Bool = false) -> String {
         let line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
-                                   paid: paid)
+                                   paid: paid, slab: slab)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
@@ -1156,11 +1161,13 @@ final class GameStore {
 
     /// Takes the money for a sale on a channel, less its fees and shipping. Returns the line for the report.
     /// `paid` is what the player paid for the item, for the receipt. Nil for a pulled card.
-    func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?) -> String {
+    func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?,
+                         slab: Bool = false) -> String {
         let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
         addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid)
+        if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
         let after = channel.ships ? "after fees and shipping" : "in cash"
         return "Sold \(name) on \(channel.rawValue) for \(money(price)). You got \(money(net)) \(after)."
     }

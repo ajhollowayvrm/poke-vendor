@@ -437,7 +437,7 @@ extension GameStore {
     /// A Whatnot sale from a stream. The item leaves at once.
     func sellOnStream(_ item: StreamItem, price: Double) {
         let line = completeSaleNow(name: item.name, channel: .whatnot, price: price, sealed: item.sealed, insured: false,
-                                   paid: paidFor(item.id))
+                                   paid: paidFor(item.id), slab: data.slabs.contains { $0.id == item.id })
         let soldCard = card(item.id)
         let soldSealed = data.sealed.first { $0.id == item.id }
         data.raw.removeAll { $0.id == item.id }

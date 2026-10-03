@@ -25,6 +25,7 @@ struct BuyView: View {
                         ForEach(Storefront.allCases, id: \.self) { s in
                             channelRow(title: s.rawValue, detail: status(s)) { nav.path.append(.store(s)) }
                         }
+                        channelRow(title: "Supplies", detail: store.suppliesSummary) { nav.path.append(.supplies) }
                         // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
                         if store.wholesaleOpen {
                             channelRow(title: "Distributor", detail: "Cases at \(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.wholesaleOffers.count) this week") {

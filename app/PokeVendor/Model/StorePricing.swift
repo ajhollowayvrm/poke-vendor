@@ -148,7 +148,7 @@ extension GameStore {
         let name = card.print.name + (card.grade.map { " " + $0.label } ?? "")
         if let sale = rollSale(listing, card: card) {
             let line = completeSale(name: name, listing: listing, price: sale, sealed: false, paid: card.paid, fake: card.fake,
-                                    known: card.isKnownFake, card: card)
+                                    known: card.isKnownFake, card: card, slab: card.grade != nil)
             return (line, true)
         }
         if listingExpired(listing) {
