@@ -24,6 +24,8 @@ import glob, json, os, random, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "..")
+sys.path.insert(0, HERE)
+import rip_set as R  # noqa: E402  (the graded prices of a PPT card)
 APP_SETS = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "catalog.json")
 CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
@@ -94,8 +96,35 @@ def svp_promos(group=SVP_GROUP):
         if key in out and not plain:
             continue
         out[key] = {"name": p["name"].split(" - ")[0], "market": price.get(p["productId"]),
-                    "image": f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg"}
+                    "image": f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg",
+                    "productId": p["productId"]}
     return out
+
+
+_PPT_BY_TCG = None
+
+
+def promo_graded(product_id):
+    """Return ({grade key: price}, {grade key: sale count}) for a promo, from the PPT card with this TCGplayer ID."""
+    global _PPT_BY_TCG
+    if _PPT_BY_TCG is None:
+        _PPT_BY_TCG = {}
+        groups = {str(g) for g, _, _ in PROMO_GROUPS.values()}
+        for folder in (os.path.join(ROOT, "tools", "ppt", "cache"), os.path.join(ROOT, "tools", "ppt", "cache_ebay")):
+            for gid in groups:
+                path = os.path.join(folder, f"{gid}.json")
+                if not os.path.exists(path):
+                    continue
+                data = json.load(open(path))
+                for c in (data.get("data", []) if isinstance(data, dict) else data):
+                    if not c.get("tcgPlayerId"):
+                        continue
+                    key = int(c["tcgPlayerId"])
+                    # A newer card replaces an older one only when it has sales. This is the rule of rip_set.ebay_sales.
+                    if key not in _PPT_BY_TCG or (c.get("ebay") or {}).get("salesByGrade"):
+                        _PPT_BY_TCG[key] = c
+    pc = _PPT_BY_TCG.get(int(product_id)) if product_id else None
+    return R.graded_from_sales((pc.get("ebay") or {}).get("salesByGrade") or {}) if pc else ({}, {})
 
 
 def stamped_promos():
@@ -310,8 +339,9 @@ def resolve_promo(text, sets, promos, stamped=None):
         p = promos[source].get(num)
         if not p or p["market"] is None:
             return None
+        prices, sales = promo_graded(p.get("productId"))
         return {"name": name, "num": fmt.format(num), "setName": set_name, "rarity": "Promo",
-                "variant": "Holo", "market": p["market"], "graded": {}, "image": p["image"]}
+                "variant": "Holo", "market": p["market"], "graded": prices, "gradedSales": sales, "image": p["image"]}
     for s in sets.values():
         if s["name"] != source:
             continue
@@ -326,8 +356,13 @@ def resolve_promo(text, sets, promos, stamped=None):
                     return None
                 return {"name": name, "num": p["num"], "setName": source, "rarity": p["rarity"],
                         "variant": f"{p['variant']} · {STAMP}", "market": s["market"], "graded": {}, "image": s["image"]}
-            return {"name": name, "num": p["num"], "setName": source, "rarity": p["rarity"], "variant": p["variant"],
-                    "market": p["market"], "graded": p["graded"], "image": p["image"]}
+            out = {"name": name, "num": p["num"], "setName": source, "rarity": p["rarity"], "variant": p["variant"],
+                   "market": p["market"], "graded": p["graded"], "image": p["image"]}
+            # A missing field stays missing. A set file with no counts means MIN_SALES in fill_graded, not 1 sale.
+            for field in ("gradedSales", "gradedReal"):
+                if field in p:
+                    out[field] = p[field]
+            return out
     return None
 
 

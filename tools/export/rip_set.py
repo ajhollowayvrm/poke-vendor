@@ -5,8 +5,11 @@ Usage: python3 tools/export/rip_set.py <set> [<set> ...]
 Writes app/PokeVendor/Resources/Sets/<set>.json with:
 - the slots of one pack, in pack order (front card first), each with its outcomes and final odds
   (tools/slotmap/odds.py, with the era fallback);
-- every print that an outcome can produce, with its market price, its graded prices
-  (CGC 10, CGC 9, PSA 10, PSA 9, BGS 10, BGS 9.5), and its TCGplayer image URL (tools/ppt/cache/);
+- every print that an outcome can produce, with its market price, its TCGplayer image URL (tools/ppt/cache/),
+  its real graded prices for each PSA, CGC, and BGS grade that the app uses, and the eBay sale count of each
+  graded price (`gradedSales`). The graded data comes from tools/ppt/cache_ebay/ when that folder has the set
+  (a newer pull), else from tools/ppt/cache/. tools/export/fill_graded.py fills the other grades and removes
+  `gradedSales`;
 - the cost of one pack: the market price of the loose booster pack (tools/ppt/cache/sealed/).
 
 tools/export/catalog.py writes the sealed products.
@@ -129,8 +132,38 @@ def pack_order(era, slots, has_energy_row):
 
 
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
-GRADES = ("cgc10", "cgc9_5", "cgc9", "cgc8_5", "cgc8", "psa10", "psa9", "psa8", "psa7", "psa6",
-          "bgs10", "bgs9_5", "bgs9", "bgs8_5", "bgs8")
+EBAY_CACHE = os.path.join(ROOT, "tools", "ppt", "cache_ebay")
+
+
+def app_grades():
+    """The keys of the app (SlabGrade.priceKey): PSA 1 to 10, and CGC and BGS 1 to 10 in steps of 0.5."""
+    keys = [f"psa{g}" for g in range(10, 0, -1)]
+    for company in ("cgc", "bgs"):
+        for i in range(18, -1, -1):
+            g = 1 + i * 0.5
+            keys.append(company + (str(int(g)) if g == int(g) else str(g).replace(".", "_")))
+    return tuple(keys)
+
+
+GRADES = app_grades()
+_EBAY = None
+
+
+def ebay_sales(pc):
+    """The eBay sales by grade of a PPT card. The newer pull in tools/ppt/cache_ebay wins when it has sales for the card.
+    Without them, the older pull in tools/ppt/cache gives the sales."""
+    global _EBAY
+    if _EBAY is None:
+        _EBAY = {}
+        for f in glob.glob(os.path.join(EBAY_CACHE, "*.json")):
+            data = json.load(open(f))
+            for c in (data.get("data", []) if isinstance(data, dict) else data):
+                sales = (c.get("ebay") or {}).get("salesByGrade")
+                if c.get("id") and sales:
+                    _EBAY[c["id"]] = sales
+    if pc.get("id") in _EBAY:
+        return _EBAY[pc["id"]]
+    return ((pc.get("ebay") or {}).get("salesByGrade")) or {}
 
 
 def ppt_matches(slug, cards):
@@ -160,16 +193,24 @@ def ppt_matches(slug, cards):
 
 
 def graded(pc):
-    res = {}
+    """Return ({grade key: price}, {grade key: sale count}) for the grades with sales."""
+    return graded_from_sales(ebay_sales(pc))
+
+
+def graded_from_sales(sales):
+    """Return ({grade key: price}, {grade key: sale count}) for a salesByGrade map."""
+    prices, counts = {}, {}
     for g in GRADES:
-        s = ((pc.get("ebay") or {}).get("salesByGrade") or {}).get(g) or {}
+        s = sales.get(g) or {}
         p = (s.get("smartMarketPrice") or {}).get("price") or s.get("medianPrice")
-        res[g] = round(p, 2) if p else None
-    return res
+        if p:
+            prices[g] = round(p, 2)
+            counts[g] = s.get("count") or 1
+    return prices, counts
 
 
 def price_print(matches, variant):
-    """Return (market price, graded prices, image URL) for one print of a card."""
+    """Return (market price, graded prices, graded sale counts, image URL) for one print of a card."""
     kind, first, _, _ = J.list_print(variant)
     pat = J.pattern_of(variant)
     for pc in matches:
@@ -180,8 +221,9 @@ def price_print(matches, variant):
             if pat and pk == "Holo" and kind == "Reverse holo":
                 pk = "Reverse holo"
             if pk == kind and pfirst == first:
-                return v.get("marketPrice"), graded(pc), pc.get("imageCdnUrl800") or pc.get("imageUrl")
-    return None, {g: None for g in GRADES}, None
+                prices, counts = graded(pc)
+                return v.get("marketPrice"), prices, counts, pc.get("imageCdnUrl800") or pc.get("imageUrl")
+    return None, {}, {}, None
 
 
 def pack_cost(slug):
@@ -245,10 +287,11 @@ def export(slug):
                     for v in hits:
                         key = (c["num"], v)
                         if key not in index:
-                            market, grades, image = price_print(matches[c["num"]], v)
+                            market, grades, sales, image = price_print(matches[c["num"]], v)
                             index[key] = len(prints)
                             prints.append({"num": c["num"], "name": c["name"], "rarity": c["rarity"],
-                                           "variant": v, "market": market, "graded": grades, "image": image})
+                                           "variant": v, "market": market, "graded": grades,
+                                           "gradedSales": sales, "image": image})
                         ids.append(index[key])
                     break
             outcomes.append({"name": r[2], "entry": r[3], "odds": round(p / 100, 6), "prints": ids})

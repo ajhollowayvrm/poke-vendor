@@ -442,6 +442,10 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     /// The median price of a CGC or BGS grade as a multiple of the PSA price of the same grade, at grades 8, 9, and 10.
     private static let companyFactors: [GradingCompany: [Double]] = [.cgc: [0.58, 0.51, 0.30], .bgs: [0.70, 0.72, 1.72], .psa: [1, 1, 1]]
 
+    /// The lowest price of a slab: the 1st percentile of the real prices.
+    /// Keep these numbers equal to SLAB_FLOOR in tools/export/fill_graded.py. `fill_graded.py --check` compares them.
+    private static let slabFloors: [GradingCompany: Double] = [.psa: 6.2, .bgs: 6.6, .cgc: 3.25]
+
     /// For a grade with no price in the set file: the raw price times the fitted ratios of the data.
     static func fallbackGradedPrice(raw: Double, grade: SlabGrade) -> Double {
         let tier = [1.0, 5, 25, 100].filter { raw >= $0 }.count
@@ -454,7 +458,7 @@ struct OwnedCard: Codable, Identifiable, Hashable {
         let factors = companyFactors[grade.company] ?? [1, 1, 1]
         let x = max(grade.grade, 8) - 8
         let factor = x >= 1 ? factors[1] * pow(factors[2] / factors[1], x - 1) : factors[0] * pow(factors[1] / factors[0], x)
-        return max(raw * psa(min(10, max(1, grade.grade))) * factor, 1) * (grade.blackLabel ? 2 : 1)
+        return max(raw * psa(min(10, max(1, grade.grade))) * factor, slabFloors[grade.company] ?? 1) * (grade.blackLabel ? 2 : 1)
     }
 }
 

@@ -1,11 +1,11 @@
 """Pull card prices, graded eBay prices, and images from the PokemonPriceTracker (PPT) API.
 
-Usage: python3 tools/ppt/pull.py [--no-ebay] [--min-credits N] [--sets GROUP,GROUP]
+Usage: python3 tools/ppt/pull.py [--no-ebay] [--min-credits N] [--sets GROUP,GROUP] [--cache DIR]
 
 - Reads PPT_API_KEY from the repo's .env file.
 - Pulls each set in tools/cardlist/tcgcsv-map.json (the PPT setId is the TCGCSV group ID),
   newest set first, with fetchAllInSet=true and includeEbay=true.
-- Saves each response to tools/ppt/cache/<setId>.json (not in git). A set already in the cache is skipped,
+- Saves each response to tools/ppt/cache/<setId>.json (not in git). --cache DIR saves to another folder. A set already in the cache is skipped,
   so the pull can stop and start again.
 - Stays under 60 calls per minute, and stops when the daily credits left fall below --min-credits
   (default: the estimated cost of the next set).
@@ -57,6 +57,9 @@ def wait_for_minute_window(headers, need=30):
 
 
 def main():
+    global CACHE
+    if "--cache" in sys.argv:
+        CACHE = os.path.abspath(sys.argv[sys.argv.index("--cache") + 1])
     ebay = "--no-ebay" not in sys.argv
     min_credits = None
     if "--min-credits" in sys.argv:
