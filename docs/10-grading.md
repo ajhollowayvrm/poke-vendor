@@ -203,6 +203,37 @@ game's existing risk/variance design, see
 Only the specific dollar figures and day counts are deliberately left
 out of this doc.
 
+## Estimated prices
+
+The app can ask for 48 grade keys: PSA 1 to 10, and CGC and BGS 1 to 10
+in steps of 0.5. The real sales data holds 15 of them (PSA 6 to 10, CGC
+8 to 10, BGS 8 to 10), and only for some cards. So the export tool
+`tools/export/fill_graded.py` fills every other price with an estimate:
+
+- It fits the median price ratios to the real prices. It uses era,
+  rarity bucket, and raw price tier as the groups. The ratios are in
+  [19-prototype-values.md](19-prototype-values.md#graded-prices).
+- A missing grade comes from the real grades of the same card. For
+  example, a missing PSA 9 comes from the PSA 10 and PSA 8 of the card.
+  A missing CGC price comes from the PSA price with the CGC discount.
+- A card with no real graded price gets a cautious estimate from its
+  raw price. A card with sales is a card that people want, so the
+  script uses the lower quartile of the real ratios.
+- A grade price never falls when the grade rises, inside one company.
+  If two real prices break this rule, the script replaces both with the
+  fitted value. About 29 percent of the real prices needed this change,
+  because the sales data is thin and noisy. A price that changed is not
+  real any more.
+- A card with no raw price gets an estimate too.
+
+Each print in a set file has the optional list `gradedReal`: the keys
+with a real price. Every other key is an estimate. A print also has
+`marketEstimated` when the raw price is an estimate. An old file has
+neither field, and the app treats every price in it as real. The app
+shows "est." next to an estimated price in the card detail screen and
+in the grade sheet. Run the script after each export, then run
+`tools/export/fill_graded.py --check`.
+
 ## Turnaround
 
 Submission is a free action (see

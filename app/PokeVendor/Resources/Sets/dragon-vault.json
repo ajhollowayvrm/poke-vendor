@@ -63,24 +63,9 @@
    "rarity": "Common",
    "variant": "Holo",
    "market": 79.97,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": 1591.2,
-    "psa9": 535,
-    "psa8": 169.25,
-    "psa7": 71.77,
-    "psa6": 59.99,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": 121.87,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86563_in_800x800.jpg"
+   "graded": {"psa1":11.51,"psa2":16.01,"psa3":22.27,"psa4":30.99,"psa5":43.12,"psa6":59.99,"psa7":71.77,"psa8":169.25,"psa9":535.0,"psa10":1591.2,"cgc1":4.98,"cgc1_5":5.87,"cgc2":6.93,"cgc2_5":8.17,"cgc3":9.64,"cgc3_5":11.37,"cgc4":13.41,"cgc4_5":15.82,"cgc5":18.66,"cgc5_5":22.01,"cgc6":25.96,"cgc6_5":28.4,"cgc7":31.06,"cgc7_5":47.7,"cgc8":73.25,"cgc8_5":85.45,"cgc9":126.76,"cgc9_5":133.61,"cgc10":262.42,"bgs1":6.94,"bgs1_5":8.18,"bgs2":9.65,"bgs2_5":11.38,"bgs3":13.42,"bgs3_5":15.83,"bgs4":18.68,"bgs4_5":22.03,"bgs5":25.99,"bgs5_5":30.65,"bgs6":36.15,"bgs6_5":39.55,"bgs7":43.25,"bgs7_5":66.42,"bgs8":102.0,"bgs8_5":121.87,"bgs9":203.55,"bgs9_5":404.37,"bgs10":1496.81},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86563_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","bgs8_5"]
   },
   {
    "num": "1/20",
@@ -88,24 +73,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 4.34,
-   "graded": {
-    "cgc10": 135.99,
-    "cgc9_5": null,
-    "cgc9": 11.5,
-    "cgc8_5": null,
-    "cgc8": 12.75,
-    "psa10": 659.98,
-    "psa9": 15,
-    "psa8": 37.25,
-    "psa7": 13,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84937_in_800x800.jpg"
+   "graded": {"psa1":4.94,"psa2":6.0,"psa3":7.29,"psa4":8.85,"psa5":10.75,"psa6":13.0,"psa7":13.0,"psa8":23.64,"psa9":23.64,"psa10":659.98,"cgc1":1.69,"cgc1_5":1.87,"cgc2":2.06,"cgc2_5":2.26,"cgc3":2.5,"cgc3_5":2.75,"cgc4":3.03,"cgc4_5":3.34,"cgc5":3.68,"cgc5_5":4.05,"cgc6":4.46,"cgc6_5":4.46,"cgc7":4.46,"cgc7_5":7.53,"cgc8":12.13,"cgc8_5":12.13,"cgc9":12.13,"cgc9_5":30.96,"cgc10":135.99,"bgs1":1.96,"bgs1_5":2.15,"bgs2":2.37,"bgs2_5":2.62,"bgs3":2.88,"bgs3_5":3.18,"bgs4":3.5,"bgs4_5":3.86,"bgs5":4.25,"bgs5_5":4.68,"bgs6":5.15,"bgs6_5":5.15,"bgs7":5.15,"bgs7_5":8.7,"bgs8":14.73,"bgs8_5":17.57,"bgs9":31.24,"bgs9_5":43.85,"bgs10":167.04},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84937_in_800x800.jpg",
+   "gradedReal": ["psa7","psa10","cgc10"]
   },
   {
    "num": "2/20",
@@ -113,24 +83,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 14.36,
-   "graded": {
-    "cgc10": 224.95,
-    "cgc9_5": null,
-    "cgc9": 17,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": 1625.5,
-    "psa9": 104,
-    "psa8": 29.75,
-    "psa7": 25,
-    "psa6": 3.25,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84938_in_800x800.jpg"
+   "graded": {"psa1":1.88,"psa2":2.09,"psa3":2.34,"psa4":2.61,"psa5":2.91,"psa6":3.25,"psa7":25.0,"psa8":29.75,"psa9":104.0,"psa10":1625.5,"cgc1":0.82,"cgc1_5":0.87,"cgc2":0.92,"cgc2_5":0.97,"cgc3":1.03,"cgc3_5":1.09,"cgc4":1.15,"cgc4_5":1.21,"cgc5":1.28,"cgc5_5":1.35,"cgc6":1.43,"cgc6_5":3.97,"cgc7":11.0,"cgc7_5":12.0,"cgc8":13.09,"cgc8_5":17.08,"cgc9":17.08,"cgc9_5":32.43,"cgc10":224.95,"bgs1":1.27,"bgs1_5":1.35,"bgs2":1.42,"bgs2_5":1.5,"bgs3":1.59,"bgs3_5":1.68,"bgs4":1.77,"bgs4_5":1.87,"bgs5":1.98,"bgs5_5":2.09,"bgs6":2.21,"bgs6_5":6.12,"bgs7":16.98,"bgs7_5":18.52,"bgs8":20.21,"bgs8_5":22.75,"bgs9":48.61,"bgs9_5":97.98,"bgs10":490.72},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84938_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc9","cgc10"]
   },
   {
    "num": "3/20",
@@ -138,24 +93,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 6.07,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": 14.5,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 212,
-    "psa8": 27.25,
-    "psa7": 4.25,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84902_in_800x800.jpg"
+   "graded": {"psa1":4.84,"psa2":4.84,"psa3":4.84,"psa4":4.84,"psa5":4.84,"psa6":4.84,"psa7":4.84,"psa8":27.25,"psa9":212.0,"psa10":474.4,"cgc1":2.47,"cgc1_5":2.61,"cgc2":2.76,"cgc2_5":2.91,"cgc3":3.08,"cgc3_5":3.25,"cgc4":3.31,"cgc4_5":3.31,"cgc5":3.31,"cgc5_5":3.31,"cgc6":3.31,"cgc6_5":3.31,"cgc7":3.31,"cgc7_5":4.7,"cgc8":11.89,"cgc8_5":13.37,"cgc9":14.5,"cgc9_5":25.06,"cgc10":65.7,"bgs1":2.34,"bgs1_5":2.47,"bgs2":2.61,"bgs2_5":2.76,"bgs3":2.91,"bgs3_5":3.08,"bgs4":3.13,"bgs4_5":3.13,"bgs5":3.13,"bgs5_5":3.13,"bgs6":3.13,"bgs6_5":3.13,"bgs7":3.13,"bgs7_5":4.45,"bgs8":11.27,"bgs8_5":16.64,"bgs9":33.26,"bgs9_5":65.55,"bgs10":215.27},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84902_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","cgc9"]
   },
   {
    "num": "4/20",
@@ -163,24 +103,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 15.21,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": 75,
-    "cgc8_5": null,
-    "cgc8": 25,
-    "psa10": 202.5,
-    "psa9": 200,
-    "psa8": 52.5,
-    "psa7": 17.14,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84903_in_800x800.jpg"
+   "graded": {"psa1":14.9,"psa2":16.64,"psa3":17.86,"psa4":17.86,"psa5":17.86,"psa6":17.86,"psa7":17.86,"psa8":52.5,"psa9":200.0,"psa10":202.5,"cgc1":7.1,"cgc1_5":7.5,"cgc2":7.92,"cgc2_5":8.37,"cgc3":8.84,"cgc3_5":9.34,"cgc4":9.87,"cgc4_5":10.43,"cgc5":10.52,"cgc5_5":10.52,"cgc6":10.52,"cgc6_5":10.52,"cgc7":10.52,"cgc7_5":14.28,"cgc8":25.0,"cgc8_5":33.76,"cgc9":74.48,"cgc9_5":74.48,"cgc10":146.71,"bgs1":7.61,"bgs1_5":8.04,"bgs2":8.49,"bgs2_5":8.97,"bgs3":9.48,"bgs3_5":10.01,"bgs4":10.58,"bgs4_5":11.18,"bgs5":11.28,"bgs5_5":11.28,"bgs6":11.28,"bgs6_5":11.28,"bgs7":11.28,"bgs7_5":15.31,"bgs8":26.79,"bgs8_5":33.2,"bgs9":64.92,"bgs9_5":121.4,"bgs10":433.71},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84903_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8"]
   },
   {
    "num": "5/20",
@@ -188,24 +113,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 33.71,
-   "graded": {
-    "cgc10": 515,
-    "cgc9_5": null,
-    "cgc9": 55.45,
-    "cgc8_5": 44,
-    "cgc8": 33,
-    "psa10": 6500,
-    "psa9": 400,
-    "psa8": 142.66,
-    "psa7": 68.99,
-    "psa6": 23.5,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84915_in_800x800.jpg"
+   "graded": {"psa1":4.3,"psa2":6.04,"psa3":8.49,"psa4":11.92,"psa5":16.73,"psa6":23.5,"psa7":68.99,"psa8":142.66,"psa9":400.0,"psa10":6500.0,"cgc1":1.0,"cgc1_5":1.18,"cgc2":1.4,"cgc2_5":1.66,"cgc3":1.96,"cgc3_5":2.33,"cgc4":2.76,"cgc4_5":3.27,"cgc5":3.87,"cgc5_5":4.59,"cgc6":5.44,"cgc6_5":9.31,"cgc7":15.96,"cgc7_5":22.95,"cgc8":33.0,"cgc8_5":44.0,"cgc9":55.45,"cgc9_5":113.01,"cgc10":515.0,"bgs1":1.92,"bgs1_5":2.27,"bgs2":2.69,"bgs2_5":3.19,"bgs3":3.78,"bgs3_5":4.48,"bgs4":5.31,"bgs4_5":6.29,"bgs5":7.46,"bgs5_5":8.84,"bgs6":10.47,"bgs6_5":17.94,"bgs7":30.74,"bgs7_5":44.2,"bgs8":58.8,"bgs8_5":58.8,"bgs9":133.05,"bgs9_5":348.03,"bgs10":1051.84},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84915_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10"]
   },
   {
    "num": "6/20",
@@ -213,24 +123,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 2.33,
-   "graded": {
-    "cgc10": 92.47,
-    "cgc9_5": null,
-    "cgc9": 24.99,
-    "cgc8_5": 19.32,
-    "cgc8": null,
-    "psa10": 1303.78,
-    "psa9": 91.5,
-    "psa8": 70,
-    "psa7": 25,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83701_in_800x800.jpg"
+   "graded": {"psa1":8.65,"psa2":10.5,"psa3":12.76,"psa4":15.49,"psa5":18.81,"psa6":22.84,"psa7":25.0,"psa8":70.0,"psa9":91.5,"psa10":1303.78,"cgc1":2.67,"cgc1_5":2.94,"cgc2":3.24,"cgc2_5":3.57,"cgc3":3.94,"cgc3_5":4.34,"cgc4":4.78,"cgc4_5":5.27,"cgc5":5.81,"cgc5_5":6.4,"cgc6":7.05,"cgc6_5":7.38,"cgc7":7.72,"cgc7_5":12.92,"cgc8":19.42,"cgc8_5":19.42,"cgc9":24.99,"cgc9_5":50.25,"cgc10":92.47,"bgs1":3.27,"bgs1_5":3.6,"bgs2":3.97,"bgs2_5":4.37,"bgs3":4.82,"bgs3_5":5.31,"bgs4":5.85,"bgs4_5":6.45,"bgs5":7.11,"bgs5_5":7.83,"bgs6":8.63,"bgs6_5":9.03,"bgs7":9.45,"bgs7_5":15.81,"bgs8":26.45,"bgs8_5":29.24,"bgs9":48.37,"bgs9_5":80.98,"bgs10":251.24},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83701_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc9","cgc10"]
   },
   {
    "num": "7/20",
@@ -238,24 +133,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 1.94,
-   "graded": {
-    "cgc10": 530,
-    "cgc9_5": null,
-    "cgc9": 44,
-    "cgc8_5": 40,
-    "cgc8": null,
-    "psa10": 510,
-    "psa9": 43.86,
-    "psa8": 8.5,
-    "psa7": null,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/89130_in_800x800.jpg"
+   "graded": {"psa1":6.78,"psa2":8.23,"psa3":9.48,"psa4":9.48,"psa5":9.48,"psa6":9.48,"psa7":9.48,"psa8":9.48,"psa9":43.86,"psa10":510.0,"cgc1":12.61,"cgc1_5":13.89,"cgc2":15.31,"cgc2_5":16.87,"cgc3":18.59,"cgc3_5":20.49,"cgc4":22.58,"cgc4_5":24.88,"cgc5":27.41,"cgc5_5":28.83,"cgc6":28.83,"cgc6_5":28.83,"cgc7":28.83,"cgc7_5":28.83,"cgc8":28.83,"cgc8_5":40.0,"cgc9":44.0,"cgc9_5":60.94,"cgc10":530.0,"bgs1":17.65,"bgs1_5":19.45,"bgs2":21.44,"bgs2_5":23.62,"bgs3":26.03,"bgs3_5":28.68,"bgs4":31.61,"bgs4_5":34.83,"bgs5":38.34,"bgs5_5":38.34,"bgs6":38.34,"bgs6_5":38.34,"bgs7":38.34,"bgs7_5":38.34,"bgs8":38.34,"bgs8_5":38.34,"bgs9":49.95,"bgs9_5":61.71,"bgs10":206.41},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/89130_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc8_5","cgc9","cgc10"]
   },
   {
    "num": "8/20",
@@ -263,24 +143,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 6.31,
-   "graded": {
-    "cgc10": 199.95,
-    "cgc9_5": 44.99,
-    "cgc9": 19.5,
-    "cgc8_5": 21.24,
-    "cgc8": 199.99,
-    "psa10": 2875,
-    "psa9": 102.92,
-    "psa8": 323,
-    "psa7": 28.62,
-    "psa6": 16.27,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": 36,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88900_in_800x800.jpg"
+   "graded": {"psa1":9.39,"psa2":10.48,"psa3":11.7,"psa4":13.06,"psa5":14.58,"psa6":16.27,"psa7":28.62,"psa8":182.33,"psa9":182.33,"psa10":2875.0,"cgc1":5.81,"cgc1_5":6.14,"cgc2":6.49,"cgc2_5":6.85,"cgc3":7.24,"cgc3_5":7.65,"cgc4":8.08,"cgc4_5":8.54,"cgc5":9.02,"cgc5_5":9.53,"cgc6":10.07,"cgc6_5":13.36,"cgc7":17.72,"cgc7_5":43.81,"cgc8":43.81,"cgc8_5":43.81,"cgc9":43.81,"cgc9_5":44.99,"cgc10":199.95,"bgs1":1.07,"bgs1_5":1.13,"bgs2":1.19,"bgs2_5":1.26,"bgs3":1.33,"bgs3_5":1.41,"bgs4":1.49,"bgs4_5":1.57,"bgs5":1.66,"bgs5_5":1.75,"bgs6":1.85,"bgs6_5":2.46,"bgs7":3.26,"bgs7_5":10.95,"bgs8":36.24,"bgs8_5":36.24,"bgs9":36.24,"bgs9_5":153.22,"bgs10":680.28},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88900_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa10","cgc9_5","cgc10"]
   },
   {
    "num": "9/20",
@@ -288,24 +153,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 22,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": 36.3,
-    "cgc8_5": 34.18,
-    "cgc8": null,
-    "psa10": 2463,
-    "psa9": 176.25,
-    "psa8": 243.75,
-    "psa7": 152.5,
-    "psa6": 90,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86654_in_800x800.jpg"
+   "graded": {"psa1":51.93,"psa2":57.96,"psa3":64.7,"psa4":72.23,"psa5":80.62,"psa6":90.0,"psa7":152.5,"psa8":207.27,"psa9":207.27,"psa10":2463.0,"cgc1":10.0,"cgc1_5":10.56,"cgc2":11.16,"cgc2_5":11.79,"cgc3":12.46,"cgc3_5":13.16,"cgc4":13.91,"cgc4_5":14.69,"cgc5":15.52,"cgc5_5":16.4,"cgc6":17.33,"cgc6_5":22.56,"cgc7":29.36,"cgc7_5":34.81,"cgc8":34.81,"cgc8_5":34.81,"cgc9":36.3,"cgc9_5":108.72,"cgc10":301.32,"bgs1":15.51,"bgs1_5":16.39,"bgs2":17.31,"bgs2_5":18.29,"bgs3":19.33,"bgs3_5":20.42,"bgs4":21.57,"bgs4_5":22.79,"bgs5":24.08,"bgs5_5":25.44,"bgs6":26.88,"bgs6_5":34.99,"bgs7":45.55,"bgs7_5":57.59,"bgs8":72.8,"bgs8_5":79.77,"bgs9":176.19,"bgs9_5":325.61,"bgs10":1341.69},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86654_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa10","cgc9"]
   },
   {
    "num": "10/20",
@@ -313,24 +163,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 12.37,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": 75,
-    "cgc8_5": 34,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 174.37,
-    "psa8": 74.99,
-    "psa7": 37,
-    "psa6": 68.5,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86668_in_800x800.jpg"
+   "graded": {"psa1":39.52,"psa2":44.12,"psa3":49.25,"psa4":50.69,"psa5":50.69,"psa6":50.69,"psa7":50.69,"psa8":74.99,"psa9":174.37,"psa10":1350.59,"cgc1":17.63,"cgc1_5":18.63,"cgc2":19.68,"cgc2_5":20.79,"cgc3":21.97,"cgc3_5":23.21,"cgc4":24.52,"cgc4_5":24.6,"cgc5":24.6,"cgc5_5":24.6,"cgc6":24.6,"cgc6_5":24.6,"cgc7":24.6,"cgc7_5":24.6,"cgc8":33.45,"cgc8_5":34.0,"cgc9":75.0,"cgc9_5":94.43,"cgc10":218.09,"bgs1":21.03,"bgs1_5":22.22,"bgs2":23.48,"bgs2_5":24.8,"bgs3":26.2,"bgs3_5":27.69,"bgs4":29.25,"bgs4_5":29.35,"bgs5":29.35,"bgs5_5":29.35,"bgs6":29.35,"bgs6_5":29.35,"bgs7":29.35,"bgs7_5":29.35,"bgs8":39.9,"bgs8_5":51.75,"bgs9":101.51,"bgs9_5":196.8,"bgs10":611.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86668_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","cgc8_5","cgc9"]
   },
   {
    "num": "11/20",
@@ -338,24 +173,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 59.42,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": 89.25,
-    "cgc9": 95,
-    "cgc8_5": 104.75,
-    "cgc8": 160,
-    "psa10": 15609,
-    "psa9": 707.5,
-    "psa8": 208.75,
-    "psa7": 72.25,
-    "psa6": 94.99,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": 40.24
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88631_in_800x800.jpg"
+   "graded": {"psa1":17.39,"psa2":24.43,"psa3":34.3,"psa4":48.17,"psa5":67.64,"psa6":82.84,"psa7":82.84,"psa8":208.75,"psa9":707.5,"psa10":15609.0,"cgc1":13.33,"cgc1_5":15.8,"cgc2":18.72,"cgc2_5":22.19,"cgc3":26.29,"cgc3_5":31.15,"cgc4":36.92,"cgc4_5":43.75,"cgc5":51.85,"cgc5_5":61.44,"cgc6":63.5,"cgc6_5":63.5,"cgc7":63.5,"cgc7_5":94.13,"cgc8":109.18,"cgc8_5":109.18,"cgc9":109.18,"cgc9_5":109.18,"cgc10":445.38,"bgs1":3.35,"bgs1_5":3.97,"bgs2":4.71,"bgs2_5":5.58,"bgs3":6.61,"bgs3_5":7.84,"bgs4":9.29,"bgs4_5":11.0,"bgs5":13.04,"bgs5_5":15.45,"bgs6":15.97,"bgs6_5":15.97,"bgs7":15.97,"bgs7_5":23.67,"bgs8":40.24,"bgs8_5":109.99,"bgs9":204.95,"bgs9_5":527.19,"bgs10":1750.61},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88631_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","bgs8"]
   },
   {
    "num": "12/20",
@@ -363,24 +183,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 2.08,
-   "graded": {
-    "cgc10": 35,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": 5.5,
-    "psa10": null,
-    "psa9": 22.25,
-    "psa8": 11.01,
-    "psa7": 15,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83670_in_800x800.jpg"
+   "graded": {"psa1":3.33,"psa2":4.04,"psa3":4.9,"psa4":5.95,"psa5":7.23,"psa6":8.78,"psa7":12.85,"psa8":12.85,"psa9":22.25,"psa10":229.1,"cgc1":1.66,"cgc1_5":1.83,"cgc2":2.02,"cgc2_5":2.22,"cgc3":2.45,"cgc3_5":2.7,"cgc4":2.97,"cgc4_5":3.28,"cgc5":3.61,"cgc5_5":3.98,"cgc6":4.39,"cgc6_5":5.62,"cgc7":5.62,"cgc7_5":5.62,"cgc8":5.62,"cgc8_5":8.26,"cgc9":10.46,"cgc9_5":18.77,"cgc10":35.0,"bgs1":2.65,"bgs1_5":2.92,"bgs2":3.22,"bgs2_5":3.55,"bgs3":3.91,"bgs3_5":4.31,"bgs4":4.75,"bgs4_5":5.23,"bgs5":5.77,"bgs5_5":6.35,"bgs6":7.0,"bgs6_5":9.15,"bgs7":10.03,"bgs7_5":10.03,"bgs8":10.03,"bgs8_5":10.03,"bgs9":14.3,"bgs9_5":20.72,"bgs10":72.33},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83670_in_800x800.jpg",
+   "gradedReal": ["psa9","cgc10"]
   },
   {
    "num": "13/20",
@@ -388,24 +193,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 2.16,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": 17,
-    "cgc8": 20,
-    "psa10": null,
-    "psa9": 49.99,
-    "psa8": 8.25,
-    "psa7": 15,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83671_in_800x800.jpg"
+   "graded": {"psa1":4.85,"psa2":5.89,"psa3":7.15,"psa4":8.68,"psa5":10.54,"psa6":11.16,"psa7":11.16,"psa8":11.16,"psa9":49.99,"psa10":386.84,"cgc1":11.75,"cgc1_5":12.95,"cgc2":14.27,"cgc2_5":15.73,"cgc3":17.33,"cgc3_5":19.1,"cgc4":19.69,"cgc4_5":19.69,"cgc5":19.69,"cgc5_5":19.69,"cgc6":19.69,"cgc6_5":19.69,"cgc7":19.69,"cgc7_5":19.69,"cgc8":19.69,"cgc8_5":19.69,"cgc9":19.69,"cgc9_5":28.29,"cgc10":52.88,"bgs1":8.06,"bgs1_5":8.88,"bgs2":9.78,"bgs2_5":10.78,"bgs3":11.88,"bgs3_5":13.09,"bgs4":14.42,"bgs4_5":15.89,"bgs5":17.51,"bgs5_5":19.27,"bgs6":19.27,"bgs6_5":19.27,"bgs7":19.27,"bgs7_5":19.27,"bgs8":19.27,"bgs8_5":19.27,"bgs9":19.27,"bgs9_5":32.59,"bgs10":103.96},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83671_in_800x800.jpg",
+   "gradedReal": ["psa9"]
   },
   {
    "num": "14/20",
@@ -413,24 +203,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 1.95,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 59,
-    "psa8": 8.5,
-    "psa7": 16.75,
-    "psa6": 16.99,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85559_in_800x800.jpg"
+   "graded": {"psa1":6.44,"psa2":7.81,"psa3":9.49,"psa4":11.52,"psa5":13.43,"psa6":13.43,"psa7":13.43,"psa8":13.43,"psa9":59.0,"psa10":401.15,"cgc1":7.62,"cgc1_5":8.4,"cgc2":9.25,"cgc2_5":10.2,"cgc3":11.24,"cgc3_5":12.38,"cgc4":13.64,"cgc4_5":15.03,"cgc5":15.9,"cgc5_5":15.9,"cgc6":15.9,"cgc6_5":15.9,"cgc7":15.9,"cgc7_5":15.9,"cgc8":15.9,"cgc8_5":15.9,"cgc9":15.9,"cgc9_5":25.98,"cgc10":49.54,"bgs1":10.03,"bgs1_5":11.06,"bgs2":12.18,"bgs2_5":13.43,"bgs3":14.8,"bgs3_5":16.3,"bgs4":17.97,"bgs4_5":19.8,"bgs5":20.22,"bgs5_5":20.22,"bgs6":20.22,"bgs6_5":20.22,"bgs7":20.22,"bgs7_5":20.22,"bgs8":20.22,"bgs8_5":20.22,"bgs9":20.22,"bgs9_5":29.24,"bgs10":95.1},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85559_in_800x800.jpg",
+   "gradedReal": ["psa9"]
   },
   {
    "num": "15/20",
@@ -438,24 +213,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 1.59,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 57.49,
-    "psa8": 8,
-    "psa7": null,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85560_in_800x800.jpg"
+   "graded": {"psa1":3.53,"psa2":4.28,"psa3":5.2,"psa4":6.31,"psa5":7.67,"psa6":8.16,"psa7":8.16,"psa8":8.16,"psa9":57.49,"psa10":307.3,"cgc1":3.44,"cgc1_5":3.8,"cgc2":4.18,"cgc2_5":4.61,"cgc3":5.08,"cgc3_5":5.6,"cgc4":6.17,"cgc4_5":6.8,"cgc5":7.49,"cgc5_5":8.25,"cgc6":9.09,"cgc6_5":9.13,"cgc7":9.13,"cgc7_5":9.13,"cgc8":9.13,"cgc8_5":9.17,"cgc9":10.85,"cgc9_5":20.74,"cgc10":38.87,"bgs1":3.61,"bgs1_5":3.98,"bgs2":4.38,"bgs2_5":4.83,"bgs3":5.32,"bgs3_5":5.87,"bgs4":6.47,"bgs4_5":7.12,"bgs5":7.85,"bgs5_5":8.65,"bgs6":9.53,"bgs6_5":9.57,"bgs7":9.57,"bgs7_5":9.57,"bgs8":9.57,"bgs8_5":11.35,"bgs9":11.74,"bgs9_5":24.34,"bgs10":70.87},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85560_in_800x800.jpg",
+   "gradedReal": ["psa9"]
   },
   {
    "num": "16/20",
@@ -463,24 +223,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 3.85,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 29.75,
-    "psa8": 38.03,
-    "psa7": 14.5,
-    "psa6": 61,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86034_in_800x800.jpg"
+   "graded": {"psa1":23.11,"psa2":28.06,"psa3":30.43,"psa4":30.43,"psa5":30.43,"psa6":30.43,"psa7":30.43,"psa8":33.64,"psa9":33.64,"psa10":651.07,"cgc1":10.88,"cgc1_5":11.99,"cgc2":13.22,"cgc2_5":14.56,"cgc3":16.05,"cgc3_5":17.3,"cgc4":17.3,"cgc4_5":17.3,"cgc5":17.3,"cgc5_5":17.3,"cgc6":17.3,"cgc6_5":17.3,"cgc7":17.3,"cgc7_5":17.3,"cgc8":17.91,"cgc8_5":22.19,"cgc9":28.48,"cgc9_5":41.86,"cgc10":79.03,"bgs1":15.16,"bgs1_5":16.7,"bgs2":18.41,"bgs2_5":20.28,"bgs3":22.35,"bgs3_5":24.09,"bgs4":24.09,"bgs4_5":24.09,"bgs5":24.09,"bgs5_5":24.09,"bgs6":24.09,"bgs6_5":24.09,"bgs7":24.09,"bgs7_5":24.09,"bgs8":24.09,"bgs8_5":24.09,"bgs9":37.12,"bgs9_5":47.19,"bgs10":148.23},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86034_in_800x800.jpg",
+   "gradedReal": []
   },
   {
    "num": "17/20",
@@ -488,24 +233,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 3,
-   "graded": {
-    "cgc10": 51,
-    "cgc9_5": 85,
-    "cgc9": 64.95,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": 105.83,
-    "psa8": 8.5,
-    "psa7": 26,
-    "psa6": 15.75,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84979_in_800x800.jpg"
+   "graded": {"psa1":5.97,"psa2":7.24,"psa3":8.8,"psa4":10.68,"psa5":12.97,"psa6":15.16,"psa7":15.16,"psa8":15.16,"psa9":105.83,"psa10":527.46,"cgc1":12.0,"cgc1_5":13.22,"cgc2":14.57,"cgc2_5":16.06,"cgc3":17.69,"cgc3_5":19.5,"cgc4":21.49,"cgc4_5":23.68,"cgc5":26.09,"cgc5_5":28.75,"cgc6":31.6,"cgc6_5":31.6,"cgc7":31.6,"cgc7_5":31.6,"cgc8":31.6,"cgc8_5":31.6,"cgc9":64.95,"cgc9_5":65.84,"cgc10":65.84,"bgs1":15.41,"bgs1_5":16.98,"bgs2":18.71,"bgs2_5":20.62,"bgs3":22.72,"bgs3_5":25.04,"bgs4":27.59,"bgs4_5":30.4,"bgs5":33.5,"bgs5_5":36.92,"bgs6":36.94,"bgs6_5":36.94,"bgs7":36.94,"bgs7_5":36.94,"bgs8":36.94,"bgs8_5":36.94,"bgs9":36.94,"bgs9_5":55.89,"bgs10":168.12},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84979_in_800x800.jpg",
+   "gradedReal": ["psa9","cgc9"]
   },
   {
    "num": "18/20",
@@ -513,24 +243,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 1.83,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": 160.5,
-    "psa9": 17.18,
-    "psa8": 19.51,
-    "psa7": null,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85366_in_800x800.jpg"
+   "graded": {"psa1":3.18,"psa2":3.86,"psa3":4.69,"psa4":5.7,"psa5":6.92,"psa6":8.4,"psa7":10.01,"psa8":18.31,"psa9":18.31,"psa10":160.5,"cgc1":1.21,"cgc1_5":1.33,"cgc2":1.47,"cgc2_5":1.62,"cgc3":1.78,"cgc3_5":1.96,"cgc4":2.16,"cgc4_5":2.38,"cgc5":2.63,"cgc5_5":2.89,"cgc6":3.19,"cgc6_5":3.48,"cgc7":3.8,"cgc7_5":5.3,"cgc8":7.4,"cgc8_5":9.0,"cgc9":9.89,"cgc9_5":20.32,"cgc10":35.34,"bgs1":1.61,"bgs1_5":1.77,"bgs2":1.96,"bgs2_5":2.16,"bgs3":2.37,"bgs3_5":2.62,"bgs4":2.88,"bgs4_5":3.18,"bgs5":3.5,"bgs5_5":3.86,"bgs6":4.25,"bgs6_5":4.64,"bgs7":5.07,"bgs7_5":7.08,"bgs8":9.88,"bgs8_5":10.57,"bgs9":20.41,"bgs9_5":25.21,"bgs10":82.32},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85366_in_800x800.jpg",
+   "gradedReal": ["psa10"]
   },
   {
    "num": "19/20",
@@ -538,24 +253,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 0.87,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": null,
-    "psa9": null,
-    "psa8": null,
-    "psa7": null,
-    "psa6": null,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85470_in_800x800.jpg"
+   "graded": {"psa1":6.78,"psa2":7.77,"psa3":8.92,"psa4":10.22,"psa5":11.72,"psa6":12.52,"psa7":12.52,"psa8":12.83,"psa9":15.36,"psa10":156.94,"cgc1":3.61,"cgc1_5":3.87,"cgc2":4.14,"cgc2_5":4.44,"cgc3":4.75,"cgc3_5":5.09,"cgc4":5.45,"cgc4_5":5.83,"cgc5":6.25,"cgc5_5":6.64,"cgc6":6.64,"cgc6_5":6.64,"cgc7":6.64,"cgc7_5":6.64,"cgc8":6.83,"cgc8_5":7.05,"cgc9":10.59,"cgc9_5":14.95,"cgc10":30.36,"bgs1":5.64,"bgs1_5":6.04,"bgs2":6.47,"bgs2_5":6.93,"bgs3":7.42,"bgs3_5":7.94,"bgs4":8.51,"bgs4_5":9.11,"bgs5":9.75,"bgs5_5":10.37,"bgs6":10.37,"bgs6_5":10.37,"bgs7":10.37,"bgs7_5":10.37,"bgs8":10.67,"bgs8_5":12.18,"bgs9":17.78,"bgs9_5":29.04,"bgs10":143.58},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85470_in_800x800.jpg",
+   "gradedReal": []
   },
   {
    "num": "20/20",
@@ -563,24 +263,9 @@
    "rarity": "Rare",
    "variant": "Holo",
    "market": 5.95,
-   "graded": {
-    "cgc10": null,
-    "cgc9_5": null,
-    "cgc9": null,
-    "cgc8_5": null,
-    "cgc8": null,
-    "psa10": 225.61,
-    "psa9": null,
-    "psa8": 63,
-    "psa7": null,
-    "psa6": 3.25,
-    "bgs10": null,
-    "bgs9_5": null,
-    "bgs9": null,
-    "bgs8_5": null,
-    "bgs8": null
-   },
-   "image": "https://tcgplayer-cdn.tcgplayer.com/product/89632_in_800x800.jpg"
+   "graded": {"psa1":1.88,"psa2":2.09,"psa3":2.34,"psa4":2.61,"psa5":2.91,"psa6":3.25,"psa7":11.26,"psa8":61.4,"psa9":61.4,"psa10":225.61,"cgc1":0.24,"cgc1_5":0.25,"cgc2":0.26,"cgc2_5":0.28,"cgc3":0.29,"cgc3_5":0.31,"cgc4":0.33,"cgc4_5":0.35,"cgc5":0.37,"cgc5_5":0.39,"cgc6":0.41,"cgc6_5":0.76,"cgc7":1.42,"cgc7_5":3.35,"cgc8":7.93,"cgc8_5":11.63,"cgc9":15.77,"cgc9_5":20.5,"cgc10":45.52,"bgs1":0.41,"bgs1_5":0.43,"bgs2":0.45,"bgs2_5":0.48,"bgs3":0.51,"bgs3_5":0.54,"bgs4":0.57,"bgs4_5":0.6,"bgs5":0.63,"bgs5_5":0.67,"bgs6":0.7,"bgs6_5":1.31,"bgs7":2.44,"bgs7_5":5.77,"bgs8":13.26,"bgs8_5":13.26,"bgs9":30.03,"bgs9_5":50.96,"bgs10":230.69},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/89632_in_800x800.jpg",
+   "gradedReal": ["psa6","psa10"]
   }
  ]
 }

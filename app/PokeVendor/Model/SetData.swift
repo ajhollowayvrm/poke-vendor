@@ -11,10 +11,21 @@ struct CardPrint: Codable, Hashable {
     /// Graded prices by key, for example "psa10" or "bgs9_5". A grade with no sales data is nil.
     let graded: [String: Double?]
     let image: String?
+    /// The graded keys that hold a real sale price. The other keys hold an estimate (tools/export/fill_graded.py).
+    /// Nil in an old file: every price is real.
+    var gradedReal: [String]? = nil
+    /// The raw price is an estimate. Nil in an old file.
+    var marketEstimated: Bool? = nil
 }
 
 extension CardPrint {
     func gradedPrice(_ key: String) -> Double? { graded[key] ?? nil }
+
+    /// The price of this key is an estimate. It is not an estimate when the price is real or the file has no list.
+    func isGradedEstimated(_ key: String) -> Bool {
+        guard let gradedReal, graded[key] ?? nil != nil else { return false }
+        return !gradedReal.contains(key)
+    }
 }
 
 /// A sealed product from catalog.json (tools/export/catalog.py).
@@ -34,9 +45,12 @@ struct Product: Codable, Hashable, Identifiable {
         let market: Double?
         let graded: [String: Double?]
         let image: String?
+        var gradedReal: [String]? = nil
+        var marketEstimated: Bool? = nil
 
         var print: CardPrint {
-            CardPrint(num: num, name: name, rarity: rarity, variant: variant, market: market, graded: graded, image: image)
+            CardPrint(num: num, name: name, rarity: rarity, variant: variant, market: market, graded: graded, image: image,
+                      gradedReal: gradedReal, marketEstimated: marketEstimated)
         }
     }
 

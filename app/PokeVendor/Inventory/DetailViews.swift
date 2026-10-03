@@ -127,6 +127,9 @@ struct CardDetailView: View {
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundStyle(Theme.muted)
                             Spacer()
+                            if card.isGradedEstimated || (card.grade == nil && card.print.marketEstimated == true) {
+                                Text("est.").font(.caption).foregroundStyle(Theme.muted)
+                            }
                             Text(money(card.market)).font(.title3.monospaced().weight(.semibold))
                         }
                         if card.grade != nil {

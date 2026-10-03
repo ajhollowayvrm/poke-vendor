@@ -421,17 +421,40 @@ struct OwnedCard: Codable, Identifiable, Hashable {
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
     }
 
-    /// For a grade with no sales data: a multiple of the raw price, with a floor.
+    /// The price of the slab is an estimate, not a real sale (docs/10-grading.md, Estimated prices).
+    var isGradedEstimated: Bool {
+        guard let grade else { return false }
+        return print.isGradedEstimated(grade.priceKey)
+    }
+
+    /// The median price of a PSA 6, 7, 8, 9, and 10 as a multiple of the raw price, for each raw price tier.
+    /// The tiers are under $1, $1 to $5, $5 to $25, $25 to $100, and $100 and up. The numbers come from
+    /// tools/export/fill_graded.py (docs/19-prototype-values.md, Graded prices).
+    private static let psaRatios: [[Double]] = [
+        [21.55, 21.77, 21.77, 28.46, 121.33],
+        [4.71, 5.39, 6.25, 9.01, 33.61],
+        [1.32, 1.60, 1.98, 2.97, 14.29],
+        [0.72, 0.91, 1.04, 1.65, 8.81],
+        [0.71, 0.94, 1.20, 2.14, 10.98],
+    ]
+    /// The fall in price for each PSA grade below PSA 6, for each raw price tier.
+    private static let psaSteps: [Double] = [0.87, 0.9, 0.83, 0.71, 0.72]
+    /// The median price of a CGC or BGS grade as a multiple of the PSA price of the same grade, at grades 8, 9, and 10.
+    private static let companyFactors: [GradingCompany: [Double]] = [.cgc: [0.58, 0.51, 0.30], .bgs: [0.70, 0.72, 1.72], .psa: [1, 1, 1]]
+
+    /// For a grade with no price in the set file: the raw price times the fitted ratios of the data.
     static func fallbackGradedPrice(raw: Double, grade: SlabGrade) -> Double {
-        let (multiple, floor): (Double, Double) = switch grade.grade {
-        case 10...: (2.5, grade.company == .bgs ? 30 : grade.company == .psa ? 15 : 12)
-        case 9.5...: (1.6, 10)
-        case 9...: (1.3, 7)
-        case 8...: (0.95, 5)
-        case 7...: (0.75, 4)
-        default: (0.5, 3)
+        let tier = [1.0, 5, 25, 100].filter { raw >= $0 }.count
+        let top = psaRatios[tier]
+        func psa(_ g: Double) -> Double {
+            if g < 6 { return top[0] * pow(psaSteps[tier], 6 - g) }
+            let low = Int(g.rounded(.down)), high = Int(g.rounded(.up))
+            return (top[low - 6] * top[high - 6]).squareRoot()
         }
-        return max(raw * multiple, floor) * (grade.blackLabel ? 2 : 1)
+        let factors = companyFactors[grade.company] ?? [1, 1, 1]
+        let x = max(grade.grade, 8) - 8
+        let factor = x >= 1 ? factors[1] * pow(factors[2] / factors[1], x - 1) : factors[0] * pow(factors[1] / factors[0], x)
+        return max(raw * psa(min(10, max(1, grade.grade))) * factor, 1) * (grade.blackLabel ? 2 : 1)
     }
 }
 

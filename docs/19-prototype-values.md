@@ -158,9 +158,93 @@ centering subgrade of 10.
 | Centering ruler | $40 | Numbers ±2 | Words (eye error ±6) |
 | Centering scanner | $200 | Exact | Exact |
 
-**A grade with no sales data** is worth a multiple of the raw price,
-with a floor. A 10 is 2.5 times raw, with a floor of $15 for PSA, $12
-for CGC, and $30 for BGS.
+### Graded prices
+
+Every print has a price for each of 48 grade keys: PSA 1 to 10, and CGC
+and BGS 1 to 10 in steps of 0.5. About 59,600 of the 1.66 million prices
+(3.6 percent) are real sales. The script `tools/export/fill_graded.py`
+fills the rest (see [10-grading.md](10-grading.md#estimated-prices)).
+The numbers below are the median ratios that the script fitted to the
+real prices. The app shows "est." next to an estimated price.
+
+Median price of a grade as a multiple of the raw price, by raw price
+tier. The tier uses the raw price of the card.
+
+| Key | Under $1 | $1 to $5 | $5 to $25 | $25 to $100 | $100 and up |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| PSA 6 | 21.55 | 4.71 | 1.32 | 0.72 | 0.71 |
+| PSA 7 | 21.77 | 5.39 | 1.60 | 0.91 | 0.94 |
+| PSA 8 | 21.19 | 6.25 | 1.98 | 1.04 | 1.20 |
+| PSA 9 | 28.46 | 9.01 | 2.97 | 1.65 | 2.14 |
+| PSA 10 | 121.33 | 33.61 | 14.29 | 8.81 | 10.98 |
+| CGC 8 | 13.01 | 4.17 | 1.27 | 0.86 | 0.86 |
+| CGC 8.5 | 13.86 | 4.16 | 1.53 | 0.98 | 0.94 |
+| CGC 9 | 14.72 | 4.71 | 1.70 | 1.06 | 1.14 |
+| CGC 9.5 | 23.69 | 6.27 | 2.24 | 1.35 | 1.25 |
+| CGC 10 | 34.72 | 12.18 | 4.13 | 2.33 | 2.52 |
+| BGS 8 | — | 3.38 | 1.47 | 1.22 | 1.16 |
+| BGS 8.5 | 13.65 | 4.54 | 1.38 | 1.29 | 1.14 |
+| BGS 9 | 22.14 | 6.17 | 1.91 | 1.62 | 1.77 |
+| BGS 9.5 | 46.27 | 9.21 | 3.25 | 2.21 | 2.74 |
+| BGS 10 | — | 25.51 | 14.11 | 7.17 | 3.87 |
+
+Median price of a key as a multiple of the PSA price of the same card
+and grade, by era. Vintage is the Wizards of the Coast and e-Card sets.
+Classic is the EX to XY sets. Current is Sun & Moon and later.
+
+| Pair | All | Vintage | Classic | Current |
+| --- | ---: | ---: | ---: | ---: |
+| CGC 10 / PSA 10 | 0.30 | 0.24 | 0.19 | 0.40 |
+| CGC 9 / PSA 9 | 0.51 | 0.52 | 0.42 | 0.63 |
+| CGC 8 / PSA 8 | 0.58 | 0.58 | 0.53 | 0.75 |
+| BGS 10 / PSA 10 | 1.72 | — | 0.81 | 1.73 |
+| BGS 9 / PSA 9 | 0.72 | 0.71 | 0.57 | 0.82 |
+| BGS 8 / PSA 8 | 0.70 | 0.58 | 0.65 | 0.89 |
+
+Median step from one grade to the next, over all prints:
+
+| Step | Ratio |
+| --- | ---: |
+| PSA 10 / PSA 9 | 5.29 |
+| PSA 9 / PSA 8 | 1.65 |
+| PSA 8 / PSA 7 | 1.39 |
+| PSA 7 / PSA 6 | 1.34 |
+| CGC 10 / CGC 9.5 | 1.94 |
+| CGC 9.5 / CGC 9 | 1.34 |
+| BGS 10 / BGS 9.5 | 3.59 |
+| BGS 9.5 / BGS 9 | 1.84 |
+
+Median PSA 10 price as a multiple of the raw price, by era and rarity
+bucket:
+
+| Era | Bulk | Rare | Holo | Ultra | Chase |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Vintage | 31.5 | 16.7 | 24.0 | — | — |
+| Classic | 23.9 | 36.3 | 72.9 | 31.5 | 24.0 |
+| Current | 29.8 | 44.1 | 67.8 | 15.2 | 8.0 |
+
+The script fits one ratio for each group of era, rarity bucket, and raw
+price tier. A group with fewer than 30 prints uses the next wider group.
+The tables show the pooled medians.
+
+Other values:
+
+- **A print with no real graded price** uses the lower quartile of the
+  fitted raw ratio for its PSA keys. Its CGC and BGS keys use the median
+  ratio to its PSA keys.
+- **PSA 1 to 5** have no real data. Each grade below PSA 6 is worth the
+  next grade up times a step: 0.87, 0.90, 0.83, 0.71, and 0.72 for the
+  five raw price tiers. The step is the fitted PSA 6 / PSA 7 ratio, held
+  between 0.6 and 0.9.
+- **CGC and BGS below 8** follow the PSA ladder, times the CGC 8 / PSA 8
+  or BGS 8 / PSA 8 ratio of the same card.
+- **A missing raw price** (40 prints) comes from the median raw price of
+  the same rarity bucket in the same set.
+- **A Black Label** is worth 2 times the BGS 10 price.
+- **The fallback in the app** (`fallbackGradedPrice`) is for a grade that
+  a set file does not hold. It uses the PSA row of the first table by
+  raw price tier, the CGC and BGS ratios to PSA at grades 8, 9, and 10,
+  and a floor of $1.
 
 ## Social media
 

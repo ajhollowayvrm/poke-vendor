@@ -313,9 +313,10 @@ struct GradeSheet: View {
                             }
                             Spacer()
                             VStack(alignment: .trailing) {
-                                Text("raw \(money(card.market))").font(.caption.monospaced())
-                                let ten = card.print.gradedPrice("\(company.rawValue.lowercased())10")
-                                Text("\(company.rawValue) 10 \(ten.map(money) ?? "—")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                Text("raw \(money(card.market))\(card.print.marketEstimated == true ? " est." : "")").font(.caption.monospaced())
+                                let tenKey = "\(company.rawValue.lowercased())10"
+                                let ten = card.print.gradedPrice(tenKey)
+                                Text("\(company.rawValue) 10 \(ten.map(money) ?? "—")\(card.print.isGradedEstimated(tenKey) ? " est." : "")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             }
                         }
                     }

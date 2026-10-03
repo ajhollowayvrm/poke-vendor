@@ -14,6 +14,20 @@ brand-new set, an obscure promo not yet tracked, etc.). Rather than
 leaving those cards with no gem rate or price curve at all, they fall
 back to the archetype-tag formula below.
 
+## What the code does now
+
+The set files hold a price for every card and every grade key. Most are
+estimates, and the file marks them (see
+[10-grading.md](10-grading.md#estimated-prices)). The export tool
+`tools/export/fill_graded.py` makes them with the idea of this doc. The
+groups are era (vintage, classic, current), rarity bucket (bulk, rare,
+holo, ultra, chase), and raw price tier. The tool fits the ratios to the
+real PPT prices, so it does not use the formula below. The app uses the
+fitted ratios in `fallbackGradedPrice` for a grade that a file does not
+hold. The tags finish, distribution, and demand tier are not in the
+tool. The rarity bucket stands in for them. The formulas below remain
+the plan for a card that no data covers.
+
 ## The problem this solves, for uncovered cards
 
 Two real-world facts don't scale if modeled naively:
