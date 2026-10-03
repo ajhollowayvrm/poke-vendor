@@ -149,6 +149,7 @@ extension GameStore {
         if !show.booked {
             addLedger(-show.size.entryFee, .showFees, "Entry · \(show.name)")
         }
+        rollCarBreakIn(trip: show.name)
         save()
         return data.shows[i]
     }
@@ -632,7 +633,9 @@ final class ShowSession {
     var hasTable: Bool { venue.hasTable }
     private let store: GameStore
 
-    var phase: Phase
+    var phase: Phase {
+        didSet { if phase == .summary, oldValue != .summary { rollTheft() } }
+    }
     /// Minutes since the doors opened.
     private(set) var minute: Double
     /// The minute when the player arrived.
@@ -660,6 +663,10 @@ final class ShowSession {
     /// True once the table is set up and open.
     private(set) var opened = false
     var note: String?
+    /// Minutes on the floor while the table stood empty, and the theft that happened (docs/24-theft-and-insurance.md).
+    private var awayMinutes = 0.0
+    private var theftRolled = false
+    private(set) var theftLine: String?
 
     convenience init(show: CardShow, store: GameStore) {
         let venue = Venue(kind: .show, name: show.name,
@@ -1307,7 +1314,16 @@ final class ShowSession {
 
     func closeVendor() { openVendorID = nil }
 
+    /// Once, when the day ends: a card or a slab can walk off the table.
+    private func rollTheft() {
+        guard venue.kind == .show, hasTable, opened, !theftRolled else { return }
+        theftRolled = true
+        let total = max(1, closeMinute - startMinute)
+        theftLine = store.rollShowTheft(table: table, awayShare: awayMinutes / total)
+    }
+
     private func spend(_ minutes: Double) {
+        if hasTable, opened, phase == .floor { awayMinutes += min(minutes, closeMinute - minute) }
         minute = min(closeMinute, minute + minutes)
         let gone = arrivals.filter { $0 < minute - 30 }.count
         missed += gone

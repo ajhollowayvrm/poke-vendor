@@ -345,3 +345,17 @@ See [23-payment-methods.md](23-payment-methods.md). The code is in `Model/Paymen
 | Seller's permit | $50, one time. A requirement for a store lease. A store from an old save has one |
 | 1099-K note | $2,000 of gross sales on TCGplayer, eBay, and Whatnot in a year of 364 days |
 | Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, and store events |
+
+## Theft, damage, and insurance
+
+| Item | Value |
+| --- | --- |
+| Show table theft | 5% a booked show day. ×0.5 when the player never leaves the table, up to ×2.5 when away all day. +1.0 at $2,000 of table value (scaled below that). +0.25 with a slab on the table. Maximum 30% |
+| Thief choice | By value. A slab counts ×2. Cards and slabs only |
+| Car break-in | 1.5% a show day or store run with stock in hand. The bag holds 1 to 4 items |
+| Home damage | 0.8% each End Day. Hits 1 to 3 raw cards. Edges and surface lose 2 to 4 grades, twice. The floor is 3 |
+| Locked display case | $220. ×0.4 on show theft and car break-in |
+| Dehumidifier | $120. ×0.4 on home damage |
+| Fire safe | $400. No home damage |
+| Insurance premium | 1.5% of the insured value every 28 days. Minimum $10 |
+| Insurance claim | 80% of the loss, less a $25 deductible |

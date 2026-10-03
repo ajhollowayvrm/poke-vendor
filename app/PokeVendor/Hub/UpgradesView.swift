@@ -35,6 +35,11 @@ struct UpgradesView: View {
                     upgradeRow(.dropDiscord)
                     upgradeRow(.restockBot)
                 }
+                DetailBox(title: "Storage and security") {
+                    upgradeRow(.lockedCase)
+                    upgradeRow(.dehumidifier)
+                    upgradeRow(.fireSafe)
+                }
                 DetailBox(title: "Social media") {
                     row(name: "Analytics", detail: "The likes and the reach factors of each post, plus burnout and authenticity meters.",
                         cost: Balance.analyticsUpgradeCost, owned: store.social.analytics, icon: "chart.bar",

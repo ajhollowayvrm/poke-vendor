@@ -57,6 +57,9 @@ Every system in this folder is built. The list:
 - **Taxes**: sales tax at the store and the show table, the seller's
   permit, estimated income tax every 13 weeks with a penalty for a
   missed payment, the 1099-K note, and the tax box in the Wallet.
+- **Theft and insurance**: theft at a card show, a stolen bag from the
+  car, water damage at home, three upgrades that lower the risk, and
+  collection insurance in the Wallet.
 
 The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md).

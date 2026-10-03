@@ -92,6 +92,8 @@ struct GameData: Codable {
     var payments = PaymentState()
     /// Sales tax, income tax, and the seller's permit (docs/23-taxes.md).
     var taxes = TaxState()
+    /// Collection insurance (docs/24-theft-and-insurance.md).
+    var insurance = InsuranceState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -159,6 +161,7 @@ extension GameData {
         lots = v(.lots, lots)
         payments = v(.payments, payments)
         taxes = v(.taxes, taxes)
+        insurance = v(.insurance, insurance)
     }
 }
 
@@ -617,6 +620,7 @@ final class GameStore {
             data.shops[s.rawValue] = state
         }
         log("Store run: \(stores.map(\.rawValue).joined(separator: ", ")) (\(formatHours(hours))).")
+        rollCarBreakIn(trip: "the store run")
         save()
         return true
     }
@@ -935,6 +939,7 @@ final class GameStore {
         }
         if data.gameOver == nil { lines += storeRentDue() }
         lines += taxesEndDay()
+        if data.gameOver == nil { lines += lossesEndDay() }
 
         if isPokemonCenterDropLive {
             lines.append("A Pokemon Center drop is live today.")

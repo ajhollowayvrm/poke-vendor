@@ -53,6 +53,7 @@ struct WalletView: View {
                     }
                 }
                 TaxBox()
+                insuranceBox
                 DetailBox(title: "Ledger") {
                     ForEach(store.data.ledger.reversed()) { entry in
                         HStack(alignment: .top) {
@@ -80,6 +81,37 @@ struct WalletView: View {
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Wallet")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+extension WalletView {
+    /// Collection insurance (docs/24-theft-and-insurance.md).
+    private var insuranceBox: some View {
+        let policy = store.data.insurance
+        let percent = Int(Balance.policyCoverage * 100)
+        return DetailBox(title: "Collection insurance") {
+            HStack(spacing: 0) {
+                StatCell(label: "Insured value", value: money(store.insuredValue))
+                StatCell(label: "Premium", value: money(store.insurancePremium))
+                StatCell(label: policy.active ? "Next premium" : "Status",
+                         value: policy.active ? "Day \(policy.nextPremiumDay + 1)" : "None",
+                         color: policy.active ? Theme.green : Theme.muted)
+            }
+            Text("Pays \(percent)% of the market value of stolen or damaged items, less a \(money(Balance.policyDeductible)) deductible on each claim. The premium is due every 4 weeks.")
+                .font(.caption).foregroundStyle(Theme.muted)
+            if policy.active {
+                Text("Premiums paid \(money(policy.premiumsPaid)) · Payouts \(money(policy.payouts))")
+                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Button("Cancel the policy") { store.cancelInsurance() }
+                    .buttonStyle(.bordered)
+            } else {
+                Button("Sign up · \(money(store.insurancePremium))") { store.signInsurance() }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.cyan)
+                    .foregroundStyle(.black)
+                    .disabled(!store.canSignInsurance)
+            }
+        }
     }
 }
 

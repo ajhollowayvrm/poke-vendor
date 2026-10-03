@@ -23,6 +23,10 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case contactBook, bigContactBook
     /// A card reader: card payments at shows and at the store counter, for a fee (docs/23).
     case cardReader
+    /// Less theft at a show table and from the car (docs/24-theft-and-insurance.md).
+    case lockedCase
+    /// Less water damage to raw cards in storage, or none with the fire safe (docs/24).
+    case dehumidifier, fireSafe
 
     var name: String {
         switch self {
@@ -40,6 +44,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .contactBook: "Contact book"
         case .bigContactBook: "Big contact book"
         case .cardReader: "Card reader"
+        case .lockedCase: "Locked display case"
+        case .dehumidifier: "Dehumidifier"
+        case .fireSafe: "Fire safe"
         }
     }
 
@@ -59,6 +66,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .contactBook: "Room for \(Balance.contactBookSizes[1]) contacts instead of \(Balance.contactBookSizes[0])."
         case .bigContactBook: "Room for \(Balance.contactBookSizes[2]) contacts."
         case .cardReader: "Take card payments at shows, meets, and your store counter. Buyers with no cash stop walking away. A card sale costs \(Balance.readerFeeRate.formatted(.percent.precision(.fractionLength(1)))) plus \(money(Balance.readerFeeFixed))."
+        case .lockedCase: "Cuts the chance of theft at a show table, and from your car, by \(Int((1 - Balance.lockedCaseFactor) * 100))%."
+        case .dehumidifier: "Cuts the chance of water damage to raw cards in storage by \(Int((1 - Balance.dehumidifierFactor) * 100))%."
+        case .fireSafe: "A sealed safe for your cards. Water damage to raw cards in storage cannot happen."
         }
     }
 
@@ -80,6 +90,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .contactBook: "person.crop.rectangle.stack"
         case .bigContactBook: "books.vertical"
         case .cardReader: "creditcard"
+        case .lockedCase: "lock.rectangle"
+        case .dehumidifier: "humidity"
+        case .fireSafe: "lock.shield"
         }
     }
 
@@ -98,6 +111,7 @@ extension Balance {
         .evReadout: 120, .betterCar: 900, .dropDiscord: 60, .restockBot: 150, .authTool: 350,
         .cornerLoupe: 60, .edgeLight: 90, .surfaceLamp: 140, .studioLights: 250, .cameraKit: 600,
         .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600, .cardReader: Balance.cardReaderCost,
+        .lockedCase: 220, .dehumidifier: 120, .fireSafe: 400,
     ]
     /// Contact book room: no upgrade, the contact book, and the big contact book.
     static let contactBookSizes = [4, 8, 15]

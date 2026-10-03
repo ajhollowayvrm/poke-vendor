@@ -1275,6 +1275,9 @@ private struct SummaryStage: View {
                         StatCell(label: "Net cash", value: signedMoney(session.soldTotal - session.boughtTotal),
                                  color: session.soldTotal >= session.boughtTotal ? Theme.green : Theme.orange)
                     }
+                    if let theft = session.theftLine {
+                        Text(theft).font(.subheadline).foregroundStyle(Theme.orange)
+                    }
                     list("SOLD", session.sold.map { ($0.name, money($0.price)) })
                     list(session.venue.isShow ? "BOUGHT ON THE FLOOR" : "BOUGHT", session.bought.map { ($0.name, money($0.price)) })
                     list("TRADES", session.trades.map { ($0, "") })
