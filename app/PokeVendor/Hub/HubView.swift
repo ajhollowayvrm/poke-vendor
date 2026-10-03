@@ -131,6 +131,12 @@ struct HubView: View {
             }
             .buttonStyle(.plain)
         }
+        ForEach(store.taxWarnings, id: \.self) { warning in
+            Button { nav.path.append(.wallet) } label: {
+                Banner(text: warning.text, color: warning.affordable ? Theme.cyan : Theme.orange, icon: "doc.text")
+            }
+            .buttonStyle(.plain)
+        }
         if store.isPokemonCenterDropLive && !store.data.pokemonCenterAttempted {
             Button { nav.path.append(.store(.pokemonCenter)) } label: {
                 Banner(text: "A Pokemon Center drop is live today. You get one attempt.", color: Theme.green)

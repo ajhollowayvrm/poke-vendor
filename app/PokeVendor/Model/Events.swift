@@ -38,6 +38,7 @@ extension GameStore {
         if data.jobState.timeOffBooked.contains(day) {
             out.append(CalendarEntry(kind: .timeOff, title: "Time off", detail: "Booked · paid"))
         }
+        out += taxEntries(day: day)
         return out
     }
 }

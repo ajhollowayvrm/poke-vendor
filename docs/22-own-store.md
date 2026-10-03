@@ -25,6 +25,7 @@ row opens a screen that shows what a landlord wants:
 | --- | --- | --- |
 | Reputation | Trusted (tier 2) | People must trust the player before they shop with them. |
 | Sales over the whole run | $2,500 | The player must show that they can move product. |
+| A seller's permit | $50, one time, from the Wallet | The store collects sales tax (see [23-taxes.md](23-taxes.md#the-sellers-permit)). |
 | Cash | The first rent, a deposit of one rent, and the build-out | The landlord and the builder want their money first. |
 
 The player names the store, picks one location, and picks the lease

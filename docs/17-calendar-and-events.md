@@ -128,6 +128,9 @@ planning. A scheduled live stream appears when the player schedules it.
   [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
 - **Rent due**: every 4 weeks, with a warning 3 days before (see
   [16-time-and-day.md](16-time-and-day.md#rent)).
+- **Tax due**: sales tax every 4 weeks, and estimated income tax every
+  13 weeks, each with a warning 3 days before (see
+  [23-taxes.md](23-taxes.md)).
 
 ## Surprise entries
 

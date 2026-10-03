@@ -201,6 +201,9 @@ extension GameStore {
             StoreRequirement(id: "sales", label: "\(money(Balance.storeLifetimeSales)) in sales",
                              detail: "\(money(lifetimeSales)) so far. Show that you can move product.",
                              met: lifetimeSales >= Balance.storeLifetimeSales),
+            StoreRequirement(id: "permit", label: "A seller's permit",
+                             detail: hasSellerPermit ? "You have one." : "It costs \(money(Balance.sellerPermitFee)). Get it in the Wallet.",
+                             met: hasSellerPermit),
         ]
     }
 
@@ -599,6 +602,7 @@ extension GameStore {
             data.sealed.removeAll { $0.id == id }
         }
         addLedger(price, .sale, "\(item.name) · \(storeName)")
+        collectSalesTax(on: price, at: storeName)
         addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid)
         if let fake = item.fake {
             recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false)

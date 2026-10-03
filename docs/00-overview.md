@@ -43,6 +43,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [23-payment-methods.md](23-payment-methods.md) — payment methods on face-to-face sales: cash, card (the card reader upgrade and its fee), and Venmo or PayPal Goods and Services against Friends and Family. The payment policy, fees in the Wallet, fake screenshots, and chargebacks.
 - [22-own-store.md](22-own-store.md) — the player's own card store: the requirements to sign a lease, three locations, the build-out and the grand opening, stock and one shelf price, the clerk and working the counter, open days, fixtures, the Friday tournament, shoplifting, wholesale for a store, store rent, eviction, and closing the store.
 - [23-supplies.md](23-supplies.md) — supplies and accessories: the Supplies storefront (penny sleeves, top loaders, team bags, card savers, mailers, magnetic cases), what a shipped sale, a grading submission, and a show table use, the rush price when the stock is empty, and the accessory shelf of the player's own store.
+- [23-taxes.md](23-taxes.md) — sales tax at the store and the show table, the seller's permit, estimated income tax every 13 weeks, the 1099-K note, and the tax box in the Wallet.
 - [21-relationships-and-reputation.md](21-relationships-and-reputation.md) — contacts (game shops, recurring show vendors, regulars, and strangers who become contacts), relationship levels, saved items, the want list, fair dealing, and the reputation tiers.
 
 ## Open topics

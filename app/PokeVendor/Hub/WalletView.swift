@@ -52,6 +52,7 @@ struct WalletView: View {
                         }
                     }
                 }
+                TaxBox()
                 DetailBox(title: "Ledger") {
                     ForEach(store.data.ledger.reversed()) { entry in
                         HStack(alignment: .top) {

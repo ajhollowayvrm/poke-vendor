@@ -54,6 +54,9 @@ Every system in this folder is built. The list:
 - **Supplies**: the Supplies storefront, use of supplies by shipped
   sales, grading, and show tables, the rush price, and accessories for
   the store.
+- **Taxes**: sales tax at the store and the show table, the seller's
+  permit, estimated income tax every 13 weeks with a penalty for a
+  missed payment, the 1099-K note, and the tax box in the Wallet.
 
 The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md).

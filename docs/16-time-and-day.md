@@ -92,7 +92,9 @@ The job pays a **weekly paycheck**, every Friday. Each paycheck is a
 cash-in entry in the Wallet ledger (see
 [08-ui-direction.md](08-ui-direction.md)).
 
-The paycheck is the take-home amount. The game has no tax system.
+The paycheck is the take-home amount, after tax. The paycheck has no
+other tax. The game taxes only the card business (see
+[23-taxes.md](23-taxes.md)).
 
 ### The job ladder
 

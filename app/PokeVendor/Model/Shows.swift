@@ -205,6 +205,7 @@ extension GameStore {
             data.sealed.removeAll { $0.id == item.id }
         }
         addLedger(price, .sale, "\(item.name) · \(venue)")
+        collectSalesTax(on: price, at: venue)
         log("Sold \(item.name) at \(venue) for \(money(price)).", cash: price)
         save()
     }

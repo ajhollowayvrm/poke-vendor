@@ -90,6 +90,8 @@ struct GameData: Codable {
     var lots: [Lot] = []
     /// The payment policy and the payments that the sender will take back (docs/23-payment-methods.md).
     var payments = PaymentState()
+    /// Sales tax, income tax, and the seller's permit (docs/23-taxes.md).
+    var taxes = TaxState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -156,6 +158,7 @@ extension GameData {
         bestOffers = v(.bestOffers, bestOffers)
         lots = v(.lots, lots)
         payments = v(.payments, payments)
+        taxes = v(.taxes, taxes)
     }
 }
 
@@ -931,6 +934,7 @@ final class GameStore {
             lines.append("Rent of \(money(Balance.rent)) is due in \(Balance.rentWarningDays) days.")
         }
         if data.gameOver == nil { lines += storeRentDue() }
+        lines += taxesEndDay()
 
         if isPokemonCenterDropLive {
             lines.append("A Pokemon Center drop is live today.")
@@ -1193,6 +1197,7 @@ final class GameStore {
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
         addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated)
         if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
+        notePlatformSale(channel: channel, price: price)
         let after = channel.ships ? "after fees and shipping" : "in cash"
         return "Sold \(name) on \(channel.rawValue) for \(money(price)). You got \(money(net)) \(after)."
     }

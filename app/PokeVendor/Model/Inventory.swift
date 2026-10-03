@@ -480,6 +480,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
     enum Category: String, Codable, CaseIterable {
         case startingCapital = "Starting capital", paycheck = "Paycheck", sale = "Sale", refund = "Refund"
         case sealed = "Sealed product", singles = "Singles", grading = "Grading fees", rent = "Rent"
+        case tax = "Taxes"
         case sponsorship = "Sponsorship", upgrade = "Upgrades", showFees = "Show fees", test = "Test"
         case authentication = "Authentication fees", tips = "Live-stream tips", wholesale = "Wholesale"
         case storeRent = "Store rent", storeSetup = "Store setup", wages = "Wages", storeEvents = "Store events"
@@ -488,7 +489,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
 
     var id = UUID()
     let day: Int
-    let amount: Double
+    var amount: Double
     let category: Category
     var label: String
     var pending = false

@@ -164,7 +164,10 @@ extension GameStore {
             cards += taken
         }
         let revenue = Double(cards) * Balance.bulkBoxPrice
-        if cards > 0 { addLedger(revenue, .sale, "Bulk box · \(cards) cards · \(s.name)") }
+        if cards > 0 {
+            addLedger(revenue, .sale, "Bulk box · \(cards) cards · \(s.name)")
+            collectSalesTax(on: revenue, at: s.name)
+        }
         return (sold, revenue)
     }
 

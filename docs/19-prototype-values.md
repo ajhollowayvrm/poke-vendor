@@ -331,3 +331,17 @@ See [23-payment-methods.md](23-payment-methods.md). The code is in `Model/Paymen
 | Contact risk | 25% of the stranger risk |
 | Clerk sales with a reader | ×1.12 |
 | Default policy | No Friends and Family |
+
+## Taxes
+
+| Value | Prototype value |
+| --- | --- |
+| Sales tax | 7% of the price, on top of the price. At the player's store and show table only |
+| Sales tax payment | Every 28 days, on day 15, 43, 71, and so on |
+| Income tax | 20% of the net profit of a quarter. A loss goes to the next quarter |
+| Income tax payment | Every 91 days (13 weeks), on day 92, 183, 274, and so on |
+| Warning | 3 days before a due day |
+| Missed payment | A penalty of 10% of the amount. The player still owes the amount. No game over |
+| Seller's permit | $50, one time. A requirement for a store lease. A store from an old save has one |
+| 1099-K note | $2,000 of gross sales on TCGplayer, eBay, and Whatnot in a year of 364 days |
+| Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, and store events |
