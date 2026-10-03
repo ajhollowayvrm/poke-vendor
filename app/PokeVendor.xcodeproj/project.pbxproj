@@ -88,6 +88,7 @@
 		76CC8A08745C4BCD5D0BF58F /* ruby-sapphire.json in Resources */ = {isa = PBXBuildFile; fileRef = D9887FEE4EB6935793366540 /* ruby-sapphire.json */; };
 		76DA8D89B34C2DE62DE99897 /* ascended-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F83F25627755699228CC982 /* ascended-heroes.json */; };
 		77F46089228046EF2432372E /* WholesaleViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */; };
+		78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */; };
 		7A35C872266C162E6BEC2E3D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689EB4A1DA309507FAA552BA /* Events.swift */; };
 		7A3F4E4177605B7802A0D612 /* evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = CC0E8783F786B72E1D0FF385 /* evolutions.json */; };
 		7ACC1B39815CB76022632456 /* Shows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C938A56BB535142EA1BE4B /* Shows.swift */; };
@@ -145,6 +146,7 @@
 		BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6187C2CFFD057E0E448F0CC8 /* jungle.json */; };
 		BD5A2FACC5DD80A8909BFF55 /* black-bolt.json in Resources */ = {isa = PBXBuildFile; fileRef = F78F3275EFDE7F3E896A5E91 /* black-bolt.json */; };
 		BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A569E4A6BF6ADE917EC538F /* delta-species.json */; };
+		BDF93E32D155D521D1F428B1 /* StoreEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71039722F060097A21B22BB3 /* StoreEvents.swift */; };
 		BF40EF0C7B89584AA1DB15F8 /* base-set.json in Resources */ = {isa = PBXBuildFile; fileRef = 05ED658C6E7349BE468EC9FE /* base-set.json */; };
 		BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */; };
 		C13E4D86A349AC573D8646EC /* phantom-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = 754F7D2C37FC137EEECF52E0 /* phantom-forces.json */; };
@@ -292,8 +294,10 @@
 		69B3B59FEFA22014368E0146 /* unleashed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = unleashed.json; sourceTree = "<group>"; };
 		6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "forbidden-light.json"; sourceTree = "<group>"; };
 		6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge.json"; sourceTree = "<group>"; };
+		6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEventsBox.swift; sourceTree = "<group>"; };
 		6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2021.json"; sourceTree = "<group>"; };
 		7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "cosmic-eclipse.json"; sourceTree = "<group>"; };
+		71039722F060097A21B22BB3 /* StoreEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEvents.swift; sourceTree = "<group>"; };
 		71BFAA4A10360362D9BE2E1C /* base-set-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "base-set-2.json"; sourceTree = "<group>"; };
 		754F7D2C37FC137EEECF52E0 /* phantom-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantom-forces.json"; sourceTree = "<group>"; };
 		75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "power-keepers.json"; sourceTree = "<group>"; };
@@ -620,6 +624,7 @@
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
+				71039722F060097A21B22BB3 /* StoreEvents.swift */,
 				3946D786540E6C06E3BB91E4 /* Upgrades.swift */,
 				E045FCAD07023E23A8B677B4 /* Vendors.swift */,
 				93A0BCABB4AA9FD6C9E14979 /* Wholesale.swift */,
@@ -663,6 +668,7 @@
 				772DBF76AEF228531662272E /* JobView.swift */,
 				1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */,
 				B39FE2287AB7BA7F1781A41B /* SettingsView.swift */,
+				6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */,
 				07BCE444E4AD984840D93FF6 /* UpgradesView.swift */,
 				50F97256E10C06386BD90E19 /* WalletView.swift */,
 			);
@@ -967,6 +973,8 @@
 				7ACC1B39815CB76022632456 /* Shows.swift in Sources */,
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
+				BDF93E32D155D521D1F428B1 /* StoreEvents.swift in Sources */,
+				78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				F905C1398E75C747E47A1439 /* StreamView.swift in Sources */,
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,

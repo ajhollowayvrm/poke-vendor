@@ -2,8 +2,9 @@
 
 **Status: built.** The lease, three locations, the build-out, the
 shelves, the prices, the clerk, the open days, working the counter,
-the fixtures, store rent, eviction, and closing the store
-(`Model/CardStore.swift`, `Hub/CardStoreView.swift`). The numbers are
+the fixtures, the events, store rent, eviction, and closing the store
+(`Model/CardStore.swift`, `Model/StoreEvents.swift`,
+`Hub/CardStoreView.swift`, `Hub/StoreEventsBox.swift`). The numbers are
 in [19-prototype-values.md](19-prototype-values.md#your-own-store).
 
 The player starts with no storefront (see
@@ -73,6 +74,7 @@ These change it:
 - **Reputation**: +6% for each tier.
 - **Followers**: +8% for each follower tier, with a social media
   account.
+- **Events**: see [Events](#events).
 - **Stock**: empty shelves turn people away. The factor goes from
   ×0.4 with no stock to ×1.2 with 40 or more items.
 - **Fixtures and the grand opening**: see below.
@@ -89,7 +91,9 @@ picks. On an open day, two people can staff it:
 
 - **The clerk**: $120 a day, paid only on open days. The clerk sells at
   the shelf price. The clerk does not haggle, trade, or buy from
-  customers.
+  customers. The clerk sells a bit worse than the player: a customer
+  buys 85% as often, and the clerk never sells a second item to the
+  same customer.
 - **The player**: "Work the counter" is a time-cost action, once a
   day. It uses the show table: buyers haggle, traders offer cards, and
   people bring collections to sell. A store gets more sellers than a
@@ -108,14 +112,66 @@ when the store closes.
 | --- | --- | --- |
 | Second display case | $500 | Room for 60 more cards and slabs |
 | Sealed wall | $400 | Room for 60 more sealed items |
-| Play tables | $700 | A Friday tournament: 8 to 16 players, +10% for each reputation tier, $7 for each player after prizes. ×1.3 customers on Friday. Someone must staff the store |
+| Play tables | $700 | Two events: a Friday tournament and a weekend Pokemon League (see [Events](#events)). Someone must staff the store |
 | Security cameras | $350 | Stops shoplifting |
 | Lighted sign | $300 | ×1.15 customers every day |
 
+## Events
+
+Events bring people into the store. Both events need the play tables
+and someone in the store: the clerk, or the player at the counter. The
+event day must be an open day. The player turns each event on or off,
+and picks the entry fee from a short list, in the Events box on the
+store screen. The Friday tournament starts on. The league starts off.
+
+| Event | When | Fee options | Players | Prize |
+| --- | --- | --- | --- | --- |
+| Friday tournament | Friday evening | $5, $10 (default), $15, $20 | 8 to 16 | Loose packs from the store's own stock |
+| Pokemon League | Saturday or Sunday morning. The player picks the day | Free (default), $2, $5 | 6 to 14 | One promo card for each player, $0.75 each |
+
+- **Fee**: a higher fee brings fewer players. Tournament attendance is
+  150% less 5% for each dollar of the fee. League attendance is 100%
+  less 6% for each dollar. Attendance never goes under 30%.
+- **Reputation**: +10% players for each reputation tier at the
+  tournament, +5% at the league.
+- **The player hosts**: if the player works the counter that day, +15%
+  players.
+- **Tournament prizes**: the store owes 0.7 packs for each player. The
+  game takes the cheapest loose packs in the store. If the store has
+  fewer packs, the event runs with fewer prizes.
+- **Prize standing**: a value from 0.5 to 1.5, from 1.0 at the start. It
+  multiplies the tournament players. It goes up when the store gives
+  more than 60% of the packs it owes. It goes down when it gives less.
+  A full set of prizes adds 0.1. No prizes take off 0.15.
+- **More customers**: each tournament player adds 0.5 customers that
+  day. Each league player adds 0.8 customers. Most of them are
+  small-budget customers.
+- **Afterglow**: after an event, the players come back. For 3 days,
+  the store gets 30% of the players as extra customers, less each
+  day.
+- **What they buy**: tournament players and afterglow customers buy
+  singles more than packs. A pack is 0.4 times as likely to be picked.
+  League kids are small-budget customers and look at cheap items,
+  often packs.
+- **Morning report**: a line for each event, for example "14 players
+  came to the Friday tournament at Card Corner. You gave 10 packs as
+  prizes."
+
 ## Shoplifting
 
-On a day when the clerk is alone, there is a 5% chance that someone
-steals one card of $40 or less. Security cameras stop it.
+On a day when the clerk is alone, there is a chance that someone steals
+from the store. Security cameras stop it. The chance is 5% at a
+location with 20 customers, and it scales with the traffic of the
+location: the mall has more theft than the strip mall.
+
+What the thief takes:
+
+- 70%: one to three loose packs from the rack.
+- 20%: one cheap sealed item, $30 or less.
+- 10%: one cheap card, $40 or less.
+
+If the store has no item of the chosen kind, the thief takes another
+kind.
 
 ## Wholesale
 
@@ -148,8 +204,8 @@ the building. The player can sign a new lease later.
   stock list.
 - **Prices**, **Staff and hours**, **Fixtures**, and **Lease**.
 
-The calendar shows the grand opening, each open day, and each store
-rent.
+The calendar shows the grand opening, each open day, each event, and
+each store rent.
 
 ## Open topics
 

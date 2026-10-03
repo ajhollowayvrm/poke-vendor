@@ -139,6 +139,16 @@ These have no notice.
 | Stock on a store run | On arrival only | The player learns what a store has only when they arrive (see [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)). |
 | Surprise opportunity | 1 to 2 every 4 weeks | An alert banner on the home hub, with 0 to 1 day of notice (see [08-ui-direction.md](08-ui-direction.md)). |
 
+## Store events
+
+A store with the play tables shows its events on the calendar, on the
+open days only (see [22-own-store.md](22-own-store.md#events)).
+
+| Entry | Days | Window | Details |
+| --- | --- | --- | --- |
+| Friday tournament | Friday | Evening | Entry fee shown. Prizes are loose packs from the store |
+| Pokemon League | Saturday or Sunday, the player picks | Morning | Entry fee shown, or "Free entry". A promo card for each player |
+
 ## A typical week with the day job
 
 - **Weekday mornings (7 to 9 AM)**: a short window. Free actions, or a

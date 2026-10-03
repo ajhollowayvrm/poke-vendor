@@ -26,6 +26,7 @@ struct CardStoreView: View {
                     shelvesBox
                     pricesBox(s)
                     staffBox(s)
+                    StoreEventsBox()
                     fixturesBox
                     leaseBox(s)
                 } else {
@@ -242,7 +243,7 @@ struct CardStoreView: View {
             Toggle(isOn: Binding(get: { s.clerk }, set: { store.setClerk($0) })) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Clerk · \(money(Balance.clerkWage)) a day").font(.subheadline.weight(.medium))
-                    Text("Keeps the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day. Paid only on open days. A clerk sells at your price, but does not haggle, trade, or buy.")
+                    Text("Keeps the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day. Paid only on open days. A clerk sells at your price, a bit less often than you do. The clerk does not haggle, trade, buy, or sell a second item.")
                         .font(.caption)
                         .foregroundStyle(Theme.muted)
                 }

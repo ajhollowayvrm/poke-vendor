@@ -251,9 +251,12 @@ for CGC, and $30 for BGS.
 | Buyers | 35% only look. A buyer pays 92% to 128% of market |
 | Shelf price | 95%, 100%, 110% (default), 120%, or 130% of market |
 | Room | 40 cards and 40 sealed. +60 with each fixture |
-| Clerk | $120 a day open |
+| Clerk | $120 a day open. A customer buys 85% as often as with the player, and the clerk sells no second item |
 | At the counter | 60% of the day's customers come to the counter. 32% of them sell |
-| Fixtures | Second display case $500, sealed wall $400, play tables $700, security cameras $350, lighted sign $300 (×1.15 customers) |
-| Friday tournament | 8 to 16 players, +10% a reputation tier, $7 each after prizes, ×1.3 customers |
-| Shoplifting | 5% of clerk-only days, one card of $40 or less |
+| Fixtures | Second display case $500, sealed wall $400, play tables $700 (both events), security cameras $350, lighted sign $300 (×1.15 customers) |
+| Friday tournament | 8 to 16 players, +10% a reputation tier. Fee $5, $10 (default), $15, or $20: attendance 150% less 5% a dollar. Prizes: 0.7 loose packs a player. +0.5 customers a player |
+| Pokemon League | Saturday or Sunday morning. 6 to 14 players, +5% a reputation tier. Fee free (default), $2, or $5: attendance 100% less 6% a dollar. A promo card a player at $0.75. +0.8 customers a player, small-budget |
+| Event standing | 0.5 to 1.5, starts at 1.0. Moves by (prize support − 0.6) × 0.25 after each tournament. Multiplies tournament players |
+| Event extras | Player at the counter: +15% players. Afterglow: 3 days, 30% of the players as extra customers, less each day. Tournament players pick a pack 0.4 times as often as a single. Attendance floor 30% |
+| Shoplifting | 5% of clerk-only days at 20 customers, scaled by the location traffic. 70% one to three loose packs, 20% a sealed item of $30 or less, 10% a card of $40 or less |
 | Eviction | Reputation −15, and the landlord keeps the deposit |

@@ -31,7 +31,8 @@ extension GameStore {
             }
             if day >= s.openDay, s.openDays.contains(day % 7) {
                 out.append(CalendarEntry(kind: .store, title: s.name,
-                                         detail: "Open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose))\(s.clerk ? " · clerk" : "")\(s.has(.playTables) && day % 7 == 4 ? " · Friday tournament" : "")"))
+                                         detail: "Open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose))\(s.clerk ? " · clerk" : "")"))
+                out += storeEventEntries(day: day)
             }
         }
         if data.jobState.timeOffBooked.contains(day) {

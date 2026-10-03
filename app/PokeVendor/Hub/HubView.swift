@@ -519,6 +519,13 @@ struct HubView: View {
                 }
                 if store.day % 4 == 2, let s = store.startCounter() { play(s) }
                 if store.day == 10 { store.buyFixture(.playTables) }
+                // The events: the tournament is on by default. Turn the league on, then change the fees and the league day.
+                if store.day == 11 { store.setEvent(.league, on: true) }
+                if store.day == 14 { store.setEventFee(.tournament, 15); store.setEventFee(.league, 2) }
+                if store.day == 17 { store.setLeagueDay(6) }
+                if store.day == 20 { store.setEvent(.tournament, on: false) }
+                if store.day == 22 { store.setEvent(.tournament, on: true) }
+                if store.day % 7 == 3, let id = store.storeStock.sealed.first(where: { $0.packs == 1 })?.id { store.takeBackFromStore([id]) }
                 if store.day == 12 { store.toggleOpenDay(1) }
                 if store.day % 9 == 0, let id = store.storeStock.cards.first?.id { store.takeBackFromStore([id]) }
                 if store.day == days - 4 { store.closeStore() }
@@ -575,6 +582,7 @@ struct HubView: View {
             store.endDay()
         }
         print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales")
+        if let plan = store.cardStore?.eventPlan { print("SOAK EVENTS: standing \(plan.standing), afterglow \(plan.afterglowPlayers) on day \(plan.afterglowDay + 1)") }
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
         for line in log.suffix(12) { print("SOAK", line) }
         for line in store.data.activity.suffix(30) { print("SOAK D\(line.day + 1)", line.text) }

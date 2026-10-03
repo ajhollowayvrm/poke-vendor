@@ -59,7 +59,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         switch self {
         case .extraCase: "Room for \(Balance.extraCaseSlots) more cards and slabs."
         case .sealedWall: "Room for \(Balance.sealedWallSlots) more sealed products."
-        case .playTables: "A Friday night tournament: entry fees, and more people in the store that day."
+        case .playTables: "Events: a Friday tournament and a weekend Pokemon League. Entry fees, and more people in the store."
         case .cameras: "Stops shoplifting on the days the clerk is alone."
         case .sign: "\(Int((Balance.signTrafficBonus - 1) * 100))% more customers every day."
         }
@@ -108,6 +108,8 @@ struct CardStoreState: Codable, Hashable {
     var counterDay = -1
     var counterHours = 0.0
     var history: [StoreDay] = []
+    /// The events (docs/22-own-store.md#events). Optional, so old saves still load.
+    var events: StoreEvents?
 
     func has(_ fixture: StoreFixture) -> Bool { fixtures.contains(fixture) }
 }
@@ -148,12 +150,17 @@ extension Balance {
     static let sealedWallSlots = 60
     static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300]
     static let signTrafficBonus = 1.15
-    static let tournamentTrafficBonus = 1.3
     static let tournamentPlayers = 8...16
-    /// Entry fee less the prize packs, for each player.
-    static let tournamentNetPerPlayer = 7.0
+    /// The clerk sells a bit worse than the owner: customers buy this often, and never take a second item.
+    static let clerkSalesFactor = 0.85
+    /// The chance on a clerk-only day, at a location with `shopliftTrafficBase` customers. It scales with traffic.
     static let shopliftChance = 0.05
+    static let shopliftTrafficBase = 20.0
     static let shopliftMaxValue = 40.0
+    static let shopliftMaxSealed = 30.0
+    static let shopliftPackShare = 0.7
+    static let shopliftSealedShare = 0.2
+    static let shopliftMaxPacks = 3
     static let evictionReputationCost = 15
 }
 
@@ -356,8 +363,9 @@ extension GameStore {
         mean *= 1 + Balance.storeReputationStep * Double(reputationTier)
         if hasAccount { mean *= 1 + Balance.storeFollowerStep * Double(followerTier) }
         if s.has(.sign) { mean *= Balance.signTrafficBonus }
-        if s.has(.playTables), day % 7 == 4 { mean *= Balance.tournamentTrafficBonus }
         if day >= s.openDay, day < s.openDay + Balance.grandOpeningDays { mean *= Balance.grandOpeningBonus }
+        let event = eventTraffic(day: day)
+        mean += event.tournament + event.league + event.glow
         // Empty shelves turn people away. A full store draws a few more.
         let stock = storeStock
         mean *= min(1.2, 0.4 + Double(stock.cards.count + stock.sealed.count) / 50)
@@ -435,7 +443,7 @@ extension GameStore {
 
     // MARK: - End Day
 
-    /// The day at the store, before the clock moves: the clerk's sales, wages, the tournament, and shoplifting.
+    /// The day at the store, before the clock moves: the clerk's sales, wages, the events, and shoplifting.
     func storeDayEnd() -> [String] {
         guard var s = data.cardStore else { return [] }
         let today = data.day
@@ -465,20 +473,10 @@ extension GameStore {
         } else if worked == 0 {
             lines.append("Nobody worked at \(s.name) today, so it stayed closed.")
         }
-        // The Friday tournament needs someone in the store.
-        if s.has(.playTables), today % 7 == 4, s.clerk || worked > 0 {
-            let players = Int(Double(Int.random(in: Balance.tournamentPlayers)) * (1 + 0.1 * Double(reputationTier)))
-            let net = Double(players) * Balance.tournamentNetPerPlayer
-            addLedger(net, .storeEvents, "Friday tournament · \(players) players · \(s.name)")
-            record.revenue += net
-            lines.append("\(players) players came to the Friday tournament at \(s.name). You made \(money(net)) after prizes.")
-        }
-        if s.clerk, share > 0, !s.has(.cameras), Double.random(in: 0..<1) < Balance.shopliftChance,
-           let card = storeStock.cards.filter({ $0.realMarket <= Balance.shopliftMaxValue }).randomElement() {
-            let id = card.id
-            data.raw.removeAll { $0.id == id }
-            data.slabs.removeAll { $0.id == id }
-            lines.append("Someone walked out of \(s.name) with your \(card.print.name) (\(money(card.realMarket))). Security cameras stop this.")
+        lines += runStoreEvents(&s, record: &record, worked: worked, today: today)
+        if s.clerk, share > 0, !s.has(.cameras), Double.random(in: 0..<1) < shopliftChance(for: s.location),
+           let stolen = stealFromStore() {
+            lines.append("Someone walked out of \(s.name) with \(stolen) of your stock. Security cameras stop this.")
         }
         s.history.append(record)
         s.history.removeAll { $0.day < today - 27 }
@@ -493,26 +491,27 @@ extension GameStore {
         let customers = max(0, Int((mean + Double.random(in: -2...2)).rounded()))
         var sold = 0
         var revenue = 0.0
+        // Event players are part of the crowd. League kids are small-budget. Tournament players want singles.
+        let event = eventTraffic(day: data.day)
+        let crowd = max(1, expectedCustomers(day: data.day))
+        let kidShare = min(0.6, event.league / crowd)
+        let playerShare = min(0.6, (event.tournament + event.glow) / crowd)
         for _ in 0..<customers {
             guard Double.random(in: 0..<1) >= Balance.storeBrowseChance else { continue }
-            let casual = Double.random(in: 0..<1) < casualShare
+            // The clerk loses some sales that the owner would close.
+            guard Double.random(in: 0..<1) < Balance.clerkSalesFactor else { continue }
+            let roll = Double.random(in: 0..<1)
+            let kid = roll < kidShare
+            let player = !kid && roll < kidShare + playerShare
+            let casual = kid || Double.random(in: 0..<1) < casualShare
             let items = storeShelf().filter { !casual || storePrice($0.market) <= Balance.storeCasualBudget }
-            guard let item = pickForCustomer(items) else { continue }
+            guard let item = pickForCustomer(items, packWeight: player ? Balance.eventPackWeight : 1) else { continue }
             let limit = item.market * Double.random(in: Balance.storeBuyerLimit)
             let price = storePrice(item.market)
             guard price <= limit else { continue }
             sellFromStore(item, price: price, storeName: storeName)
             sold += 1
             revenue += price
-            // A casual buyer at the pack rack often takes a few.
-            if casual, item.isPack {
-                for _ in 0..<Int.random(in: 0...2) {
-                    guard let more = storeShelf().first(where: { $0.isPack && $0.productKey == item.productKey }) else { break }
-                    sellFromStore(more, price: price, storeName: storeName)
-                    sold += 1
-                    revenue += price
-                }
-            }
         }
         return (customers, sold, revenue)
     }
@@ -545,8 +544,8 @@ extension GameStore {
     }
 
     /// People look at the better items first, the same as at a show.
-    private func pickForCustomer(_ items: [StoreShelfItem]) -> StoreShelfItem? {
-        let weights = items.map { sqrt(max($0.market, 0.5)) }
+    private func pickForCustomer(_ items: [StoreShelfItem], packWeight: Double = 1) -> StoreShelfItem? {
+        let weights = items.map { sqrt(max($0.market, 0.5)) * ($0.isPack ? packWeight : 1) }
         let total = weights.reduce(0, +)
         guard total > 0 else { return items.first }
         var roll = Double.random(in: 0..<total)
