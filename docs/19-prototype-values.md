@@ -222,6 +222,7 @@ for CGC, and $30 for BGS.
 | Value | Prototype value |
 | --- | --- |
 | Wholesale | 72% of MSRP, $500 minimum, 5-day delivery. Cases of 6 boxes, 10 ETBs, 12 bundles, 36 packs |
+| Wholesale, store account | 58% of MSRP, no minimum. A weekly allocation of each product: 1 case, +1 for each $6,000 spent with the distributor, up to 5. +1 case for a product that is not hot (market under 1.2 × MSRP) |
 | Case splits | 85% of market a box (80% from a Friend vendor). Respected: 1 invite a week, 2 boxes. Elite: 2 a week, half the case. Closes in 3 days, arrives 4 days later |
 | Consignment | From Regular. The shop takes 20%, 12% at Trusted. 28 days. A card at market sells 60% of the time. +2 standing a sale |
 | Facebook selling | An offer 8% of days at 65–95% of the price. Half meet today, half in 1 to 3 days. 20% do not show. 1 hour, cash, no fees |
@@ -243,7 +244,11 @@ for CGC, and $30 for BGS.
 | Value | Prototype value |
 | --- | --- |
 | To sign | Reputation Trusted, $2,500 in sales over the run, and the first rent, a deposit of one rent, and the build-out |
-| Locations | Strip mall: rent $1,400, build-out $2,000, 12 customers. Main Street: $2,400, $3,500, 20. Mall: $3,800, $5,000, 32 |
+| Locations | Strip mall: rent $1,400, build-out $3,500, 12 customers. Main Street: $2,400, $5,000, 20. Mall: $3,800, $7,000, 32 |
+| Lease term | 6 periods of 28 days at the listed rent, or 12 periods at 10% less. The deposit is one rent of the term |
+| Buyout | Closing early: 3 rents, or the rest of the term if less. The landlord keeps the deposit. The last 7 days of a term: no buyout, deposit back. The lease renews on the same terms |
+| Overhead, every 28 days | Insurance $90 / $130 / $200, utilities $140 / $220 / $380, POS software $60 / $80 / $100, card fees 3% of the period's store sales |
+| Rival game shops | Each loses 15 standing with the player at a lease. No consignment while the store stands |
 | Small-budget customers | 30% / 25% / 50%. They look only at items of $30 or less |
 | Build-out and grand opening | 7 days, then ×1.5 customers for 7 days |
 | Hours | 11 AM to 7 PM on the open days |

@@ -384,6 +384,8 @@ struct ConsignBox: View {
                 }
                 Button("Consign cards") { sheet = true }
                     .buttonStyle(.bordered)
+            } else if store.cardStore != nil {
+                Text("We don't consign for the competition. Close your store and the case opens again.").font(.caption).foregroundStyle(Theme.muted)
             } else {
                 Text("Consignment opens at Regular standing (30 points).").font(.caption).foregroundStyle(Theme.muted)
             }

@@ -77,6 +77,8 @@ struct GameData: Codable {
     var meetups: [Meetup] = []
     /// The player's own card store, after they sign a lease (docs/22-own-store.md).
     var cardStore: CardStoreState?
+    /// The player's history with the distributor (docs/12-acquiring-product.md).
+    var distributor = DistributorAccount()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -136,6 +138,7 @@ extension GameData {
         fbOffers = v(.fbOffers, fbOffers)
         meetups = v(.meetups, meetups)
         cardStore = v(.cardStore, cardStore)
+        distributor = v(.distributor, distributor)
     }
 }
 

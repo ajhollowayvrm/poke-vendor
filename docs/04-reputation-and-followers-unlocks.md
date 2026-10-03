@@ -25,7 +25,10 @@ follower count, moves this track.
 | 4 | Elite | Priority case allocation on the rarest splits. Private consignment offers — someone's whole vintage collection, offered directly before it ever reaches a public sale. |
 
 The player's own store also opens wholesale, from the day its
-build-out is done (see [22-own-store.md](22-own-store.md#wholesale)).
+build-out is done. A store account has a lower price, 58% of MSRP, and
+a weekly allocation for each product that grows with the order history
+(see [22-own-store.md](22-own-store.md#wholesale)). A player at
+Respected with no store keeps the 72% price with no limit.
 
 This resolves the open question in
 [12-acquiring-product.md](12-acquiring-product.md#open-topics): wholesale

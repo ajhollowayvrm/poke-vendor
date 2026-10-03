@@ -7,6 +7,7 @@ struct CardStoreView: View {
     @Environment(AppNav.self) private var nav
     @State private var name = ""
     @State private var signing: StoreLocation?
+    @State private var term = Balance.leaseTerms[0]
     @State private var stocking = false
     @State private var closing = false
     @State private var onlineSheet: SellRequest?
@@ -45,14 +46,22 @@ struct CardStoreView: View {
         .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(get: { signing != nil }, set: { if !$0 { signing = nil } }),
                             titleVisibility: .visible, presenting: signing) { location in
-            Button("Sign for \(money(location.upfront))") { store.signLease(location, name: name) }
+            Button("Sign for \(money(location.upfront(term: term)))") { store.signLease(location, term: term, name: name) }
         } message: { location in
-            Text("\(location.name): the first rent, a deposit, and the build-out. Rent of \(money(location.rent)) is due every 28 days after that. If you cannot pay it, the landlord locks the store and keeps the deposit.")
+            Text("\(location.name): \(term) periods of 28 days, to day \(store.day + term * Balance.rentCycleDays + 1). You pay the first rent, a deposit, and the build-out now. Rent of \(money(location.rent(term: term))) is due every 28 days, with about \(money(location.fixedOverhead)) of overhead and a \(Int(Balance.cardFeeRate * 100))% card fee. The lease renews on the same terms unless you close in the last \(Balance.leaseNoticeDays) days of a term. If you close sooner, you pay a buyout of up to \(Balance.leaseBuyoutRents) rents, and the landlord keeps the deposit. If you cannot pay, the landlord locks the store and keeps the deposit. Cardboard Castle and Top Deck Games see you as a competitor. Your standing with each goes down by \(Balance.rivalStandingLoss) points, and they do not consign for you while you own a store.")
         }
         .confirmationDialog("Close the store?", isPresented: $closing, titleVisibility: .visible) {
-            Button("Close the store", role: .destructive) { store.closeStore() }
+            if let s = store.cardStore {
+                let buyout = store.leaseBuyout(s)
+                Button(buyout > 0 ? "Close and pay \(money(buyout))" : "Close the store", role: .destructive) { store.closeStore() }
+                    .disabled(!store.canCloseStore)
+            }
         } message: {
-            Text("The landlord gives back the deposit. Your stock comes home tomorrow. The fixtures stay with the building.")
+            if let s = store.cardStore, store.leaseBuyout(s) > 0 {
+                Text("The lease runs to day \((s.lease?.endDay ?? 0) + 1). You pay the buyout, and the landlord keeps the \(money(s.deposit)) deposit. Your stock comes home tomorrow. The fixtures stay with the building.")
+            } else {
+                Text("The landlord gives back the deposit. Your stock comes home tomorrow. The fixtures stay with the building.")
+            }
         }
     }
 
@@ -79,7 +88,7 @@ struct CardStoreView: View {
             }
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: "dollarsign.circle").foregroundStyle(Theme.muted)
-                Text("The cash to sign: the first rent, a deposit of one rent, and the build-out.")
+                Text("The cash to sign: the first rent, a deposit of one rent, and the build-out. After that, every 28 days: rent, and overhead for insurance, utilities, software, and card fees.")
                     .font(.caption).foregroundStyle(Theme.muted)
             }
         }
@@ -90,6 +99,17 @@ struct CardStoreView: View {
                 .background(Theme.background)
                 .overlay(Rectangle().stroke(Theme.line))
         }
+        DetailBox(title: "The lease term") {
+            Picker("Term", selection: $term) {
+                ForEach(Balance.leaseTerms, id: \.self) { t in
+                    Text("\(t) periods").tag(t)
+                }
+            }
+            .pickerStyle(.segmented)
+            Text("A period is 28 days. \(termDiscountText) If you close before the term ends, you pay a buyout of up to \(Balance.leaseBuyoutRents) rents, and the landlord keeps the deposit. The lease renews on the same terms unless you close in the last \(Balance.leaseNoticeDays) days of a term. Then the landlord gives back the deposit.")
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+        }
         ForEach(StoreLocation.allCases, id: \.self) { location in
             DetailBox(title: location.name) {
                 HStack(alignment: .top, spacing: 10) {
@@ -97,21 +117,30 @@ struct CardStoreView: View {
                     Text(location.detail).font(.caption).foregroundStyle(Theme.muted)
                 }
                 HStack(spacing: 0) {
-                    StatCell(label: "Rent / 28 d", value: money(location.rent))
+                    StatCell(label: "Rent / 28 d", value: money(location.rent(term: term)))
                     StatCell(label: "Build-out", value: money(location.buildout))
                     StatCell(label: "Weekday", value: "~\(Int(location.traffic)) ppl")
                 }
                 Button { signing = location } label: {
-                    Text("Sign the lease · \(money(location.upfront))").frame(maxWidth: .infinity)
+                    Text("Sign the lease · \(money(location.upfront(term: term)))").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .foregroundStyle(.black)
-                .disabled(!store.canSignLease(location))
+                .disabled(!store.canSignLease(location, term: term))
             }
         }
     }
 
     // MARK: - The store
+
+    /// The rent saving of each term, for the term picker.
+    private var termDiscountText: String {
+        let parts = Balance.leaseTerms.compactMap { t -> String? in
+            let cut = Int(((1 - (Balance.leaseRentFactor[t] ?? 1)) * 100).rounded())
+            return cut > 0 ? "\(t) periods: rent \(cut)% lower." : nil
+        }
+        return parts.joined(separator: " ")
+    }
 
     private func storeHeader(_ s: CardStoreState) -> some View {
         HStack(alignment: .firstTextBaseline) {
@@ -132,8 +161,9 @@ struct CardStoreView: View {
 
     @ViewBuilder private func rentBanner(_ s: CardStoreState) -> some View {
         if let days = store.daysUntilStoreRent, days <= Balance.rentWarningDays {
-            Banner(text: "Store rent of \(money(s.location.rent)) is due in \(days) day\(days == 1 ? "" : "s"). You have \(money(store.cash)).",
-                   color: store.canAfford(s.location.rent) ? Theme.cyan : Theme.orange)
+            let overhead = store.storeOverhead(s).total
+            Banner(text: "Store rent of \(money(s.rent)) and about \(money(overhead)) of overhead are due in \(days) day\(days == 1 ? "" : "s"). You have \(money(store.cash)).",
+                   color: store.canAfford(s.rent + overhead) ? Theme.cyan : Theme.orange)
         }
     }
 
@@ -171,11 +201,11 @@ struct CardStoreView: View {
         return DetailBox(title: "Last 7 days") {
             HStack(spacing: 0) {
                 StatCell(label: "Sales", value: money(week.revenue), color: Theme.green)
-                StatCell(label: "Wages, rent", value: money(week.costs), color: Theme.orange)
+                StatCell(label: "Costs", value: money(week.costs), color: Theme.orange)
                 StatCell(label: "Net", value: signedMoney(week.revenue - week.costs),
                          color: week.revenue >= week.costs ? Theme.green : Theme.orange)
             }
-            Text("\(week.customers) customer\(week.customers == 1 ? "" : "s") · \(week.sold) item\(week.sold == 1 ? "" : "s") sold. Sales are the price paid, before what you paid for the stock.")
+            Text("\(week.customers) customer\(week.customers == 1 ? "" : "s") · \(week.sold) item\(week.sold == 1 ? "" : "s") sold. Costs are wages, rent, and overhead. Sales are the price paid, before what you paid for the stock.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
         }
@@ -385,7 +415,7 @@ struct CardStoreView: View {
     private func leaseBox(_ s: CardStoreState) -> some View {
         DetailBox(title: "Lease") {
             HStack {
-                Text("Rent \(money(s.location.rent))").font(.subheadline)
+                Text("Rent \(money(s.rent))").font(.subheadline)
                 Spacer()
                 if let days = store.daysUntilStoreRent {
                     Text("due in \(days) day\(days == 1 ? "" : "s")")
@@ -393,7 +423,22 @@ struct CardStoreView: View {
                         .foregroundStyle(days <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
                 }
             }
-            Text("Deposit \(money(s.deposit)) · signed on day \(s.leaseDay + 1). If you miss a rent, the landlord locks the store, keeps the deposit, and word gets around.")
+            if let lease = s.lease {
+                let left = max(0, lease.endDay - store.day)
+                Text("Term \(lease.periods) periods · ends on day \(lease.endDay + 1) (\(left) day\(left == 1 ? "" : "s") left)")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.cyan)
+                Text(store.leaseBuyout(s) > 0 ? "It renews on the same terms at the end. To leave without a buyout, close in the last \(Balance.leaseNoticeDays) days of the term. A close now costs \(money(store.leaseBuyout(s))), and the landlord keeps the deposit." : "The term ends soon. Close now and the landlord gives back the deposit. If you do not, the lease renews on the same terms.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+            } else {
+                Text("Month to month. You can close at any time.").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+            }
+            let overhead = store.storeOverhead(s)
+            Text("Overhead every 28 days: insurance \(money(overhead.insurance)), utilities \(money(overhead.utilities)), software \(money(overhead.software)), and a \(Int(Balance.cardFeeRate * 100))% card fee on sales.")
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+            Text("Deposit \(money(s.deposit)) · signed on day \(s.leaseDay + 1). If you miss a payment, the landlord locks the store, keeps the deposit, and word gets around. The two game shops do not consign for you while you own a store.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
             Button("Close the store", role: .destructive) { closing = true }

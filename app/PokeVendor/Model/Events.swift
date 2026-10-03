@@ -27,7 +27,7 @@ extension GameStore {
             }
             let since = day - s.leaseDay
             if since > 0, since % Balance.rentCycleDays == 0 {
-                out.append(CalendarEntry(kind: .rent, title: "Store rent due", detail: "\(money(s.location.rent)) · \(s.name)"))
+                out.append(CalendarEntry(kind: .rent, title: "Store rent due", detail: "\(money(s.rent)) · \(s.name)"))
             }
             if day >= s.openDay, s.openDays.contains(day % 7) {
                 out.append(CalendarEntry(kind: .store, title: s.name,

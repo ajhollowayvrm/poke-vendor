@@ -37,8 +37,6 @@ enum StoreLocation: String, Codable, CaseIterable, Hashable {
     var traffic: Double { Balance.storeTraffic[self] ?? 0 }
     /// The share of customers with a small budget: kids, parents, and casual buyers.
     var casualShare: Double { Balance.storeCasualShare[self] ?? 0 }
-    /// The cash to sign the lease: the first rent, the deposit, and the build-out.
-    var upfront: Double { rent * 2 + buildout }
 }
 
 /// A one-time buy for the store. The store keeps it until the store closes.
@@ -117,13 +115,15 @@ struct CardStoreState: Codable, Hashable {
     var events: StoreEvents?
     /// The buylist, store credit, and the bulk box. Optional, so old saves still load.
     var sourcing: StoreSourcing?
+    /// The term of the lease. Nil on a store from an old save.
+    var lease: StoreLease?
 
     func has(_ fixture: StoreFixture) -> Bool { fixtures.contains(fixture) }
 }
 
 extension Balance {
     static let storeRent: [StoreLocation: Double] = [.stripMall: 1400, .mainStreet: 2400, .mall: 3800]
-    static let storeBuildout: [StoreLocation: Double] = [.stripMall: 2000, .mainStreet: 3500, .mall: 5000]
+    static let storeBuildout: [StoreLocation: Double] = [.stripMall: 3500, .mainStreet: 5000, .mall: 7000]
     static let storeTraffic: [StoreLocation: Double] = [.stripMall: 12, .mainStreet: 20, .mall: 32]
     static let storeCasualShare: [StoreLocation: Double] = [.stripMall: 0.3, .mainStreet: 0.25, .mall: 0.5]
     /// To sign a lease: reputation Trusted, and this much in sales over the whole run.
@@ -206,22 +206,28 @@ extension GameStore {
 
     var storeRequirementsMet: Bool { storeRequirements.allSatisfy(\.met) }
 
-    func canSignLease(_ location: StoreLocation) -> Bool {
-        data.cardStore == nil && storeRequirementsMet && canAfford(location.upfront)
+    func canSignLease(_ location: StoreLocation, term: Int) -> Bool {
+        data.cardStore == nil && storeRequirementsMet && canAfford(location.upfront(term: term))
     }
 
-    /// Signs the lease: the first rent, the deposit, and the build-out. The store opens after the build-out.
-    func signLease(_ location: StoreLocation, name: String) {
-        guard canSignLease(location) else { return }
+    /// Signs the lease for `term` periods of 28 days: the first rent, the deposit, and the build-out. The store opens
+    /// after the build-out. The two game shops notice.
+    func signLease(_ location: StoreLocation, term: Int, name: String) {
+        guard canSignLease(location, term: term) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = trimmed.isEmpty ? "Card Corner" : String(trimmed.prefix(30))
-        addLedger(-location.rent, .storeRent, "First rent · \(title)")
-        addLedger(-location.rent, .storeSetup, "Security deposit · \(title)")
+        let rent = location.rent(term: term)
+        addLedger(-rent, .storeRent, "First rent · \(title)")
+        addLedger(-rent, .storeSetup, "Security deposit · \(title)")
         addLedger(-location.buildout, .storeSetup, "Build-out · \(title)")
-        data.cardStore = CardStoreState(name: title, location: location, leaseDay: data.day,
-                                        openDay: data.day + Balance.storeBuildDays, deposit: location.rent)
-        log("Signed a lease at \(location.name). \(title) opens on day \(data.day + Balance.storeBuildDays + 1).",
-            cash: -location.upfront)
+        var state = CardStoreState(name: title, location: location, leaseDay: data.day,
+                                   openDay: data.day + Balance.storeBuildDays, deposit: rent)
+        state.lease = StoreLease(periods: term, endDay: data.day + term * Balance.rentCycleDays, rent: rent)
+        data.cardStore = state
+        rivalShopsReact()
+        log("Signed a \(term)-period lease at \(location.name). \(title) opens on day \(data.day + Balance.storeBuildDays + 1).",
+            cash: -location.upfront(term: term))
+        log("Cardboard Castle and Top Deck Games lost \(Balance.rivalStandingLoss) standing with you. They do not consign for the competition.")
         save()
     }
 
@@ -229,10 +235,13 @@ extension GameStore {
         data.cardStore.map { Balance.rentCycleDays - (data.day - $0.leaseDay) % Balance.rentCycleDays }
     }
 
-    /// Ends the lease. Every item in the store comes home tomorrow. The landlord keeps the deposit after an eviction.
+    /// Ends the lease. Every item in the store comes home tomorrow. The landlord keeps the deposit after an eviction,
+    /// and after an early close, which also costs the buyout.
     @discardableResult
     func closeStore(evicted: Bool = false) -> [String] {
         guard let s = data.cardStore else { return [] }
+        let buyout = evicted ? 0 : leaseBuyout(s)
+        guard canAfford(buyout) else { return ["You need \(money(buyout)) to buy out the lease."] }
         let back = ItemStatus.arriving(daysLeft: 1, from: s.name)
         var count = 0
         for i in data.raw.indices where Self.isInStore(data.raw[i].status) {
@@ -257,6 +266,9 @@ extension GameStore {
         if evicted {
             addReputation(-Balance.evictionReputationCost)
             lines.append("You could not pay the store rent. The landlord locked \(s.name) and kept the \(money(s.deposit)) deposit. Reputation −\(Balance.evictionReputationCost).\(stock)")
+        } else if buyout > 0 {
+            addLedger(-buyout, .storeRent, "Lease buyout · \(s.name)")
+            lines.append("You closed \(s.name) before the lease ended. You paid \(money(buyout)) to leave, and the landlord kept the \(money(s.deposit)) deposit.\(stock)")
         } else {
             addLedger(s.deposit, .refund, "Deposit back · \(s.name)")
             lines.append("You closed \(s.name). The landlord gave back the \(money(s.deposit)) deposit.\(stock)")
@@ -588,20 +600,28 @@ extension GameStore {
         }
     }
 
-    /// Store rent, after the clock moves. A missed rent closes the store, but the run goes on.
+    /// Store rent and overhead, after the clock moves. A missed payment closes the store, but the run goes on.
+    /// A lease that reaches the end of its term renews on the same terms.
     func storeRentDue() -> [String] {
-        guard let s = data.cardStore else { return [] }
+        guard var s = data.cardStore else { return [] }
         let since = data.day - s.leaseDay
         guard since > 0 else { return [] }
-        let rent = s.location.rent
+        let rent = s.rent
         if since % Balance.rentCycleDays == 0 {
-            guard canAfford(rent) else { return closeStore(evicted: true) }
+            let overhead = storeOverhead(s)
+            guard canAfford(rent + overhead.total) else { return closeStore(evicted: true) }
             addLedger(-rent, .storeRent, "Store rent · \(s.name)")
-            if var now = data.cardStore {
-                if now.history.last?.day == data.day - 1 { now.history[now.history.count - 1].costs += rent }
-                data.cardStore = now
+            addLedger(-overhead.total, .storeOverhead, "Store overhead · \(s.name)")
+            addStoreCost(rent + overhead.total, to: &s)
+            var lines = ["Store rent paid: \(money(rent)) for \(s.name).",
+                         "Store overhead paid: \(money(overhead.total)). Card fees \(money(overhead.fees)), insurance \(money(overhead.insurance)), utilities \(money(overhead.utilities)), software \(money(overhead.software))."]
+            if let lease = s.lease, data.day >= lease.endDay {
+                let newEnd = lease.endDay + lease.periods * Balance.rentCycleDays
+                s.lease?.endDay = newEnd
+                lines.append("The lease of \(s.name) renewed for \(lease.periods) periods. It ends on day \(newEnd + 1).")
             }
-            return ["Store rent paid: \(money(rent)) for \(s.name)."]
+            data.cardStore = s
+            return lines
         }
         if Balance.rentCycleDays - since % Balance.rentCycleDays == Balance.rentWarningDays {
             return ["Store rent of \(money(rent)) for \(s.name) is due in \(Balance.rentWarningDays) days."]
@@ -620,10 +640,13 @@ extension GameStore {
 
     // MARK: - Test tools
 
-    /// A store that opens today, with no cost and no requirements.
-    func testOpenCardStore(_ location: StoreLocation = .mainStreet) {
-        data.cardStore = CardStoreState(name: "Test Cards", location: location, leaseDay: data.day, openDay: data.day,
-                                        deposit: location.rent)
+    /// A store that opens today, with no cost and no requirements. The lease runs for `term` periods.
+    func testOpenCardStore(_ location: StoreLocation = .mainStreet, term: Int = 12) {
+        let rent = location.rent(term: term)
+        var state = CardStoreState(name: "Test Cards", location: location, leaseDay: data.day, openDay: data.day, deposit: rent)
+        state.lease = StoreLease(periods: term, endDay: data.day + term * Balance.rentCycleDays, rent: rent)
+        data.cardStore = state
+        rivalShopsReact()
         save()
     }
 }

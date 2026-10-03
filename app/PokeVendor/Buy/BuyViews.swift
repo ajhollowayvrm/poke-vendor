@@ -27,7 +27,7 @@ struct BuyView: View {
                         }
                         // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
                         if store.wholesaleOpen {
-                            channelRow(title: "Distributor", detail: "Cases at \(Int(Balance.wholesaleDiscount * 100))% of MSRP · \(store.wholesaleOffers.count) this week") {
+                            channelRow(title: "Distributor", detail: "Cases at \(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.wholesaleOffers.count) this week") {
                                 nav.path.append(.wholesale)
                             }
                             channelRow(title: "Case splits", detail: store.openSplits.isEmpty ? "No invites right now" : "\(store.openSplits.count) open") {

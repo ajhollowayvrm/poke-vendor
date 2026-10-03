@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// The distributor: cases at wholesale, from reputation Respected (docs/12-acquiring-product.md, Distributor / wholesale).
+/// The distributor: cases at wholesale, from reputation Respected, or for a store with a weekly allocation
+/// (docs/12-acquiring-product.md, Distributor / wholesale).
 struct WholesaleView: View {
     @Environment(GameStore.self) private var store
     @State private var cases: [String: Int] = [:]
@@ -10,30 +11,44 @@ struct WholesaleView: View {
         ScrollView {
             VStack(spacing: 12) {
                 HStack {
-                    Text("\(Int(Balance.wholesaleDiscount * 100))% of MSRP · minimum order \(money(Balance.wholesaleMinOrder)) · \(Balance.wholesaleDeliveryDays)-day delivery")
+                    Text("\(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.hasStoreAccount ? "store account" : "minimum order \(money(Balance.wholesaleMinOrder))") · \(Balance.wholesaleDeliveryDays)-day delivery")
                         .font(.caption).foregroundStyle(Theme.muted)
                     Spacer()
                     Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                }
+                if store.hasStoreAccount {
+                    DetailBox(title: "Your allocation") {
+                        Text("Hot product is allocated. Each week you can buy a few cases of each product: \(Balance.allocationBase) of a hot one, \(Balance.allocationBase + 1) of the rest. The limit grows by 1 case for each \(money(Balance.allocationStep)) you spend here, up to \(Balance.allocationMax). There is no minimum order.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                        Text("Spent with the distributor: \(money(store.distributorSpent))")
+                            .font(.caption.monospaced())
+                    }
                 }
                 if let message { Banner(text: message, color: Theme.cyan, icon: "info.circle.fill") }
                 if !store.wholesaleOpen {
                     EmptyTab(text: "Wholesale opens at reputation Respected, or when your own store opens.")
                 }
                 ForEach(store.wholesaleOffers) { offer in
-                    let n = cases[offer.id] ?? 1
+                    let left = store.wholesaleLeft(offer)
+                    let top = left.map { max(1, $0) } ?? 10
+                    let n = min(cases[offer.id] ?? 1, top)
                     HStack(alignment: .top, spacing: 12) {
                         ProductImage(url: offer.product.image, setName: offer.product.name).frame(width: 50, height: 64)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(offer.product.name).font(.subheadline.weight(.medium)).lineLimit(2)
                             Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · MSRP \(money(offer.product.msrp ?? 0)) · mkt \(money(offer.product.market))")
                                 .font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                            Stepper("\(n) case\(n == 1 ? "" : "s") · \(money(offer.casePrice * Double(n)))", value: Binding(get: { n }, set: { cases[offer.id] = $0 }), in: 1...10)
+                            if let left {
+                                Text("Allocation this week: \(left) of \(store.wholesaleCap(offer.product)) case\(store.wholesaleCap(offer.product) == 1 ? "" : "s") left\(store.isHot(offer.product) ? " · hot product" : "")")
+                                    .font(.caption.monospaced()).foregroundStyle(left == 0 ? Theme.orange : Theme.cyan)
+                            }
+                            Stepper("\(n) case\(n == 1 ? "" : "s") · \(money(offer.casePrice * Double(n)))", value: Binding(get: { n }, set: { cases[offer.id] = $0 }), in: 1...top)
                                 .font(.caption)
                             Button("Order") { message = store.buyWholesale(offer, cases: n) ?? "Ordered. It arrives in \(Balance.wholesaleDeliveryDays) days." }
                                 .buttonStyle(.borderedProminent)
                                 .foregroundStyle(.black)
                                 .controlSize(.small)
-                                .disabled(!store.canAfford(offer.casePrice * Double(n)))
+                                .disabled(left == 0 || !store.canAfford(offer.casePrice * Double(n)))
                         }
                     }
                     .padding(12)

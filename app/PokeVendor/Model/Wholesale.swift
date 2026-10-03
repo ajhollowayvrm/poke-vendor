@@ -52,7 +52,7 @@ extension GameStore {
     /// an account for a store (docs/22-own-store.md).
     var wholesaleOpen: Bool { reputationTier >= 3 || storeIsBuilt }
 
-    /// This week's cases: in-print product at 72% of MSRP. The same week always gives the same cases.
+    /// This week's cases: in-print product at 72% of MSRP, or 58% for a store account. The same week always gives the same cases.
     var wholesaleOffers: [WholesaleOffer] {
         guard wholesaleOpen else { return [] }
         var r = SeededRandom(seed: UInt64(data.day / 7 + 1) &* 57_559 &+ 909)
@@ -65,16 +65,20 @@ extension GameStore {
             if out.contains(where: { $0.product.id == p.id }) { continue }
             let size = Balance.caseSizes[p.kind] ?? 6
             out.append(WholesaleOffer(id: "w\(data.day / 7)-\(i)", product: p, caseSize: size,
-                                      unitPrice: Market.retail((p.msrp ?? p.market) * Balance.wholesaleDiscount)))
+                                      unitPrice: Market.retail((p.msrp ?? p.market) * wholesaleDiscountNow)))
         }
         return out.sorted { $0.casePrice > $1.casePrice }
     }
 
-    /// Buys cases. The minimum order is $500, and the boxes arrive in 5 days.
+    /// Buys cases. The minimum order is $500, and the boxes arrive in 5 days. A store account has no minimum order,
+    /// but it can buy only its weekly allocation of each product.
     func buyWholesale(_ offer: WholesaleOffer, cases: Int) -> String? {
         let total = offer.casePrice * Double(cases)
         guard cases > 0 else { return nil }
-        guard total >= Balance.wholesaleMinOrder else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
+        if let left = wholesaleLeft(offer), cases > left {
+            return left == 0 ? "Your allocation of this product is used up this week." : "Your allocation has \(left) more case\(left == 1 ? "" : "s") of this product this week."
+        }
+        guard total >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
         guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }
         addLedger(-total, .wholesale, "\(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) · Distributor")
         for _ in 0..<(offer.caseSize * cases) {
@@ -83,6 +87,7 @@ extension GameStore {
                                           status: .arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor"),
                                           acquiredDay: data.day))
         }
+        recordWholesale(offer, cases: cases, total: total)
         log("Ordered \(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) from the distributor for \(money(total)). It arrives in \(Balance.wholesaleDeliveryDays) days.",
             cash: -total)
         save()

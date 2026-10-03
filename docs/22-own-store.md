@@ -2,9 +2,12 @@
 
 **Status: built.** The lease, three locations, the build-out, the
 shelves, the prices, the clerk, the open days, working the counter,
-the fixtures, the events, store rent, eviction, and closing the store
-(`Model/CardStore.swift`, `Model/StoreEvents.swift`,
-`Hub/CardStoreView.swift`, `Hub/StoreEventsBox.swift`). The numbers are
+the fixtures, the events, the buylist, store credit, the bulk box, split
+prices, online listings, the lease term and the buyout, store rent,
+overhead, eviction, closing the store, and the reaction of the game shops
+(`Model/CardStore.swift`, `Model/StoreEvents.swift`, `Model/StoreBuying.swift`,
+`Model/StorePricing.swift`, `Model/StoreLease.swift`, `Hub/CardStoreView.swift`).
+The numbers are
 in [19-prototype-values.md](19-prototype-values.md#your-own-store).
 
 The player starts with no storefront (see
@@ -24,7 +27,8 @@ row opens a screen that shows what a landlord wants:
 | Sales over the whole run | $2,500 | The player must show that they can move product. |
 | Cash | The first rent, a deposit of one rent, and the build-out | The landlord and the builder want their money first. |
 
-The player names the store and picks one location.
+The player names the store, picks one location, and picks the lease
+term.
 
 ## Locations
 
@@ -34,13 +38,75 @@ the same cycle as the home rent (see
 
 | Location | Rent | Build-out | Customers on a weekday | Small-budget customers |
 | --- | --- | --- | --- | --- |
-| Oak Plaza strip mall | $1,400 | $2,000 | 12 | 30% |
-| Main Street storefront | $2,400 | $3,500 | 20 | 25% |
-| Northgate Mall | $3,800 | $5,000 | 32 | 50% |
+| Oak Plaza strip mall | $1,400 | $3,500 | 12 | 30% |
+| Main Street storefront | $2,400 | $5,000 | 20 | 25% |
+| Northgate Mall | $3,800 | $7,000 | 32 | 50% |
+
+The rent in the table is for the short term (see
+[The lease term](#the-lease-term)).
 
 The build-out takes 7 days. The player can stock the shelves during
 the build-out. The first 7 open days are the grand opening, with 50%
 more customers.
+
+## The lease term
+
+The player picks a term when they sign. A term is a number of rent
+periods of 28 days.
+
+| Term | Length | Rent |
+| --- | --- | --- |
+| 6 periods | 168 days | The rent in the Locations table |
+| 12 periods | 336 days | 10% lower |
+
+The deposit is one rent of the term the player picked. The Lease box
+and the sign dialog show the term and the end day.
+
+- **Closing before the term ends**: the player pays a buyout of 3
+  rents, or the rent for the rest of the term if that is less. The
+  landlord keeps the deposit. The player needs the cash for the
+  buyout.
+- **Notice window**: in the last 7 days of a term, the player can
+  close with no buyout. The landlord gives back the deposit.
+- **Renewal**: on the end day, the lease renews for the same term, at
+  the same rent. The player must close in the notice window to leave.
+- **Old saves**: a store from an older save has no term. Its lease
+  runs month to month. The player can close at any time, and the
+  landlord gives back the deposit.
+
+## Overhead
+
+Every 28 days, with the store rent, the store pays overhead. The
+ledger category is "Store overhead".
+
+| Cost | Strip mall | Main Street | Mall |
+| --- | --- | --- | --- |
+| Insurance | $90 | $130 | $200 |
+| Utilities | $140 | $220 | $380 |
+| POS software | $60 | $80 | $100 |
+| Card fees | 3% of the store's sales in the period | the same | the same |
+
+The overhead and the rent count in the costs of the "Last 7 days" box
+on the day before the payment. If the player cannot pay the rent and
+the overhead, the landlord locks the store (see
+[Store rent and eviction](#store-rent-and-eviction)).
+
+## Rival game shops
+
+Cardboard Castle and Top Deck Games see a new store as a competitor.
+When the player signs a lease:
+
+- Each shop takes 15 standing points from the player. Standing does
+  not go below 0.
+- The shops stop consigning for the player while the store stands,
+  from the day of the lease, with the build-out. The shop screen says
+  "We don't consign for the competition."
+- Cards that are already on consignment stay there. They sell or come
+  back as before.
+
+When the store closes, consignment opens again at the standing that
+the player has. The standing does not come back. The sign dialog tells
+the player all of this.
 
 ## Stock
 
@@ -263,35 +329,57 @@ closes, the box comes home with the other stock.
 
 A distributor opens an account for a store. When the build-out is
 done, wholesale opens even below reputation Respected (see
-[12-acquiring-product.md](12-acquiring-product.md)). Case splits still
-need Respected.
+[12-acquiring-product.md](12-acquiring-product.md)).
+Case splits still need Respected.
+
+A store account buys sealed product at 58% of MSRP. A player with no
+store pays 72%. The distributor allocates hot product to a store
+account:
+
+- Each week, the account can buy a limited number of cases of each
+  product. The limit is 1 case, plus 1 case for each $6,000 that the
+  player spent with the distributor over the whole run, up to 5. A
+  product that is not hot has 1 more case.
+- A product is hot when its market price is 1.2 times its MSRP or
+  more.
+- A store account has no minimum order. The allocation replaces it.
+- The wholesale screen shows the allocation for each product, the
+  cases left this week, and the total spent.
+
+The order history is in the save data. It counts from the first order,
+also before the store.
 
 ## Store rent and eviction
 
-- Store rent is due every 28 days after the lease day. The game warns
-  the player 3 days before.
+- Store rent and overhead are due every 28 days after the lease day.
+  The game warns the player 3 days before.
 - The home rent comes first. If the player cannot pay the store rent
-  after the home rent, the landlord locks the store.
+  and the overhead after the home rent, the landlord locks the store.
 - **Eviction**: the landlord keeps the deposit, and reputation goes
   down by 15. The stock comes home the next day. The run does not end.
 
 ## Closing the store
 
-The player can close the store at any time. The landlord gives back
-the deposit. The stock comes home the next day. The fixtures stay with
-the building. The player can sign a new lease later.
+The player can close the store at any time. Before the term ends, the
+player pays the buyout and the landlord keeps the deposit. In the
+notice window at the end of the term, there is no buyout and the
+landlord gives back the deposit (see
+[The lease term](#the-lease-term)). The stock comes home the next day.
+The fixtures stay with the building. Consignment at the game shops
+opens again. The player can sign a new lease later.
 
 ## The store screen
 
 - **Today**: work the counter, and the customers to expect today.
-- **Last 7 days**: sales, wages and rent, the net, customers, and items
-  sold.
+- **Last 7 days**: sales, costs (wages, rent, and overhead), the net,
+  customers, and items sold.
 - **Shelves**: the room used, the stock at the shelf price, and the
   stock list. Each row has a menu: the slab price, and the online
   listing.
 - **Buylist and store credit**: the buylist settings and the credit the store owes.
 - **Bulk box**: the cards in the box and the buttons to move bulk.
-- **Prices**, **Staff and hours**, **Fixtures**, and **Lease**.
+- **Prices**, **Staff and hours**, **Fixtures**, and **Lease**. The
+  Lease box shows the term, the end day, the buyout, and the overhead.
 
 The calendar shows the grand opening, each open day, each event, and
 each store rent.

@@ -124,8 +124,8 @@ struct HubView: View {
         }
         if let shop = store.cardStore, let days = store.daysUntilStoreRent, days <= Balance.rentWarningDays {
             Button { nav.path.append(.cardStore) } label: {
-                Banner(text: "Store rent of \(money(shop.location.rent)) for \(shop.name) is due in \(days) day\(days == 1 ? "" : "s").",
-                       color: store.canAfford(Balance.rent + shop.location.rent) ? Theme.cyan : Theme.orange, icon: "storefront")
+                Banner(text: "Store rent of \(money(shop.rent)) for \(shop.name) is due in \(days) day\(days == 1 ? "" : "s").",
+                       color: store.canAfford(Balance.rent + shop.rent) ? Theme.cyan : Theme.orange, icon: "storefront")
             }
             .buttonStyle(.plain)
         }
@@ -513,7 +513,10 @@ struct HubView: View {
         }
         for _ in 0..<days {
             // The store: open on day 3, stock it every few days, work the counter, buy fixtures, and close near the end.
-            if store.day == 3 { store.testOpenCardStore(.stripMall); store.setClerk(true) }
+            // A one-period lease: an early close with a buyout, a second lease, and a renewal.
+            if store.day == 3 { store.testOpenCardStore(.stripMall, term: 1); store.setClerk(true) }
+            if store.day == 15 { store.closeStore() }
+            if store.day == 18, store.cardStore == nil { store.testOpenCardStore(.stripMall, term: 1); store.setClerk(true) }
             if store.cardStore != nil {
                 if store.day % 3 == 0 {
                     let pick = store.stockable
@@ -590,6 +593,10 @@ struct HubView: View {
             if store.day % 7 == 1, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) { store.consign([card.id], at: .castle, percent: 110) }
             for split in store.openSplits where split.mine == 0 { _ = store.joinSplit(split.id, boxes: 1) }
             if let offer = store.wholesaleOffers.first, store.canAfford(offer.casePrice) { _ = store.buyWholesale(offer, cases: 1) }
+            // A store account cannot go over its allocation.
+            if store.hasStoreAccount, let offer = store.wholesaleOffers.first {
+                if let msg = store.buyWholesale(offer, cases: 99) { log.append("Wholesale 99 cases: \(msg)") }
+            }
             if store.data.sealed.contains(where: { $0.status == nil && !$0.keep }) {
                 let items = Array(store.data.sealed.filter { $0.status == nil && !$0.keep }.prefix(2))
                 let model = RipModel(items: items, store: store)
@@ -610,6 +617,8 @@ struct HubView: View {
         }
         print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales, credit owed \(money(store.storeCreditOwed)), bulk box \(store.cardStore?.source.bulkCards ?? 0)")
         if let plan = store.cardStore?.eventPlan { print("SOAK EVENTS: standing \(plan.standing), afterglow \(plan.afterglowPlayers) on day \(plan.afterglowDay + 1)") }
+        let overheadPaid = store.data.ledger.filter { $0.category == .storeOverhead }.reduce(0) { $0 - $1.amount }
+        print("SOAK LEASE: end day \(store.cardStore?.lease.map { $0.endDay + 1 } ?? 0), overhead paid \(money(overheadPaid)), castle \(store.shop(.castle).points), top deck \(store.shop(.topDeck).points), distributor \(money(store.distributorSpent))")
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
         for line in log.suffix(12) { print("SOAK", line) }
         for line in store.data.activity.suffix(30) { print("SOAK D\(line.day + 1)", line.text) }

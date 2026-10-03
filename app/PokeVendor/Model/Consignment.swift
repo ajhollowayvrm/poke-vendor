@@ -16,7 +16,8 @@ extension Balance {
 
 @MainActor
 extension GameStore {
-    func canConsign(at shop: LocalStore) -> Bool { standing(shop).rank >= StandingLevel.regular.rank }
+    /// The game shops do not consign for a player who owns a store.
+    func canConsign(at shop: LocalStore) -> Bool { data.cardStore == nil && standing(shop).rank >= StandingLevel.regular.rank }
 
     func consignCut(at shop: LocalStore) -> Double {
         standing(shop).rank >= StandingLevel.trusted.rank ? Balance.consignCutTrusted : Balance.consignCutRegular
