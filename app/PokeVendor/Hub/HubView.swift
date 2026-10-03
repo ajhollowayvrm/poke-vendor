@@ -477,7 +477,9 @@ struct HubView: View {
                     switch v.intent {
                     case .buy: session.accept()
                     case .trade: session.proposeTrade(valuing: 90)
-                    case .sell: if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.6) }
+                    case .sell:
+                        if session.canPayCredit, Bool.random() { session.acceptWithCredit() }
+                        else if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.6) }
                     }
                 } else if session.phase == .table {
                     if session.hasTable, floorVisits == 0, steps > 3 { session.walkFloor() } else { session.nextVisitor() }
@@ -518,6 +520,11 @@ struct HubView: View {
                     store.stockStore(Set(pick.cards.prefix(6).map(\.id) + pick.sealed.prefix(4).map(\.id)))
                 }
                 if store.day % 4 == 2, let s = store.startCounter() { play(s) }
+                if store.day == 4 { store.setBuylist(rate: 0.5, budget: 250, offerCredit: true) }
+                if store.day == 14 { store.setBuylist(rate: 0.6, budget: 100, offerCredit: false) }
+                if store.day == 18 { store.setBuylist(rate: 0, budget: 250, offerCredit: false) }
+                if store.day % 4 == 1 { store.moveBulkToBox(Set(store.movableBulk.prefix(3).map(\.id))) }
+                if store.day == 16 { store.takeBulkBack() }
                 if store.day == 10 { store.buyFixture(.playTables) }
                 // The events: the tournament is on by default. Turn the league on, then change the fees and the league day.
                 if store.day == 11 { store.setEvent(.league, on: true) }
@@ -581,7 +588,7 @@ struct HubView: View {
             if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
             store.endDay()
         }
-        print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales")
+        print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales, credit owed \(money(store.storeCreditOwed)), bulk box \(store.cardStore?.source.bulkCards ?? 0)")
         if let plan = store.cardStore?.eventPlan { print("SOAK EVENTS: standing \(plan.standing), afterglow \(plan.afterglowPlayers) on day \(plan.afterglowDay + 1)") }
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
         for line in log.suffix(12) { print("SOAK", line) }

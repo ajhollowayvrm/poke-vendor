@@ -27,6 +27,8 @@ struct CardStoreView: View {
                     pricesBox(s)
                     staffBox(s)
                     StoreEventsBox()
+                    buylistBox(s)
+                    bulkBox(s)
                     fixturesBox
                     leaseBox(s)
                 } else {
@@ -243,7 +245,7 @@ struct CardStoreView: View {
             Toggle(isOn: Binding(get: { s.clerk }, set: { store.setClerk($0) })) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Clerk · \(money(Balance.clerkWage)) a day").font(.subheadline.weight(.medium))
-                    Text("Keeps the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day. Paid only on open days. A clerk sells at your price, a bit less often than you do. The clerk does not haggle, trade, buy, or sell a second item.")
+                    Text("Keeps the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day. Paid only on open days. A clerk sells at your price, a bit less often than you do. The clerk does not haggle, trade, or sell a second item. The clerk buys only through the buylist.")
                         .font(.caption)
                         .foregroundStyle(Theme.muted)
                 }
@@ -266,6 +268,61 @@ struct CardStoreView: View {
                 }
             }
             Text("Saturday brings the most customers, then Sunday and Friday.").font(.caption).foregroundStyle(Theme.muted)
+        }
+    }
+
+    private func buylistBox(_ s: CardStoreState) -> some View {
+        let src = s.source
+        return DetailBox(title: "Buylist and store credit") {
+            HStack(spacing: 0) {
+                StatCell(label: "Credit owed", value: money(src.creditOwed), color: src.creditOwed > 0 ? Theme.orange : Theme.text)
+                StatCell(label: "Buylist", value: src.buylistRate > 0 ? "\(Int((src.buylistRate * 100).rounded()))%" : "Off")
+                StatCell(label: "Daily budget", value: src.buylistRate > 0 ? money(src.buylistBudget) : "-")
+            }
+            Picker("Buylist", selection: Binding(get: { src.buylistRate },
+                                                 set: { store.setBuylist(rate: $0, budget: src.buylistBudget, offerCredit: src.offerCredit) })) {
+                Text("Off").tag(0.0)
+                ForEach(Balance.buylistRates, id: \.self) { r in Text("\(Int((r * 100).rounded()))%").tag(r) }
+            }
+            .pickerStyle(.segmented)
+            Picker("Budget", selection: Binding(get: { src.buylistBudget },
+                                                set: { store.setBuylist(rate: src.buylistRate, budget: $0, offerCredit: src.offerCredit) })) {
+                ForEach(Balance.buylistBudgets, id: \.self) { b in Text(money(b)).tag(b) }
+            }
+            .pickerStyle(.segmented)
+            Toggle(isOn: Binding(get: { src.offerCredit },
+                                 set: { store.setBuylist(rate: src.buylistRate, budget: src.buylistBudget, offerCredit: $0) })) {
+                Text("The clerk offers store credit at \(Int((Balance.creditBonus * 100).rounded()))% of the cash offer")
+                    .font(.subheadline)
+            }
+            .tint(Theme.cyan)
+            Text("On each open day with a clerk, walk-in sellers offer collections. The clerk pays this share of market, up to the daily budget, and does not check for fakes. A higher share brings more sellers. Bought items go to Inventory. Customers pay up to \(Int(Balance.creditRedeemShare * 100))% of a day's sales with credit, so no cash comes in for that part. At the counter, you can pay a seller in store credit.")
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
+        }
+    }
+
+    private func bulkBox(_ s: CardStoreState) -> some View {
+        let src = s.source
+        let groups = store.movableBulk
+        return DetailBox(title: "Bulk box") {
+            HStack(spacing: 0) {
+                StatCell(label: "Cards in the box", value: "\(src.bulkCards)")
+                StatCell(label: "Price a card", value: money(Balance.bulkBoxPrice))
+                StatCell(label: "Inventory bulk", value: "\(groups.reduce(0) { $0 + $1.cards.count })")
+            }
+            HStack(spacing: 8) {
+                Button { store.moveBulkToBox(Set(groups.map(\.id))) } label: { Text("Move all bulk").frame(maxWidth: .infinity) }
+                    .buttonStyle(.borderedProminent)
+                    .foregroundStyle(.black)
+                    .disabled(groups.isEmpty)
+                Button { store.takeBulkBack() } label: { Text("Take the box back").frame(maxWidth: .infinity) }
+                    .buttonStyle(.bordered)
+                    .disabled(src.bulkBox.isEmpty)
+            }
+            Text("Small-budget customers buy handfuls of \(Balance.bulkHandful.lowerBound) to \(Balance.bulkHandful.upperBound) cards at \(money(Balance.bulkBoxPrice)) each.")
+                .font(.caption)
+                .foregroundStyle(Theme.muted)
         }
     }
 

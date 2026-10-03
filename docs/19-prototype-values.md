@@ -259,4 +259,7 @@ for CGC, and $30 for BGS.
 | Event standing | 0.5 to 1.5, starts at 1.0. Moves by (prize support − 0.6) × 0.25 after each tournament. Multiplies tournament players |
 | Event extras | Player at the counter: +15% players. Afterglow: 3 days, 30% of the players as extra customers, less each day. Tournament players pick a pack 0.4 times as often as a single. Attendance floor 30% |
 | Shoplifting | 5% of clerk-only days at 20 customers, scaled by the location traffic. 70% one to three loose packs, 20% a sealed item of $30 or less, 10% a card of $40 or less |
+| Buylist | Off, or 40%, 50%, 60% of market in cash. Daily budget $100, $250 (default), $500, or $1,000. Walk-in sellers: 10% of the clerk-hour customers at 50%, scaled by rate ÷ 50%. A seller wants 40% to 75% of market at least |
+| Store credit | 130% of the cash offer. 60% of sellers take it when the clerk offers it. Customers pay up to 25% of a day's sales with it |
+| Bulk box | $0.10 a card. 50% of small-budget customers buy a handful of 5 to 20 cards |
 | Eviction | Reputation −15, and the landlord keeps the deposit |

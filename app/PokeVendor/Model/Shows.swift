@@ -208,26 +208,28 @@ extension GameStore {
         save()
     }
 
-    func buyCardAtShow(_ card: OwnedCard, price: Double, vendor: String, at venue: String) {
+    /// `credit` is store credit that the seller took in place of cash (docs/22-own-store.md). No cash leaves the till.
+    func buyCardAtShow(_ card: OwnedCard, price: Double, vendor: String, at venue: String, credit: Double? = nil) {
         var card = card
         card.acquiredDay = data.day
-        addLedger(-price, .singles, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(vendor)")
+        if let credit { addStoreCredit(credit) } else { addLedger(-price, .singles, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(vendor)") }
         if card.grade == nil { data.raw.append(card) } else { data.slabs.append(card) }
-        log("Bought \(card.print.name)\(card.grade.map { " (\($0.label))" } ?? "") from \(vendor) at \(venue) for \(money(price)).",
-            cash: -price)
+        log("Bought \(card.print.name)\(card.grade.map { " (\($0.label))" } ?? "") from \(vendor) at \(venue) for \(credit.map { "\(money($0)) in store credit" } ?? money(price)).",
+            cash: credit == nil ? -price : nil)
         save()
     }
 
     @discardableResult
     func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil,
-                         known: Bool? = nil) -> SealedItem {
-        addLedger(-price, .sealed, "\(product.name) · \(vendor)")
+                         known: Bool? = nil, credit: Double? = nil) -> SealedItem {
+        if let credit { addStoreCredit(credit) } else { addLedger(-price, .sealed, "\(product.name) · \(vendor)") }
         var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
                               acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: data.day)
         item.fake = fake
         item.fakeKnown = known
         data.sealed.append(item)
-        log("Bought \(product.name) from \(vendor) at \(venue) for \(money(price)).", cash: -price)
+        log("Bought \(product.name) from \(vendor) at \(venue) for \(credit.map { "\(money($0)) in store credit" } ?? money(price)).",
+            cash: credit == nil ? -price : nil)
         save()
         return item
     }
@@ -1075,6 +1077,22 @@ final class ShowSession {
         Haptics.hit()
     }
 
+    /// At the player's own store, a seller can take store credit instead of cash.
+    var canPayCredit: Bool { venue.kind == .store && store.cardStore != nil }
+
+    /// The store credit for this seller: more than the cash offer, and no cash leaves the till.
+    func creditOffer(_ v: Visitor) -> Double { store.storeCreditOffer(cash: v.offer) }
+
+    func acceptWithCredit() {
+        guard canPayCredit, let v = current, v.intent == .sell, let goods = v.goods else { return }
+        buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff, credit: creditOffer(v))
+        store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
+                         market: v.goodsMarket, slug: goodsSlug(goods))
+        maybePromote(v, points: 12)
+        finish(minutes: .random(in: 6...12))
+        Haptics.hit()
+    }
+
     /// A stranger who had a good deal with the player sometimes gives their number.
     private func maybePromote(_ v: Visitor, points: Int, chance: Double = 0.25) {
         guard v.contactID == nil, Double.random(in: 0..<1) < chance else { return }
@@ -1318,7 +1336,8 @@ final class ShowSession {
     }
 
     /// `fake` is the item's hidden truth, and `looksOff` means the player saw it, so they know what they bought.
-    private func buyGoods(_ goods: VendorGoods, price: Double, from seller: String, fake: FakeTier? = nil, looksOff: Bool = false) {
+    private func buyGoods(_ goods: VendorGoods, price: Double, from seller: String, fake: FakeTier? = nil, looksOff: Bool = false,
+                          credit: Double? = nil) {
         let name = VendorItem(goods: goods, price: price, market: nil).name
         let known: Bool? = looksOff && fake != nil ? true : nil
         switch goods {
@@ -1326,21 +1345,22 @@ final class ShowSession {
             var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, condition: condition)
             card.fake = fake
             card.fakeKnown = known
-            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name)
+            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name, credit: credit)
         case .slab(let print, let slug, let grade):
             var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade)
             card.fake = fake
             card.fakeKnown = known
-            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name)
+            store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name, credit: credit)
         case .sealed(let product):
-            justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name, fake: fake, known: known)
+            justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name, fake: fake, known: known,
+                                               credit: credit)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,
                                    price: price, vendor: seller, at: venue.name)
             reveal = MysteryReveal(pack: pack, price: price, filler: contents.filler, hit: contents.hit)
         }
-        bought.append((name, price))
+        bought.append((credit == nil ? name : name + " (credit)", price))
     }
 
     /// Items that a recurring vendor saved for the player at this show.

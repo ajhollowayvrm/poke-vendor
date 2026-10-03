@@ -173,6 +173,58 @@ What the thief takes:
 If the store has no item of the chosen kind, the thief takes another
 kind.
 
+## Buylist
+
+A real shop makes its best margin when it buys collections for less
+than market. The store has a buylist. The player sets two values on
+the store screen:
+
+- The cash offer: off, or 40%, 50%, or 60% of market.
+- The daily cash budget: $100, $250, $500, or $1,000.
+
+The buylist runs on each open day, in the hours that the clerk covers.
+Walk-in sellers come in. Each seller brings one item: a single, a slab,
+or sealed product. The item has a hidden floor of 40% to 75% of market.
+The clerk buys when the offer meets the floor and the budget has room.
+A higher offer brings more sellers and more sales to the store.
+
+- The items go to Inventory in hand, not onto the shelves. The player
+  decides what to stock.
+- `paid` is the cash offer.
+- The clerk does not check for fakes. The roll uses the stranger
+  source, the same as a stranger at the counter. The player can still
+  look by eye when they work the counter.
+- The morning report says what the clerk bought and what it cost.
+- When the daily budget is gone, the clerk turns sellers away. The
+  report says so.
+
+## Store credit
+
+A seller can take store credit in place of cash. Credit is worth 130%
+of the cash offer.
+
+- At the counter, the player sees a "Pay in store credit" button next
+  to "Buy" on each seller. No cash leaves the till. The item cost is
+  still the cash offer.
+- On clerk days, the player can set the clerk to offer credit. 60% of
+  sellers whose floor the credit meets take it. The credit does not
+  use cash, but it counts against the daily budget at the cash offer.
+- The store owes the credit. The store screen shows the amount.
+- On each open day, customers pay up to 25% of the day's sales with
+  credit. No cash comes in for that part. A negative Sale line in the
+  ledger shows it. This holds for the clerk's sales and for the sales
+  at the counter.
+- Credit that customers hold is lost when the store closes.
+
+## Bulk box
+
+The player can move bulk groups from Inventory to the bulk box. The
+store sells every card in the box at $0.10. Small-budget customers
+look in the box. Half of them buy a handful of 5 to 20 cards. The
+store screen shows the count of cards in the box. The player can take
+the groups that are still in the box back to Inventory. When the store
+closes, the box comes home with the other stock.
+
 ## Wholesale
 
 A distributor opens an account for a store. When the build-out is
@@ -202,6 +254,8 @@ the building. The player can sign a new lease later.
   sold.
 - **Shelves**: the room used, the stock at the shelf price, and the
   stock list.
+- **Buylist and store credit**: the buylist settings and the credit the store owes.
+- **Bulk box**: the cards in the box and the buttons to move bulk.
 - **Prices**, **Staff and hours**, **Fixtures**, and **Lease**.
 
 The calendar shows the grand opening, each open day, each event, and
@@ -212,4 +266,5 @@ each store rent.
 - Balancing. The clerk wage against the sales on a quiet weekday.
 - A second store, or a bigger space.
 - Prices for each item, not one price for the whole store.
-- Store credit, buylists, and consignment at the player's own store.
+- Consignment at the player's own store.
+- Credit that expires. A buylist for sealed product only.

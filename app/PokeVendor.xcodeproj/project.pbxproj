@@ -141,6 +141,7 @@
 		B2628B0567788334F46A6907 /* crimson-invasion.json in Resources */ = {isa = PBXBuildFile; fileRef = 4DB852494E5092892E066499 /* crimson-invasion.json */; };
 		B3C2C938CCDDCE663A45170D /* neo-discovery.json in Resources */ = {isa = PBXBuildFile; fileRef = FAF0483A8B75F89A628B7214 /* neo-discovery.json */; };
 		B3E96DBC625CE0339D0C6A71 /* deoxys.json in Resources */ = {isa = PBXBuildFile; fileRef = 42F6EF496DC38B97131F0BBF /* deoxys.json */; };
+		B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */; };
 		B61765C7106375126BC3C120 /* destined-rivals.json in Resources */ = {isa = PBXBuildFile; fileRef = 292D3A115C43F52F2750F722 /* destined-rivals.json */; };
 		B61E9D4F56F6B53C0FAE5B8D /* shining-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = BEE883B7CE36E2F72E9892DA /* shining-fates.json */; };
 		BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6187C2CFFD057E0E448F0CC8 /* jungle.json */; };
@@ -242,6 +243,7 @@
 		38152100E3F21C13B7C61E1B /* GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStore.swift; sourceTree = "<group>"; };
 		383520ADD17820B56C2198FB /* set-index.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "set-index.json"; sourceTree = "<group>"; };
 		38930186931A1B4CDBBF0541 /* firered-leafgreen.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "firered-leafgreen.json"; sourceTree = "<group>"; };
+		38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBuying.swift; sourceTree = "<group>"; };
 		3946D786540E6C06E3BB91E4 /* Upgrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Upgrades.swift; sourceTree = "<group>"; };
 		3A569E4A6BF6ADE917EC538F /* delta-species.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "delta-species.json"; sourceTree = "<group>"; };
 		3B54A884DC3FCF4D498BA581 /* lost-origin.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-origin.json"; sourceTree = "<group>"; };
@@ -624,6 +626,7 @@
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
+				38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */,
 				71039722F060097A21B22BB3 /* StoreEvents.swift */,
 				3946D786540E6C06E3BB91E4 /* Upgrades.swift */,
 				E045FCAD07023E23A8B677B4 /* Vendors.swift */,
@@ -973,6 +976,7 @@
 				7ACC1B39815CB76022632456 /* Shows.swift in Sources */,
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
+				B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */,
 				BDF93E32D155D521D1F428B1 /* StoreEvents.swift in Sources */,
 				78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,

@@ -393,6 +393,13 @@ struct DealButtons: View {
             case .sell:
                 primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
                     .disabled(!store.canAfford(visitor.offer))
+                if session.canPayCredit {
+                    Button { withAnimation { session.acceptWithCredit() } } label: {
+                        Text("Pay in store credit · \(money(session.creditOffer(visitor)))").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Theme.cyan)
+                }
                 if visitor.naive {
                     // They do not know what they have. The player chooses how to deal with that.
                     HStack(spacing: 8) {

@@ -110,6 +110,8 @@ struct CardStoreState: Codable, Hashable {
     var history: [StoreDay] = []
     /// The events (docs/22-own-store.md#events). Optional, so old saves still load.
     var events: StoreEvents?
+    /// The buylist, store credit, and the bulk box. Optional, so old saves still load.
+    var sourcing: StoreSourcing?
 
     func has(_ fixture: StoreFixture) -> Bool { fixtures.contains(fixture) }
 }
@@ -240,6 +242,7 @@ extension GameStore {
             data.sealed[i].status = back
             count += 1
         }
+        data.bulk += s.source.bulkBox
         data.cardStore = nil
         var lines: [String] = []
         let stock = count > 0 ? " \(count) item\(count == 1 ? "" : "s") come\(count == 1 ? "s" : "") home tomorrow." : ""
@@ -437,6 +440,7 @@ extension GameStore {
         record.revenue += session.soldTotal
         s.history.append(record)
         data.cardStore = s
+        redeemStoreCredit(sales: session.soldTotal)
         let count = session.sold.count + session.bought.count + session.trades.count
         log("Worked the counter at \(s.name) for \(formatHours(worked)): \(count) deal\(count == 1 ? "" : "s"), \(money(session.soldTotal)) in sales, \(money(session.boughtTotal)) spent.")
     }
@@ -465,11 +469,17 @@ extension GameStore {
             record.customers += result.customers
             record.sold += result.sold
             record.revenue += result.revenue
+            data.cardStore = s
+            let extra = storeSourcingDay(share: share, shelfSales: result.revenue)
+            s = data.cardStore ?? s
+            record.revenue += extra.revenue
+            record.sold += extra.sold
             if result.sold > 0 {
                 lines.append("\(s.name) sold \(result.sold) item\(result.sold == 1 ? "" : "s") for \(money(result.revenue)) to \(result.customers) customer\(result.customers == 1 ? "" : "s").")
             } else if result.customers > 0 {
                 lines.append("\(result.customers) customer\(result.customers == 1 ? "" : "s") came into \(s.name), but nobody bought.")
             }
+            lines += extra.lines
         } else if worked == 0 {
             lines.append("Nobody worked at \(s.name) today, so it stayed closed.")
         }
