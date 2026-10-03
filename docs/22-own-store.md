@@ -86,6 +86,8 @@ ledger category is "Store overhead".
 | POS software | $60 | $80 | $100 |
 | Card fees | 3% of the store's sales in the period | the same | the same |
 
+The card fees cover every card sale at the store. A card sale at the counter has no second fee. The clerk sells more with the card reader (see [23-payment-methods.md](23-payment-methods.md)).
+
 The overhead and the rent count in the costs of the "Last 7 days" box
 on the day before the payment. If the player cannot pay the rent and
 the overhead, the landlord locks the store (see

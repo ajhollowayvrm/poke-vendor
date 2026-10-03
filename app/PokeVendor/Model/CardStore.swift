@@ -532,7 +532,7 @@ extension GameStore {
         for _ in 0..<customers {
             guard Double.random(in: 0..<1) >= Balance.storeBrowseChance else { continue }
             // The clerk loses some sales that the owner would close.
-            guard Double.random(in: 0..<1) < Balance.clerkSalesFactor else { continue }
+            guard Double.random(in: 0..<1) < Balance.clerkSalesFactor * clerkPaymentFactor else { continue }
             let roll = Double.random(in: 0..<1)
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare

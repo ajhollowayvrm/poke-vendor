@@ -138,6 +138,13 @@ extension GameStore {
             return "\(m.who) did not show up. The listing is still up."
         }
         guard let itemID = m.itemID else { return nil }
+        let pay = rollPayment(price: m.price, contactID: nil, atStore: false, buyer: m.who)
+        if pay.walked || pay.scam {
+            if pay.scam { loseToScam(itemID, name: m.name, venue: "a Facebook Marketplace meetup") }
+            data.meetups.remove(at: i)
+            save()
+            return pay.walked ? pay.line + " The listing is still up." : pay.line
+        }
         var fake: FakeTier?
         var known = false
         let paid = paidFor(itemID)
@@ -158,12 +165,14 @@ extension GameStore {
         let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false, paid: paid,
                                    overstated: overstated)
         if let fake {
-            recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known, refunds: false)
+            recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known,
+                          refunds: pay.refundsFakes)
         }
+        settlePayment(pay, item: m.name, venue: "Facebook Marketplace", price: m.price)
         data.meetups.remove(at: i)
-        log(line, cash: m.price)
+        log(line.replacingOccurrences(of: " in cash.", with: " \(pay.method.phrase)."), cash: m.price)
         save()
-        return "Sold to \(m.who) for \(money(m.price)) cash."
+        return "Sold to \(m.who) for \(money(m.price)) \(pay.method.phrase).\(pay.fee > 0 ? " Fee: \(money(pay.fee))." : "")"
     }
 
     private func deliverPickup(_ m: Meetup) {

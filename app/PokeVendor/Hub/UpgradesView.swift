@@ -23,6 +23,7 @@ struct UpgradesView: View {
                         icon: "tablecells", canBuy: store.canAfford(Balance.vendorKitCost)) { store.buyVendorKit() }
                     upgradeRow(.evReadout)
                     upgradeRow(.salesAnalytics)
+                    upgradeRow(.cardReader)
                     upgradeRow(.authTool)
                 }
                 DetailBox(title: "Contacts") {

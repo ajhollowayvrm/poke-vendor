@@ -61,6 +61,7 @@ $200, and the player buys it from the detail screen of any card show
 | Upgrade | Cost | What it does |
 |---|---|---|
 | Sales analytics | $150 | The sell screen and the consign screen show what the player paid for each item, the profit after fees and shipping, and the total profit, before the player lists. A pulled card counts as free. |
+| Card reader | $80 | Take card payments at shows, meets, and the store counter. Buyers with no cash stop walking away. A card sale costs 2.6% plus $0.15. See [23-payment-methods.md](23-payment-methods.md). |
 | Contact book | $200 | Room for 8 contacts in the contact book instead of 4. |
 | Big contact book | $600 | Room for 15 contacts. Needs the contact book. |
 

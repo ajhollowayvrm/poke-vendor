@@ -88,6 +88,8 @@ struct GameData: Codable {
     var bestOffers: [BestOffer] = []
     /// Lots on sale. Their items are not in Inventory (docs/15-selling.md, Lots).
     var lots: [Lot] = []
+    /// The payment policy and the payments that the sender will take back (docs/23-payment-methods.md).
+    var payments = PaymentState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -153,6 +155,7 @@ extension GameData {
         offerTerms = v(.offerTerms, offerTerms)
         bestOffers = v(.bestOffers, bestOffers)
         lots = v(.lots, lots)
+        payments = v(.payments, payments)
     }
 }
 
@@ -905,6 +908,7 @@ final class GameStore {
         lines += opportunitiesEndDay()
         lines += counterfeitsEndDay()
         lines += saleProblemsEndDay()
+        lines += paymentsEndDay()
         lines += streamsEndDay()
         lines += splitsEndDay()
         lines += meetupsEndDay()

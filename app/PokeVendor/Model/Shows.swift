@@ -1034,13 +1034,27 @@ final class ShowSession {
         case .buy:
             guard let item = v.item else { return }
             if buyerCatchesFake(v, item) { return }
+            let pay = store.rollPayment(price: v.offer, contactID: v.contactID, atStore: venue.kind == .store, buyer: v.name)
+            if pay.walked || pay.scam {
+                if pay.scam {
+                    store.loseToScam(item.id, name: item.name, venue: venue.name)
+                    table.removeAll { $0.id == item.id }
+                } else {
+                    walkedAway += 1
+                }
+                note = pay.line
+                finish(minutes: .random(in: 6...12))
+                return
+            }
             store.sellAtShow(item, price: v.offer, at: venue.name)
+            store.settlePayment(pay, item: item.name, venue: venue.name, price: v.offer)
+            if !pay.line.isEmpty { note = pay.line }
             sold.append((item.name, v.offer))
             table.removeAll { $0.id == item.id }
             store.recordDeal(v.contactID, what: "Sold them \(item.name)", price: v.offer, market: item.market, slug: item.setSlug)
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: v.offer, fake: fake, known: item.fakeKnown,
-                                    refunds: false, contactID: v.contactID)
+                                    refunds: pay.refundsFakes, contactID: v.contactID)
             }
         case .trade:
             guard let item = v.item else { return }

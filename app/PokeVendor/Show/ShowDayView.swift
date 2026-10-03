@@ -173,6 +173,7 @@ struct SetupStage: View {
                         }
                         .pickerStyle(.segmented)
                     }
+                    PaymentPolicyPicker()
                     if items.isEmpty {
                         Text("You have nothing to sell. Kept items, listed items, and items at a grader stay home.")
                             .font(.subheadline)

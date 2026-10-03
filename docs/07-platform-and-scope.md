@@ -46,6 +46,9 @@ Every system in this folder is built. The list:
   streams with auctions, Buy Now, giveaways, and tips, scheduled
   streams, and the show promo post.
 - **Upgrades**: one screen with every upgrade.
+- **Payment methods**: cash, card, and app payments on face-to-face
+  sales, the card reader, a payment policy, fees in the Wallet, fake
+  screenshots, and reversals.
 - **Your own store**: the lease, three locations, the shelves, the
   clerk, working the counter, fixtures, store rent, and eviction.
 - **Supplies**: the Supplies storefront, use of supplies by shipped

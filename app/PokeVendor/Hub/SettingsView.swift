@@ -9,6 +9,7 @@ struct SettingsView: View {
     var body: some View {
         let rule = store.data.settings.stopRule
         Form {
+            PaymentPolicySection()
             Section {
                 Picker("Rip mode", selection: Binding(get: { store.data.settings.ripMode }, set: { store.setRipMode($0) })) {
                     ForEach(RipMode.allCases, id: \.self) { Text($0.label).tag($0) }

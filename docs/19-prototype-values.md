@@ -263,6 +263,7 @@ for CGC, and $30 for BGS.
 | Authentication tool | $350 |
 | Corner loupe, edge light, raking lamp | $60, $90, $140 |
 | Studio lights, camera kit | $250, $600 |
+| Card reader | $80 |
 
 ## Your own store
 
@@ -312,3 +313,21 @@ The values are in `app/PokeVendor/Model/Supplies.swift`.
 | Accessory shelf price | Deck sleeves $9, binder $24, deck box $12, playmat $25 |
 | Accessory case | Deck sleeves 24, binders 6, deck boxes 12, playmats 6. The distributor charges 55% of the shelf price |
 | Accessory sales | 10% of the customers, plus 15% times the small-budget share of the location. Mix: sleeves 45%, deck boxes 25%, binders 15%, playmats 15% |
+
+## Payment methods
+
+See [23-payment-methods.md](23-payment-methods.md). The code is in `Model/Payments.swift`.
+
+| Value | Prototype value |
+| --- | --- |
+| Card reader | $80 upgrade |
+| Buyer's preferred method | 55% cash, 30% card, 15% app. 45% of app buyers ask for Friends and Family |
+| Card fee | 2.6% plus $0.15. No per-sale fee at the player's store: the overhead has card fees |
+| Goods and Services fee | 2.9% plus $0.30 |
+| Friends and Family fee | none |
+| Method not accepted | A Friends and Family buyer pays Goods and Services 70% of the time, if accepted. Otherwise cash 50% of the time (80% for a contact). Otherwise the buyer walks |
+| Fake screenshot | Goods and Services 2%, Friends and Family 8%. The money never arrives |
+| Reversal | Goods and Services 3%, Friends and Family 5%. It comes 3 to 12 days after the sale |
+| Contact risk | 25% of the stranger risk |
+| Clerk sales with a reader | ×1.12 |
+| Default policy | No Friends and Family |
