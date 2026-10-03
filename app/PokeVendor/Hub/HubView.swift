@@ -137,6 +137,12 @@ struct HubView: View {
             }
             .buttonStyle(.plain)
         }
+        ForEach(store.debtWarnings, id: \.self) { warning in
+            Button { nav.path.append(.loans) } label: {
+                Banner(text: warning.text, color: warning.affordable ? Theme.cyan : Theme.orange, icon: "creditcard")
+            }
+            .buttonStyle(.plain)
+        }
         if store.isPokemonCenterDropLive && !store.data.pokemonCenterAttempted {
             Button { nav.path.append(.store(.pokemonCenter)) } label: {
                 Banner(text: "A Pokemon Center drop is live today. You get one attempt.", color: Theme.green)
@@ -568,6 +574,24 @@ struct HubView: View {
                 if store.day % 9 == 0, let id = store.storeStock.cards.first?.id { store.takeBackFromStore([id]) }
                 if store.day == days - 4 { store.closeStore() }
             }
+            // Debt: a line with overdraft, both loans, a payday loan, and the pawn shop. A low score on day 40 tests the
+            // misses, and a cash drain on day 44 sends a debt to collections.
+            if store.day == 1 { store.openLine(); store.drawLine(300) }
+            if store.day == 2, let offer = store.personalLoanOffer { store.takeLoan(offer, amount: 1_000, periods: 6) }
+            if store.day == 5 { store.takePayday(200) }
+            if store.day % 10 == 6, let item = store.pawnable.first { _ = store.pawn(item.id) }
+            if store.day % 10 == 9, let ticket = store.data.debt.pawns.first { Bool.random() ? store.redeemPawn(ticket.id) : store.extendPawn(ticket.id) }
+            if store.day == 20, let loan = store.data.debt.loans.first { store.payLoan(loan.id, amount: 50) }
+            if store.day == 25, let line = store.data.debt.line { store.payLine(line.payoff / 2) }
+            if store.day == 91 { store.testSetCreditScore(720); store.getSellerPermit() }
+            if store.day == 92, let offer = store.businessLoanOffer { store.takeLoan(offer, amount: offer.maxAmount, periods: 12) }
+            if store.day == 40 { store.testSetCreditScore(560) }
+            if store.day == 44 {
+                for i in store.data.debt.loans.indices { store.data.debt.loans[i].missed = Balance.missesToCollections - 1 }
+                store.addTestCash(-store.cash + 5)
+            }
+            if store.day == 50 || store.day == 80 { store.addTestCash(9000) }
+            if store.day == 52, let debt = store.data.debt.collections.first { store.payCollection(debt.id, amount: debt.owed / 2) }
             store.report = nil
             if store.data.lateHours > 0 { store.chooseMorning(sleepIn: Bool.random()) }
             for o in store.activeOpportunities where o.day == store.day {
@@ -627,6 +651,8 @@ struct HubView: View {
         if let plan = store.cardStore?.eventPlan { print("SOAK EVENTS: standing \(plan.standing), afterglow \(plan.afterglowPlayers) on day \(plan.afterglowDay + 1)") }
         let overheadPaid = store.data.ledger.filter { $0.category == .storeOverhead }.reduce(0) { $0 - $1.amount }
         print("SOAK LEASE: end day \(store.cardStore?.lease.map { $0.endDay + 1 } ?? 0), overhead paid \(money(overheadPaid)), castle \(store.shop(.castle).points), top deck \(store.shop(.topDeck).points), distributor \(money(store.distributorSpent))")
+        let debt = store.data.debt
+        print("SOAK DEBT: score \(store.creditScore), owed \(money(store.totalDebt)), loans \(debt.loans.count), line \(money(debt.line?.payoff ?? 0)), pawns \(debt.pawns.count), collections \(debt.collections.count), interest paid \(money(debt.interestPaid))")
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")
         for line in log.suffix(12) { print("SOAK", line) }
         for line in store.data.activity.suffix(30) { print("SOAK D\(line.day + 1)", line.text) }
@@ -646,6 +672,7 @@ struct HubView: View {
         if let i = args.firstIndex(of: "-route"), i + 1 < args.count {
             switch args[i + 1] {
             case "wallet": nav.path = [.wallet]
+            case "loans": nav.path = [.wallet, .loans]
             case "buy": nav.path = [.buy]
             case "amazon": nav.path = [.buy, .store(.amazon)]
             case "ebay": nav.path = [.buy, .store(.ebay)]

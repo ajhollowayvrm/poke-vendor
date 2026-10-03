@@ -191,7 +191,9 @@ entry in the Wallet ledger.
 With the starting job, 4 weeks of pay is $2,560. After rent, $1,360
 is left for trading and other costs.
 
-**If the player cannot pay rent, the game is over.** The run ends.
+**If the player cannot pay rent, the game is over.** The run ends. A line of
+credit with overdraft protection pays the gap when it has the credit
+(see [27-debt-and-loans.md](27-debt-and-loans.md#overdraft-protection)).
 
 Rent is what gives quitting and unemployment a real risk: with no
 paycheck, the business must cover the rent. The local game shop's

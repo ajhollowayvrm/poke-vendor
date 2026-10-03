@@ -53,6 +53,7 @@ struct WalletView: View {
                     }
                 }
                 TaxBox()
+                debtBox
                 insuranceBox
                 DetailBox(title: "Ledger") {
                     ForEach(store.data.ledger.reversed()) { entry in
@@ -85,6 +86,27 @@ struct WalletView: View {
 }
 
 extension WalletView {
+    /// Credit and debt, with the way into the Loans screen (docs/27-debt-and-loans.md).
+    private var debtBox: some View {
+        let debt = store.data.debt
+        return DetailBox(title: "Debt and credit") {
+            HStack(spacing: 0) {
+                StatCell(label: "Credit score", value: "\(store.creditScore)")
+                StatCell(label: "You owe", value: money(store.totalDebt), color: store.totalDebt > 0 ? Theme.orange : Theme.text)
+                StatCell(label: "Net worth", value: money(store.netWorth), color: store.netWorth >= 0 ? Theme.green : Theme.orange)
+            }
+            if !debt.collections.isEmpty {
+                Text("A debt is in collections. The collector takes part of each paycheck.").font(.caption).foregroundStyle(Theme.orange)
+            }
+            Text("\(debt.loans.count) loan\(debt.loans.count == 1 ? "" : "s") · \(debt.line == nil ? "no line of credit" : "line of credit open") · \(debt.pawns.count) pawn ticket\(debt.pawns.count == 1 ? "" : "s")")
+                .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            NavigationLink(value: AppRoute.loans) {
+                Text("Loans and the pawn shop").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+        }
+    }
+
     /// Collection insurance (docs/24-theft-and-insurance.md).
     private var insuranceBox: some View {
         let policy = store.data.insurance

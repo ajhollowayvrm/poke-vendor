@@ -62,6 +62,9 @@ Every system in this folder is built. The list:
 - **Theft and insurance**: theft at a card show, a stolen bag from the
   car, water damage at home, three upgrades that lower the risk, and
   collection insurance in the Wallet.
+- **Debt and loans**: the credit score, personal and business loans, the
+  line of credit with overdraft protection, payday loans, the pawn shop,
+  and collections with wage garnishment.
 
 The values that the design leaves to balancing are in
 [19-prototype-values.md](19-prototype-values.md).

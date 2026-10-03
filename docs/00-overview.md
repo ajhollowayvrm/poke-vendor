@@ -46,6 +46,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [24-theft-and-insurance.md](24-theft-and-insurance.md) — theft at a card show, a stolen bag from the car, water damage at home, the locked case, dehumidifier, and fire safe upgrades, and collection insurance (premium every 4 weeks, deductible, payouts in the Wallet ledger).
 - [25-payment-methods.md](25-payment-methods.md) — payment methods on face-to-face sales: cash, card (the card reader upgrade and its fee), and Venmo or PayPal Goods and Services against Friends and Family. The payment policy, fees in the Wallet, fake screenshots, and chargebacks.
 - [26-taxes.md](26-taxes.md) — sales tax at the store and the show table, the seller's permit, estimated income tax every 13 weeks, the 1099-K note, and the tax box in the Wallet.
+- [27-debt-and-loans.md](27-debt-and-loans.md) — the credit score, personal and business loans, the line of credit and overdraft protection, payday loans, the pawn shop, missed payments, collections and wage garnishment, and how interest counts for income tax.
 
 ## Open topics
 

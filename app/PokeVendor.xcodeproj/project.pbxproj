@@ -88,6 +88,7 @@
 		59E4448191D4B6B1C30434C9 /* arceus.json in Resources */ = {isa = PBXBuildFile; fileRef = 96C7926C1973DA524FFEA029 /* arceus.json */; };
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
 		5C495FB58BD39174F59911D7 /* majestic-dawn.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */; };
+		5E314A75E9482AAE174AF1E4 /* LoansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B789AFBC7E60902CCEA9F3 /* LoansView.swift */; };
 		5FB9D02054882C35C7069D88 /* SuppliesViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
 		6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */ = {isa = PBXBuildFile; fileRef = A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */; };
@@ -187,6 +188,7 @@
 		D3B93B18BEA7DF8E26B5B8C3 /* dragons-exalted.json in Resources */ = {isa = PBXBuildFile; fileRef = 946CC77705EA5072E1E4B4B2 /* dragons-exalted.json */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
 		D889A9F9ED8A2AC4D22CCD94 /* vivid-voltage.json in Resources */ = {isa = PBXBuildFile; fileRef = B20617D3991981E63F15727B /* vivid-voltage.json */; };
+		D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93E91BC33F28004C994B1EE /* Debt.swift */; };
 		D90544EAF24F5CD54A7CFBAE /* fates-collide.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */; };
 		D9AA152721D08C2AD1ED0B0E /* evolving-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */; };
 		D9DF577EC89779021C377193 /* WholesaleAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8833683AAA2FC8DCC8F98539 /* WholesaleAccount.swift */; };
@@ -233,6 +235,7 @@
 		074AD82C95C34EEF99B9381E /* shining-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "shining-legends.json"; sourceTree = "<group>"; };
 		07BCE444E4AD984840D93FF6 /* UpgradesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradesView.swift; sourceTree = "<group>"; };
 		0F522C90FE86AD311AB076F5 /* dragon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dragon.json; sourceTree = "<group>"; };
+		10B789AFBC7E60902CCEA9F3 /* LoansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoansView.swift; sourceTree = "<group>"; };
 		11814C73AA917A111DD8EC6A /* PackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackView.swift; sourceTree = "<group>"; };
 		12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unbroken-bonds.json"; sourceTree = "<group>"; };
 		15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackBuilder.swift; sourceTree = "<group>"; };
@@ -438,6 +441,7 @@
 		F704E86B4D99E71629CF9403 /* great-encounters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "great-encounters.json"; sourceTree = "<group>"; };
 		F78F3275EFDE7F3E896A5E91 /* black-bolt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-bolt.json"; sourceTree = "<group>"; };
 		F885E2CD1858D928F56B9E78 /* OfferLotViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferLotViews.swift; sourceTree = "<group>"; };
+		F93E91BC33F28004C994B1EE /* Debt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debt.swift; sourceTree = "<group>"; };
 		F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mysterious-treasures.json"; sourceTree = "<group>"; };
 		FA2426C0050E11BB75D79A1E /* Losses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Losses.swift; sourceTree = "<group>"; };
 		FAF0483A8B75F89A628B7214 /* neo-discovery.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery.json"; sourceTree = "<group>"; };
@@ -652,6 +656,7 @@
 				FAFC1AB6090289298D64A7E6 /* Condition.swift */,
 				3284779D32F44C664EE1950F /* Consignment.swift */,
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
+				F93E91BC33F28004C994B1EE /* Debt.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				38152100E3F21C13B7C61E1B /* GameStore.swift */,
 				4B1D85597836B370B32E25FC /* GarageSales.swift */,
@@ -730,6 +735,7 @@
 				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
 				22DCF071A80BA4398E968082 /* HubView.swift */,
 				772DBF76AEF228531662272E /* JobView.swift */,
+				10B789AFBC7E60902CCEA9F3 /* LoansView.swift */,
 				1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */,
 				4BAC90EF53AF2640A15B85AF /* PaymentViews.swift */,
 				B39FE2287AB7BA7F1781A41B /* SettingsView.swift */,
@@ -1006,6 +1012,7 @@
 				54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */,
 				E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */,
 				EDECE585BE210F65109E48BD /* Counterfeits.swift in Sources */,
+				D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				7A35C872266C162E6BEC2E3D /* Events.swift in Sources */,
@@ -1018,6 +1025,7 @@
 				C31C63C7733ED165D21528FD /* Job.swift in Sources */,
 				897A07D0BDDA180C5FBAB178 /* JobView.swift in Sources */,
 				C3BA9223FB686ECAAA25A207 /* LiveStream.swift in Sources */,
+				5E314A75E9482AAE174AF1E4 /* LoansView.swift in Sources */,
 				7C714401A1C5DB31FFCD79E6 /* LocalStores.swift in Sources */,
 				697C57E1692D53608533B285 /* Losses.swift in Sources */,
 				807C01D64258BC9B234CA73D /* Lots.swift in Sources */,

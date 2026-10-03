@@ -66,10 +66,14 @@ The net profit of a quarter is the sum of these ledger entries:
 - Income: sales, live-stream tips, and sponsorships. A refund is
   negative income.
 - Cost: sealed product, singles, grading and authentication fees, show
-  fees, wholesale, store rent, store overhead, wages, and store events.
+  fees, wholesale, store rent, store overhead, wages, store events, and
+  the interest and fees of a business loan.
 
 The paycheck, the home rent, the upgrades, the store build-out and
-deposit, and the tax payments are not in the sum.
+deposit, and the tax payments are not in the sum. Loan cash, principal
+payments, and personal interest are not in the sum (see
+[27-debt-and-loans.md](27-debt-and-loans.md#income-tax)). A pawn shop that
+keeps an item counts as a sale for the amount of the loan.
 
 The game counts a purchase when the player pays for it, not when the
 item sells. A quarter with more buying than selling is a loss. The loss

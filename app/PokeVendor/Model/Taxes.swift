@@ -46,7 +46,7 @@ extension Balance {
     /// The ledger entries that count for income tax: sales and other income, less the cost of the business.
     static let taxableCategories: Set<LedgerEntry.Category> = [
         .sale, .tips, .sponsorship, .refund, .sealed, .singles, .grading, .showFees, .authentication, .wholesale,
-        .storeRent, .storeOverhead, .wages, .storeEvents,
+        .storeRent, .storeOverhead, .wages, .storeEvents, .businessInterest,
     ]
 }
 

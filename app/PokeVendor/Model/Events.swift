@@ -39,6 +39,7 @@ extension GameStore {
             out.append(CalendarEntry(kind: .timeOff, title: "Time off", detail: "Booked · paid"))
         }
         out += taxEntries(day: day)
+        out += debtEntries(day: day)
         return out
     }
 }

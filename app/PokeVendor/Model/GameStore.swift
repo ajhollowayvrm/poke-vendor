@@ -94,6 +94,8 @@ struct GameData: Codable {
     var taxes = TaxState()
     /// Collection insurance (docs/24-theft-and-insurance.md).
     var insurance = InsuranceState()
+    /// The credit score, loans, the line of credit, pawn tickets, and collections (docs/27-debt-and-loans.md).
+    var debt = DebtState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -162,6 +164,7 @@ extension GameData {
         payments = v(.payments, payments)
         taxes = v(.taxes, taxes)
         insurance = v(.insurance, insurance)
+        debt = v(.debt, debt)
     }
 }
 
@@ -882,6 +885,7 @@ final class GameStore {
             let pay = max(0, job.weeklyPay - unpaid)
             addLedger(pay, .paycheck, "Paycheck · \(job.title)\(unpaid > 0 ? " · \(data.jobState.unpaidDays) unpaid day\(data.jobState.unpaidDays == 1 ? "" : "s")" : "")")
             lines.append("Payday: \(money(pay)) from your job\(unpaid > 0 ? ", less \(money(unpaid)) for the days you skipped" : "").")
+            if let line = garnishWages(pay) { lines.append(line) }
             data.jobState.unpaidDays = 0
         }
 
@@ -927,7 +931,7 @@ final class GameStore {
         }
 
         if data.day % Balance.rentCycleDays == 0 {
-            if canAfford(Balance.rent) {
+            if coverWithLine(Balance.rent, for: "Rent") {
                 addLedger(-Balance.rent, .rent, "Rent")
                 lines.append("Rent paid: \(money(Balance.rent)).")
             } else {
@@ -939,6 +943,8 @@ final class GameStore {
         }
         if data.gameOver == nil { lines += storeRentDue() }
         lines += taxesEndDay()
+        // Debt payments come after rent and taxes. A missed debt payment adds a fee, and the run goes on.
+        if data.gameOver == nil { lines += debtEndDay() }
         if data.gameOver == nil { lines += lossesEndDay() }
         if data.gameOver == nil { lines += storeGrowthDay() }
 

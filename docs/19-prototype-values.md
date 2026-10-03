@@ -428,7 +428,7 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Missed payment | A penalty of 10% of the amount. The player still owes the amount. No game over |
 | Seller's permit | $50, one time. A requirement for a store lease. A store from an old save has one |
 | 1099-K note | $2,000 of gross sales on TCGplayer, eBay, and Whatnot in a year of 364 days |
-| Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, and store events |
+| Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, store events, and business interest |
 
 ## Theft, damage, and insurance
 
@@ -448,3 +448,19 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Sealed buylist | Off, or 60%, 70%, 80% of market in cash. Daily budget $100, $250 (default), $500, or $1,000. Walk-in sellers: 6% of the clerk-hour customers at 70%, scaled by rate ÷ 70%. A seller wants 55% to 85% of market at least. Product of $15 or more |
 | Consignment in the own store | Store cut 15%, 20% (default), or 25%. Up to 3 cards a day, 8% of the clerk-hour customers at 20%. Each point of cut over 20% takes 4 points of the sellers away. Card of $8 or more. Unsold cards go back after 28 days |
 | Bigger space | Bigger unit $2,500, large unit $4,500. Each step: +40 card slots, +40 sealed slots, +25% of the lease rent, +25% insurance and utilities |
+
+## Debt and loans
+
+| Item | Value |
+| --- | --- |
+| Credit score | 300 to 850. Start 650. On time +4, paid off +10, application −5, first miss −45, later miss −25, collections −100 |
+| Line use penalty | Over 30% of the limit −15, over 70% −35 |
+| Interest | Accrues every day at APR ÷ 364. Payments every 28 days |
+| Personal loan | Score 580+. 740+: 9% APR, up to $10,000. 670+: 14%, up to $5,000. 580+: 24%, up to $2,000. 6, 12, or 24 payments. 3% fee. A job is required |
+| Debt-to-income | All loan payments under 20% of 4 weeks of pay |
+| Business loan | Score 620+. 700+: 10% APR, 620+: 13%. 12, 24, or 36 payments. 2% fee. Seller's permit, 91 days of history, $1,000 of sales in 91 days. Up to half of one year of sales, cap $25,000 |
+| Line of credit | Score 580+. 740+: $5,000 at 18%. 670+: $2,000 at 22%. 580+: $500 at 29%. Minimum payment: interest + 3% of the balance, at least $25 |
+| Payday loan | $100 to $500, at most half of one week of pay. $15 fee for each $100, due in 14 days. Up to 4 rollovers. $30 bounce fee |
+| Pawn shop | 40% of market. Items of $20 or more. 20% fee for each 28 days. The shop keeps the item after the last day |
+| Late fee | $30, or 5% of the payment when that is more |
+| Collections | After 3 missed payments in a row. 20% collection fee. 25% of each paycheck |
