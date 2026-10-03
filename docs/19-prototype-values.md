@@ -88,6 +88,13 @@ run. Holds, consignment, and league night are not built.
 | TCGplayer sale chance | 30% each day at or under the lowest listing. The chance halves for about each 2% above it |
 | eBay Buy It Now sale chance | 10% each day at market (14% for slabs and sealed). It falls as the price goes above market |
 | eBay auction | 5% end with no bid. The others end near 95% of market, with a spread of about ±35% |
+| Best Offer: offer chance | 12% each day at a price equal to market, for each listing with Best Offer on. The chance falls by a factor of e for each 33% above market. Follower tier 3 reach raises it |
+| Best Offer: the offer | The buyer's most is 85% to 100% of market (never above the price). The first offer is 80% to 92% of that most |
+| Best Offer: answers | An offer waits 2 days. One counter for each offer. The buyer says yes when the counter is at or under his most, and no above it. He answers at End Day |
+| Best Offer: auto rules | Auto-accept slider 80% to 100% of the price (default 95%). Auto-decline slider 50% to 90% (default 70%) |
+| Lot: buyer price | 85% of the sum of market values. The player's price slider runs from 50% to 110% of the sum |
+| Lot: sale chance | Each day: (6% + 22% / (1 + average item value / $20)) × e^(−8 × (price / buyer price − 1)). Cap 50%. A $2 item gives 26%, a $20 item 17%, a $100 item 10% |
+| Lot: size | At least 2 items, all in one Inventory tab. A lot ends after 28 days |
 
 ## Grading
 

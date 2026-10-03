@@ -1,6 +1,6 @@
 # Selling
 
-**Status: built.** TCGplayer, eBay, eBay auctions, Facebook Marketplace with meetups and no-shows, Whatnot on a stream, social posts, the game shop buylist, bulk for credit, consignment, local meets, shipping, insurance, bad sales, and buyer problems. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+**Status: built.** TCGplayer, eBay, eBay auctions, eBay Best Offer, lots, Facebook Marketplace with meetups and no-shows, Whatnot on a stream, social posts, the game shop buylist, bulk for credit, consignment, local meets, shipping, insurance, bad sales, and buyer problems. The numbers are in [19-prototype-values.md](19-prototype-values.md).
 
 How the player turns inventory into cash. This is the sell side of the
 loop, opposite of [12-acquiring-product.md](12-acquiring-product.md).
@@ -83,6 +83,60 @@ and high-value singles, and it reaches international buyers.
 - **Buy It Now**: a fixed price that the player sets. It is slower,
   but the price is known.
 - eBay takes the highest fees of all the online channels.
+
+### Best Offer
+
+On a Buy It Now listing, the player can turn on **Accept offers** in the
+sell sheet. Best Offer makes a sale more likely at a lower price.
+
+- **Offers**: at End Day, each listing with Best Offer on can get an
+  offer from a buyer. The chance is highest at market price. It falls
+  fast when the price is above market. The offer is below the price.
+- **The player answers**: the hub shows each offer in the box "Offers
+  on eBay". The player accepts, declines, or counters. An offer waits
+  **2 days**, then it runs out.
+- **Counter**: the player picks a price above the offer and at or under
+  the listing price. Each offer gets one counter. The buyer has a hidden
+  most. At End Day, he says yes when the counter is at or under it, and
+  no above it. After a no, the listing stays up.
+- **Auto rules**: the player can set an **auto-accept** share of the
+  price. An offer at or above it sells at once. The player can also set
+  an **auto-decline** share. An offer below it goes away, and the
+  End Day report counts it.
+- **Same rules as a sale**: an offer sale uses the listing time (4
+  weeks), the eBay fees, shipping, insurance, the chance of a lost
+  package, and the bad-sale rules for a fake. An offer sale gives a
+  normal receipt and ledger entry.
+- The normal Buy It Now sale chance stays on. A card can still sell at
+  the full price on a day with no offer.
+- If the card sells another way, or the player removes the listing,
+  the offers on it go away.
+
+## Lots
+
+The player selects two or more items in one Inventory tab, taps **Lot**,
+and lists them as **one lot at one price**. A lot goes on eBay or on
+Facebook Marketplace.
+
+- A lot is one listing, one shipment, and one ledger entry. It has one
+  receipt. The fees apply to the whole price, and the shipping cost is
+  for one package.
+- The items **leave Inventory together** and stay in the lot. The
+  portfolio header still counts them. The hub shows the box "Lots on
+  sale" with a button to take a lot down. A lot that ends with no sale
+  after 4 weeks returns its items to Inventory.
+- A lot buyer pays about **85%** of the sum of market values. This is a
+  discount. The player sets the price from 50% to 110% of the sum.
+- A lot sells **much faster** than the same items one by one when the
+  items have a low or mid value. The daily chance falls as the average
+  item value rises. A lot of expensive items sells at about the speed
+  of one eBay listing.
+- A lot on Facebook Marketplace is a cash sale at End Day. It has no
+  fees and no shipping. It has no meetup in this version.
+- A fake in a lot works as in any sale. The lot sells, and the fake can
+  come back later (see [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)).
+- Items with a status (listed, at a grader, in the store) or the Keep
+  tag cannot join a lot.
 
 ## Facebook Marketplace
 
@@ -292,6 +346,8 @@ mistake quietly. A well-known player cannot.
 
 ## Open topics
 
+- A Facebook lot meetup. A lot on Facebook sells at End Day with no meetup.
+- Mixed lots. A lot holds items from one Inventory tab only.
 - How notoriety is measured.
 - The meet encounter and trading. A separate design.
 - Card shows. A separate design.

@@ -23,6 +23,7 @@ struct InventoryView: View {
     @State private var selection: Set<UUID> = []
     @State private var sellIDs: SellRequest?
     @State private var gradeIDs: GradeRequest?
+    @State private var lotIDs: SellRequest?
     @State private var confirmBulk = false
 
     init(startTab: InventoryTab = .sealed) {
@@ -60,6 +61,9 @@ struct InventoryView: View {
         }
         .sheet(item: $gradeIDs) { request in
             GradeSheet(ids: request.ids)
+        }
+        .sheet(item: $lotIDs) { request in
+            LotSheet(ids: request.ids)
         }
     }
 
@@ -196,8 +200,10 @@ struct InventoryView: View {
                 .foregroundStyle(.black)
                 .disabled(chosen.isEmpty || blocked)
                 sellButton(chosen, disabled: blocked)
+                lotButton(chosen, disabled: blocked)
             case .raw:
                 sellButton(chosen, disabled: blocked)
+                lotButton(chosen, disabled: blocked)
                 Button("Grade") {
                     gradeIDs = GradeRequest(ids: chosen)
                     finishSelecting()
@@ -212,6 +218,7 @@ struct InventoryView: View {
                 .disabled(chosen.isEmpty || blocked)
             case .slabs:
                 sellButton(chosen, disabled: blocked)
+                lotButton(chosen, disabled: blocked)
             case .bulk:
                 Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
             }
@@ -241,6 +248,15 @@ struct InventoryView: View {
         }
         .buttonStyle(.bordered)
         .disabled(chosen.isEmpty || disabled)
+    }
+
+    private func lotButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
+        Button("Lot") {
+            lotIDs = SellRequest(ids: chosen)
+            finishSelecting()
+        }
+        .buttonStyle(.bordered)
+        .disabled(chosen.count < Balance.lotMinItems || disabled)
     }
 
     private func finishSelecting() {

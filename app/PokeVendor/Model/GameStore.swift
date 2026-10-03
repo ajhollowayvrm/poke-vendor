@@ -83,6 +83,11 @@ struct GameData: Codable {
     var distributor = DistributorAccount()
     /// Supplies in hand and the accessory shelf of the store (docs/23-supplies.md).
     var supplies = SupplyState()
+    /// eBay Best Offer settings by item, and the offers that wait (docs/15-selling.md, Best Offer).
+    var offerTerms: [UUID: OfferTerms] = [:]
+    var bestOffers: [BestOffer] = []
+    /// Lots on sale. Their items are not in Inventory (docs/15-selling.md, Lots).
+    var lots: [Lot] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -145,6 +150,9 @@ extension GameData {
         cardStore = v(.cardStore, cardStore)
         distributor = v(.distributor, distributor)
         supplies = v(.supplies, supplies)
+        offerTerms = v(.offerTerms, offerTerms)
+        bestOffers = v(.bestOffers, bestOffers)
+        lots = v(.lots, lots)
     }
 }
 
@@ -283,6 +291,7 @@ final class GameStore {
             + data.raw.reduce(0) { $0 + $1.market }
             + data.slabs.reduce(0) { $0 + $1.market }
             + data.bulk.reduce(0) { $0 + $1.value }
+            + lotsMarketValue
     }
 
     var paid: Double {
@@ -290,6 +299,7 @@ final class GameStore {
             + data.raw.reduce(0) { $0 + ($1.paid ?? 0) }
             + data.slabs.reduce(0) { $0 + ($1.paid ?? 0) }
             + data.openedPaid
+            + lotsPaid
     }
 
     var net: Double { marketValue - paid }
@@ -898,6 +908,8 @@ final class GameStore {
         lines += streamsEndDay()
         lines += splitsEndDay()
         lines += meetupsEndDay()
+        lines += offersEndDay()
+        lines += lotsEndDay()
         data.priceBoosts = data.priceBoosts.filter { $0.value >= data.day }
         if data.lateHours > 0 {
             lines.append("You were up until \(GameStore.clock(Balance.dayEnd + data.lateHours)). Start tired, or sleep in.")

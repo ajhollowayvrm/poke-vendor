@@ -26,6 +26,8 @@ struct HubView: View {
                     freeActions
                     timeActions
                     offersBox
+                    BestOfferBox()
+                    LotsBox()
                     recentActivity
                 }
                 .padding(.horizontal, 16)

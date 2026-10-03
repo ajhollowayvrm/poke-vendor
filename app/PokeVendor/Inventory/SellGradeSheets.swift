@@ -17,6 +17,11 @@ struct SellSheet: View {
     @State private var insured = false
     /// The condition to list each raw stack at, by the stack's first item. The default is the condition the player sees.
     @State private var listedWear: [UUID: Wear] = [:]
+    @State private var acceptOffers = false
+    @State private var autoAcceptOn = false
+    @State private var autoDeclineOn = false
+    @State private var autoAccept = Balance.autoAcceptDefault * 100
+    @State private var autoDecline = Balance.autoDeclineDefault * 100
 
     /// One stack of identical items.
     private struct Line: Identifiable {
@@ -151,6 +156,10 @@ struct SellSheet: View {
                             .foregroundStyle(Theme.muted)
                     }
                 }
+                if channel == .ebay, !alsoOnline {
+                    BestOfferSection(acceptOffers: $acceptOffers, autoAcceptOn: $autoAcceptOn, autoDeclineOn: $autoDeclineOn,
+                                     autoAccept: $autoAccept, autoDecline: $autoDecline)
+                }
                 if channel.ships {
                     Section {
                         Toggle("Shipping insurance", isOn: $insured)
@@ -234,6 +243,10 @@ struct SellSheet: View {
                         } else {
                             store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
                                        insured: insured, wear: { wears[$0] })
+                            if channel == .ebay, acceptOffers {
+                                store.setOfferTerms(Set(chosenIDs), OfferTerms(autoAccept: autoAcceptOn ? autoAccept / 100 : nil,
+                                                                               autoDecline: autoDeclineOn ? min(autoDecline, autoAccept - 1) / 100 : nil))
+                            }
                         }
                         dismiss()
                     }
