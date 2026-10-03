@@ -367,12 +367,7 @@ enum VendorFloor {
         guard let (print, slug) = randomPrint(from: sets, minMarket: minMarket) else { return nil }
         let old = vintage && (Balance.vintageSets.contains(slug) || Balance.olderSets.contains(slug))
         let condition = old ? Condition.played() : (Double.random(in: 0..<1) < 0.25 ? .secondHand() : .packFresh())
-        let wear: Double = switch condition.wear {
-        case .nearMint: 1
-        case .lightlyPlayed: 0.8
-        case .moderatelyPlayed: 0.6
-        }
-        let market = (print.market ?? 0) * wear
+        let market = (print.market ?? 0) * condition.wear.valueFactor
         return VendorItem(goods: .single(print, slug: slug, condition: condition), price: price(market, kind), market: market)
     }
 

@@ -88,10 +88,56 @@ What the player can read of the cut depends on the centering tool (see
 
 **Wear** is what anyone can see on a raw card without a tool. The game
 shows it in words: "Looks clean" (Near Mint), "Light wear" (Lightly
-Played), or "Heavy wear" (Moderately Played). It comes from the
-corners, edges, and surface. Almost every card from a pack is Near
-Mint. About 1 card in 11 is Lightly Played. Values: see
+Played), "Heavy wear" (Moderately Played), "Very heavy wear" (Heavily
+Played), or "Damaged". It comes from the corners, edges, and surface.
+Almost every card from a pack is Near Mint. About 1 card in 11 is
+Lightly Played. Values: see
 [19-prototype-values.md](19-prototype-values.md#grading).
+
+## Condition grades
+
+Buyers do not price a raw card by its subgrades. They price it by the
+standard TCGplayer condition scale. The game has one scale, the `Wear`
+type in code, and the wear above is the condition grade. The grades,
+best first:
+
+| Grade | Short | Wear in words | Price |
+| --- | --- | --- | --- |
+| Near Mint | NM | Looks clean | 100% |
+| Lightly Played | LP | Light wear | 80% |
+| Moderately Played | MP | Heavy wear | 65% |
+| Heavily Played | HP | Very heavy wear | 45% |
+| Damaged | DMG | Damaged | 30% |
+
+- **The condition comes from the hidden subgrades.** The corners, edges,
+  and surface set it. The centering does not change it. Centering has
+  its own reading (see Cut and wear).
+- **The price is a share of the Near Mint market value.** Every raw
+  card is valued with it: on TCGplayer, eBay, and Facebook Marketplace,
+  at the game shop buylist, at show buyers, on vendor tables, and on the
+  shelf of the player's own store. A slab has no condition price. Its
+  grade sets its price.
+- **The label shows in the same places as the wear:** Inventory, the
+  sell sheet, the grade sheet, the rip screen, and vendor and show
+  tables. It reads as the short grade and the wear in words, for
+  example "NM · Looks clean".
+- **The player sets the listed condition when they list a raw card
+  online.** The sell sheet has one condition choice for each stack. The
+  default is the condition the player sees. The listed condition sets
+  the reference price, and the buyer judges the price against it. A
+  listing at a better condition has a higher price, and it still sells.
+- **The overstated condition flag.** A listing is overstated when its
+  condition is better than the true condition. The game sets
+  `Listing.overstatedCondition` (a `Bool?`) to true when it creates
+  the listing. The `Listing` also keeps `listedWear`. A sale of an
+  overstated listing records `overstatedCondition = true` on the sale
+  receipt (`SaleReceipt` in `Model/Sales.swift`). The game records the
+  flag and does nothing more with it. The returns system reads the flag
+  to decide a "not as described" return. Facebook Marketplace and the
+  store online listing record the flag too. The social posts and
+  Whatnot always list the true condition.
+- **Old saves** load. A listing with no `listedWear` uses the true
+  condition.
 
 ## How the four combine into one grade
 

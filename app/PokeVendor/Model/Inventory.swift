@@ -212,14 +212,17 @@ struct CutReading {
 }
 
 /// The wear that anyone can see on a raw card.
-enum Wear: String, CaseIterable {
+enum Wear: String, CaseIterable, Codable {
     case nearMint = "Near Mint", lightlyPlayed = "Lightly Played", moderatelyPlayed = "Moderately Played"
+    case heavilyPlayed = "Heavily Played", damaged = "Damaged"
 
     var short: String {
         switch self {
         case .nearMint: "NM"
         case .lightlyPlayed: "LP"
         case .moderatelyPlayed: "MP"
+        case .heavilyPlayed: "HP"
+        case .damaged: "DMG"
         }
     }
 
@@ -229,6 +232,8 @@ enum Wear: String, CaseIterable {
         case .nearMint: "Looks clean"
         case .lightlyPlayed: "Light wear"
         case .moderatelyPlayed: "Heavy wear"
+        case .heavilyPlayed: "Very heavy wear"
+        case .damaged: "Damaged"
         }
     }
 }
@@ -249,6 +254,8 @@ struct Condition: Codable, Hashable {
     /// Whitening on a corner or an edge, or a scratch, shows by eye. Almost every card from a pack is Near Mint.
     var wear: Wear {
         let worst = min(corners, edges)
+        if worst <= 5 || surface <= 4 { return .damaged }
+        if worst <= 6 || surface <= 5 { return .heavilyPlayed }
         if worst <= 7 || surface <= 6 { return .moderatelyPlayed }
         if worst <= 8 || surface <= 7 { return .lightlyPlayed }
         return .nearMint
@@ -331,8 +338,9 @@ struct Listing: Codable, Hashable {
     let dayListed: Int
     var auctionEndDay: Int?
     var insured: Bool
-    /// The listing gave a better condition than the true one. Set by the condition system. It makes a return more likely
-    /// (docs/15-selling.md, Buyer problems). Optional, so old saves still load.
+    /// The condition the player listed a raw card at (docs/10-grading.md, Condition grades). Nil: the true condition.
+    var listedWear: Wear?
+    /// True when the listed condition is better than the true condition. Nil on old saves and on other listings.
     var overstatedCondition: Bool?
 }
 
@@ -408,7 +416,7 @@ struct OwnedCard: Codable, Identifiable, Hashable {
 
     /// What a real copy sells for: the price a buyer who does not know pays.
     var realMarket: Double {
-        guard let grade else { return rawMarket }
+        guard let grade else { return market(as: condition.wear) }
         if let price = print.graded[grade.priceKey] ?? nil { return grade.blackLabel ? price * 2 : price }
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
     }

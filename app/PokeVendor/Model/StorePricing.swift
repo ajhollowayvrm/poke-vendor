@@ -94,10 +94,16 @@ extension GameStore {
     }
 
     /// Lists items that are in the store on a channel too. The items stay in the store.
-    func listOnline(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool) {
+    func listOnline(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool,
+                    wear: (UUID) -> Wear? = { _ in nil }) {
+        let day = data.day
+        let trueWear = Dictionary(data.raw.map { ($0.id, $0.condition.wear) }, uniquingKeysWith: { a, _ in a })
         func listing(_ id: UUID) -> Listing {
-            Listing(channel: channel, price: price(id), dayListed: data.day,
-                    auctionEndDay: auctionDays.map { data.day + $0 }, insured: insured)
+            let listed = wear(id)
+            let overstated = listed.map { w in trueWear[id].map { w.rank < $0.rank } ?? false }
+            return Listing(channel: channel, price: price(id), dayListed: day,
+                    auctionEndDay: auctionDays.map { day + $0 }, insured: insured, listedWear: listed,
+                    overstatedCondition: overstated)
         }
         var count = 0
         for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) {
@@ -148,7 +154,8 @@ extension GameStore {
         let name = card.print.name + (card.grade.map { " " + $0.label } ?? "")
         if let sale = rollSale(listing, card: card) {
             let line = completeSale(name: name, listing: listing, price: sale, sealed: false, paid: card.paid, fake: card.fake,
-                                    known: card.isKnownFake, card: card, slab: card.grade != nil)
+                                    known: card.isKnownFake, card: card, slab: card.grade != nil,
+                                    overstated: card.overstates(listing))
             return (line, true)
         }
         if listingExpired(listing) {

@@ -15,6 +15,8 @@ struct SellSheet: View {
     @State private var percent: Double = 100
     @State private var auctionDays = 7
     @State private var insured = false
+    /// The condition to list each raw stack at, by the stack's first item. The default is the condition the player sees.
+    @State private var listedWear: [UUID: Wear] = [:]
 
     /// One stack of identical items.
     private struct Line: Identifiable {
@@ -64,7 +66,17 @@ struct SellSheet: View {
     /// TCGplayer prices against the lowest listing. eBay prices against the market price.
     private func reference(_ line: Line) -> Double {
         guard line.isRaw, let card = store.card(line.id) else { return line.reference }
-        return channel == .tcgplayer ? GameStore.tcgLowest(for: card.print) : card.realMarket
+        let wear = wear(line)
+        return channel == .tcgplayer ? GameStore.tcgLowest(for: card.print, wear: wear) : card.market(as: wear)
+    }
+
+    /// The condition that a raw stack lists at.
+    private func wear(_ line: Line) -> Wear {
+        listedWear[line.id] ?? store.card(line.id)?.condition.wear ?? .nearMint
+    }
+
+    private func wearBinding(_ line: Line) -> Binding<Wear> {
+        Binding(get: { wear(line) }, set: { listedWear[line.id] = $0 })
     }
 
     private func price(_ line: Line) -> Double {
@@ -165,6 +177,21 @@ struct SellSheet: View {
                         let costs = GameStore.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
                         VStack(alignment: .leading, spacing: 3) {
                             Text(line.name).font(.subheadline.weight(.medium))
+                            if line.isRaw, let card = store.card(line.id) {
+                                Picker("Condition", selection: wearBinding(line)) {
+                                    ForEach(Wear.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                                }
+                                .font(.subheadline)
+                                if wear(line).rank < card.condition.wear.rank {
+                                    Text("Better than the card looks. A buyer who finds out can send it back.")
+                                        .font(.caption)
+                                        .foregroundStyle(Theme.orange)
+                                } else {
+                                    Text("\(card.condition.wear.label) as you see it. \(wear(line).rawValue) pays \(Int(wear(line).valueFactor * 100))% of Near Mint.")
+                                        .font(.caption)
+                                        .foregroundStyle(Theme.muted)
+                                }
+                            }
                             if line.ids.count > 1 {
                                 Stepper("Quantity \(count(line)) of \(line.ids.count)", value: quantityBinding(line), in: 1...line.ids.count)
                                     .font(.subheadline)
@@ -199,12 +226,14 @@ struct SellSheet: View {
                             for id in line.ids { snapshot[id] = p }
                         }
                         let days = channel == .ebayAuction ? auctionDays : nil
+                        var wears: [UUID: Wear] = [:]
+                        for line in lines where line.isRaw { for id in line.ids { wears[id] = wear(line) } }
                         if alsoOnline {
                             store.listOnline(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
-                                             insured: insured)
+                                             insured: insured, wear: { wears[$0] })
                         } else {
                             store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
-                                       insured: insured)
+                                       insured: insured, wear: { wears[$0] })
                         }
                         dismiss()
                     }

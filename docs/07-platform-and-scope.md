@@ -32,7 +32,8 @@ Every system in this folder is built. The list:
   and scam returns.
 - **Grading**: PSA, CGC, and BGS, the centering tools, the reveal tools
   for corners, edges, and surface, and a grading booth at regional
-  shows.
+  shows. Raw cards have a condition grade (NM to Damaged) with a price
+  multiple on every channel.
 - **Counterfeits**: fakes from risky sources, a look by eye, paid
   authentication, the authentication tool, graders that flag fakes,
   resealed product, and bad sales that come back to the player.

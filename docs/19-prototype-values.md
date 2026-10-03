@@ -111,8 +111,23 @@ four 10s is a Black Label.
 
 **Wear.** A card is Lightly Played when a corner or an edge is 8 or
 less, or the surface is 7 or less. It is Moderately Played at 7 or less
-(corners, edges) or 6 or less (surface). About 9% of cards from a pack
-are Lightly Played. No card from a pack is Moderately Played.
+(corners, edges) or 6 or less (surface). It is Heavily Played at 6 or
+less (corners, edges) or 5 or less (surface). It is Damaged at 5 or
+less (corners, edges) or 4 or less (surface). About 9% of cards from a
+pack are Lightly Played. No card from a pack is Moderately Played or
+worse.
+
+**Condition price.** A raw card sells for a share of its Near Mint
+market value (`Balance.conditionFactor`). See
+[10-grading.md](10-grading.md#condition-grades).
+
+| Condition | Share of Near Mint |
+| --- | --- |
+| Near Mint | 100% |
+| Lightly Played | 80% |
+| Moderately Played | 65% |
+| Heavily Played | 45% |
+| Damaged | 30% |
 
 **Cut.** Each value is the share of the left (or top) border. The
 factory spread is a normal curve around 50/50: 4.2 points for front LR,

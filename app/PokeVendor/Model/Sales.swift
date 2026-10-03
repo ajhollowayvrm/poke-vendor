@@ -15,6 +15,8 @@ struct SaleReceipt: Identifiable, Hashable {
     let net: Double
     /// What the player paid for the item. Nil for a card pulled from a pack: the pack holds that cost.
     let paid: Double?
+    /// The listing said a better condition than the raw card had (docs/10-grading.md, Condition grades).
+    var overstatedCondition = false
 
     var profit: Double { net - (paid ?? 0) }
 }
@@ -27,8 +29,8 @@ extension GameStore {
         return data.sealed.first { $0.id == id }?.paid
     }
 
-    func addReceipt(name: String, venue: String, price: Double, net: Double, paid: Double?) {
-        receipts.append(SaleReceipt(name: name, venue: venue, price: price, net: net, paid: paid))
+    func addReceipt(name: String, venue: String, price: Double, net: Double, paid: Double?, overstated: Bool = false) {
+        receipts.append(SaleReceipt(name: name, venue: venue, price: price, net: net, paid: paid, overstatedCondition: overstated))
     }
 
     func clearReceipts() { receipts.removeAll() }

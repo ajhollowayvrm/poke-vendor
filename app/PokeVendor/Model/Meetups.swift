@@ -141,6 +141,7 @@ extension GameStore {
         var fake: FakeTier?
         var known = false
         let paid = paidFor(itemID)
+        let overstated = overstatesListing(itemID)
         if let card = card(itemID) {
             fake = card.fake
             known = card.isKnownFake
@@ -154,7 +155,8 @@ extension GameStore {
         data.raw.removeAll { $0.id == itemID }
         data.slabs.removeAll { $0.id == itemID }
         data.sealed.removeAll { $0.id == itemID }
-        let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false, paid: paid)
+        let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false, paid: paid,
+                                   overstated: overstated)
         if let fake {
             recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known, refunds: false)
         }

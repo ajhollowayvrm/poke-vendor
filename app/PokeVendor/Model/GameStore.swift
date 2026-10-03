@@ -767,10 +767,16 @@ final class GameStore {
 
     // MARK: - Selling
 
-    func list(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool) {
+    func list(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool,
+              wear: (UUID) -> Wear? = { _ in nil }) {
+        let day = data.day
+        let trueWear = Dictionary(data.raw.map { ($0.id, $0.condition.wear) }, uniquingKeysWith: { a, _ in a })
         func listing(_ id: UUID) -> ItemStatus {
-            .listed(Listing(channel: channel, price: price(id), dayListed: data.day,
-                            auctionEndDay: auctionDays.map { data.day + $0 }, insured: insured))
+            let listed = wear(id)
+            let overstated = listed.map { w in trueWear[id].map { w.rank < $0.rank } ?? false }
+            return .listed(Listing(channel: channel, price: price(id), dayListed: day,
+                            auctionEndDay: auctionDays.map { day + $0 }, insured: insured, listedWear: listed,
+                            overstatedCondition: overstated))
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) { data.raw[i].status = listing(data.raw[i].id) }
         for i in data.slabs.indices where ids.contains(data.slabs[i].id) { data.slabs[i].status = listing(data.slabs[i].id) }
@@ -1041,7 +1047,8 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false, paid: card.paid,
-                                              fake: card.fake, known: card.isKnownFake, card: card))
+                                              fake: card.fake, known: card.isKnownFake, card: card,
+                                              overstated: card.overstates(listing)))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -1108,11 +1115,13 @@ final class GameStore {
 
     func rollSale(_ listing: Listing, card: OwnedCard) -> Double? {
         if listing.channel == .tcgplayer {
-            let lowest = Self.tcgLowest(for: card.print)
+            let lowest = card.grade == nil ? Self.tcgLowest(for: card.print, wear: card.listedWear(in: listing)) : Self.tcgLowest(for: card.print)
             let chance = listing.price <= lowest ? 0.30 : 0.30 * exp(-(listing.price / lowest - 1) * 35)
             return Double.random(in: 0..<1) < chance * reachSaleFactor ? listing.price : nil
         }
-        return rollSale(listing, market: card.realMarket, sealed: false, slab: card.grade != nil)
+        // The buyer prices the card by the condition in the listing.
+        let market = card.grade == nil ? card.market(as: card.listedWear(in: listing)) : card.realMarket
+        return rollSale(listing, market: market, sealed: false, slab: card.grade != nil)
     }
 
     /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
@@ -1147,26 +1156,26 @@ final class GameStore {
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
     func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
                               known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil,
-                              slab: Bool = false) -> String {
+                              slab: Bool = false, overstated: Bool = false) -> String {
         let line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
-                                   paid: paid, slab: slab)
+                                   paid: paid, slab: slab, overstated: overstated)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
         }
         scheduleSaleProblems(name: name, channel: listing.channel, price: price, insured: listing.insured,
-                             overstated: listing.overstatedCondition == true, card: card, sealed: sealedItem)
+                             overstated: overstated || listing.overstatedCondition == true, card: card, sealed: sealedItem)
         return line
     }
 
     /// Takes the money for a sale on a channel, less its fees and shipping. Returns the line for the report.
     /// `paid` is what the player paid for the item, for the receipt. Nil for a pulled card.
     func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?,
-                         slab: Bool = false) -> String {
+                         slab: Bool = false, overstated: Bool = false) -> String {
         let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
-        addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid)
+        addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated)
         if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
         let after = channel.ships ? "after fees and shipping" : "in cash"
         return "Sold \(name) on \(channel.rawValue) for \(money(price)). You got \(money(net)) \(after)."

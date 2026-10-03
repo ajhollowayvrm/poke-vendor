@@ -224,7 +224,9 @@ A set can have rare special packs that replace the slot map
 ### Condition on the reveal
 
 The condition of the card in hand shows in the column on the left of
-the stack, in words: "Looks clean", "Light wear", or "Heavy wear". Its
+the stack, as the condition grade and the wear in words, for example
+"NM · Looks clean". The value of a pulled card uses its condition
+price (see [10-grading.md](10-grading.md#condition-grades)). Its
 cut shows in the column on the right: the front, then the back. The cut
 is as sharp as the player's centering tool can read it (see
 [10-grading.md](10-grading.md#cut-and-wear)). The summary also shows

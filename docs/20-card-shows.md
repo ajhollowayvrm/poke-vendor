@@ -67,10 +67,11 @@ comes wants to sell.
 | Vintage collector | Vintage and older cards and sealed | 95% to 112% of market |
 | Sealed collector | Sealed product | 90% to 105% of market |
 
-- **Condition changes the price.** Light wear takes 18% off the top
-  price, and heavy wear takes 40% off. An off-center card takes more
-  off. The buyer says what they see, for example "There's some wear on
-  the corners."
+- **Condition changes the price.** The market value of a raw card
+  already holds its condition price (see
+  [10-grading.md](10-grading.md#condition-grades)), so the buyer's top
+  price follows it. An off-center card takes more off. The buyer says
+  what they see, for example "There's some wear on the corners."
 - The buyer's top price is hidden. The first offer is 72% to 90% of it.
 - **Sell** takes the offer. **Counter** uses a slider that snaps to
   5% steps of market, from 50% to 150%, and clicks at each step. It
@@ -135,8 +136,8 @@ because this is where most vintage turns up.
   plays like a seller at the table.
 - **Old cards show their age.** Vintage and older cards from a dealer
   or a collector have more wear and looser centering. A worn card is
-  priced from its worn value (80% of market for light wear, 60% for
-  heavy wear).
+  priced from its condition price (80% of market for Lightly Played,
+  65% for Moderately Played, and so on).
 - **Slabs** are PSA or CGC, grade 6 to 10, at the graded price.
 - **Time:** looking over a table the first time takes 15 minutes. A
   buy takes 5 minutes, and asking for a deal takes 2. Buyers who come

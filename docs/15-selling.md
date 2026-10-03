@@ -50,6 +50,11 @@ auction has its own end time (see [eBay](#ebay)).
 
 The main channel for raw singles.
 
+Every raw listing has a condition (see
+[10-grading.md](10-grading.md#condition-grades)). The player picks it
+on the sell sheet, and the price follows it. This holds on eBay and
+Facebook Marketplace too.
+
 TCGPlayer is a fight for the lowest price. For each card, many sellers
 list copies, and the buyer takes the lowest listing. A listing above
 the lowest price almost never sells. The result is a real selling

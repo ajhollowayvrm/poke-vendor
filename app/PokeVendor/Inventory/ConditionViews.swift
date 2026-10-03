@@ -1,11 +1,11 @@
 import SwiftUI
 
-/// The wear of a raw card, in words: "Looks clean", "Light wear", or "Heavy wear".
+/// The condition of a raw card: the standard grade and the wear in words, for example "NM · Looks clean".
 struct WearText: View {
     let wear: Wear
 
     var body: some View {
-        Text(wear.looks)
+        Text(wear.label)
             .font(.caption.weight(.semibold))
             .foregroundStyle(wear == .nearMint ? Theme.green : wear == .lightlyPlayed ? Theme.orange : .red)
     }

@@ -506,17 +506,6 @@ struct FloorListing: Identifiable, Hashable {
     var market: Double { (print.market ?? 0) * condition.wear.valueFactor }
 }
 
-extension Wear {
-    /// What wear takes off a card's value.
-    var valueFactor: Double {
-        switch self {
-        case .nearMint: 1
-        case .lightlyPlayed: 0.8
-        case .moderatelyPlayed: 0.6
-        }
-    }
-}
-
 /// The people who come up at a show.
 enum VisitorType: CaseIterable {
     case collector, flipper, kid, gradeHunter, vintageFan, sealedCollector, trader, closetCleaner, dealer
@@ -892,11 +881,13 @@ final class ShowSession {
             switch wear {
             case .nearMint: break
             case .lightlyPlayed:
-                top *= 0.82
                 line = "There's some wear on the corners. "
             case .moderatelyPlayed:
-                top *= 0.6
                 line = "This one's pretty played. "
+            case .heavilyPlayed:
+                line = "This one's beat up. "
+            case .damaged:
+                line = "This one's damaged. "
             }
             if type == .gradeHunter {
                 if wear == .nearMint && cut <= 55 {

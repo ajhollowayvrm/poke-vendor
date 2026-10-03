@@ -74,7 +74,7 @@ struct RipCard: Identifiable, Hashable {
     var condition = Condition.packFresh()
 
     var name: String { print?.name ?? "Basic \(energy?.rawValue ?? "") Energy" }
-    var market: Double { print?.market ?? 0 }
+    var market: Double { (print?.market ?? 0) * condition.wear.valueFactor }
     var imageURL: URL? { print?.image.flatMap(URL.init(string:)) }
     var foil: Foil { print.map { Foil(variant: $0.variant) } ?? .none }
 
