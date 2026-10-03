@@ -57,6 +57,8 @@ struct GameData: Codable {
     var upgrades: [String] = []
     /// Sales of fakes that the buyer will find out about (docs/14-counterfeit-risk.md).
     var badSales: [BadSale] = []
+    /// Buyer problems that arrive some days after an online sale (docs/15-selling.md, Buyer problems).
+    var saleProblems: [SaleProblem] = []
     /// The tired factor today: 1 rested, 0.85 tired, 0.7 exhausted (docs/16-time-and-day.md, Late nights).
     var tiredToday = 1.0
     /// Hours past 11 PM last night, waiting for the morning choice.
@@ -127,6 +129,7 @@ extension GameData {
         opportunities = v(.opportunities, opportunities)
         upgrades = v(.upgrades, upgrades)
         badSales = v(.badSales, badSales)
+        saleProblems = v(.saleProblems, saleProblems)
         tiredToday = v(.tiredToday, tiredToday)
         lateHours = v(.lateHours, lateHours)
         streams = v(.streams, streams)
@@ -881,6 +884,7 @@ final class GameStore {
         lines += followerTipsEndDay()
         lines += opportunitiesEndDay()
         lines += counterfeitsEndDay()
+        lines += saleProblemsEndDay()
         lines += streamsEndDay()
         lines += splitsEndDay()
         lines += meetupsEndDay()
@@ -937,7 +941,7 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, market: realMarket(of: item), sealed: true) {
                     lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid,
-                                              fake: item.fake, known: item.isKnownFake))
+                                              fake: item.fake, known: item.isKnownFake, sealedItem: item))
                     continue
                 } else if listingExpired(listing) {
                     item.status = nil
@@ -1033,7 +1037,7 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false, paid: card.paid,
-                                              fake: card.fake, known: card.isKnownFake))
+                                              fake: card.fake, known: card.isKnownFake, card: card))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -1056,7 +1060,8 @@ final class GameStore {
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
-                                              price: sale, sealed: false, paid: card.paid, fake: card.fake, known: card.isKnownFake))
+                                              price: sale, sealed: false, paid: card.paid, fake: card.fake, known: card.isKnownFake,
+                                              card: card))
                     if listing.channel == .social { markPostSale(cardID: card.id, result: .sold(sale)) }
                     continue
                 } else if listingExpired(listing) {
@@ -1137,25 +1142,15 @@ final class GameStore {
 
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
     func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
-                              known: Bool = false) -> String {
-        var line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
+                              known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil) -> String {
+        let line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
                                    paid: paid)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
         }
-        if listing.channel.ships, Double.random(in: 0..<1) < Balance.lossChance {
-            if listing.insured {
-                line += " The package got lost, and the insurance paid you back."
-            } else {
-                addLedger(-price, .refund, "Lost package · \(name)")
-                if let last = receipts.popLast() {
-                    addReceipt(name: last.name + " (lost in the mail)", venue: last.venue, price: last.price, net: last.net - price,
-                               paid: last.paid)
-                }
-                line += " The package got lost with no insurance, so the buyer got a refund of \(money(price))."
-            }
-        }
+        scheduleSaleProblems(name: name, channel: listing.channel, price: price, insured: listing.insured,
+                             overstated: listing.overstatedCondition == true, card: card, sealed: sealedItem)
         return line
     }
 

@@ -1,6 +1,6 @@
 # Selling
 
-**Status: built.** TCGplayer, eBay, eBay auctions, Facebook Marketplace with meetups and no-shows, Whatnot on a stream, social posts, the game shop buylist, bulk for credit, consignment, local meets, shipping, insurance, and bad sales. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+**Status: built.** TCGplayer, eBay, eBay auctions, Facebook Marketplace with meetups and no-shows, Whatnot on a stream, social posts, the game shop buylist, bulk for credit, consignment, local meets, shipping, insurance, bad sales, and buyer problems. The numbers are in [19-prototype-values.md](19-prototype-values.md).
 
 How the player turns inventory into cash. This is the sell side of the
 loop, opposite of [12-acquiring-product.md](12-acquiring-product.md).
@@ -204,8 +204,47 @@ The player can buy **shipping insurance** for a sale.
 - **Insured package lost**: the insurance pays the player back the
   card's value.
 - **Uninsured package lost**: the card is gone, and the buyer gets
-  their money back. Nothing else happens. A lost package is not a bad
-  sale, and it does not cause a scam accusation.
+  their money back. A lost package is not a bad sale, and it does not
+  cause a scam accusation.
+
+A lost package does not show on the day of the sale. It shows some days
+later, at End Day, with a line in Activity.
+
+## Buyer problems
+
+A shipped sale on TCGplayer, eBay, Whatnot, or social media can bring a
+problem some days after the sale. The problem arrives at End Day, with a
+line in Activity. The game rolls at most one problem for each sale. A
+fake has its own roll (see [14-counterfeit-risk.md](14-counterfeit-risk.md)),
+so it gets none of these. Facebook Marketplace hands over in person, so it
+gets none.
+
+- **Item not received (INR)**: the buyer says the package did not arrive,
+  but it did. A tracked package (from $20) or an insured package wins the
+  claim, and the sale stands. A plain envelope loses. The player refunds the
+  buyer, and the seller rating drops a little.
+- **Not as described (INAD)**: the buyer returns the item. The player
+  refunds the price. On eBay the player also pays the return shipping. The
+  fees do not come back. The item goes back to Inventory. The base chance is
+  small. It is much higher when the sale has the `overstatedCondition` flag
+  (the listing gave a better condition than the true one). In that case the
+  seller rating also drops a little.
+- **Scam return**: the buyer makes a false INAD claim and returns a
+  different, worse card from the same set. The platform decides, and the
+  rules differ:
+  - eBay favors the buyer. The player wins 30% of the time.
+  - TCGplayer protects the seller better. The player wins 60% of the time
+    for a tracked or insured order, and 20% for a plain one.
+  - Whatnot: the player wins 30% of the time.
+  - Social media has no platform, so the player never wins.
+
+  When the player wins, the sale stands. When the player loses, the player
+  refunds the buyer and gets the worse card, and the seller rating drops a
+  little.
+
+The seller rating is the player's reputation. The values are in
+[19-prototype-values.md](19-prototype-values.md). The code is in
+`Model/SaleProblems.swift`.
 
 ## The sale receipt
 

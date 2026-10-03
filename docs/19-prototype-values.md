@@ -80,7 +80,10 @@ run. Holds, consignment, and league night are not built.
 | eBay fee | 13.25% + $0.40 |
 | Shipping cost | $1.00 for a single under $20, $4.75 for a single from $20, $1.50 for sealed product under $20 (a pack), $6.50 for other sealed product |
 | Shipping insurance | 2% of the price, $1 minimum |
-| Lost package | 1% of sales |
+| Lost package | 1% of shipped sales. It surfaces 7 to 14 days after the sale |
+| Item-not-received claim | 1.5% of shipped sales that did not get a lost package. It comes 5 to 12 days after the sale. A tracked package (price $20 or more) or an insured package wins. A plain envelope loses. A lost claim costs reputation -2 |
+| Return, not as described | 2% of shipped sales. 40% when the sale has the overstated-condition flag. It comes 6 to 14 days after the sale. The player refunds the price, and on eBay also pays the return shipping. The fees do not come back. The item goes back to Inventory. With the flag, reputation -2 |
+| Scam return | 1.5% of shipped sales. It comes 8 to 16 days after the sale. The platform sides with the player: eBay 30%, TCGplayer 60% for a tracked or insured order and 20% for a plain one, Whatnot 30%, social media 0%. A lost claim: refund, a worse card from the same set comes back (worth at most 15% of the price), reputation -2 |
 | TCGplayer lowest listing | 90% to 99% of market, fixed for each card |
 | TCGplayer sale chance | 30% each day at or under the lowest listing. The chance halves for about each 2% above it |
 | eBay Buy It Now sale chance | 10% each day at market (14% for slabs and sealed). It falls as the price goes above market |

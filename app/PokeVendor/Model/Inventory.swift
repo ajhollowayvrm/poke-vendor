@@ -331,6 +331,9 @@ struct Listing: Codable, Hashable {
     let dayListed: Int
     var auctionEndDay: Int?
     var insured: Bool
+    /// The listing gave a better condition than the true one. Set by the condition system. It makes a return more likely
+    /// (docs/15-selling.md, Buyer problems). Optional, so old saves still load.
+    var overstatedCondition: Bool?
 }
 
 enum ItemStatus: Codable, Hashable {

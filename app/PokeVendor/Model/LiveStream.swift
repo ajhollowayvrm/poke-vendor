@@ -438,9 +438,13 @@ extension GameStore {
     func sellOnStream(_ item: StreamItem, price: Double) {
         let line = completeSaleNow(name: item.name, channel: .whatnot, price: price, sealed: item.sealed, insured: false,
                                    paid: paidFor(item.id))
+        let soldCard = card(item.id)
+        let soldSealed = data.sealed.first { $0.id == item.id }
         data.raw.removeAll { $0.id == item.id }
         data.slabs.removeAll { $0.id == item.id }
         data.sealed.removeAll { $0.id == item.id }
+        scheduleSaleProblems(name: item.name, channel: .whatnot, price: price, insured: false, overstated: false,
+                             card: soldCard, sealed: soldSealed)
         if let fake = item.fake {
             recordBadSale(item: item.name, channel: "Whatnot", price: price, fake: fake, known: item.fakeKnown, refunds: true)
         }

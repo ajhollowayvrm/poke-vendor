@@ -27,7 +27,9 @@ Every system in this folder is built. The list:
   packs, and three modes: Normal, Fast, and Sift with a stop rule.
 - **Inventory and selling**: TCGplayer, eBay, eBay auctions, Facebook
   Marketplace meetups, social posts, Whatnot on a stream, the game shop
-  buylist, bulk for credit, and consignment.
+  buylist, bulk for credit, and consignment. Shipped online sales also
+  bring buyer problems: lost packages, item-not-received claims, returns,
+  and scam returns.
 - **Grading**: PSA, CGC, and BGS, the centering tools, the reveal tools
   for corners, edges, and surface, and a grading booth at regional
   shows.
