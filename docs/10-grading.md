@@ -219,14 +219,17 @@ in steps of 0.5. The real sales data holds 15 of them (PSA 6 to 10, CGC
 - A card with no real graded price gets a cautious estimate from its
   raw price. A card with sales is a card that people want, so the
   script uses the lower quartile of the real ratios.
-- A real price always wins. The script never changes a real price. It
-  fills only the grades with no real price.
+- A real price wins over the math. The script never changes a real
+  price. It fills only the grades with no real price.
 - An estimate never falls when the grade rises, inside one company. An
   estimate is at least the slab floor and each real price below it, and
   at most each real price above it. When these disagree, the real price
   above wins, so an estimate can be below the slab floor.
-- Two real prices can fall, for example a real PSA 9 above a real PSA 10,
-  because the sales data is thin and noisy. The script keeps both.
+- A higher grade is never cheaper, and a grade 10 is always above the
+  grade below it (at least 5 percent). The sales data is thin and noisy,
+  so real prices can break this rule, for example a real PSA 9 above a
+  real PSA 10. Then the real prices with the most sales stay real, and
+  the others become estimates.
 - A card with no raw price gets an estimate too.
 
 Each print in a set file has the optional list `gradedReal`: the keys
