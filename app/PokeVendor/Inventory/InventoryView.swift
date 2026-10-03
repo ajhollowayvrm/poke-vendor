@@ -518,6 +518,7 @@ struct CardRow: View {
                     .lineLimit(1)
                 if card.grade == nil {
                     RawLooks(condition: card.condition)
+                    GradedValueLine(print: card.print)
                 }
                 Tags(keep: card.keep, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
             }
@@ -535,6 +536,25 @@ struct CardRow: View {
                 }
             }
         }
+    }
+}
+
+/// The PSA 9 and PSA 10 prices of a raw card: what it can be worth after grading.
+struct GradedValueLine: View {
+    let print: CardPrint
+
+    private func value(_ key: String) -> String {
+        "\(print.gradedPrice(key).map(money) ?? "—")\(print.isGradedEstimated(key) ? " est." : "")"
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text("PSA 9 \(value("psa9")) ·").foregroundStyle(Theme.muted)
+            Text("10 \(value("psa10"))").foregroundStyle(Theme.cyan)
+        }
+        .font(.caption.monospaced())
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
     }
 }
 
