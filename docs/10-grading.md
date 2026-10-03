@@ -215,15 +215,18 @@ in steps of 0.5. The real sales data holds 15 of them (PSA 6 to 10, CGC
   [19-prototype-values.md](19-prototype-values.md#graded-prices).
 - A missing grade comes from the real grades of the same card. For
   example, a missing PSA 9 comes from the PSA 10 and PSA 8 of the card.
-  A missing CGC price comes from the PSA price with the CGC discount.
+  A missing CGC price comes from the raw price and the real CGC prices.
 - A card with no real graded price gets a cautious estimate from its
   raw price. A card with sales is a card that people want, so the
   script uses the lower quartile of the real ratios.
-- A grade price never falls when the grade rises, inside one company.
-  If two real prices break this rule, the script replaces both with the
-  fitted value. About 29 percent of the real prices needed this change,
-  because the sales data is thin and noisy. A price that changed is not
-  real any more.
+- A real price always wins. The script never changes a real price. It
+  fills only the grades with no real price.
+- An estimate never falls when the grade rises, inside one company. An
+  estimate is at least the slab floor and each real price below it, and
+  at most each real price above it. When these disagree, the real price
+  above wins, so an estimate can be below the slab floor.
+- Two real prices can fall, for example a real PSA 9 above a real PSA 10,
+  because the sales data is thin and noisy. The script keeps both.
 - A card with no raw price gets an estimate too.
 
 Each print in a set file has the optional list `gradedReal`: the keys

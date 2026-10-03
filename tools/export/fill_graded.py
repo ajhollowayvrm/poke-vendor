@@ -3,19 +3,20 @@
 
 Run it after tools/export/rip_set.py and tools/export/catalog.py. It reads and writes the set files in
 app/PokeVendor/Resources/Sets and the file app/PokeVendor/Resources/catalog.json. Run it once after each export.
-It stops when a file already has estimates, because the rising rule changes some real prices for good.
+It stops when a file already has estimates, because the files no longer hold the sale counts.
 
     fill_graded.py --gap      count the missing values (run it before a fill)
     fill_graded.py            fit the ratios and write the filled files
-    fill_graded.py --check    verify the files (no null, no missing raw price, every ladder rises)
+    fill_graded.py --check    verify the files (no null, no missing raw price, estimates rise and fit the real prices)
     fill_graded.py --report   print the fitted ratios as Markdown tables (writes nothing)
 
 How it works (docs/10-grading.md, Estimated prices):
 - The graded keys that the app can ask for are PSA 1 to 10, and CGC and BGS 1 to 10 in steps of 0.5. That is 48
   keys. A print has a raw price and a real price for each key with eBay sales (tools/export/rip_set.py), with the
   sale count of each key in `gradedSales`. The script removes `gradedSales` when it writes the files.
-- A real price from 1 sale is noisy. The fit of the ratios uses only real prices with MIN_SALES sales or more.
-  A real price with fewer sales still anchors its own print, with a smaller weight.
+- A real price always wins. The file keeps every real price as its sold value, and the math fills only the other
+  keys. A real price from 1 sale is noisy, so the fit of the ratios uses only real prices with MIN_SALES sales or
+  more. A real price with fewer sales still anchors its own print, with a smaller weight.
 - Each print is in a group: set, era (vintage, classic, current), rarity bucket, and raw price tier. The narrowest
   group is the set, rarity bucket, and tier. It needs MIN_N_SET prints. The wider groups need MIN_N prints.
 - From the raw price, the script fits a line in log space for each key and group: log(price) = a + b * log(raw).
@@ -34,14 +35,11 @@ How it works (docs/10-grading.md, Estimated prices):
   nearest grade that has both prices.
 - A missing raw price comes from the real graded prices of the print, or else from the median raw price of the
   same rarity bucket in the same set.
-- An estimate is never below the slab floor of its company (SLAB_FLOOR).
-- At the end, every company ladder rises with the grade. The script makes it so with a weighted isotonic fit in log
-  space. The weight of a real price grows with its sale count, so a well-sold price holds its place. A real price
-  with fewer than MIN_SALES sales has the weight of an estimate, so it does not pull the other grades.
-- A real price that the fit moves by more than MOVED (0.5 percent) is no longer real. The file then holds the fitted
-  price as an estimate. A real price that stays keeps its sold value, and a price in `gradedReal` is always a sold
-  value. After the fit, the script lifts each estimate to the slab floor and keeps the ladder rising. A real price
-  that a lifted estimate would pass is no longer real.
+- At the end, the estimates of each company ladder rise with the grade (an isotonic fit in log space). Then each
+  estimate is clamped: at least the slab floor of its company (SLAB_FLOOR) and each real price below it, at most each
+  real price above it. When these disagree, the real price above wins, so an estimate can be below the floor.
+- Two real prices can fall (a real PSA 9 above a real PSA 10). The file keeps both, and the estimates between them
+  take the lower one.
 - CGC and BGS grades use the raw price and the real prices of the print as anchors. An estimated PSA price comes from
   the same raw price, so it is not a second anchor.
 
@@ -66,9 +64,6 @@ INVENTORY = os.path.join(ROOT, "app", "PokeVendor", "Model", "Inventory.swift")
 MIN_N = 30
 MIN_N_SET = 10
 MIN_SALES = 2
-MOVED = 0.005
-REAL_WEIGHT = 4.0
-SALES_CAP = 25
 SALE_NOISE = 0.15
 RAW_SALES = 20
 VARIANCE_FLOOR = 0.01
@@ -361,6 +356,15 @@ def reset(items):
         p.pop("marketEstimated", None)
 
 
+def bounds(keys, i, real, company):
+    """The lowest and highest estimate for keys[i] of a company ladder: at least the slab floor and each real price
+    below it, at most each real price above it. When the two disagree, the real price above wins."""
+    below = [real[k] for k in keys[:i] if k in real]
+    above = [real[k] for k in keys[i + 1:] if k in real]
+    hi = min(above, default=math.inf)
+    return min(max([SLAB_FLOOR[company]] + below), hi), hi
+
+
 def fill(items, fit):
     stats = collections.Counter()
     for it in items:
@@ -432,40 +436,25 @@ def fill(items, fit):
                 factor = min(near)[1] if near else 1.0
                 price[k] = math.sqrt(psa[int(math.floor(g))] * psa[int(math.ceil(g))]) * factor
                 stats["from the PSA ladder"] += 1
-        # A slab has a floor price. It holds for estimates only.
-        for company in ("psa", "cgc", "bgs"):
-            for _, k in LADDERS[company]:
-                if k not in real:
-                    price[k] = max(price[k], SLAB_FLOOR[company])
-        # Every ladder rises. A real price with MIN_SALES sales or more holds its place. Any other price has the weight
-        # of an estimate. A real price that the fit moves is no longer real, and a real price in the file is a sold value.
-        # After the fit, an estimate is at least the slab floor. A real price that the floor or the order passes is no
-        # longer real.
-        moved = set()
-        final = {}
+        # Real prices win. The file keeps every real price as its sold value, and the math fills only the other keys.
+        # An estimate rises with the grade and is at least the slab floor. It is at least each real price below it and
+        # at most each real price above it. A real price above it holds over the floor. Two real prices that fall stay.
         for company in ("psa", "cgc", "bgs"):
             keys = [k for _, k in LADDERS[company]]
-            logs = [math.log(price[k]) for k in keys]
-            weights = [REAL_WEIGHT * min(counts[k], SALES_CAP) if k in real and counts[k] >= MIN_SALES else 1.0
-                       for k in keys]
-            fitted = isotonic(logs, weights)
-            top = 0.0
-            for k, v in zip(keys, fitted):
-                if k in real and abs(v - math.log(real[k])) <= math.log(1 + MOVED):
-                    value = round(real[k], 2)
-                    if value >= top:
-                        final[k] = top = value
-                        continue
+            est = [k for k in keys if k not in real]
+            fitted = dict(zip(est, isotonic([math.log(price[k]) for k in est], [1.0] * len(est))))
+            for i, k in enumerate(keys):
                 if k in real:
-                    moved.add(k)
-                final[k] = top = max(round(math.exp(v), 2), SLAB_FLOOR[company], top, 0.01)
-        price.update(final)
+                    price[k] = round(real[k], 2)
+                    continue
+                lo, hi = bounds(keys, i, real, company)
+                price[k] = round(min(max(math.exp(fitted[k]), lo), hi), 2)
+            values = [real[k] for k in keys if k in real]
+            stats["real prices that fall below a lower grade"] += sum(a > b for a, b in zip(values, values[1:]))
         p["graded"] = {k: price[k] for k in ALL_KEYS}
-        p["gradedReal"] = [k for k in ALL_KEYS if k in real and k not in moved]
+        p["gradedReal"] = [k for k in ALL_KEYS if k in real]
         p.pop("gradedSales", None)
         stats["real prices in the data"] += len(real)
-        stats["real prices moved by the rising rule"] += len(moved)
-        stats["real prices moved, with 2 or more sales"] += sum(counts[k] >= 2 for k in moved)
         stats["real prices kept"] += len(p["gradedReal"])
         stats["estimated prices"] += len(ALL_KEYS) - len(p["gradedReal"])
     return stats
@@ -494,15 +483,20 @@ def check(items):
         for k in ALL_KEYS:
             if not graded.get(k):
                 bad["null graded price"] += 1
-        for company in ("psa", "cgc", "bgs"):
-            vals = [graded.get(k) or 0 for _, k in LADDERS[company]]
-            if any(a > b for a, b in zip(vals, vals[1:])):
-                bad["ladder that does not rise"] += 1
         real = p.get("gradedReal")
-        for company in ("psa", "cgc", "bgs"):
-            for _, k in LADDERS[company]:
-                if real is not None and k not in real and 0 < (graded.get(k) or 0) < SLAB_FLOOR[company]:
-                    bad["estimated price below the slab floor"] += 1
+        if real is not None:
+            real_prices = {k: graded[k] for k in real if graded.get(k)}
+            for company in ("psa", "cgc", "bgs"):
+                keys = [k for _, k in LADDERS[company]]
+                est = [graded.get(k) or 0 for k in keys if k not in real]
+                if any(a > b for a, b in zip(est, est[1:])):
+                    bad["estimates that do not rise"] += 1
+                for i, k in enumerate(keys):
+                    if k in real or not graded.get(k):
+                        continue
+                    lo, hi = bounds(keys, i, real_prices, company)
+                    if graded[k] < round(lo, 2) - 0.005 or graded[k] > round(hi, 2) + 0.005:
+                        bad["estimate outside the floor and its real prices"] += 1
         if real is None:
             bad["print with no gradedReal"] += 1
         elif any(k not in graded for k in real):
@@ -512,7 +506,7 @@ def check(items):
         for k, v in bad.items():
             print(f"FAIL {k}: {v}")
         return 1
-    print("OK: no null graded price, no missing raw price, every ladder rises, no estimate below the slab floor")
+    print("OK: no null graded price, no missing raw price, every estimate rises, at the floor or above, and between its real prices")
     return 0
 
 
