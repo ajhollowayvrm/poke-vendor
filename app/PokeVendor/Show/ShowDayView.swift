@@ -499,6 +499,7 @@ struct VisitorCard: View {
                         Text("\(asking.map { "Your price \(money($0)) · " } ?? "")market \(money(item.market))")
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
+                        OwnedItemLines(item: item)
                     }
                 }
             }
@@ -510,6 +511,7 @@ struct VisitorCard: View {
                         Text(VendorItem(goods: goods, price: 0, market: nil).name).font(.subheadline.weight(.semibold))
                         GoodsDetail(goods: goods, tool: tool)
                         Text("market \(money(visitor.goodsMarket))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        GoodsValueLines(goods: goods, market: visitor.goodsMarket)
                         if visitor.goodsLooksOff {
                             LooksOffLine(sealed: { if case .sealed = goods { return true }; return false }())
                         }
@@ -627,6 +629,75 @@ struct GradingBoothSheet: View {
 }
 
 /// The eyeball check caught something (docs/14-counterfeit-risk.md, Detection).
+/// For an item on the player's table: what the player paid, the open EV of sealed product, and the PSA 10 price of a
+/// raw card. The open EV needs the expected-value upgrade.
+struct OwnedItemLines: View {
+    @Environment(GameStore.self) private var store
+    let item: ShowItem
+
+    var body: some View {
+        switch item.kind {
+        case .card:
+            if let card = store.card(item.id) {
+                InfoLine(text: card.paid.map { "Paid \(money($0))" } ?? "Pulled from a pack")
+                if card.grade == nil { Psa10Line(print: card.print) }
+            }
+        case .sealed:
+            if let owned = store.data.sealed.first(where: { $0.id == item.id }) {
+                InfoLine(text: "Paid \(money(owned.paid))")
+                if let product = SetLibrary.product(owned.productID, in: owned.setSlug) {
+                    OpenEVLine(product: product, market: item.market)
+                }
+            }
+        }
+    }
+}
+
+/// For an item that a visitor sells: the PSA 10 price of a raw card, or the open EV of sealed product.
+struct GoodsValueLines: View {
+    let goods: VendorGoods
+    let market: Double
+
+    var body: some View {
+        switch goods {
+        case .single(let print, _, _): Psa10Line(print: print)
+        case .sealed(let product): OpenEVLine(product: product, market: market)
+        case .slab, .mystery: EmptyView()
+        }
+    }
+}
+
+private struct InfoLine: View {
+    let text: String
+    var color = Theme.muted
+
+    var body: some View {
+        Text(text).font(.caption.monospaced()).foregroundStyle(color)
+    }
+}
+
+private struct Psa10Line: View {
+    let print: CardPrint
+
+    var body: some View {
+        InfoLine(text: "PSA 10 \(print.gradedPrice("psa10").map(money) ?? "—")\(print.isGradedEstimated("psa10") ? " est." : "")")
+    }
+}
+
+/// The open EV, green when it beats the market price of the sealed product. Hidden without the upgrade.
+private struct OpenEVLine: View {
+    @Environment(GameStore.self) private var store
+    let product: Product
+    let market: Double
+
+    var body: some View {
+        if store.hasUpgrade(.evReadout) {
+            let ev = store.expectedValue(of: product)
+            InfoLine(text: "Open EV \(money(ev))", color: ev >= market ? Theme.green : Theme.orange)
+        }
+    }
+}
+
 struct LooksOffLine: View {
     let sealed: Bool
 
