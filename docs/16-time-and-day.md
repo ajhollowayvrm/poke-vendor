@@ -94,7 +94,7 @@ cash-in entry in the Wallet ledger (see
 
 The paycheck is the take-home amount, after tax. The paycheck has no
 other tax. The game taxes only the card business (see
-[23-taxes.md](23-taxes.md)).
+[26-taxes.md](26-taxes.md)).
 
 ### The job ladder
 

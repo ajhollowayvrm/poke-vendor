@@ -88,9 +88,9 @@ struct GameData: Codable {
     var bestOffers: [BestOffer] = []
     /// Lots on sale. Their items are not in Inventory (docs/15-selling.md, Lots).
     var lots: [Lot] = []
-    /// The payment policy and the payments that the sender will take back (docs/23-payment-methods.md).
+    /// The payment policy and the payments that the sender will take back (docs/25-payment-methods.md).
     var payments = PaymentState()
-    /// Sales tax, income tax, and the seller's permit (docs/23-taxes.md).
+    /// Sales tax, income tax, and the seller's permit (docs/26-taxes.md).
     var taxes = TaxState()
     /// Collection insurance (docs/24-theft-and-insurance.md).
     var insurance = InsuranceState()

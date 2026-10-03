@@ -1,6 +1,6 @@
 import Foundation
 
-// Sales tax, the estimated income tax, the seller's permit, and the 1099-K note (docs/23-taxes.md).
+// Sales tax, the estimated income tax, the seller's permit, and the 1099-K note (docs/26-taxes.md).
 
 /// What the player owes the tax office. A save from an older build has none of it, so every field has a default.
 struct TaxState: Codable, Hashable {

@@ -29,7 +29,7 @@ row opens a screen that shows what a landlord wants:
 | --- | --- | --- |
 | Reputation | Trusted (tier 2) | People must trust the player before they shop with them. |
 | Sales over the whole run | $2,500 | The player must show that they can move product. |
-| A seller's permit | $50, one time, from the Wallet | The store collects sales tax (see [23-taxes.md](23-taxes.md#the-sellers-permit)). |
+| A seller's permit | $50, one time, from the Wallet | The store collects sales tax (see [26-taxes.md](26-taxes.md#the-sellers-permit)). |
 | Cash | The first rent, a deposit of one rent, and the build-out | The landlord and the builder want their money first. |
 
 The player names the store, picks one location, and picks the lease
@@ -91,7 +91,7 @@ ledger category is "Store overhead".
 | POS software | $60 | $80 | $100 |
 | Card fees | 3% of the store's sales in the period | the same | the same |
 
-The card fees cover every card sale at the store. A card sale at the counter has no second fee. The clerk sells more with the card reader (see [23-payment-methods.md](23-payment-methods.md)).
+The card fees cover every card sale at the store. A card sale at the counter has no second fee. The clerk sells more with the card reader (see [25-payment-methods.md](25-payment-methods.md)).
 
 The overhead and the rent count in the costs of the "Last 7 days" box
 on the day before the payment. If the player cannot pay the rent and

@@ -2,7 +2,7 @@
 
 **Status: built** (`Model/Counterfeits.swift`). The open topic is closed: the player can knowingly sell a fake. The find-out chance rises by 30%, and a scam accusation follows. Grading appeals stay out of scope: a grader's call is final. The rates are in [19-prototype-values.md](19-prototype-values.md).
 
-A buyer who paid by card or with Goods and Services gets a refund from the player's account when the buyer finds a fake. See [23-payment-methods.md](23-payment-methods.md#fit-with-the-counterfeit-system).
+A buyer who paid by card or with Goods and Services gets a refund from the player's account when the buyer finds a fake. See [25-payment-methods.md](25-payment-methods.md#fit-with-the-counterfeit-system).
 
 Fake cards and resealed boxes are a real part of the hobby this game
 mirrors, so they get a real mechanic — not everywhere, only where real

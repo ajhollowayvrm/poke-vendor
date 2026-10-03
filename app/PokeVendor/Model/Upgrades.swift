@@ -21,7 +21,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case salesAnalytics
     /// More room in the contact book (docs/21, The contact book).
     case contactBook, bigContactBook
-    /// A card reader: card payments at shows and at the store counter, for a fee (docs/23).
+    /// A card reader: card payments at shows and at the store counter, for a fee (docs/25-payment-methods.md).
     case cardReader
     /// Less theft at a show table and from the car (docs/24-theft-and-insurance.md).
     case lockedCase

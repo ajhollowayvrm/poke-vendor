@@ -1,6 +1,6 @@
 import Foundation
 
-// Payment methods and their fees (docs/23-payment-methods.md).
+// Payment methods and their fees (docs/25-payment-methods.md).
 
 /// How a buyer pays in person.
 enum PaymentMethod: String, Codable, CaseIterable, Hashable {
@@ -223,7 +223,7 @@ extension GameStore {
         save()
     }
 
-    /// End Day: payments that the sender takes back today (docs/23-payment-methods.md, Reversals).
+    /// End Day: payments that the sender takes back today (docs/25-payment-methods.md, Reversals).
     func paymentsEndDay() -> [String] {
         let today = data.day
         let due = data.payments.reversals.filter { $0.dayDue <= today }

@@ -316,7 +316,7 @@ The values are in `app/PokeVendor/Model/Supplies.swift`.
 
 ## Payment methods
 
-See [23-payment-methods.md](23-payment-methods.md). The code is in `Model/Payments.swift`.
+See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Payments.swift`.
 
 | Value | Prototype value |
 | --- | --- |

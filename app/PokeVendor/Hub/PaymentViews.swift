@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The payment policy for face-to-face sales (docs/23-payment-methods.md). It sits on the table setup screen.
+/// The payment policy for face-to-face sales (docs/25-payment-methods.md). It sits on the table setup screen.
 struct PaymentPolicyPicker: View {
     @Environment(GameStore.self) private var store
 

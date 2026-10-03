@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The tax due and the tax set aside, with the due days (docs/23-taxes.md). It sits in the Wallet.
+/// The tax due and the tax set aside, with the due days (docs/26-taxes.md). It sits in the Wallet.
 struct TaxBox: View {
     @Environment(GameStore.self) private var store
 
