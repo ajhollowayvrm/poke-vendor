@@ -189,7 +189,49 @@ struct InventoryView: View {
         let chosen = selection
         let blocked = chosen.contains { store.isKept($0) || store.hasStatus($0) }
         let allKept = !chosen.isEmpty && chosen.allSatisfy { store.isKept($0) }
+        return VStack(spacing: 8) {
+            if tab == .raw { quickListRow(chosen, blocked: blocked) }
+            actionRow(chosen, blocked: blocked, allKept: allKept)
+        }
+        .controlSize(.large)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Theme.surface)
+        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+
+    /// The raw cards that a quick listing can take: not kept, not listed or at a grader, and not a known fake.
+    private var listableRaw: [OwnedCard] {
+        sortedCards(store.data.raw).filter { !$0.keep && $0.status == nil && !$0.isKnownFake }
+    }
+
+    /// Select every listable raw card, and list the selection on TCGplayer at the lowest listing for its condition.
+    private func quickListRow(_ chosen: Set<UUID>, blocked: Bool) -> some View {
+        let listable = Set(listableRaw.map(\.id))
+        let allChosen = !listable.isEmpty && listable == chosen
         return HStack(spacing: 8) {
+            Button(allChosen ? "Clear" : "Select all \(listable.count)") {
+                selection = allChosen ? [] : listable
+            }
+            .buttonStyle(.bordered)
+            .disabled(listable.isEmpty)
+            Button("List \(chosen.count) on TCGplayer") {
+                let cards = store.data.raw.filter { chosen.contains($0.id) }
+                let prices = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, GameStore.tcgLowest(for: $0.print, wear: $0.condition.wear)) })
+                let wears = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0.condition.wear) })
+                store.list(chosen, channel: .tcgplayer, price: { prices[$0] ?? 0.05 }, auctionDays: nil, insured: false,
+                           wear: { wears[$0] })
+                finishSelecting()
+            }
+            .buttonStyle(.borderedProminent)
+            .foregroundStyle(.black)
+            .frame(maxWidth: .infinity)
+            .disabled(chosen.isEmpty || blocked || chosen.contains { id in store.data.raw.contains { $0.id == id && $0.isKnownFake } })
+        }
+    }
+
+    private func actionRow(_ chosen: Set<UUID>, blocked: Bool, allKept: Bool) -> some View {
+        HStack(spacing: 8) {
             switch tab {
             case .sealed:
                 Button("Rip") {
@@ -234,11 +276,6 @@ struct InventoryView: View {
                 .font(.caption.monospaced())
                 .foregroundStyle(Theme.muted)
         }
-        .controlSize(.large)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(Theme.surface)
-        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
     }
 
     private func sellButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
