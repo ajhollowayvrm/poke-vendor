@@ -9,6 +9,7 @@ struct CardStoreView: View {
     @State private var signing: StoreLocation?
     @State private var stocking = false
     @State private var closing = false
+    @State private var onlineSheet: SellRequest?
 
     var body: some View {
         ScrollView {
@@ -41,6 +42,7 @@ struct CardStoreView: View {
         .navigationTitle(store.cardStore?.name ?? "Your own store")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $stocking) { StockShelvesSheet() }
+        .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(get: { signing != nil }, set: { if !$0 { signing = nil } }),
                             titleVisibility: .visible, presenting: signing) { location in
             Button("Sign for \(money(location.upfront))") { store.signLease(location, name: name) }
@@ -182,7 +184,7 @@ struct CardStoreView: View {
     private var shelvesBox: some View {
         let stock = store.storeStock
         let items = store.showItems(stock)
-        let value = items.reduce(0) { $0 + store.storePrice($1.market) }
+        let value = items.reduce(0) { $0 + store.storePrice(item: $1) }
         return DetailBox(title: "Shelves") {
             HStack(spacing: 0) {
                 StatCell(label: "Cards", value: "\(stock.cards.count) / \(store.storeCardSlots)")
@@ -215,9 +217,31 @@ struct CardStoreView: View {
             ItemLine(item: item)
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
-                Text(money(store.storePrice(item.market))).font(.subheadline.monospaced())
+                Text(money(store.storePrice(item: item))).font(.subheadline.monospaced())
                 Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                if let listing = store.onlineListing(of: item.id) {
+                    Text("also \(listing.channel.rawValue) \(money(listing.price))")
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(Theme.cyan)
+                }
             }
+            Menu {
+                if item.graded {
+                    Menu("Slab price") {
+                        Button("Singles price") { store.setSlabPrice(item.id, nil) }
+                        ForEach(Balance.storeSlabPrices, id: \.self) { p in
+                            Button(Self.percent(p)) { store.setSlabPrice(item.id, p) }
+                        }
+                    }
+                }
+                if store.onlineListing(of: item.id) == nil {
+                    Button("List online too") { onlineSheet = SellRequest(ids: [item.id], startAll: false) }
+                } else {
+                    Button("Remove online listing", role: .destructive) { store.removeOnlineListing(item.id) }
+                }
+            } label: { Image(systemName: "ellipsis.circle") }
+                .foregroundStyle(Theme.muted)
+                .accessibilityLabel("Options for \(item.name)")
             Button { store.takeBackFromStore([item.id]) } label: { Image(systemName: "arrow.uturn.backward.circle") }
                 .buttonStyle(.plain)
                 .foregroundStyle(Theme.muted)
@@ -226,15 +250,21 @@ struct CardStoreView: View {
         .padding(.vertical, 4)
     }
 
+    static func percent(_ p: Double) -> String { p == 1 ? "Market" : "\(Int((p * 100).rounded()))%" }
+
     private func pricesBox(_ s: CardStoreState) -> some View {
         DetailBox(title: "Prices") {
-            Picker("Price", selection: Binding(get: { s.priceFactor }, set: { store.setStorePrice($0) })) {
-                ForEach(Balance.storePrices, id: \.self) { p in
-                    Text(p == 1 ? "Market" : "\(Int((p * 100).rounded()))%").tag(p)
-                }
+            Text("SINGLES AND SLABS").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            Picker("Singles", selection: Binding(get: { s.singlesPrice }, set: { store.setSinglesPrice($0) })) {
+                ForEach(Balance.storePrices, id: \.self) { p in Text(Self.percent(p)).tag(p) }
             }
             .pickerStyle(.segmented)
-            Text("Every item sells at this share of market. A customer pays up to about \(Int(Balance.storeBuyerLimit.upperBound * 100))% of market, so a lower price sells more. At the counter, buyers still haggle.")
+            Text("SEALED").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted).padding(.top, 4)
+            Picker("Sealed", selection: Binding(get: { s.sealedPrice }, set: { store.setSealedPrice($0) })) {
+                ForEach(Balance.storeSealedPrices, id: \.self) { p in Text(Self.percent(p)).tag(p) }
+            }
+            .pickerStyle(.segmented)
+            Text("Sealed product sells near MSRP. Put hot product above market. A slab uses the singles price, unless you set its own price with the menu on its row. A customer pays up to about \(Int(Balance.storeBuyerLimit.upperBound * 100))% of market, so a lower price sells more. At the counter, buyers still haggle.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
         }
@@ -450,7 +480,7 @@ struct StockShelvesSheet: View {
                 ItemLine(item: item)
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(money(store.storePrice(item.market))).font(.subheadline.monospaced())
+                    Text(money(store.storePrice(item: item))).font(.subheadline.monospaced())
                     Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                 }
             }

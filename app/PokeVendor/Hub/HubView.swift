@@ -525,6 +525,26 @@ struct HubView: View {
                 if store.day == 18 { store.setBuylist(rate: 0, budget: 250, offerCredit: false) }
                 if store.day % 4 == 1 { store.moveBulkToBox(Set(store.movableBulk.prefix(3).map(\.id))) }
                 if store.day == 16 { store.takeBulkBack() }
+                // Prices and online listings: set each price, price a slab, list stock online, and remove a listing.
+                if store.day % 5 == 1 {
+                    store.setSinglesPrice(Balance.storePrices.randomElement() ?? 1)
+                    store.setSealedPrice(Balance.storeSealedPrices.randomElement() ?? 1)
+                    if let slab = store.storeStock.cards.first(where: { $0.grade != nil }) {
+                        store.setSlabPrice(slab.id, Bool.random() ? Balance.storeSlabPrices.randomElement() : nil)
+                    }
+                }
+                if store.day % 2 == 0 {
+                    let stock = store.storeStock
+                    let free = (stock.cards.filter { $0.onlineListing == nil }.prefix(3).map(\.id)
+                        + stock.sealed.filter { $0.onlineListing == nil }.prefix(2).map(\.id))
+                    let ids = Set(free)
+                    let auction = Bool.random()
+                    store.listOnline(ids, channel: auction ? .ebayAuction : .ebay, price: { _ in 5 },
+                                     auctionDays: auction ? 3 : nil, insured: false)
+                }
+                if store.day % 7 == 0, let id = store.storeStock.sealed.first(where: { $0.onlineListing != nil })?.id {
+                    store.removeOnlineListing(id)
+                }
                 if store.day == 10 { store.buyFixture(.playTables) }
                 // The events: the tournament is on by default. Turn the league on, then change the fees and the league day.
                 if store.day == 11 { store.setEvent(.league, on: true) }

@@ -390,6 +390,10 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var fakeKnown: Bool?
     /// A check, the tool, or a grader said it is real.
     var verified: Bool?
+    /// The online listing of a card in the player's store. Only used while the status is `.inStore` (docs/22).
+    var onlineListing: Listing?
+    /// The own shelf price of a slab in the store, as a share of market. Nil: the slab uses the singles price.
+    var shelfFactor: Double?
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }
@@ -438,6 +442,8 @@ struct SealedItem: Codable, Identifiable, Hashable {
     var fake: FakeTier?
     var fakeKnown: Bool?
     var verified: Bool?
+    /// The online listing of an item in the player's store. Only used while the status is `.inStore` (docs/22).
+    var onlineListing: Listing?
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }

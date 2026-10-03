@@ -161,6 +161,13 @@ case. Store credit is not cash, and it is not a fifth currency (see
 The Wallet screen does not show store credit. The player sees the
 balance on that shop's own screen.
 
+## Your own store
+
+An item in the player's own store can also have a TCGplayer or eBay
+listing. The item stays in the store. The listing rolls at End Day like
+any other listing. A sale in the store ends the listing. The rules are in
+[22-own-store.md](22-own-store.md#online-listings).
+
 ## Local meets
 
 One-to-one sales and trades with other traders. This is the Flipper's

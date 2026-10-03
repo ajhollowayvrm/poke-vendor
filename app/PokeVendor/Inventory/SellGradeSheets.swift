@@ -7,6 +7,8 @@ struct SellSheet: View {
     let ids: Set<UUID>
     /// True: each stack starts at its full count. False: each stack starts at 1 (a sale from a detail screen).
     var startAll = true
+    /// True: the items are in the player's store and stay there. The listing is online too (docs/22-own-store.md).
+    var alsoOnline = false
     @State private var channel: Listing.Channel = .tcgplayer
     /// How many items of each stack to list, by the stack's first item.
     @State private var quantity: [UUID: Int] = [:]
@@ -99,12 +101,19 @@ struct SellSheet: View {
                             .foregroundStyle(Theme.orange)
                     }
                 }
+                if alsoOnline {
+                    Section {
+                        Text("The items stay in your store. If one sells online, it leaves the store. If it sells in the store first, the listing goes away. On rare days both happen: you cancel the online order, and your reputation goes down.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                }
                 Section("Channel") {
                     Picker("Channel", selection: $channel) {
                         if tcgAllowed { Text("TCGplayer").tag(Listing.Channel.tcgplayer) }
                         Text("eBay Buy It Now").tag(Listing.Channel.ebay)
                         Text("eBay auction").tag(Listing.Channel.ebayAuction)
-                        Text("Facebook Marketplace").tag(Listing.Channel.facebook)
+                        if !alsoOnline { Text("Facebook Marketplace").tag(Listing.Channel.facebook) }
                     }
                     .pickerStyle(.inline)
                     .labelsHidden()
@@ -178,7 +187,7 @@ struct SellSheet: View {
                     }
                 }
             }
-            .navigationTitle("Sell")
+            .navigationTitle(alsoOnline ? "List online too" : "Sell")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
@@ -189,8 +198,14 @@ struct SellSheet: View {
                             let p = channel == .ebayAuction ? reference(line) : price(line)
                             for id in line.ids { snapshot[id] = p }
                         }
-                        store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 },
-                                   auctionDays: channel == .ebayAuction ? auctionDays : nil, insured: insured)
+                        let days = channel == .ebayAuction ? auctionDays : nil
+                        if alsoOnline {
+                            store.listOnline(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
+                                             insured: insured)
+                        } else {
+                            store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
+                                       insured: insured)
+                        }
                         dismiss()
                     }
                     .disabled(chosenIDs.isEmpty)

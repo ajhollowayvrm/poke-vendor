@@ -940,6 +940,11 @@ final class GameStore {
                     item.status = nil
                     lines.append("Your \(listing.channel.rawValue) listing for \(item.name) ended with no sale.")
                 }
+            case .inStore:
+                if let result = advanceOnlineListing(&item) {
+                    lines.append(result.line)
+                    if result.sold { continue }
+                }
             case .arriving(let days, let from):
                 if days <= 1 {
                     item.status = nil
@@ -1017,6 +1022,11 @@ final class GameStore {
                     lines.append(line)
                     if card.status == nil, c.sellDay == data.day { continue }
                 }
+            case .inStore:
+                if let result = advanceOnlineListing(&card) {
+                    lines.append(result.line)
+                    if result.sold { continue }
+                }
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false, paid: card.paid,
@@ -1035,6 +1045,11 @@ final class GameStore {
         }
         for var card in data.slabs where card.status != nil {
             switch card.status {
+            case .inStore:
+                if let result = advanceOnlineListing(&card) {
+                    lines.append(result.line)
+                    if result.sold { continue }
+                }
             case .listed(let listing):
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
@@ -1075,11 +1090,11 @@ final class GameStore {
         return lines
     }
 
-    private func listingExpired(_ listing: Listing) -> Bool {
+    func listingExpired(_ listing: Listing) -> Bool {
         listing.auctionEndDay == nil && data.day - listing.dayListed >= Balance.listingDays
     }
 
-    private func rollSale(_ listing: Listing, card: OwnedCard) -> Double? {
+    func rollSale(_ listing: Listing, card: OwnedCard) -> Double? {
         if listing.channel == .tcgplayer {
             let lowest = Self.tcgLowest(for: card.print)
             let chance = listing.price <= lowest ? 0.30 : 0.30 * exp(-(listing.price / lowest - 1) * 35)
@@ -1091,7 +1106,7 @@ final class GameStore {
     /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
     var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
 
-    private func rollSale(_ listing: Listing, market: Double, sealed: Bool, slab: Bool = false) -> Double? {
+    func rollSale(_ listing: Listing, market: Double, sealed: Bool, slab: Bool = false) -> Double? {
         let reach = reachSaleFactor
         switch listing.channel {
         case .ebayAuction:
@@ -1118,7 +1133,7 @@ final class GameStore {
     }
 
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
-    private func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
+    func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
                               known: Bool = false) -> String {
         var line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
                                    paid: paid)

@@ -195,6 +195,7 @@ extension GameStore {
 
     /// `venue` is the name of the place: a show, a meet, or a sale.
     func sellAtShow(_ item: ShowItem, price: Double, at venue: String) {
+        settleOnlineListing(item.id, name: item.name)
         addReceipt(name: item.name, venue: venue, price: price, net: price, paid: paidFor(item.id))
         switch item.kind {
         case .card:
@@ -251,6 +252,7 @@ extension GameStore {
 
     /// A trade: the player's item goes, and the other person's cards plus any cash come in.
     func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String) {
+        settleOnlineListing(item.id, name: item.name)
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -739,7 +741,10 @@ final class ShowSession {
     var soldTotal: Double { sold.reduce(0) { $0 + $1.price } }
     var boughtTotal: Double { bought.reduce(0) { $0 + $1.price } }
 
-    func asking(_ item: ShowItem) -> Double { Self.round(item.market * markup) }
+    /// At the player's own store, the ask is the shelf price of the item.
+    func asking(_ item: ShowItem) -> Double {
+        venue.kind == .store ? store.storePrice(item: item) : Self.round(item.market * markup)
+    }
 
     static func round(_ value: Double) -> Double {
         value >= 20 ? value.rounded() : (value * 4).rounded() / 4

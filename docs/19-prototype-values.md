@@ -249,7 +249,10 @@ for CGC, and $30 for BGS.
 | Hours | 11 AM to 7 PM on the open days |
 | Customers | Weekday traffic × Mon–Thu 0.8, Fri 1.1, Sat 1.5, Sun 1.2. +6% a reputation tier, +8% a follower tier. Stock ×0.4 empty to ×1.2 at 40 items |
 | Buyers | 35% only look. A buyer pays 92% to 128% of market |
-| Shelf price | 95%, 100%, 110% (default), 120%, or 130% of market |
+| Shelf price, singles | 95%, 100%, 110% (default), 120%, or 130% of market |
+| Shelf price, sealed | 90%, 100% (default), 110%, 120%, 135%, or 150% of market |
+| Shelf price, one slab | 90%, 95%, 100%, 110%, 120%, 130%, 150%, or 200% of market. Default: the singles price |
+| Online listing of store stock | Double sale: 2% on a day when both would sell. Reputation −2 |
 | Room | 40 cards and 40 sealed. +60 with each fixture |
 | Clerk | $120 a day open. A customer buys 85% as often as with the player, and the clerk sells no second item |
 | At the counter | 60% of the day's customers come to the counter. 32% of them sell |

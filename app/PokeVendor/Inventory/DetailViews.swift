@@ -33,6 +33,7 @@ struct StatusBox: View {
     @Environment(GameStore.self) private var store
     let id: UUID
     let status: ItemStatus?
+    @State private var onlineSheet: SellRequest?
 
     var body: some View {
         DetailBox(title: "Status") {
@@ -59,6 +60,7 @@ struct StatusBox: View {
             case .inStore(let since):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("In \(store.cardStore?.name ?? "your store") since day \(since + 1)").font(.subheadline)
+                    StoreShelfControls(id: id, sheet: $onlineSheet)
                     Button("Take it back") { store.takeBackFromStore([id]) }
                         .buttonStyle(.bordered)
                 }
@@ -79,6 +81,7 @@ struct StatusBox: View {
                 }
             }
         }
+        .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
     }
 }
 

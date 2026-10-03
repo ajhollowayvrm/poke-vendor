@@ -53,9 +53,11 @@
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
 		4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1D85597836B370B32E25FC /* GarageSales.swift */; };
 		470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */; };
+		475B860FD55F4C5531477F54 /* StoreShelfControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */; };
 		480ED1135C7167834012A28F /* UpgradesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BCE444E4AD984840D93FF6 /* UpgradesView.swift */; };
 		484DB0AF7BC480439CDBAACC /* Social.swift in Sources */ = {isa = PBXBuildFile; fileRef = D894A52F7AE73A7EAF8DF6D3 /* Social.swift */; };
 		499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */ = {isa = PBXBuildFile; fileRef = FB1006AA43D16FB5FB572A8A /* legend-maker.json */; };
+		4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
 		4D9FB8FB76885393BDADF1FE /* silver-tempest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A358D246B4A0E231698B762 /* silver-tempest.json */; };
 		4E14652814D639209494DB7F /* lost-origin.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B54A884DC3FCF4D498BA581 /* lost-origin.json */; };
@@ -301,6 +303,7 @@
 		7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "cosmic-eclipse.json"; sourceTree = "<group>"; };
 		71039722F060097A21B22BB3 /* StoreEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEvents.swift; sourceTree = "<group>"; };
 		71BFAA4A10360362D9BE2E1C /* base-set-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "base-set-2.json"; sourceTree = "<group>"; };
+		7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreShelfControls.swift; sourceTree = "<group>"; };
 		754F7D2C37FC137EEECF52E0 /* phantom-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantom-forces.json"; sourceTree = "<group>"; };
 		75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "power-keepers.json"; sourceTree = "<group>"; };
 		772DBF76AEF228531662272E /* JobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobView.swift; sourceTree = "<group>"; };
@@ -310,6 +313,7 @@
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
 		7C47B50B9FFDCF815C603661 /* obsidian-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "obsidian-flames.json"; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
+		7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorePricing.swift; sourceTree = "<group>"; };
 		7E94D7F70903BA100DDFBA0F /* burning-shadows.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "burning-shadows.json"; sourceTree = "<group>"; };
 		7F23F60653C3E9407ECEFD30 /* guardians-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "guardians-rising.json"; sourceTree = "<group>"; };
 		7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionViews.swift; sourceTree = "<group>"; };
@@ -628,6 +632,7 @@
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 				38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */,
 				71039722F060097A21B22BB3 /* StoreEvents.swift */,
+				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
 				3946D786540E6C06E3BB91E4 /* Upgrades.swift */,
 				E045FCAD07023E23A8B677B4 /* Vendors.swift */,
 				93A0BCABB4AA9FD6C9E14979 /* Wholesale.swift */,
@@ -672,6 +677,7 @@
 				1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */,
 				B39FE2287AB7BA7F1781A41B /* SettingsView.swift */,
 				6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */,
+				7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */,
 				07BCE444E4AD984840D93FF6 /* UpgradesView.swift */,
 				50F97256E10C06386BD90E19 /* WalletView.swift */,
 			);
@@ -979,7 +985,9 @@
 				B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */,
 				BDF93E32D155D521D1F428B1 /* StoreEvents.swift in Sources */,
 				78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */,
+				4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
+				475B860FD55F4C5531477F54 /* StoreShelfControls.swift in Sources */,
 				F905C1398E75C747E47A1439 /* StreamView.swift in Sources */,
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,
 				55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */,

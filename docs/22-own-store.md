@@ -59,10 +59,44 @@ Status box.
 
 ## Prices
 
-One price applies to every item: 95%, market, 110%, 120%, or 130% of
-market. The default is 110%. A customer pays from 92% to 128% of
-market. A lower price sells more items. A higher price makes more on
-each item.
+The store has two shelf prices, and a slab can have its own price.
+
+| Price | Choices (share of market) | Default |
+| --- | --- | --- |
+| Singles and slabs | 95%, market, 110%, 120%, 130% | 110% |
+| Sealed | 90%, market, 110%, 120%, 135%, 150% | Market |
+| One slab | 90%, 95%, market, 110%, 120%, 130%, 150%, 200% | The singles price |
+
+Sealed product sells near MSRP. Hot product goes above market. A slab
+with no own price uses the singles price. The player sets the own price
+of a slab from the menu on its row on the store screen, or from its
+Status box. The clerk and the counter both use the price of each item.
+
+A customer pays from 92% to 128% of market. A lower price sells more
+items. A higher price makes more on each item.
+
+An old save has one store-wide price. It becomes the singles price and
+the sealed price, until the player sets a price.
+
+## Online listings
+
+Most shops sell the same stock in the case and online. An item in the
+store can also have a listing on TCGplayer (raw singles) or eBay. The
+item stays in the store while it is listed. The player lists it with
+"List online too", from the menu on its row or from its Status box. The
+sell sheet is the same as for any listing (see
+[15-selling.md](15-selling.md)). Facebook Marketplace is not available.
+
+- **Sells online**: the listing rolls at End Day like a normal listing.
+  If it sells, the item leaves the store.
+- **Sells in the store**: the listing goes away with the item.
+- **Both on one day**: when the online listing would sell on the same
+  day as a store sale, there is a 2% chance of a double sale. The
+  player cancels the online order, and reputation goes down by 2. In the
+  other 98%, the player pulls the listing in time.
+- **Listing ends with no sale**: the item stays in the store.
+- **Take it back**: the item leaves the store and stays listed.
+- **Close or eviction**: the online listings end.
 
 ## Customers
 
@@ -253,7 +287,8 @@ the building. The player can sign a new lease later.
 - **Last 7 days**: sales, wages and rent, the net, customers, and items
   sold.
 - **Shelves**: the room used, the stock at the shelf price, and the
-  stock list.
+  stock list. Each row has a menu: the slab price, and the online
+  listing.
 - **Buylist and store credit**: the buylist settings and the credit the store owes.
 - **Bulk box**: the cards in the box and the buttons to move bulk.
 - **Prices**, **Staff and hours**, **Fixtures**, and **Lease**.
@@ -265,6 +300,5 @@ each store rent.
 
 - Balancing. The clerk wage against the sales on a quiet weekday.
 - A second store, or a bigger space.
-- Prices for each item, not one price for the whole store.
 - Consignment at the player's own store.
 - Credit that expires. A buylist for sealed product only.

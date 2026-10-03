@@ -98,8 +98,13 @@ struct CardStoreState: Codable, Hashable {
     let openDay: Int
     /// The landlord gives it back when the player closes the store, but not after an eviction.
     let deposit: Double
-    /// The shelf price, as a share of market.
-    var priceFactor = Balance.storeDefaultPrice
+    /// The old store-wide price. Only an old save has it. It counts for singles and sealed until the player sets a price
+    /// (`singlesPrice`, `sealedPrice` in `Model/StorePricing.swift`).
+    var priceFactor: Double?
+    /// The shelf price of singles, and of slabs with no own price, as a share of market.
+    var singlesFactor: Double?
+    /// The shelf price of sealed product, as a share of market.
+    var sealedFactor: Double?
     var clerk = false
     /// The weekdays the store opens. 0 is Monday.
     var openDays: [Int] = Array(0..<7)
@@ -232,14 +237,17 @@ extension GameStore {
         var count = 0
         for i in data.raw.indices where Self.isInStore(data.raw[i].status) {
             data.raw[i].status = back
+            data.raw[i].onlineListing = nil
             count += 1
         }
         for i in data.slabs.indices where Self.isInStore(data.slabs[i].status) {
             data.slabs[i].status = back
+            data.slabs[i].onlineListing = nil
             count += 1
         }
         for i in data.sealed.indices where Self.isInStore(data.sealed[i].status) {
             data.sealed[i].status = back
+            data.sealed[i].onlineListing = nil
             count += 1
         }
         data.bulk += s.source.bulkBox
@@ -271,13 +279,6 @@ extension GameStore {
         s.fixtures.append(fixture)
         data.cardStore = s
         log("Bought the \(fixture.name.lowercased()) for \(s.name).", cash: -fixture.cost)
-        save()
-    }
-
-    func setStorePrice(_ factor: Double) {
-        guard var s = data.cardStore else { return }
-        s.priceFactor = factor
-        data.cardStore = s
         save()
     }
 
@@ -322,11 +323,6 @@ extension GameStore {
         Balance.storeSealedSlots + (data.cardStore?.has(.sealedWall) == true ? Balance.sealedWallSlots : 0)
     }
 
-    /// The shelf price of an item with this market value.
-    func storePrice(_ market: Double) -> Double {
-        ShowSession.round(market * (data.cardStore?.priceFactor ?? Balance.storeDefaultPrice))
-    }
-
     /// Puts items in the store, up to the room in the cases and on the shelves. Returns how many went in.
     @discardableResult
     func stockStore(_ ids: Set<UUID>) -> Int {
@@ -351,9 +347,19 @@ extension GameStore {
 
     /// Takes items off the shelves. They are in hand at once.
     func takeBackFromStore(_ ids: Set<UUID>) {
-        for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) { data.raw[i].status = nil }
-        for i in data.slabs.indices where ids.contains(data.slabs[i].id) && Self.isInStore(data.slabs[i].status) { data.slabs[i].status = nil }
-        for i in data.sealed.indices where ids.contains(data.sealed[i].id) && Self.isInStore(data.sealed[i].status) { data.sealed[i].status = nil }
+        // An item with an online listing stays listed.
+        for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) {
+            data.raw[i].status = data.raw[i].onlineListing.map(ItemStatus.listed)
+            data.raw[i].onlineListing = nil
+        }
+        for i in data.slabs.indices where ids.contains(data.slabs[i].id) && Self.isInStore(data.slabs[i].status) {
+            data.slabs[i].status = data.slabs[i].onlineListing.map(ItemStatus.listed)
+            data.slabs[i].onlineListing = nil
+        }
+        for i in data.sealed.indices where ids.contains(data.sealed[i].id) && Self.isInStore(data.sealed[i].status) {
+            data.sealed[i].status = data.sealed[i].onlineListing.map(ItemStatus.listed)
+            data.sealed[i].onlineListing = nil
+        }
         save()
     }
 
@@ -415,7 +421,7 @@ extension GameStore {
                           fakeSource: .stranger)
         save()
         let session = ShowSession(venue: venue, store: self, vendors: [], regulars: storeRegulars())
-        session.markup = s.priceFactor
+        session.markup = s.singlesPrice
         session.openTable()
         return session
     }
@@ -514,10 +520,10 @@ extension GameStore {
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare
             let casual = kid || Double.random(in: 0..<1) < casualShare
-            let items = storeShelf().filter { !casual || storePrice($0.market) <= Balance.storeCasualBudget }
+            let items = storeShelf().filter { !casual || shelfPrice($0) <= Balance.storeCasualBudget }
             guard let item = pickForCustomer(items, packWeight: player ? Balance.eventPackWeight : 1) else { continue }
             let limit = item.market * Double.random(in: Balance.storeBuyerLimit)
-            let price = storePrice(item.market)
+            let price = shelfPrice(item)
             guard price <= limit else { continue }
             sellFromStore(item, price: price, storeName: storeName)
             sold += 1
@@ -568,6 +574,7 @@ extension GameStore {
 
     private func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) {
         let id = item.id
+        settleOnlineListing(id, name: item.name)
         if item.isCard {
             data.raw.removeAll { $0.id == id }
             data.slabs.removeAll { $0.id == id }
