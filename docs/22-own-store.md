@@ -2,11 +2,15 @@
 
 **Status: built.** The lease, three locations, the build-out, the
 shelves, the prices, the clerk, the open days, working the counter,
-the fixtures, the events, the buylist, store credit, the bulk box, split
+the fixtures, the events, the buylist, store credit that expires, the sealed
+buylist, consignment in the player's cases, a bigger space, the bulk box, split
 prices, online listings, the lease term and the buyout, store rent,
 overhead, eviction, closing the store, and the reaction of the game shops
 (`Model/CardStore.swift`, `Model/StoreEvents.swift`, `Model/StoreBuying.swift`,
-`Model/StorePricing.swift`, `Model/StoreLease.swift`, `Hub/CardStoreView.swift`).
+`Model/StorePricing.swift`, `Model/StoreLease.swift`, `Model/StoreExtras.swift`,
+`Model/StoreConsignment.swift`, `Model/StoreCredit.swift`,
+`Model/StoreSealedBuylist.swift`, `Model/StoreExpansion.swift`,
+`Hub/CardStoreView.swift`, `Hub/StoreGrowthViews.swift`).
 The numbers are
 in [19-prototype-values.md](19-prototype-values.md#your-own-store).
 
@@ -120,7 +124,7 @@ an item back at any time, from the store screen or from the item's
 Status box.
 
 - The store holds 40 cards and slabs, and 40 sealed items. Fixtures
-  add room.
+  and a bigger space add room. Consigned cards use card slots.
 - Kept items, listed items, and known fakes cannot go into the store.
 - An unknown fake can go into the store. If it sells, it is a bad sale
   with no platform refund (see
@@ -181,6 +185,7 @@ These change it:
 - **Stock**: empty shelves turn people away. The factor goes from
   ×0.4 with no stock to ×1.2 with 40 or more items.
 - **Fixtures and the grand opening**: see below.
+- **Consigned cards**: they count as stock for the stock factor.
 
 A customer looks first at the better items, the same as a buyer at a
 show. 35% of customers only look. A small-budget customer looks only
@@ -318,6 +323,72 @@ of the cash offer.
   ledger shows it. This holds for the clerk's sales and for the sales
   at the counter.
 - Credit that customers hold is lost when the store closes.
+- **Expiry**: credit expires 56 days (8 weeks) after the store gives
+  it. Each gift of credit has its own day. Customers use the oldest
+  credit first. When credit expires, the store does not owe it any
+  more. This is a small gain for the store. No cash moves.
+- **The warning**: the morning report says so 7 days before credit
+  expires.
+- **The Credit box**: the store screen shows the credit that the store
+  owes, the credit that expires in 7 days, the credit that has expired
+  so far, and the day that the oldest credit expires.
+- **Old saves**: credit from an old save gets the day of the first End
+  Day after the update. It expires 56 days after that day.
+
+## Sealed buylist
+
+The store also has a buylist for sealed product only. It is separate
+from the main buylist. The player sets two values in the Sealed
+buylist box:
+
+- The cash offer: off, or 60%, 70%, or 80% of market.
+- The daily cash budget: $100, $250 (default), $500, or $1,000.
+
+It runs on each open day, in the hours that the clerk covers. Walk-in
+sellers each bring one sealed product with a market value of $15 or
+more. The seller has a hidden floor of 55% to 85% of market. The clerk
+buys when the offer meets the floor and the budget has room. A higher
+offer brings more sellers.
+
+- The items go to Inventory in hand, not onto the shelves.
+- `paid` is the cash offer. The offer is cash only. No store credit.
+- The clerk does not check for resealed or fake product. The roll uses
+  the stranger source and the existing counterfeit system (see
+  [14-counterfeit-risk.md](14-counterfeit-risk.md)). The player can look
+  at the item in Inventory.
+- The morning report says what the clerk bought and what it cost.
+
+## Consignment in your cases
+
+Customers bring cards to leave in the player's display case. The player
+turns this on in the Consignment box, and picks the store cut: 15%, 20%
+(default), or 25%.
+
+- **Intake**: on each open day, in the clerk hours, up to 3 customers
+  leave one card or slab each. The card has a market value of $8 or
+  more. A lower cut brings more customers. A higher cut brings fewer.
+- **Slots**: each consigned card uses one card slot in the cases. The
+  clerk turns consigners away when the cases are full. The player
+  cannot stock a card in a slot that a consigned card uses.
+- **Sale**: customers see the consigned card with the player's own
+  stock. It sells at the singles price. The store keeps its cut of the
+  price, and the owner gets the rest. The ledger shows only the cut,
+  as a Sale line. The "Last 7 days" box counts the cut as sales.
+- **Unsold**: a card that does not sell in 28 days goes back to its
+  owner. The morning report says so.
+- **Not your stock**: a consigned card is not in Inventory. It does not
+  count in the value of the player's stock. The player cannot list it,
+  price it, or take it off the shelf. It sells only through the shelf,
+  and not at the counter.
+- **Shoplifting**: a thief can take a consigned card. The player pays
+  the owner the payout: the singles price less the store cut. The
+  ledger shows a negative Sale line.
+- **Real cards**: consigned cards are never fake.
+- **Closing**: when the store closes, consigned cards go back to their
+  owners. The same happens at an eviction.
+- **The game shops**: this does not change the rule that the two game
+  shops do not consign for the player (see
+  [Rival game shops](#rival-game-shops)).
 
 ## Bulk box
 
@@ -363,6 +434,27 @@ Each open day, the clerk or the player at the counter sells a few
 accessories. The sales are small and steady. They do not use the card
 shelf. See [23-supplies.md](23-supplies.md#the-accessory-shelf-of-the-store).
 
+## A bigger space
+
+The player can move the store into a bigger unit, one step at a time.
+The store must be past its build-out. The unit stays with the lease.
+The player does not need a new lease.
+
+| Step | Cost | Room | Rent | Insurance and utilities |
+| --- | --- | --- | --- | --- |
+| Bigger unit | $2,500 | +40 cards, +40 sealed | +25% of the lease rent | +25% |
+| Large unit | $4,500 | +40 more of each | +50% of the lease rent | +50% |
+
+- The room is there at once. The new rent starts at the next rent day.
+- The Space box shows the rent before and after the step.
+- The buyout of a lease uses the rent with the space.
+- A store cannot go back to a smaller unit. When the store closes, the
+  space goes away. A new lease starts with the standard unit.
+- **A second store**: not built. The code has one store, held in
+  `GameData.cardStore`. A second store needs its own clerk, lease,
+  stock, and events. The hub, the End Day hooks, and the shelf code
+  all read the one store. This is still an open topic.
+
 ## Store rent and eviction
 
 - Store rent and overhead are due every 28 days after the lease day.
@@ -387,10 +479,12 @@ opens again. The player can sign a new lease later.
 - **Today**: work the counter, and the customers to expect today.
 - **Last 7 days**: sales, costs (wages, rent, and overhead), the net,
   customers, and items sold.
+- **Space**: the unit, the room, and the step up to a bigger unit.
 - **Shelves**: the room used, the stock at the shelf price, and the
   stock list. Each row has a menu: the slab price, and the online
   listing.
 - **Buylist and store credit**: the buylist settings and the credit the store owes.
+- **Credit that expires**, **Sealed buylist**, and **Consignment**: the boxes for the topics above.
 - **Bulk box**: the cards in the box and the buttons to move bulk.
 - **Prices**, **Staff and hours**, **Fixtures**, and **Lease**. The
   Lease box shows the term, the end day, the buyout, and the overhead.
@@ -401,6 +495,4 @@ each store rent.
 ## Open topics
 
 - Balancing. The clerk wage against the sales on a quiet weekday.
-- A second store, or a bigger space.
-- Consignment at the player's own store.
-- Credit that expires. A buylist for sealed product only.
+- A second store. It needs its own clerk, and the code has one store (see [A bigger space](#a-bigger-space)).

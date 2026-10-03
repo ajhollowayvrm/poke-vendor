@@ -359,3 +359,8 @@ See [23-payment-methods.md](23-payment-methods.md). The code is in `Model/Paymen
 | Fire safe | $400. No home damage |
 | Insurance premium | 1.5% of the insured value every 28 days. Minimum $10 |
 | Insurance claim | 80% of the loss, less a $25 deductible |
+
+| Credit expiry | 56 days after the store gives it. Warning 7 days before. The oldest credit is used first |
+| Sealed buylist | Off, or 60%, 70%, 80% of market in cash. Daily budget $100, $250 (default), $500, or $1,000. Walk-in sellers: 6% of the clerk-hour customers at 70%, scaled by rate ÷ 70%. A seller wants 55% to 85% of market at least. Product of $15 or more |
+| Consignment in the own store | Store cut 15%, 20% (default), or 25%. Up to 3 cards a day, 8% of the clerk-hour customers at 20%. Each point of cut over 20% takes 4 points of the sellers away. Card of $8 or more. Unsold cards go back after 28 days |
+| Bigger space | Bigger unit $2,500, large unit $4,500. Each step: +40 card slots, +40 sealed slots, +25% of the lease rent, +25% insurance and utilities |

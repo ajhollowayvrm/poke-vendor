@@ -940,6 +940,7 @@ final class GameStore {
         if data.gameOver == nil { lines += storeRentDue() }
         lines += taxesEndDay()
         if data.gameOver == nil { lines += lossesEndDay() }
+        if data.gameOver == nil { lines += storeGrowthDay() }
 
         if isPokemonCenterDropLive {
             lines.append("A Pokemon Center drop is live today.")

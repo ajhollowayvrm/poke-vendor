@@ -50,7 +50,9 @@ Every system in this folder is built. The list:
   sales, the card reader, a payment policy, fees in the Wallet, fake
   screenshots, and reversals.
 - **Your own store**: the lease, three locations, the shelves, the
-  clerk, working the counter, fixtures, store rent, and eviction.
+  clerk, working the counter, fixtures, store rent, and eviction. It also has
+  consignment in the player's cases, store credit that expires, a sealed
+  buylist, and a bigger space.
 - **Supplies**: the Supplies storefront, use of supplies by shipped
   sales, grading, and show tables, the rush price, and accessories for
   the store.

@@ -92,6 +92,7 @@ extension GameStore {
     func addStoreCredit(_ amount: Double) {
         guard var s = data.cardStore else { return }
         s.source.creditOwed += amount
+        s.noteCredit(amount, day: data.day)
         data.cardStore = s
     }
 
@@ -102,6 +103,7 @@ extension GameStore {
         let used = min(s.source.creditOwed, (sales * Balance.creditRedeemShare * 100).rounded() / 100)
         guard used >= 0.01 else { return 0 }
         s.source.creditOwed -= used
+        s.useCredit(used)
         data.cardStore = s
         addLedger(-used, .sale, "Paid with store credit · \(s.name)")
         log("Customers paid \(money(used)) of the sales at \(s.name) with store credit.")
@@ -260,6 +262,8 @@ extension GameStore {
         }
         redeemStoreCredit(sales: shelfSales + bulk.revenue)
         lines += rollBuylist(share: share)
+        lines += rollSealedBuylist(share: share)
+        lines += rollConsignmentIntake(share: share)
         return (lines, bulk.revenue, bulk.sold)
     }
 }

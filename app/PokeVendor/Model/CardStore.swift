@@ -117,6 +117,8 @@ struct CardStoreState: Codable, Hashable {
     var sourcing: StoreSourcing?
     /// The term of the lease. Nil on a store from an old save.
     var lease: StoreLease?
+    /// Consignment, expiring credit, the sealed buylist, and the bigger space (`Model/StoreExtras.swift`). Optional, so old saves still load.
+    var extras: StoreExtras?
 
     func has(_ fixture: StoreFixture) -> Bool { fixtures.contains(fixture) }
 }
@@ -265,6 +267,7 @@ extension GameStore {
         data.bulk += s.source.bulkBox
         data.cardStore = nil
         var lines: [String] = []
+        if let line = consignmentCloseLine(s) { lines.append(line) }
         let stock = count > 0 ? " \(count) item\(count == 1 ? "" : "s") come\(count == 1 ? "s" : "") home tomorrow." : ""
         if evicted {
             addReputation(-Balance.evictionReputationCost)
@@ -331,11 +334,11 @@ extension GameStore {
     }
 
     var storeCardSlots: Int {
-        Balance.storeCardSlots + (data.cardStore?.has(.extraCase) == true ? Balance.extraCaseSlots : 0)
+        Balance.storeCardSlots + (data.cardStore?.has(.extraCase) == true ? Balance.extraCaseSlots : 0) + (data.cardStore?.spaceSlots ?? 0)
     }
 
     var storeSealedSlots: Int {
-        Balance.storeSealedSlots + (data.cardStore?.has(.sealedWall) == true ? Balance.sealedWallSlots : 0)
+        Balance.storeSealedSlots + (data.cardStore?.has(.sealedWall) == true ? Balance.sealedWallSlots : 0) + (data.cardStore?.spaceSlots ?? 0)
     }
 
     /// Puts items in the store, up to the room in the cases and on the shelves. Returns how many went in.
@@ -343,7 +346,7 @@ extension GameStore {
     func stockStore(_ ids: Set<UUID>) -> Int {
         guard data.cardStore != nil else { return 0 }
         let stock = storeStock
-        let cardRoom = storeCardSlots - stock.cards.count
+        let cardRoom = storeCardSlots - storeCardsUsed
         let sealedRoom = storeSealedSlots - stock.sealed.count
         let pick = stockable
         let cardIDs = Set(pick.cards.filter { ids.contains($0.id) }.sorted { $0.market > $1.market }.map(\.id)
@@ -392,7 +395,7 @@ extension GameStore {
         mean += event.tournament + event.league + event.glow
         // Empty shelves turn people away. A full store draws a few more.
         let stock = storeStock
-        mean *= min(1.2, 0.4 + Double(stock.cards.count + stock.sealed.count) / 50)
+        mean *= min(1.2, 0.4 + Double(stock.cards.count + stock.sealed.count + consignedCount) / 50)
         return mean
     }
 
@@ -490,6 +493,7 @@ extension GameStore {
             record.customers += result.customers
             record.sold += result.sold
             record.revenue += result.revenue
+            s.extras = data.cardStore?.extras
             data.cardStore = s
             let extra = storeSourcingDay(share: share, shelfSales: result.revenue)
             s = data.cardStore ?? s
@@ -516,6 +520,7 @@ extension GameStore {
         }
         s.history.append(record)
         s.history.removeAll { $0.day < today - 27 }
+        s.extras = data.cardStore?.extras
         data.cardStore = s
         return lines
     }
@@ -545,9 +550,8 @@ extension GameStore {
             let limit = item.market * Double.random(in: Balance.storeBuyerLimit)
             let price = shelfPrice(item)
             guard price <= limit else { continue }
-            sellFromStore(item, price: price, storeName: storeName)
+            revenue += sellFromStore(item, price: price, storeName: storeName)
             sold += 1
-            revenue += price
         }
         return (customers, sold, revenue)
     }
@@ -564,6 +568,8 @@ extension GameStore {
         let productKey: String
         let fake: FakeTier?
         let known: Bool
+        /// A card that a customer left on consignment. The store keeps a cut (`Model/StoreConsignment.swift`).
+        var consigned = false
     }
 
     func storeShelf() -> [StoreShelfItem] {
@@ -576,7 +582,7 @@ extension GameStore {
             StoreShelfItem(id: s.id, name: s.name, market: realMarket(of: s), paid: s.paid, setSlug: s.setSlug, isCard: false,
                       isPack: s.packs == 1, productKey: s.productID ?? s.name, fake: s.fake, known: s.isKnownFake)
         }
-        return cards + sealed
+        return cards + sealed + consignedShelfItems()
     }
 
     /// People look at the better items first, the same as at a show.
@@ -592,7 +598,10 @@ extension GameStore {
         return items.last
     }
 
-    private func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) {
+    /// Returns what the store earns: the price, or the cut of a consigned card.
+    @discardableResult
+    private func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) -> Double {
+        if item.consigned { return sellConsigned(item, price: price, storeName: storeName) }
         let id = item.id
         settleOnlineListing(id, name: item.name)
         if item.isCard {
@@ -607,6 +616,7 @@ extension GameStore {
         if let fake = item.fake {
             recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false)
         }
+        return price
     }
 
     /// Store rent and overhead, after the clock moves. A missed payment closes the store, but the run goes on.

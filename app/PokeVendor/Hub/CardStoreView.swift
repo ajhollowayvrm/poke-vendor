@@ -30,8 +30,12 @@ struct CardStoreView: View {
                     staffBox(s)
                     StoreEventsBox()
                     buylistBox(s)
+                    StoreCreditBox()
+                    StoreSealedBuylistBox()
+                    StoreConsignmentBox()
                     bulkBox(s)
                     fixturesBox
+                    StoreSpaceBox()
                     leaseBox(s)
                 } else {
                     pitch
@@ -217,7 +221,7 @@ struct CardStoreView: View {
         let value = items.reduce(0) { $0 + store.storePrice(item: $1) }
         return DetailBox(title: "Shelves") {
             HStack(spacing: 0) {
-                StatCell(label: "Cards", value: "\(stock.cards.count) / \(store.storeCardSlots)")
+                StatCell(label: "Cards", value: "\(store.storeCardsUsed) / \(store.storeCardSlots)")
                 StatCell(label: "Sealed", value: "\(stock.sealed.count) / \(store.storeSealedSlots)")
                 StatCell(label: "At your price", value: money(value))
             }
@@ -456,7 +460,7 @@ struct StockShelvesSheet: View {
     var body: some View {
         let items = store.showItems(store.stockable)
         let stock = store.storeStock
-        let cardRoom = max(0, store.storeCardSlots - stock.cards.count)
+        let cardRoom = max(0, store.storeCardSlots - store.storeCardsUsed)
         let sealedRoom = max(0, store.storeSealedSlots - stock.sealed.count)
         let pickedCards = items.filter { $0.kind == .card && picked.contains($0.id) }.count
         let pickedSealed = items.filter { $0.kind == .sealed && picked.contains($0.id) }.count

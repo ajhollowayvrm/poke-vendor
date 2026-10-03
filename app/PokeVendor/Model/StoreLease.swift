@@ -50,7 +50,7 @@ extension StoreLocation {
 
 extension CardStoreState {
     /// Rent for each 28 days.
-    var rent: Double { lease?.rent ?? location.rent }
+    var rent: Double { ((lease?.rent ?? location.rent) * spaceRentFactor).rounded() }
 }
 
 @MainActor
@@ -61,7 +61,7 @@ extension GameStore {
         let left = lease.endDay - data.day
         if left <= Balance.leaseNoticeDays { return 0 }
         let periodsLeft = (left + Balance.rentCycleDays - 1) / Balance.rentCycleDays
-        return Double(min(Balance.leaseBuyoutRents, periodsLeft)) * lease.rent
+        return Double(min(Balance.leaseBuyoutRents, periodsLeft)) * s.rent
     }
 
     /// The player can close the store: the buyout, if any, must fit in cash.
@@ -69,10 +69,11 @@ extension GameStore {
 
     /// The overhead for the period that just ended: the fee on its sales, and the fixed costs.
     func storeOverhead(_ s: CardStoreState) -> StoreOverhead {
+        let overheadFactor = 1 + Balance.spaceOverheadStep * Double(s.growth.space)
         let sales = s.history.filter { data.day - $0.day <= Balance.rentCycleDays }.reduce(0) { $0 + $1.revenue }
         return StoreOverhead(fees: (sales * Balance.cardFeeRate * 100).rounded() / 100,
-                             insurance: Balance.storeInsurance[s.location] ?? 0,
-                             utilities: Balance.storeUtilities[s.location] ?? 0,
+                             insurance: (Balance.storeInsurance[s.location] ?? 0) * overheadFactor,
+                             utilities: (Balance.storeUtilities[s.location] ?? 0) * overheadFactor,
                              software: Balance.storeSoftware[s.location] ?? 0)
     }
 

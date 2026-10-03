@@ -252,7 +252,8 @@ extension GameStore {
         data.sealed.removeAll { ids.contains($0.id) }
         let value = items.reduce(0) { $0 + $1.market }
         let name = items.count == 1 ? items[0].name : "\(items.count) \(items[0].name)"
-        return "\(name) (\(money(value)))"
+        let owed = payConsignedTheft(ids)
+        return "\(name) (\(money(value))" + (owed > 0 ? ", and you paid \(money(owed)) to the owner of a consigned card)" : ")")
     }
 
     func shopliftChance(for location: StoreLocation) -> Double {
