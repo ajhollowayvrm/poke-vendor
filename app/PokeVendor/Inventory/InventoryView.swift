@@ -510,9 +510,8 @@ struct CardRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: "")
+            CardOrSlab(image: card.print.image, name: card.print.name, grade: card.grade, subgrades: card.slabSubgrades, certID: card.id)
                 .frame(width: 43, height: 60)
-                .clipShape(RoundedRectangle(cornerRadius: 3))
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(card.print.name).font(.subheadline.weight(.medium)).lineLimit(1)

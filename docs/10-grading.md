@@ -165,6 +165,29 @@ tradeoff:
   same physical card. Good for volume-grading lower-value cards where
   speed matters more than squeezing out maximum resale value.
 
+## Slabs on screen
+
+A graded card always shows in its slab: a clear case with the label of
+the company on top. `SlabView` in `Inventory/SlabViews.swift` draws it.
+Inventory rows, the card detail screen, show tables, vendor tables, and
+the stream camera use it.
+
+- **PSA:** a white label with a red frame. The label shows the name, the
+  grade words (for example "GEM MT"), the grade, and a cert number.
+- **CGC:** a blue label with a white grade box.
+- **BGS:** a silver label with the four subgrades. A BGS 10 (Pristine)
+  label is gold. A Black Label is black with gold text.
+- The cert number comes from the card ID, so the same slab always shows
+  the same number.
+
+## Black Label price
+
+The price data (PPT) has no Black Label sales. Its BGS 10 price mixes
+the sales of all BGS 10 slabs. So a Black Label is worth 2 times the BGS
+10 price, and the game always marks it as an estimate. The price grids
+show it as "BL" in the BGS column. The grade sheet shows it when the
+player picks BGS.
+
 ## Grader variance
 
 Even with all four subgrades known precisely before submission, the

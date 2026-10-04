@@ -317,6 +317,9 @@ struct GradeSheet: View {
                                 let tenKey = "\(company.rawValue.lowercased())10"
                                 let ten = card.print.gradedPrice(tenKey)
                                 Text("\(company.rawValue) 10 \(ten.map(money) ?? "—")\(card.print.isGradedEstimated(tenKey) ? " est." : "")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                if company == .bgs {
+                                    Text("Black Label \(card.print.blackLabelPrice.map(money) ?? "—") est.").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                }
                             }
                         }
                     }

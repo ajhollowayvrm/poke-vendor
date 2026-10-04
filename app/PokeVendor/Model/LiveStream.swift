@@ -63,6 +63,10 @@ struct StreamItem: Identifiable, Hashable {
     let packs: Int
     var fake: FakeTier?
     var fakeKnown = false
+    /// A slab: the card name, its grade, and the subgrades a BGS label prints.
+    var cardName: String? = nil
+    var grade: SlabGrade? = nil
+    var subgrades: [Double]? = nil
 }
 
 struct ChatLine: Identifiable, Hashable {
@@ -365,7 +369,8 @@ extension GameStore {
     var streamStock: [StreamItem] {
         let cards = (data.raw + data.slabs).filter { $0.status == nil && !$0.keep }.map { c in
             StreamItem(id: c.id, name: c.grade.map { "\(c.print.name) \($0.label)" } ?? c.print.name, market: c.realMarket,
-                       image: c.print.image, sealed: false, packs: 0, fake: c.fake, fakeKnown: c.isKnownFake)
+                       image: c.print.image, sealed: false, packs: 0, fake: c.fake, fakeKnown: c.isKnownFake,
+                       cardName: c.print.name, grade: c.grade, subgrades: c.slabSubgrades)
         }
         let sealed = data.sealed.filter { $0.status == nil && !$0.keep }.map { s in
             StreamItem(id: s.id, name: s.name, market: realMarket(of: s), image: SetLibrary.product(s.productID, in: s.setSlug)?.image,

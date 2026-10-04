@@ -460,7 +460,7 @@ extension GameStore {
             ShowItem(id: card.id, kind: .card, name: card.print.name,
                      detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.realMarket,
                      image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
-                     setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake)
+                     setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake, grade: card.grade, subgrades: card.slabSubgrades)
         }
         let sealed = stock.sealed.map { item in
             ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
@@ -488,6 +488,9 @@ struct ShowItem: Identifiable, Hashable {
     /// Hidden: the item is a fake. A buyer who catches it walks (docs/14-counterfeit-risk.md).
     var fake: FakeTier?
     var fakeKnown = false
+    /// The grade of a slab, and the subgrades a BGS label prints.
+    var grade: SlabGrade? = nil
+    var subgrades: [Double]? = nil
 
     var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
 }

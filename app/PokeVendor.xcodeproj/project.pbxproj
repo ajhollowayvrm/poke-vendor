@@ -46,6 +46,7 @@
 		2C4D39E63CD069D24D99D501 /* roaring-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = BCFB88631EA718ED0E77E2CE /* roaring-skies.json */; };
 		2C680DA90FA527CB6B61BBDF /* breakpoint.json in Resources */ = {isa = PBXBuildFile; fileRef = E7E9769BEE2452CE9114E599 /* breakpoint.json */; };
 		2DA14E7BA1560F6058013971 /* StoreCredit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */; };
+		2E0650596BCA2527E709DADE /* SlabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46393BDB097F065796D9D1CD /* SlabViews.swift */; };
 		2EBE8E85A966DED3B4517E5F /* shining-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 074AD82C95C34EEF99B9381E /* shining-legends.json */; };
 		31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */ = {isa = PBXBuildFile; fileRef = 71BFAA4A10360362D9BE2E1C /* base-set-2.json */; };
 		3209FBD08DDC8BAF97DF52E0 /* TaxBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB88AEE87E1970C61F07F /* TaxBox.swift */; };
@@ -285,6 +286,7 @@
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
 		42F6EF496DC38B97131F0BBF /* deoxys.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = deoxys.json; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
+		46393BDB097F065796D9D1CD /* SlabViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlabViews.swift; sourceTree = "<group>"; };
 		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
 		4755B9D1944633247C22C671 /* Counterfeits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counterfeits.swift; sourceTree = "<group>"; };
 		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
@@ -472,6 +474,7 @@
 				F885E2CD1858D928F56B9E78 /* OfferLotViews.swift */,
 				32DA09FC2EFE76D57AFC6910 /* SaleReceiptView.swift */,
 				35B2FE4A0A51FA88C31F2E4B /* SellGradeSheets.swift */,
+				46393BDB097F065796D9D1CD /* SlabViews.swift */,
 			);
 			path = Inventory;
 			sourceTree = "<group>";
@@ -1056,6 +1059,7 @@
 				A12FA90603696A823D4B70CE /* SettingsView.swift in Sources */,
 				0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */,
 				7ACC1B39815CB76022632456 /* Shows.swift in Sources */,
+				2E0650596BCA2527E709DADE /* SlabViews.swift in Sources */,
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,
 				F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */,
 				B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */,

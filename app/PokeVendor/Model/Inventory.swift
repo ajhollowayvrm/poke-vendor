@@ -414,6 +414,9 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     /// What the card is worth to the player. A known fake is worth nothing.
     var market: Double { isKnownFake ? 0 : realMarket }
 
+    /// The subgrades a BGS label prints. Other companies print only the overall grade.
+    var slabSubgrades: [Double]? { grade?.company == .bgs ? condition.subgrades : nil }
+
     /// What a real copy sells for: the price a buyer who does not know pays.
     var realMarket: Double {
         guard let grade else { return market(as: condition.wear) }

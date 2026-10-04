@@ -103,11 +103,18 @@ struct CardDetailView: View {
             let count = store.mates(of: card).count
             ScrollView {
                 VStack(spacing: 14) {
-                    RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: card.print.name)
-                        .aspectRatio(63.0 / 88.0, contentMode: .fit)
-                        .frame(width: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
+                    Group {
+                        if let g = card.grade {
+                            SlabView(image: card.print.image, name: card.print.name, grade: g, subgrades: card.slabSubgrades, certID: card.id)
+                                .frame(width: 200)
+                        } else {
+                            RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: card.print.name)
+                                .aspectRatio(63.0 / 88.0, contentMode: .fit)
+                                .frame(width: 220)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                    .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
                         Text(card.print.name).font(.title2.bold())
                         Text("\(card.print.rarity) · \(card.print.variant) · \(card.print.num)")

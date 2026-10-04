@@ -112,7 +112,7 @@ struct CardInfo: View {
 
 }
 
-/// CGC 10 and 9, PSA 10 and 9, and BGS 10 and 9.5.
+/// CGC 10 and 9, PSA 10 and 9, and BGS Black Label, 10, and 9.5.
 struct GradedPricesGrid: View {
     let print: CardPrint?
 
@@ -120,7 +120,7 @@ struct GradedPricesGrid: View {
         HStack(alignment: .top, spacing: 8) {
             GradeColumn(company: "CGC", rows: [("10", print?.gradedPrice("cgc10")), ("9", print?.gradedPrice("cgc9"))])
             GradeColumn(company: "PSA", rows: [("10", print?.gradedPrice("psa10")), ("9", print?.gradedPrice("psa9"))])
-            GradeColumn(company: "BGS", rows: [("10", print?.gradedPrice("bgs10")), ("9.5", print?.gradedPrice("bgs9_5"))])
+            GradeColumn(company: "BGS", rows: [("BL", print?.blackLabelPrice), ("10", print?.gradedPrice("bgs10")), ("9.5", print?.gradedPrice("bgs9_5"))])
         }
     }
 }

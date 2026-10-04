@@ -114,8 +114,8 @@ struct StreamView: View {
                     if item.sealed {
                         ProductImage(url: item.image, setName: item.name)
                     } else {
-                        RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: item.name)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        CardOrSlab(image: item.image, name: item.cardName ?? item.name, grade: item.grade, subgrades: item.subgrades,
+                                   certID: item.id, cornerRadius: 8)
                     }
                 }
                 .frame(width: 150, height: 210)

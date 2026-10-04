@@ -1220,15 +1220,8 @@ struct GoodsImage: View {
             ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
         case .mystery(let pack):
             MysteryPackArt(pack: pack)
-        case .slab:
-            RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: "")
-                .padding(4)
-                .padding(.top, 10)
-                .background(Color(white: 0.85), in: RoundedRectangle(cornerRadius: 4))
-                .overlay(alignment: .top) {
-                    Rectangle().fill(Color.red.opacity(0.85)).frame(height: 10)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+        case .slab(let print, _, let grade):
+            SlabView(image: item.image, name: print.name, grade: grade)
         case .single:
             RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: "").clipShape(RoundedRectangle(cornerRadius: 3))
         }
@@ -1413,11 +1406,10 @@ struct ItemImage: View {
     var body: some View {
         Group {
             if item.kind == .sealed {
-                ProductImage(url: item.image, setName: item.name)
+                ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
             } else {
-                RemoteCardImage(url: item.image.flatMap(URL.init(string:)), name: "")
+                CardOrSlab(image: item.image, name: item.name, grade: item.grade, subgrades: item.subgrades, certID: item.id)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 3))
     }
 }
