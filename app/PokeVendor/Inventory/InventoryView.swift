@@ -5,7 +5,7 @@ enum InventoryTab: String, CaseIterable, Hashable {
 }
 
 enum SortOrder: String, CaseIterable {
-    case newest = "Newest", value = "Highest value", setOrder = "Set order", condition = "Best condition"
+    case psa10 = "PSA 10 price", newest = "Newest", value = "Highest value", setOrder = "Set order", condition = "Best condition"
 }
 
 /// The order of a card inside its set, from its card number.
@@ -17,7 +17,7 @@ struct InventoryView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
     @State private var tab: InventoryTab
-    @State private var sort: SortOrder = .newest
+    @State private var sort: SortOrder = .psa10
     @State private var keptOnly = false
     @State private var selecting = false
     @State private var selection: Set<UUID> = []
@@ -316,7 +316,8 @@ struct InventoryView: View {
         let items = store.data.sealed.filter { !keptOnly || $0.keep }
         switch sort {
         case .newest, .condition: return items.sorted { $0.acquired > $1.acquired }
-        case .value: return items.sorted { store.market(of: $0) > store.market(of: $1) }
+        // Sealed product has no PSA 10 price, so it sorts by value.
+        case .value, .psa10: return items.sorted { store.market(of: $0) > store.market(of: $1) }
         case .setOrder: return items.sorted { $0.name < $1.name }
         }
     }
@@ -326,6 +327,11 @@ struct InventoryView: View {
         switch sort {
         case .newest: return items.sorted { $0.acquired > $1.acquired }
         case .value: return items.sorted { $0.market > $1.market }
+        // A card with no PSA 10 price goes last. Value breaks a tie.
+        case .psa10: return items.sorted {
+            let a = $0.print.gradedPrice("psa10") ?? -1, b = $1.print.gradedPrice("psa10") ?? -1
+            return a != b ? a > b : $0.market > $1.market
+        }
         case .setOrder: return items.sorted { setOrder($0.print.num) < setOrder($1.print.num) }
         // A slab's condition is its grade, so slabs sort by value.
         case .condition: return tab == .raw ? items.sorted(by: store.conditionOrder) : items.sorted { $0.market > $1.market }
@@ -334,7 +340,7 @@ struct InventoryView: View {
 
     private var sortedBulk: [BulkGroup] {
         switch sort {
-        case .value: store.data.bulk.sorted { $0.value > $1.value }
+        case .value, .psa10: store.data.bulk.sorted { $0.value > $1.value }
         default: store.data.bulk.sorted { $0.date > $1.date }
         }
     }
