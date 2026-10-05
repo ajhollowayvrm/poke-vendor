@@ -103,6 +103,8 @@ struct RipView: View {
     @State private var cardsRise = false
     @State private var cardsOut = false
     @State private var packGone = false
+    /// Hits only: the pack in the row of tears that shows now.
+    @State private var tearingIndex: Int?
     @State private var peeking = false
     @State private var showSummary = false
     @State private var pressing = false
@@ -165,16 +167,21 @@ struct RipView: View {
                             .rotationEffect(.degrees(p.rotation))
                             .position(p.point)
                             .zIndex(p.z)
+                            // The Hits only row of tears hides the cards until they rise out of the last pack.
+                            .opacity(tearingIndex != nil && !cardsRise && !cardsOut ? 0 : 1)
                             .allowsHitTesting(false)
                     }
                 }
 
                 if model.phase == .sealed || model.phase == .opening {
-                    PackView(setName: model.cardSet.name, slug: model.cardSet.slug, series: model.cardSet.series,
-                             label: model.cardSet.packLabel, image: model.cardSet.packImage,
+                    let wrapper = wrapperSet
+                    PackView(setName: wrapper.name, slug: wrapper.slug, series: wrapper.series,
+                             label: wrapper.packLabel, image: wrapper.packImage,
                              tearProgress: tearProgress, torn: torn,
                              fromLeft: tearFromLeft)
+                        .id(tearingIndex ?? -1)
                         .frame(width: layout.packW, height: layout.packH)
+                        .overlay(alignment: .bottom) { packCount(layout) }
                         .rotationEffect(.degrees(packGone ? 14 : 0))
                         .position(x: layout.packCenter.x,
                                   y: layout.packCenter.y + (packGone ? geo.size.height : 0))
@@ -185,10 +192,10 @@ struct RipView: View {
 
                 if openFlash > 0 {
                     // A god pack gives itself away with a rainbow light.
-                    RadialGradient(colors: model.special?.isGod == true
+                    RadialGradient(colors: godLight
                                        ? [.white.opacity(0.95), .pink.opacity(0.6), .yellow.opacity(0.5), .cyan.opacity(0.4), .purple.opacity(0.3), .clear]
                                        : [.white.opacity(0.9), Color(red: 1.0, green: 0.9, blue: 0.6).opacity(0.35), .clear],
-                                   center: .center, startRadius: 0, endRadius: layout.packW * (model.special?.isGod == true ? 1.1 : 0.8))
+                                   center: .center, startRadius: 0, endRadius: layout.packW * (godLight ? 1.1 : 0.8))
                         .frame(width: layout.packW * 1.8, height: layout.packW * 1.1)
                         .blendMode(.plusLighter)
                         .opacity(openFlash)
@@ -338,6 +345,12 @@ struct RipView: View {
                 withAnimation(.easeIn(duration: 0.25)) { celebration = special }
             }
         }
+        .onChange(of: model.shownPack?.index) { old, new in
+            // Hits only: a new pack comes to the front of the stack.
+            guard let new, old != nil, model.phase == .open, model.mode != .sift, let count = model.shownPack?.count else { return }
+            Haptics.tap(.medium)
+            model.note = "Pack \(new + 1) of \(count)"
+        }
         .onChange(of: model.resealedMoment) { _, moment in
             guard moment != nil else { return }
             Task {
@@ -373,6 +386,33 @@ struct RipView: View {
 
     // MARK: - Pieces
 
+    /// The rainbow light of a god pack. In the Hits only row of tears, only the god pack's own tear has it.
+    private var godLight: Bool {
+        if let i = tearingIndex, model.combinedSlugs != nil { return i == model.godIndex }
+        return model.special?.isGod == true
+    }
+
+    /// The wrapper on the table. In the Hits only row of tears, each pack shows its own set.
+    private var wrapperSet: SetData {
+        if let i = tearingIndex, let slugs = model.combinedSlugs, slugs.indices.contains(i) { return SetLibrary.set(slugs[i]) }
+        return model.cardSet
+    }
+
+    /// Hits only: how many packs the tear opens, and which pack of the row is tearing.
+    @ViewBuilder private func packCount(_ layout: TableLayout) -> some View {
+        let total = model.combinedSlugs?.count ?? (model.willCombine ? model.packsLeft : 0)
+        if total > 1 {
+            Text(tearingIndex.map { "\($0 + 1) of \(total)" } ?? "× \(total) packs")
+                .font(.caption.monospaced().weight(.bold))
+                .foregroundStyle(.black)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Theme.orange, in: Capsule())
+                .offset(y: 16)
+                .opacity(packGone ? 0 : 1)
+        }
+    }
+
     /// About half of a card's flip. A face shows only after it turns past edge-on.
     static let revealDelay = 260
 
@@ -382,9 +422,11 @@ struct RipView: View {
     }
 
     private func settleReveal() {
-        infoCard = model.focusCard
+        // No card shows before the pack is open, also when the Hits only tear builds the stack early.
+        let open = model.phase == .open || model.phase == .done
+        infoCard = open ? model.focusCard : nil
         pileTop = model.pile.last
-        settledTopID = model.stack.first.flatMap { model.isShownFaceUp($0) ? $0.id : nil }
+        settledTopID = open ? model.stack.first.flatMap { model.isShownFaceUp($0) ? $0.id : nil } : nil
     }
 
     private func inStack(_ card: RipCard) -> Bool {
@@ -447,7 +489,9 @@ struct RipView: View {
     private var bottomPanel: some View {
         VStack(spacing: 10) {
             if model.phase == .sealed, model.mode == .normal {
-                Text("Tap or swipe across the top of the pack to open it.")
+                Text(model.willCombine && model.packsLeft > 1
+                     ? "Hits only. One swipe opens all \(model.packsLeft) packs."
+                     : "Tap or swipe across the top of the pack to open it.")
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
                     .frame(maxWidth: .infinity, minHeight: 82)
@@ -520,6 +564,12 @@ struct RipView: View {
                 .buttonStyle(.bordered)
                 .tint(Theme.cyan)
             }
+            Button(action: toggleHitsOnly) {
+                Image(systemName: model.hitsOnly && model.allowsHitsOnly ? "sparkles.rectangle.stack.fill" : "sparkles.rectangle.stack")
+            }
+            .buttonStyle(.bordered)
+            .tint(model.hitsOnly && model.allowsHitsOnly ? Theme.orange : Theme.cyan)
+            .accessibilityLabel("Hits only")
             Button { stopRuleShown = true } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
                 .buttonStyle(.bordered)
                 .tint(Theme.cyan)
@@ -536,6 +586,18 @@ struct RipView: View {
         }
     }
 
+    /// Hits only: the stack holds only the hit slots of each pack (docs/18-ripping.md, Hits only).
+    private func toggleHitsOnly() {
+        guard model.allowsHitsOnly else {
+            model.note = "Hits only is off on a live stream. Viewers want to see the cards."
+            return
+        }
+        Haptics.tap()
+        model.hitsOnly.toggle()
+        let later = model.phase == .sealed ? "" : model.hasNextPack ? " From the next pack." : " From the next rip."
+        model.note = model.hitsOnly ? "Hits only: one swipe opens every pack.\(later)" : "Hits only off: every card.\(later)"
+    }
+
     /// Fast and Sift: the pack opens by itself, the cards advance, and the rip stops on the stop rule
     /// (docs/18-ripping.md, Fast and Sift). A resealed pack always stops.
     private func runAuto() {
@@ -549,7 +611,12 @@ struct RipView: View {
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { model.startPacks() }
                     try? await Task.sleep(for: .milliseconds(500))
                 case .sealed:
-                    if model.mode == .sift {
+                    if model.mode == .sift, model.willCombine {
+                        // Hits only in Sift: no tears, but a god pack still plays its moment first.
+                        model.startOpening()
+                        await playGodPack()
+                        model.finishOpening()
+                    } else if model.mode == .sift {
                         let stopped = model.sift()
                         try? await Task.sleep(for: .seconds(Balance.siftStepSeconds * Double(model.allCards.count)))
                         if stopped != nil { return }
@@ -716,7 +783,7 @@ struct RipView: View {
         let left = layout.packCenter.x - layout.packW / 2
         let x = across ? layout.packCenter.x
             : left + layout.packW * (tearFromLeft ? tearProgress : 1 - tearProgress)
-        let colors = model.special?.isGod == true
+        let colors = godLight
             ? [.pink, .yellow, .green, .cyan, .purple, .white]
             : PackArt.colors(model.cardSet.slug) + [.white, Color(white: 0.85)]
         let now = Date()
@@ -727,6 +794,10 @@ struct RipView: View {
 
     private func tear() {
         guard model.phase == .sealed else { return }
+        if model.willCombine {
+            tearAll()
+            return
+        }
         Haptics.tap(.medium)
         model.startOpening()
         // The tear runs to the far edge, then the strip flies off and light comes out of the pack.
@@ -753,6 +824,67 @@ struct RipView: View {
                 skipPack()
             }
         }
+    }
+
+    /// Hits only: one swipe tears every pack in a row, then all the hit slots come out as one stack.
+    private func tearAll() {
+        Haptics.tap(.medium)
+        tearingIndex = 0
+        model.startOpening()
+        let total = model.combinedSlugs?.count ?? 1
+        // A long queue tears faster, so a booster box does not take half a minute.
+        let step = max(0.16, min(0.5, 3.0 / Double(total)))
+        Task {
+            for i in 0..<total {
+                if i > 0 {
+                    var still = Transaction()
+                    still.disablesAnimations = true
+                    withTransaction(still) {
+                        torn = false
+                        tearProgress = 0
+                        packGone = false
+                    }
+                    withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) { tearingIndex = i }
+                    try? await Task.sleep(for: .seconds(step * 0.3))
+                }
+                withAnimation(.easeOut(duration: step * 0.25)) { tearProgress = 1 }
+                try? await Task.sleep(for: .seconds(step * 0.25))
+                Haptics.tap(i == total - 1 ? .heavy : .medium)
+                if let layout = lastLayout { addFlecks(layout, count: i == total - 1 ? 26 : 10, across: true) }
+                withAnimation(.easeOut(duration: step * 0.6)) { torn = true }
+                withAnimation(.easeOut(duration: 0.1)) { openFlash = 1 }
+                withAnimation(.easeIn(duration: step).delay(0.1)) { openFlash = 0.001 }
+                try? await Task.sleep(for: .seconds(step * 0.45))
+                if i < total - 1 {
+                    withAnimation(.easeIn(duration: step * 0.4)) { packGone = true }
+                    try? await Task.sleep(for: .seconds(step * 0.3))
+                }
+                if i == model.godIndex { await playGodPack() }
+            }
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { cardsRise = true }
+            try? await Task.sleep(for: .milliseconds(500))
+            withAnimation(.easeIn(duration: 0.45)) { packGone = true }
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.8)) {
+                cardsRise = false
+                cardsOut = true
+            }
+            try? await Task.sleep(for: .milliseconds(450))
+            tearingIndex = nil
+            model.finishOpening()
+            if skipAfterOpen {
+                skipAfterOpen = false
+                skipPack()
+            }
+        }
+    }
+
+    /// Hits only: a god pack plays its own moment before the stack, and waits for it to end.
+    private func playGodPack() async {
+        guard let special = model.special, special.isGod else { return }
+        try? await Task.sleep(for: .milliseconds(250))
+        withAnimation(.easeIn(duration: 0.25)) { celebration = special }
+        while celebration != nil { try? await Task.sleep(for: .milliseconds(150)) }
+        try? await Task.sleep(for: .milliseconds(250))
     }
 
     private func sendFront() {

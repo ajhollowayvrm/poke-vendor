@@ -797,7 +797,7 @@ struct HubView: View {
             store.addTestProduct("576482")
             nav.startRip(store.data.sealed)
         }
-        if args.contains("-demo") && !args.contains("-collrip") {
+        if args.contains("-demo") && !args.contains("-collrip") && !args.contains("-rip") {
             if let i = args.firstIndex(of: "-set"), i + 1 < args.count {
                 store.startRun()
                 store.addTestPack(slug: args[i + 1])

@@ -28,14 +28,16 @@ struct TopBar: View {
         VStack(spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(model.cardSet.name).font(.headline)
-                    Text("Pack \(model.packIndex + 1) of \(model.queue.count) · \(model.currentPack?.productName ?? "Booster pack")")
+                    let sets = Set(model.combinedSlugs ?? []).count
+                    Text(sets > 1 ? "\(sets) sets" : model.cardSet.name).font(.headline)
+                    Text(model.shownPack.map { "Hits only · Pack \($0.index + 1) of \($0.count)" }
+                         ?? "Pack \(model.packIndex + 1) of \(model.queue.count) · \(model.currentPack?.productName ?? "Booster pack")")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
                 Spacer()
                 if model.phase == .sealed || model.phase == .open {
-                    Button("Skip pack", action: onSkip)
+                    Button(model.combinedSlugs == nil ? "Skip pack" : "Skip all", action: onSkip)
                         .font(.subheadline.weight(.semibold))
                         .buttonStyle(.bordered)
                         .tint(Theme.cyan)
@@ -48,9 +50,10 @@ struct TopBar: View {
                 .tint(Theme.cyan)
             }
             HStack(spacing: 0) {
-                StatCell(label: "Pack value", value: money(model.valueSoFar))
-                StatCell(label: "Cost", value: money(model.packCost))
-                StatCell(label: "Net", value: signedMoney(model.net), color: model.net >= 0 ? Theme.green : Theme.orange)
+                let net = model.shownValue - model.shownCost
+                StatCell(label: "Pack value", value: money(model.shownValue))
+                StatCell(label: "Cost", value: money(model.shownCost))
+                StatCell(label: "Net", value: signedMoney(net), color: net >= 0 ? Theme.green : Theme.orange)
             }
         }
         .padding(.horizontal, 16)
@@ -112,13 +115,13 @@ struct CardInfo: View {
 
 }
 
-/// CGC 10 and 9, PSA 10 and 9, and BGS Black Label, 10, and 9.5.
+/// CGC Pristine 10, 10, and 9, PSA 10 and 9, and BGS Black Label, 10, and 9.5.
 struct GradedPricesGrid: View {
     let print: CardPrint?
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            GradeColumn(company: "CGC", rows: [("10", print?.gradedPrice("cgc10")), ("9", print?.gradedPrice("cgc9"))])
+            GradeColumn(company: "CGC", rows: [("P10", print?.cgcPristinePrice), ("10", print?.gradedPrice("cgc10")), ("9", print?.gradedPrice("cgc9"))])
             GradeColumn(company: "PSA", rows: [("10", print?.gradedPrice("psa10")), ("9", print?.gradedPrice("psa9"))])
             GradeColumn(company: "BGS", rows: [("BL", print?.blackLabelPrice), ("10", print?.gradedPrice("bgs10")), ("9.5", print?.gradedPrice("bgs9_5"))])
         }
@@ -191,12 +194,12 @@ struct SummaryView: View {
     @State private var posted: SocialPost?
 
     var body: some View {
-        let cards = model.allCards
+        let cards = model.everyCard
         let hits = cards.filter(\.isHit).sorted { $0.market > $1.market }
         let bulk = cards.filter { $0.print != nil && !$0.isHit }.count
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("Pack summary").font(.title2.bold())
+                Text(model.combinedSlugs == nil ? "Pack summary" : "Rip summary").font(.title2.bold())
                 Spacer()
                 if let special = model.special {
                     Text(special.title)
@@ -215,7 +218,7 @@ struct SummaryView: View {
                 StatCell(label: "Paid", value: money(model.packCost))
                 StatCell(label: "Net", value: signedMoney(model.net), color: model.net >= 0 ? Theme.green : Theme.orange)
             }
-            if model.queue.count > 1 {
+            if model.queue.count > 1, model.ripPaid != model.packCost {
                 let ripNet = model.ripValue - model.ripPaid
                 HStack(spacing: 0) {
                     StatCell(label: "Rip value", value: money(model.ripValue))

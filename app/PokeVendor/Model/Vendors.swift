@@ -432,15 +432,17 @@ enum VendorFloor {
 }
 
 extension Condition {
-    /// An old card that has been handled for years: more wear, and the loose centering of old print runs.
+    /// An old card, with the loose centering of old print runs. 40% of old cards were kept well. The rest were handled
+    /// for years and carry heavy wear. Fitted to the real 1999 Base Set populations (docs/10-grading.md, Measured grade rates).
     static func played() -> Condition {
         var c = Condition.packFresh()
-        let cut = Cut(frontLR: Int.random(in: 36...64), frontTB: Int.random(in: 40...60),
+        let cut = Cut(frontLR: Int.random(in: 36...64), frontTB: Int.random(in: 38...62),
                       backLR: Int.random(in: 30...70), backTB: Int.random(in: 30...70))
         c = Condition(cut: cut, corners: c.corners, edges: c.edges, surface: c.surface)
-        c.corners = max(5, c.corners - Double(Int.random(in: 0...4)) * 0.5)
-        c.edges = max(5, c.edges - Double(Int.random(in: 0...4)) * 0.5)
-        c.surface = max(5, c.surface - Double(Int.random(in: 0...3)) * 0.5)
+        guard Double.random(in: 0..<1) >= 0.4 else { return c }
+        c.corners = max(1.5, c.corners - Double(Int.random(in: 0...12)) * 0.5)
+        c.edges = max(1.5, c.edges - Double(Int.random(in: 0...12)) * 0.5)
+        c.surface = max(1.5, c.surface - Double(Int.random(in: 0...3)) * 0.5)
         return c
     }
 }

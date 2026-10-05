@@ -540,11 +540,12 @@
   "Common",
   "Reverse holo slot",
   "Rare slot",
+  "ENERGY",
   "Uncommon",
   "Uncommon",
   "Uncommon"
  ],
- "trick": 3,
+ "trick": 4,
  "prints": [
   {
    "num": "001/196",

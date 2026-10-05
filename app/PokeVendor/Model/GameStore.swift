@@ -860,16 +860,20 @@ final class GameStore {
         let worst = subs.min() ?? 10
         let average = subs.reduce(0, +) / Double(subs.count)
         let noise = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * company.spread * 2
-        let raw = min(10, worst * 0.7 + average * 0.3 + noise)
+        let raw = min(10.5, worst * 0.7 + average * 0.3 + company.bias + noise)
+        func halves(_ x: Double, cap: Double) -> Double { max(1, min(cap, (min(x, cap) * 2).rounded() / 2)) }
         switch company {
         case .psa:
             return SlabGrade(company: .psa, grade: max(1, min(10, raw.rounded(.toNearestOrAwayFromZero))))
         case .cgc:
-            return SlabGrade(company: .cgc, grade: max(1, min(10, (raw * 2).rounded() / 2)))
+            // CGC gives a 10 across a wide band. A Pristine 10 is the top of it.
+            if raw >= 9.4 { return SlabGrade(company: .cgc, grade: 10, pristine: raw >= 10.12) }
+            return SlabGrade(company: .cgc, grade: halves(raw, cap: 9.5))
         case .bgs:
-            let black = subs.allSatisfy { $0 == 10 }
-            let grade = black ? 10 : max(1, min(raw >= 9.75 ? 10 : 9.5, (raw * 2).rounded() / 2))
-            return SlabGrade(company: .bgs, grade: grade, blackLabel: black)
+            // A Black Label needs four perfect subgrades, and BGS rarely gives a perfect 10 subgrade.
+            let black = subs.allSatisfy { $0 == 10 } && Double.random(in: 0..<1) < 0.043
+            if black || raw >= 10.02 { return SlabGrade(company: .bgs, grade: 10, blackLabel: black) }
+            return SlabGrade(company: .bgs, grade: raw >= 9.4 ? 9.5 : halves(raw, cap: 9))
         }
     }
 

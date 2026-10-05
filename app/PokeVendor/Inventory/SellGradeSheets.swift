@@ -357,7 +357,7 @@ struct GradeSheet: View {
         switch company {
         case .psa: "Slowest and most expensive. The highest resale value for the same grade."
         case .bgs: "Mid speed and cost. Prints all four subgrades. All 10s is a Black Label."
-        case .cgc: "Fastest and cheapest. Less resale value for the same grade."
+        case .cgc: "Fastest and cheapest. Less resale value for the same grade. The best 10s are Pristine."
         }
     }
 }

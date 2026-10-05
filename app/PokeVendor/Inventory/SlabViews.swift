@@ -147,12 +147,12 @@ private struct SlabLabel: View {
             Spacer(minLength: 0)
             VStack(spacing: 0) {
                 Text(number).font(font(0.15, .heavy))
-                Text(Self.cgcWords(grade.grade)).font(font(0.042, .bold)).lineLimit(1)
+                Text(grade.pristine ? "PRISTINE" : Self.cgcWords(grade.grade)).font(font(0.042, .bold)).lineLimit(1)
             }
             .foregroundStyle(Self.cgcBlue)
             .padding(.horizontal, width * 0.03)
             .padding(.vertical, width * 0.015)
-            .background(Color.white, in: RoundedRectangle(cornerRadius: width * 0.02))
+            .background(grade.pristine ? Color(red: 0.98, green: 0.88, blue: 0.55) : Color.white, in: RoundedRectangle(cornerRadius: width * 0.02))
         }
         .minimumScaleFactor(0.5)
         .padding(width * 0.035)
@@ -281,6 +281,8 @@ struct CardOrSlab: View {
 }
 
 extension CardPrint {
-    /// The Black Label price. The price data has no Black Label sales, so it is 2 times the BGS 10 price (docs/19).
-    var blackLabelPrice: Double? { gradedPrice("bgs10").map { $0 * 2 } }
+    /// The Black Label price. The price data has no Black Label sales, so it comes from the BGS 10 and PSA 10 prices.
+    var blackLabelPrice: Double? { gradedPrice("bgs10").map { OwnedCard.blackLabelPrice(bgs10: $0, psa10: gradedPrice("psa10")) } }
+    /// The CGC Pristine 10 price. The price data has no Pristine sales, so it comes from the CGC 10 price.
+    var cgcPristinePrice: Double? { gradedPrice("cgc10").map { OwnedCard.cgcPristinePrice(cgc10: $0, psa10: gradedPrice("psa10")) } }
 }

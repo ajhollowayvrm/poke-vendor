@@ -270,7 +270,7 @@ def export(slug):
     for slot, res in O.final_odds(slug, s, O.era_pool(sets, eras), eras).items():
         rows = [(r, p) for r, p, _ in res if r[4] != "—"]
         if not rows:
-            has_energy_row = has_energy_row or slot == "Basic Energy"
+            has_energy_row = has_energy_row or slot.startswith("Basic Energy")
             continue
         outcomes = []
         for r, p in rows:

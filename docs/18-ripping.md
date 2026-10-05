@@ -1,6 +1,6 @@
 # Ripping
 
-**Status: built.** The rip queue, the three modes, the stop rule (Settings, and the rip screen), the pack trick, the pile, demigod and god packs, sealed products in the rip, the resealed stop, and ripping on a live stream (Normal and Fast only).
+**Status: built.** The rip queue, the three modes, Hits only, the stop rule (Settings, and the rip screen), the pack trick, the pile, demigod and god packs, sealed products in the rip, the resealed stop, and ripping on a live stream (Normal and Fast only).
 
 The screen where the player opens sealed product. This is the "rip"
 side of the rip-or-hold decision in
@@ -41,6 +41,46 @@ The player picks one of three modes.
   both, so Sift is the quickest way through a large queue.
 - Sift with an empty stop rule does not stop. It goes straight to the
   summary. This replaces the old **Open all** button.
+
+### Hits only
+
+**Hits only** is a switch next to the mode control. It works with
+every mode, and the game keeps the choice for the next rip.
+
+- One tear opens **every pack left in the queue** at once. The
+  products open too, with no unbox step.
+- The tear plays once for each pack, fast and in a row. Each pack
+  shows its own set wrapper and a count, for example "2 of 6". A long
+  queue tears faster, so a booster box does not take long.
+- Then the hit slots of all the packs come out as **one stack**, in
+  queue order. For example, 6 Scarlet & Violet packs give a stack of
+  18 cards. The player turns the cards one by one onto one pile.
+- The stack **keeps its packs**. Each pack is its hit slots only, for
+  example 3 cards in Scarlet & Violet. The top bar shows "Pack 2 of 6"
+  and the value, the cost, and the net of the pack in hand. A haptic
+  and a short note mark each new pack. Face down, each pack turns over
+  on its own, and the packs stay in queue order.
+- **A god pack is the exception.** All its cards are hits, so it keeps
+  every card. Its moment plays right after its own tear, before the
+  stack comes out. Only that tear has the rainbow light. In Sift, which
+  has no tears, the moment plays before the sift starts. The moment
+  does not play again in the stack.
+- A demigod pack is 3 cards like any other pack. Its moment plays when
+  its second Special Illustration Rare turns face up.
+- The hit slots are the rare slot and the reverse holo slots of the
+  set file (`RipCard.inHitSlot`). A hit from any other slot also goes
+  in the stack, so a god pack or a $1 uncommon never stays unseen.
+- The other cards do not show and do not go on the pile. The totals,
+  the summary, the Raw tab, and the bulk group still count them.
+- **Skip all** puts every card left in the stack on the pile and goes
+  to the rip summary.
+- The pack trick and Flip turn off, because the stack already holds
+  only the hit slots.
+- A change after the tear starts with the next rip.
+- A resealed pack holds only filler, so none of its cards go in the
+  stack. The resealed banner still shows.
+- A live stream turns Hits only off, because the viewers want to see
+  every card.
 
 ### Picking the mode
 
@@ -124,6 +164,13 @@ with the source of each value.
 ## Opening a pack
 
 The rip must feel like opening a real pack.
+
+**No card twice in one pack.** A pack never holds the same print twice,
+also across slots that share a pool (for example the Common slot and the
+Common/Holo slot of an e-Card set). When a slot rolls an outcome with no
+print left, for example a second one-card secret rare, it rolls its
+outcome again (`PackBuilder.swift`). A card and its reverse holo are two
+prints, so a pack can hold both.
 
 ### The manual rip (Normal)
 

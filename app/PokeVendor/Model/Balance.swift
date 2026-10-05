@@ -117,11 +117,21 @@ enum GradingCompany: String, Codable, CaseIterable, Hashable {
     case psa = "PSA", cgc = "CGC", bgs = "BGS"
 
     /// How far a returned grade can move from the card's true condition.
+    /// The spread and the bias are fitted to real grade populations (docs/10-grading.md, Measured grade rates).
     var spread: Double {
         switch self {
-        case .psa: 0.25
-        case .bgs: 0.35
-        case .cgc: 0.45
+        case .psa: 0.62
+        case .bgs: 0.29
+        case .cgc: 0.43
+        }
+    }
+
+    /// How kind the company is. CGC gives a 10 most easily, and BGS is the strictest.
+    var bias: Double {
+        switch self {
+        case .psa: 0.04
+        case .bgs: -0.05
+        case .cgc: 0.18
         }
     }
 }

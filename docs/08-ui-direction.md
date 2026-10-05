@@ -286,8 +286,13 @@ here, and the rip-or-hold decision happens here.
   header counts the price of the opened product once, in the amount
   paid. A pulled card's row shows "pulled" in place of a gain. A
   bought card's row shows its gain.
-- **The "Kept only" filter is a checkbox** at the top of the list on
-  the Sealed, Raw, and Slabs tabs.
+- **The Filter menu** sits at the top of the list on the Sealed, Raw,
+  and Slabs tabs. It shows one tag or one status at a time: Kept, No
+  status, On the way, Arriving, At grader, Authenticating, Listed,
+  Consigned, In your store, Fake, Looks off, or Verified. Each entry
+  shows its count. The menu shows only the entries that match an item
+  in the tab. On the Raw tab, "Select all" selects only the listable
+  cards that the filter shows.
 - **Collection value counts only kept items** (see
   [03-currencies.md](03-currencies.md#collection-value)). Stock for
   sale is future cash, not collection. The hub's Collection target

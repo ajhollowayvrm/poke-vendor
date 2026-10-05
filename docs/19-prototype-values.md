@@ -111,16 +111,35 @@ run. Holds, consignment, and league night are not built.
 | BGS | Express | $100 | 7 |
 
 **Card condition.** A pulled card gets four hidden subgrades. The
-overall grade is 70% the worst subgrade and 30% the average, plus a
-random spread: ±0.25 for PSA, ±0.35 for BGS, ±0.45 for CGC. PSA rounds
-to a whole grade. CGC and BGS round to a half grade. A BGS card with
-four 10s is a Black Label.
+overall grade is 70% the worst subgrade and 30% the average, plus the
+company's bias and a random spread. The values are fitted to real
+population counts (see
+[10-grading.md](10-grading.md#measured-grade-rates)).
+
+| Company | Bias | Spread | Cutoffs |
+| --- | --- | --- | --- |
+| PSA | +0.04 | ±0.62 | Rounds to a whole grade |
+| CGC | +0.18 | ±0.43 | 10 from 9.4, Pristine 10 from 10.12, half grades below |
+| BGS | −0.05 | ±0.29 | 10 from 10.02, 9.5 from 9.4, half grades below |
+
+A BGS card with four 10 subgrades is a Black Label 4.3% of the time.
+
+| Subgrade, pack-fresh | 10 | 9.5 | 9 | 8.5 | 7.5 to 8 |
+| --- | --- | --- | --- | --- | --- |
+| Corners, edges | 36.1% | 42.6% | 15.7% | 4.0% | 1.6% |
+| Surface | 38.6% | 34.5% | 13.7% | 11.7% | 1.5% |
+
+A single bought second hand loses 0 to 1 point on its corners and its
+edges. An old card has a front cut from 36/64 to 64/36 (LR) and 38/62 to
+62/38 (TB). 40% of old cards keep their pack-fresh subgrades. The rest
+lose 0 to 6 points on corners and edges and 0 to 1.5 points on the
+surface, down to 1.5.
 
 **Wear.** A card is Lightly Played when a corner or an edge is 8 or
 less, or the surface is 7 or less. It is Moderately Played at 7 or less
 (corners, edges) or 6 or less (surface). It is Heavily Played at 6 or
 less (corners, edges) or 5 or less (surface). It is Damaged at 5 or
-less (corners, edges) or 4 or less (surface). About 9% of cards from a
+less (corners, edges) or 4 or less (surface). About 3% of cards from a
 pack are Lightly Played. No card from a pack is Moderately Played or
 worse.
 
@@ -137,8 +156,8 @@ market value (`Balance.conditionFactor`). See
 | Damaged | 30% |
 
 **Cut.** Each value is the share of the left (or top) border. The
-factory spread is a normal curve around 50/50: 4.2 points for front LR,
-3.2 for front TB, and 7 for each back value. About 74% of fronts get a
+factory spread is a normal curve around 50/50: 3.6 points for front LR,
+5.3 for front TB, and 7 for each back value. About 61% of fronts get a
 centering subgrade of 10.
 
 | Front, worse side | Subgrade | Back, worse side | Subgrade |
@@ -240,7 +259,10 @@ Other values:
   or BGS 8 / PSA 8 ratio of the same card.
 - **A missing raw price** (40 prints) comes from the median raw price of
   the same rarity bucket in the same set.
-- **A Black Label** is worth 2 times the BGS 10 price.
+- **A Black Label** is worth 8 times the BGS 10 price, and at least 2
+  times the PSA 10 price.
+- **A CGC Pristine 10** is worth 2.3 times the CGC 10 price, at most the
+  PSA 10 price, and at least 5% above the CGC 10 price.
 - **The fallback in the app** (`fallbackGradedPrice`) is for a grade that
   a set file does not hold. It uses the PSA row of the first table by
   raw price tier, the CGC and BGS ratios to PSA at grades 8, 9, and 10,

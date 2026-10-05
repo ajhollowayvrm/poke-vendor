@@ -8,6 +8,51 @@ enum SortOrder: String, CaseIterable {
     case psa10 = "PSA 10 price", newest = "Newest", value = "Highest value", setOrder = "Set order", condition = "Best condition"
 }
 
+/// An item that shows tags in Inventory: a card or a sealed product.
+protocol Tagged {
+    var id: UUID { get }
+    var keep: Bool { get }
+    var status: ItemStatus? { get }
+    var fake: FakeTier? { get }
+    var isKnownFake: Bool { get }
+    var isVerified: Bool { get }
+}
+
+extension OwnedCard: Tagged {}
+extension SealedItem: Tagged {}
+
+/// The Inventory filter: one tag or one status. Each case matches the tag that the row shows.
+enum InventoryFilter: String, CaseIterable, Hashable {
+    case all = "All", kept = "Kept", free = "No status"
+    case onTheWay = "On the way", arriving = "Arriving", atGrader = "At grader", authenticating = "Authenticating"
+    case listed = "Listed", consigned = "Consigned", inStore = "In your store"
+    case fake = "Fake", looksOff = "Looks off", verified = "Verified"
+
+    func matches(_ item: some Tagged) -> Bool {
+        switch self {
+        case .all: return true
+        case .kept: return item.keep
+        case .free: return item.status == nil
+        case .fake: return item.isKnownFake
+        case .verified: return !item.isKnownFake && item.isVerified
+        case .looksOff:
+            guard !item.isKnownFake, !item.isVerified, let fake = item.fake else { return false }
+            return Counterfeit.eyeballCatches(fake, id: item.id)
+        default: break
+        }
+        switch item.status {
+        case .onTheWay: return self == .onTheWay
+        case .arriving: return self == .arriving
+        case .atGrader: return self == .atGrader
+        case .atAuthenticator: return self == .authenticating
+        case .listed: return self == .listed
+        case .consigned: return self == .consigned
+        case .inStore: return self == .inStore
+        case nil: return false
+        }
+    }
+}
+
 /// The order of a card inside its set, from its card number.
 func setOrder(_ num: String) -> Int {
     Int(num.split(separator: "/").first ?? "") ?? 0
@@ -18,7 +63,7 @@ struct InventoryView: View {
     @Environment(AppNav.self) private var nav
     @State private var tab: InventoryTab
     @State private var sort: SortOrder = .psa10
-    @State private var keptOnly = false
+    @State private var filter: InventoryFilter = .all
     @State private var selecting = false
     @State private var selection: Set<UUID> = []
     @State private var sellIDs: SellRequest?
@@ -80,15 +125,7 @@ struct InventoryView: View {
 
     private var controls: some View {
         HStack {
-            if tab != .bulk {
-                Button {
-                    keptOnly.toggle()
-                } label: {
-                    Label("Kept only", systemImage: keptOnly ? "checkmark.square.fill" : "square")
-                        .font(.subheadline)
-                }
-                .foregroundStyle(keptOnly ? Theme.cyan : Theme.muted)
-            }
+            if tab != .bulk { filterMenu }
             Spacer()
             if tab == .raw, !selecting {
                 // Cards that make no money on TCGplayer after the fees and the shipping.
@@ -118,13 +155,36 @@ struct InventoryView: View {
         }
     }
 
+    /// The filters that match an item in this tab. All and the current filter always show.
+    private var filterMenu: some View {
+        let items: [any Tagged] = switch tab {
+        case .sealed: store.data.sealed
+        case .raw: store.data.raw
+        case .slabs: store.data.slabs
+        case .bulk: []
+        }
+        return Menu {
+            Picker("Filter", selection: $filter) {
+                ForEach(InventoryFilter.allCases, id: \.self) { f in
+                    let n = items.filter { f.matches($0) }.count
+                    if f == .all || f == filter || n > 0 { Text("\(f.rawValue) \(n)").tag(f) }
+                }
+            }
+        } label: {
+            Label(filter == .all ? "Filter" : filter.rawValue,
+                  systemImage: filter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                .font(.subheadline)
+        }
+        .foregroundStyle(filter == .all ? Theme.muted : Theme.cyan)
+    }
+
     @ViewBuilder private var rows: some View {
         VStack(spacing: 0) {
             switch tab {
             case .sealed:
                 let items = sortedSealed
                 if items.isEmpty {
-                    EmptyTab(text: keptOnly ? "No kept sealed product." : "No sealed product. Buy some online from the hub.")
+                    EmptyTab(text: filter != .all ? "No sealed product matches the filter." : "No sealed product. Buy some online from the hub.")
                 }
                 // Sealed product shows by set, newest set first. The sort order holds inside each set.
                 ForEach(SetLibrary.grouped(stacks(items, key: store.stackKey), by: { $0.items[0].setSlug }), id: \.slug) { group in
@@ -140,7 +200,8 @@ struct InventoryView: View {
             case .raw, .slabs:
                 let cards = sortedCards(tab == .raw ? store.data.raw : store.data.slabs)
                 if cards.isEmpty {
-                    EmptyTab(text: tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
+                    EmptyTab(text: filter != .all ? "No cards match the filter."
+                                 : tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
                                                  : "Hits from your rips and bought singles show here.")
                 }
                 ForEach(stacks(cards, key: store.stackKey)) { stack in
@@ -313,7 +374,7 @@ struct InventoryView: View {
     }
 
     private var sortedSealed: [SealedItem] {
-        let items = store.data.sealed.filter { !keptOnly || $0.keep }
+        let items = store.data.sealed.filter { filter.matches($0) }
         switch sort {
         case .newest, .condition: return items.sorted { $0.acquired > $1.acquired }
         // Sealed product has no PSA 10 price, so it sorts by value.
@@ -323,7 +384,7 @@ struct InventoryView: View {
     }
 
     private func sortedCards(_ cards: [OwnedCard]) -> [OwnedCard] {
-        let items = cards.filter { !keptOnly || $0.keep }
+        let items = cards.filter { filter.matches($0) }
         switch sort {
         case .newest: return items.sorted { $0.acquired > $1.acquired }
         case .value: return items.sorted { $0.market > $1.market }

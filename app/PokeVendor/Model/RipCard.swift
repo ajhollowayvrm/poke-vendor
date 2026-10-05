@@ -72,6 +72,8 @@ struct RipCard: Identifiable, Hashable {
     let energy: EnergyType?
     /// The card's condition from the moment the pack is built, so the rip screen and Inventory show the same card.
     var condition = Condition.packFresh()
+    /// The slot map slot that the card came from. Nil for an Energy and for a special pack of fixed cards.
+    var slot: String?
 
     var name: String { print?.name ?? "Basic \(energy?.rawValue ?? "") Energy" }
     var market: Double { (print?.market ?? 0) * condition.wear.valueFactor }
@@ -88,6 +90,16 @@ struct RipCard: Identifiable, Hashable {
         guard let print else { return false }
         return !["Common", "Uncommon"].contains(print.rarity) || market >= 1
     }
+
+    /// The rare slot and the reverse holo slots: the cards where the hit sits (docs/18, Hits only).
+    var inHitSlot: Bool {
+        guard let slot = slot?.lowercased() else { return false }
+        return slot.hasPrefix("rare") || slot.contains("reverse holo")
+            || (slot.hasSuffix("holofoil") && !slot.hasPrefix("non"))
+    }
+
+    /// Hits only keeps this card in the stack: a hit slot card, or a hit from any other slot.
+    var keptInHitsOnly: Bool { inHitSlot || isHit }
 
     /// How big the reveal effect is.
     var hitTier: HitTier {

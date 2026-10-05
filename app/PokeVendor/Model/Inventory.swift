@@ -126,14 +126,15 @@ struct Cut: Codable, Hashable {
     var frontGrade: Double { Self.frontGrade(max(Self.worse(frontLR), Self.worse(frontTB))) }
     var backGrade: Double { Self.backGrade(max(Self.worse(backLR), Self.worse(backTB))) }
 
-    /// A cut from the factory. Left to right is a little less even than top to bottom, and the back is the least even.
+    /// A cut from the factory. Top to bottom is less even than left to right, and the back is the least even.
+    /// The spreads are fitted to the real grade populations of modern sets (docs/10-grading.md, Measured grade rates).
     static func random() -> Cut {
         func share(_ spread: Double) -> Int {
             // A normal random value (Box-Muller).
             let z = sqrt(-2 * log(Double.random(in: 0.0001..<1))) * cos(2 * .pi * Double.random(in: 0..<1))
             return max(20, min(80, Int((50 + z * spread).rounded())))
         }
-        return Cut(frontLR: share(4.2), frontTB: share(3.2), backLR: share(7), backTB: share(7))
+        return Cut(frontLR: share(3.6), frontTB: share(5.3), backLR: share(7), backTB: share(7))
     }
 
     /// A cut that gives these subgrades, for a card from a save that has no cut.
@@ -291,8 +292,9 @@ struct Condition: Codable, Hashable {
             }
             return 10
         }
-        let wear: [(Double, ClosedRange<Double>)] = [(0.72, 10...10), (0.23, 9...9.5), (0.05, 7.5...8.5)]
-        let surface: [(Double, ClosedRange<Double>)] = [(0.62, 10...10), (0.27, 9...9.5), (0.11, 7...8.5)]
+        // Fitted to the real PSA, BGS, and CGC populations of modern sets (docs/10-grading.md, Measured grade rates).
+        let wear: [(Double, ClosedRange<Double>)] = [(0.361, 10...10), (0.426, 9.5...9.5), (0.157, 9...9), (0.040, 8.5...8.5), (0.016, 7.5...8)]
+        let surface: [(Double, ClosedRange<Double>)] = [(0.386, 10...10), (0.345, 9.5...9.5), (0.137, 9...9), (0.117, 8.5...8.5), (0.015, 7.5...8)]
         return Condition(cut: .random(), corners: pick(wear), edges: pick(wear), surface: pick(surface))
     }
 
@@ -309,10 +311,30 @@ struct SlabGrade: Codable, Hashable {
     let company: GradingCompany
     let grade: Double
     var blackLabel = false
+    /// A CGC 10 that is Pristine, the grade above Gem Mint 10.
+    var pristine = false
+
+    init(company: GradingCompany, grade: Double, blackLabel: Bool = false, pristine: Bool = false) {
+        self.company = company
+        self.grade = grade
+        self.blackLabel = blackLabel
+        self.pristine = pristine
+    }
+
+    /// A save from an older build has no pristine flag.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        company = try c.decode(GradingCompany.self, forKey: .company)
+        grade = try c.decode(Double.self, forKey: .grade)
+        blackLabel = try c.decodeIfPresent(Bool.self, forKey: .blackLabel) ?? false
+        pristine = try c.decodeIfPresent(Bool.self, forKey: .pristine) ?? false
+    }
 
     var label: String {
         let number = grade == grade.rounded() ? String(Int(grade)) : String(grade)
-        return blackLabel ? "\(company.rawValue) \(number) Black Label" : "\(company.rawValue) \(number)"
+        if blackLabel { return "\(company.rawValue) \(number) Black Label" }
+        if pristine { return "\(company.rawValue) \(number) Pristine" }
+        return "\(company.rawValue) \(number)"
     }
 
     /// The key in the set file's graded prices, for example "bgs9_5".
@@ -415,13 +437,28 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var market: Double { isKnownFake ? 0 : realMarket }
 
     /// The subgrades a BGS label prints. Other companies print only the overall grade.
-    var slabSubgrades: [Double]? { grade?.company == .bgs ? condition.subgrades : nil }
+    /// Four 10s always mean a Black Label, so any other slab with four perfect subgrades prints a 9.5 surface.
+    var slabSubgrades: [Double]? {
+        guard let grade, grade.company == .bgs else { return nil }
+        let subs = condition.subgrades
+        return !grade.blackLabel && subs.allSatisfy { $0 == 10 } ? [10, 10, 10, 9.5] : subs
+    }
 
     /// What a real copy sells for: the price a buyer who does not know pays.
     var realMarket: Double {
         guard let grade else { return market(as: condition.wear) }
-        if let price = print.graded[grade.priceKey] ?? nil { return grade.blackLabel ? price * 2 : price }
+        if grade.blackLabel { return print.blackLabelPrice ?? Self.fallbackGradedPrice(raw: rawMarket, grade: grade) }
+        if grade.pristine { return print.cgcPristinePrice ?? Self.fallbackGradedPrice(raw: rawMarket, grade: grade) }
+        if let price = print.graded[grade.priceKey] ?? nil { return price }
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
+    }
+
+    /// A Black Label is 8 times the BGS 10 price, the median of 37 real sales, and never less than 2 times the PSA 10 price.
+    static func blackLabelPrice(bgs10: Double, psa10: Double?) -> Double { max(bgs10 * 8, (psa10 ?? 0) * 2) }
+    /// A CGC Pristine 10 is 2.3 times the CGC 10 price, the median of 286 real cards, and never more than the PSA 10
+    /// price. It stays a little above the CGC 10 price, so the ladder rises (docs/10-grading.md, Measured grade rates).
+    static func cgcPristinePrice(cgc10: Double, psa10: Double?) -> Double {
+        max(cgc10 * 1.05, min(cgc10 * 2.3, psa10 ?? .infinity))
     }
 
     /// The price of the slab is an estimate, not a real sale (docs/10-grading.md, Estimated prices).
@@ -461,7 +498,15 @@ struct OwnedCard: Codable, Identifiable, Hashable {
         let factors = companyFactors[grade.company] ?? [1, 1, 1]
         let x = max(grade.grade, 8) - 8
         let factor = x >= 1 ? factors[1] * pow(factors[2] / factors[1], x - 1) : factors[0] * pow(factors[1] / factors[0], x)
-        return max(raw * psa(min(10, max(1, grade.grade))) * factor, slabFloors[grade.company] ?? 1) * (grade.blackLabel ? 2 : 1)
+        let price = max(raw * psa(min(10, max(1, grade.grade))) * factor, slabFloors[grade.company] ?? 1)
+        if grade.blackLabel {
+            let psa10 = fallbackGradedPrice(raw: raw, grade: SlabGrade(company: .psa, grade: 10))
+            return blackLabelPrice(bgs10: price, psa10: psa10)
+        }
+        if grade.pristine {
+            return cgcPristinePrice(cgc10: price, psa10: fallbackGradedPrice(raw: raw, grade: SlabGrade(company: .psa, grade: 10)))
+        }
+        return price
     }
 }
 

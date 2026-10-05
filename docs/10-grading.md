@@ -90,7 +90,7 @@ What the player can read of the cut depends on the centering tool (see
 shows it in words: "Looks clean" (Near Mint), "Light wear" (Lightly
 Played), "Heavy wear" (Moderately Played), "Very heavy wear" (Heavily
 Played), or "Damaged". It comes from the corners, edges, and surface.
-Almost every card from a pack is Near Mint. About 1 card in 11 is
+Almost every card from a pack is Near Mint. About 1 card in 30 is
 Lightly Played. Values: see
 [19-prototype-values.md](19-prototype-values.md#grading).
 
@@ -163,7 +163,51 @@ tradeoff:
 - **CGC (Certified Guaranty Company)** — the fastest and cheapest, but
   a lower resale multiplier than PSA for the same numeric grade on the
   same physical card. Good for volume-grading lower-value cards where
-  speed matters more than squeezing out maximum resale value.
+  speed matters more than squeezing out maximum resale value. CGC gives
+  a 10 most easily. The best CGC 10s are **Pristine 10**, a grade above
+  Gem Mint 10.
+
+## Measured grade rates
+
+The grade rolls are fitted to real population counts, not to guesses.
+The counts are the grades of the cards that people sent in. The player
+also picks which cards to send, so the game uses these rates as they
+are.
+
+| Grade | Modern sets | 1999 Base Set | Game, modern | Game, vintage |
+| --- | --- | --- | --- | --- |
+| PSA 10 | 28–39% | 9.8% | 35.0% | 8.6% |
+| PSA 9 | 48–54% | 24.2% | 51.1% | 24.4% |
+| PSA 8 | 10–17% | 20.7% | 13.2% | 17.4% |
+| PSA 7 and below | 1.5–3.6% | 45.3% | 0.7% | 49.6% |
+| CGC Pristine 10 | 4.6–9.3% | 0.8% | 7.7% | 1.1% |
+| CGC 10 | 35–44% | 7.2% | 41.3% | 10.8% |
+| BGS 10 Pristine | 0.6–2.6% | 0.05% | 1.6% | 0.19% |
+| BGS Black Label | 0.11% | 0% | 0.13% | 0.01% |
+| BGS 9.5 | 28–41% | 6.7% | 29.5% | 5.4% |
+
+- **Modern sets:** SV 151, Prismatic Evolutions, Surging Sparks, and
+  Paldean Fates. The PSA and CGC counts come from the PSA and CGC
+  population APIs. The BGS counts come from GemRate. All were read on
+  2026-10-04. The Black Label rate is 38 Black Labels in about 34,000
+  BGS grades.
+- **How the game gets there.** Pack-fresh corners and edges are 10 for
+  36% of cards, 9.5 for 43%, and 9 for 16%. The surface is 10 for 39%
+  of cards. About 39% of fronts are past 55/45. This agrees with the 37%
+  of older PSA 10s that measure past 55/45 (Centering Check, 2026-07).
+- **Each company has its own rules.** The overall grade is 70% the worst
+  subgrade and 30% the average, plus the company's bias and a random
+  spread. PSA rounds to a whole grade. CGC gives a 10 from 9.4, and a
+  Pristine 10 from 10.12. BGS gives a 9.5 from 9.4 and a 10 from 10.02.
+  A Black Label needs four 10 subgrades and a 4.3% roll, because BGS
+  rarely gives a perfect subgrade.
+- **Vintage cards** are a mix. 40% were kept well. The rest were handled
+  for years and carry heavy wear.
+- **Not measured:** the grade rates of unscreened cards, and the
+  centering of cards straight from a pack. No public source has them.
+- The tuning scripts and the Swift check are not in the repo. To check
+  the rates again, grade 200,000 `Condition.packFresh()` and
+  `Condition.played()` cards with `GameStore.gradeResult`.
 
 ## Slabs on screen
 
@@ -174,19 +218,31 @@ the stream camera use it.
 
 - **PSA:** a white label with a red frame. The label shows the name, the
   grade words (for example "GEM MT"), the grade, and a cert number.
-- **CGC:** a blue label with a white grade box.
+- **CGC:** a blue label with a white grade box. A Pristine 10 has a gold
+  grade box.
 - **BGS:** a silver label with the four subgrades. A BGS 10 (Pristine)
   label is gold. A Black Label is black with gold text.
 - The cert number comes from the card ID, so the same slab always shows
   the same number.
 
-## Black Label price
+## Black Label and Pristine prices
 
-The price data (PPT) has no Black Label sales. Its BGS 10 price mixes
-the sales of all BGS 10 slabs. So a Black Label is worth 2 times the BGS
-10 price, and the game always marks it as an estimate. The price grids
-show it as "BL" in the BGS column. The grade sheet shows it when the
-player picks BGS.
+The price data (PPT) has no Black Label sales and no CGC Pristine 10
+sales. Its BGS 10 and CGC 10 prices mix all the 10s. So the game
+computes these two prices from real sales elsewhere, and it always marks
+them as estimates:
+
+- **A Black Label** is 8 times the BGS 10 price, and never less than 2
+  times the PSA 10 price. The 8 is the median of 37 modern cards on
+  pokeinvest (2026-10-04). The range was 1.4x to 26.6x.
+- **A CGC Pristine 10** is 2.3 times the CGC 10 price, and never more
+  than the PSA 10 price. It always stays at least 5% above the CGC 10
+  price. The 2.3 is the median of 286 modern cards on pokeinvest
+  (2026-10-04). The value tier does not change it.
+
+The price grids show them as "BL" in the BGS column and "P10" in the
+CGC column. The grade sheet shows the Black Label when the player picks
+BGS.
 
 ## Grader variance
 

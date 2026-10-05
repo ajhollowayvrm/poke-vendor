@@ -19,16 +19,20 @@ struct PackBuilder {
             return Pack(cards: fullPack(ids, order: order), special: special)
         }
         var bySlot: [String: [RipCard]] = [:]
+        // A pack does not repeat a print, also across slots that share a pool. When the outcome has no print
+        // left, for example a second roll of a one-card secret rare, the slot rolls its outcome again.
+        var used = Set<Int>()
         for slot in cardSet.slots {
-            // A pack does not repeat a card inside one slot.
-            var used = Set<Int>()
             for _ in 0..<slot.count {
-                let outcome = pick(slot.outcomes)
-                var candidates = outcome.prints.filter { !used.contains($0) }
-                if candidates.isEmpty { candidates = outcome.prints }
+                var candidates: [Int] = []
+                for _ in 0..<20 {
+                    candidates = pick(slot.outcomes).prints.filter { !used.contains($0) }
+                    if !candidates.isEmpty { break }
+                }
+                if candidates.isEmpty { candidates = pick(slot.outcomes).prints }
                 guard let index = candidates.randomElement() else { continue }
                 used.insert(index)
-                bySlot[slot.name, default: []].append(RipCard(print: cardSet.prints[index], energy: nil))
+                bySlot[slot.name, default: []].append(RipCard(print: cardSet.prints[index], energy: nil, slot: slot.name))
             }
         }
         // A demigod pack puts a different card from its pool in each of its slots.
@@ -36,7 +40,7 @@ struct PackBuilder {
             var picks = pool.shuffled()
             for name in slots {
                 guard bySlot[name]?.isEmpty == false, let index = picks.popLast() else { continue }
-                bySlot[name]?[0] = RipCard(print: cardSet.prints[index], energy: nil)
+                bySlot[name]?[0] = RipCard(print: cardSet.prints[index], energy: nil, slot: name)
             }
         }
         guard let order = cardSet.order else {
