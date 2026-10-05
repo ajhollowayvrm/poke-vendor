@@ -54,16 +54,9 @@ final class RipModel {
     /// A face-down hit that the player flipped in place. The next tap sends it to the pile.
     var showcaseID: UUID?
     private(set) var faceUp: Bool
-    /// Hits only: one tear opens every pack left in the queue, and the hit slots of all the packs make one
-    /// stack (docs/18, Hits only). The game keeps the choice for the next rip.
-    var hitsOnly: Bool {
-        didSet {
-            UserDefaults.standard.set(hitsOnly, forKey: "rip.hitsOnly")
-            refreshUnbox()
-        }
-    }
-    /// A live stream turns Hits only off, because the viewers want to see every card.
-    var allowsHitsOnly: Bool { allowedModes.contains(.sift) }
+    /// Hits only: one tear opens every pack in the queue, and the hit slots of all the packs make one stack
+    /// (docs/18, Hits only). The player picks it in Inventory, before the rip starts.
+    let hitsOnly: Bool
     /// The set of each pack that the Hits only tear opened, in queue order. Nil before that tear.
     private(set) var combinedSlugs: [String]?
     /// The cost of every pack that the Hits only tear opened.
@@ -79,7 +72,7 @@ final class RipModel {
     /// The cards that count toward the special pack moment. Nil: every card of the pack in hand.
     private var specialIDs: Set<UUID>?
     /// True when the next tear opens every pack left in the queue at once.
-    var willCombine: Bool { hitsOnly && allowsHitsOnly && combinedSlugs == nil }
+    var willCombine: Bool { hitsOnly && combinedSlugs == nil }
     /// The packs that the next Hits only tear opens.
     var packsLeft: Int { queue.count - packIndex }
     private(set) var lastReveal: Reveal?
@@ -93,10 +86,7 @@ final class RipModel {
     static var forcedSpecial: String?
     /// The rip modes this rip allows. A live stream allows Normal and Fast only (docs/18, Ripping on a live stream).
     var allowedModes: [RipMode] = RipMode.allCases {
-        didSet {
-            if !allowedModes.contains(mode) { mode = .normal }
-            refreshUnbox()
-        }
+        didSet { if !allowedModes.contains(mode) { mode = .normal } }
     }
     /// The mode for this rip. It starts from Settings, and the player can change it during the rip.
     var mode: RipMode
@@ -109,7 +99,7 @@ final class RipModel {
     /// Changes when a resealed pack opens, so the screen shows the banner once for each pack.
     private(set) var resealedMoment: UUID?
 
-    init(items: [SealedItem], store: GameStore?) {
+    init(items: [SealedItem], store: GameStore?, hitsOnly: Bool = false) {
         queue = items.flatMap { item in
             let product = item.brokenFrom == nil ? SetLibrary.product(item.productID) : nil
             let unbox = product.map { $0.kind != "Booster pack" || $0.packs > 1 } ?? false
@@ -119,9 +109,10 @@ final class RipModel {
             }
         }
         self.store = store
-        faceUp = UserDefaults.standard.bool(forKey: "rip.faceUp")
-        hitsOnly = UserDefaults.standard.bool(forKey: "rip.hitsOnly")
-        mode = store?.data.settings.ripMode ?? .normal
+        self.hitsOnly = hitsOnly
+        // Hits only has no modes and no Flip: the player turns every hit by hand, face up.
+        faceUp = hitsOnly || UserDefaults.standard.bool(forKey: "rip.faceUp")
+        mode = hitsOnly ? .normal : store?.data.settings.ripMode ?? .normal
         #if DEBUG
         // Screenshot aid: `-special god` or `-special demigod` makes the first pack special.
         let args = ProcessInfo.processInfo.arguments
@@ -279,17 +270,6 @@ final class RipModel {
     }
 
     private var combinedPacks: Int { combinedSlugs?.count ?? 0 }
-
-    /// Hits only skips the unbox step: the tear opens the products too.
-    private func refreshUnbox() {
-        if phase == .unbox, willCombine {
-            unboxing = nil
-            phase = .sealed
-        } else if phase == .sealed, !willCombine, let product = unboxProduct {
-            unboxing = product
-            phase = .unbox
-        }
-    }
 
     /// The cards of one pack, in the physical pack order, front card first.
     private func buildCards(_ queued: QueuedPack?) -> (cards: [RipCard], special: SpecialPack?, resealed: Bool) {

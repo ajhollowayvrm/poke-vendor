@@ -44,8 +44,11 @@ The player picks one of three modes.
 
 ### Hits only
 
-**Hits only** is a switch next to the mode control. It works with
-every mode, and the game keeps the choice for the next rip.
+**Hits only** is a way to start a rip. The player picks it in
+Inventory, before the rip screen opens: the **Hits only** button next
+to **Rip** in the Sealed tab's select bar, or on a sealed product's
+page. The rip screen has no mode control, no Flip, no pack trick, and
+no stop rule. The player turns every hit by hand, face up.
 
 - One tear opens **every pack left in the queue** at once. The
   products open too, with no unbox step.
@@ -62,8 +65,7 @@ every mode, and the game keeps the choice for the next rip.
   on its own, and the packs stay in queue order.
 - **A god pack is the exception.** All its cards are hits, so it keeps
   every card. Its moment plays right after its own tear, before the
-  stack comes out. Only that tear has the rainbow light. In Sift, which
-  has no tears, the moment plays before the sift starts. The moment
+  stack comes out. Only that tear has the rainbow light. The moment
   does not play again in the stack.
 - A demigod pack is 3 cards like any other pack. Its moment plays when
   its second Special Illustration Rare turns face up.
@@ -74,12 +76,9 @@ every mode, and the game keeps the choice for the next rip.
   the summary, the Raw tab, and the bulk group still count them.
 - **Skip all** puts every card left in the stack on the pile and goes
   to the rip summary.
-- The pack trick and Flip turn off, because the stack already holds
-  only the hit slots.
-- A change after the tear starts with the next rip.
 - A resealed pack holds only filler, so none of its cards go in the
   stack. The resealed banner still shows.
-- A live stream turns Hits only off, because the viewers want to see
+- A live stream has no Hits only, because the viewers want to see
   every card.
 
 ### Picking the mode

@@ -79,9 +79,9 @@ struct RipView: View {
     let onClose: () -> Void
 
     /// `onHits` gets every hit of the rip when the screen closes. A live stream uses it.
-    init(items: [SealedItem], store: GameStore, allowedModes: [RipMode] = RipMode.allCases,
+    init(items: [SealedItem], store: GameStore, allowedModes: [RipMode] = RipMode.allCases, hitsOnly: Bool = false,
          onHits: (([RipCard]) -> Void)? = nil, onClose: @escaping () -> Void) {
-        let model = RipModel(items: items, store: store)
+        let model = RipModel(items: items, store: store, hitsOnly: hitsOnly)
         model.allowedModes = allowedModes
         _model = State(initialValue: model)
         self.onClose = {
@@ -498,6 +498,20 @@ struct RipView: View {
             } else {
                 CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
             }
+            // Hits only has no modes, no Flip, and no pack trick (docs/18, Hits only).
+            if model.hitsOnly {
+                Color.clear.frame(height: 1).overlay(alignment: .top) { noteView.offset(y: 8) }
+            } else {
+                rippingControls
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    /// The mode control, Flip, and the pack trick.
+    private var rippingControls: some View {
+        VStack(spacing: 10) {
             modeControl
             HStack(spacing: 10) {
                 Button { flipStack() } label: {
@@ -530,8 +544,6 @@ struct RipView: View {
                 .disabled(model.phase != .open || model.trickCount == 0 || model.trickDone)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
     }
 
     /// The rip mode for this rip, and the stop rule (docs/18-ripping.md, Rip modes). Sift shows on a stream,
@@ -564,38 +576,23 @@ struct RipView: View {
                 .buttonStyle(.bordered)
                 .tint(Theme.cyan)
             }
-            Button(action: toggleHitsOnly) {
-                Image(systemName: model.hitsOnly && model.allowsHitsOnly ? "sparkles.rectangle.stack.fill" : "sparkles.rectangle.stack")
-            }
-            .buttonStyle(.bordered)
-            .tint(model.hitsOnly && model.allowsHitsOnly ? Theme.orange : Theme.cyan)
-            .accessibilityLabel("Hits only")
             Button { stopRuleShown = true } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
                 .buttonStyle(.bordered)
                 .tint(Theme.cyan)
                 .accessibilityLabel("Stop rule")
         }
-        .overlay(alignment: .top) {
-            if let note = model.note {
-                Text(note).font(.caption).foregroundStyle(Theme.orange).offset(y: -22)
-                    .task(id: note) {
-                        try? await Task.sleep(for: .seconds(2.5))
-                        model.note = nil
-                    }
-            }
-        }
+        .overlay(alignment: .top) { noteView }
     }
 
-    /// Hits only: the stack holds only the hit slots of each pack (docs/18-ripping.md, Hits only).
-    private func toggleHitsOnly() {
-        guard model.allowsHitsOnly else {
-            model.note = "Hits only is off on a live stream. Viewers want to see the cards."
-            return
+    /// A short note above the controls, for example why Sift is off.
+    @ViewBuilder private var noteView: some View {
+        if let note = model.note {
+            Text(note).font(.caption).foregroundStyle(Theme.orange).offset(y: -22)
+                .task(id: note) {
+                    try? await Task.sleep(for: .seconds(2.5))
+                    model.note = nil
+                }
         }
-        Haptics.tap()
-        model.hitsOnly.toggle()
-        let later = model.phase == .sealed ? "" : model.hasNextPack ? " From the next pack." : " From the next rip."
-        model.note = model.hitsOnly ? "Hits only: one swipe opens every pack.\(later)" : "Hits only off: every card.\(later)"
     }
 
     /// Fast and Sift: the pack opens by itself, the cards advance, and the rip stops on the stop rule
@@ -611,12 +608,7 @@ struct RipView: View {
                     withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { model.startPacks() }
                     try? await Task.sleep(for: .milliseconds(500))
                 case .sealed:
-                    if model.mode == .sift, model.willCombine {
-                        // Hits only in Sift: no tears, but a god pack still plays its moment first.
-                        model.startOpening()
-                        await playGodPack()
-                        model.finishOpening()
-                    } else if model.mode == .sift {
+                    if model.mode == .sift {
                         let stopped = model.sift()
                         try? await Task.sleep(for: .seconds(Balance.siftStepSeconds * Double(model.allCards.count)))
                         if stopped != nil { return }

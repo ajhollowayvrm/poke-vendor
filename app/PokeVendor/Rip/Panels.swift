@@ -226,6 +226,35 @@ struct SummaryView: View {
                     StatCell(label: "Rip net", value: signedMoney(ripNet), color: ripNet >= 0 ? Theme.green : Theme.orange)
                 }
             }
+            // A long rip holds many hits. The list scrolls, and the buttons stay on the screen.
+            ViewThatFits(in: .vertical) {
+                details(hits: hits, bulk: bulk)
+                ScrollView { details(hits: hits, bulk: bulk) }
+                    .scrollIndicators(.visible)
+            }
+            HStack(spacing: 10) {
+                Button(action: onClose) {
+                    Text("See the cards").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                Button(action: model.hasNextPack ? onNext : onDone) {
+                    Text(model.hasNextPack ? "Next pack" : "Done").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.cyan)
+                .foregroundStyle(.black)
+            }
+            .controlSize(.large)
+        }
+        .padding(20)
+        .background(Theme.surface)
+        .overlay(Rectangle().stroke(Theme.line))
+        .padding(16)
+    }
+
+    /// The promos, the hits, the bulk count, and the post button.
+    private func details(hits: [RipCard], bulk: Int) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
             if !model.packExtras.isEmpty {
                 Text("ALSO IN THE BOX · \(model.packExtras.count)")
                     .font(.system(size: 11, weight: .semibold))
@@ -277,24 +306,8 @@ struct SummaryView: View {
                         .buttonStyle(.bordered)
                 }
             }
-            HStack(spacing: 10) {
-                Button(action: onClose) {
-                    Text("See the cards").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                Button(action: model.hasNextPack ? onNext : onDone) {
-                    Text(model.hasNextPack ? "Next pack" : "Done").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Theme.cyan)
-                .foregroundStyle(.black)
-            }
-            .controlSize(.large)
         }
-        .padding(20)
-        .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
-        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

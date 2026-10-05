@@ -302,6 +302,15 @@ struct InventoryView: View {
                 .buttonStyle(.borderedProminent)
                 .foregroundStyle(.black)
                 .disabled(chosen.isEmpty || blocked)
+                // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
+                Button("Hits only") {
+                    nav.startRip(store.data.sealed.filter { chosen.contains($0.id) }, hitsOnly: true)
+                    finishSelecting()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.orange)
+                .foregroundStyle(.black)
+                .disabled(chosen.isEmpty || blocked)
                 sellButton(chosen, disabled: blocked)
                 lotButton(chosen, disabled: blocked)
             case .raw:

@@ -48,7 +48,7 @@ struct HubView: View {
         .tint(Theme.cyan)
         .saleReceipts(active: store.report == nil && haul == nil && streamSetup == nil)
         .fullScreenCover(item: $nav.rip) { session in
-            RipView(items: session.items, store: store) { nav.rip = nil }
+            RipView(items: session.items, store: store, hitsOnly: session.hitsOnly) { nav.rip = nil }
         }
         .fullScreenCover(item: $nav.showDay) { session in
             ShowDayView(show: session.show, store: store) { nav.showDay = nil }
@@ -785,7 +785,8 @@ struct HubView: View {
         }
         if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {
             store.startRun()
-            if let item = store.addTestProduct(args[i + 1]) { nav.startRip([item]) }
+            // `-hitsonly` starts the rip in Hits only.
+            if let item = store.addTestProduct(args[i + 1]) { nav.startRip([item], hitsOnly: args.contains("-hitsonly")) }
         }
         if args.contains("-coll") {
             store.startRun()

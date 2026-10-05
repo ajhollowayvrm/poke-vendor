@@ -471,6 +471,18 @@ struct SealedDetailView: View {
                         }
                     }
                     .controlSize(.large)
+                    // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
+                    Button {
+                        nav.startRip(mates.count > 1 ? mates : [item], hitsOnly: true)
+                    } label: {
+                        Label(mates.count > 1 ? "Hits only · rip all \(mates.count)" : "Hits only", systemImage: "sparkles.rectangle.stack")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Theme.orange)
+                    .foregroundStyle(.black)
+                    .controlSize(.large)
+                    .disabled(!free)
                     if item.keep {
                         Text("Unkeep this item to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
                     }

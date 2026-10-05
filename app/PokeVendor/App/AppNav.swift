@@ -40,6 +40,8 @@ struct ShowDaySession: Identifiable {
 struct RipSession: Identifiable {
     let id = UUID()
     let items: [SealedItem]
+    /// Hits only: one swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
+    var hitsOnly = false
 }
 
 /// A meet, league night, a garage or estate sale, or an opportunity, in the show day screen.
@@ -64,9 +66,9 @@ final class AppNav {
     var encounter: EncounterSession?
     var stream: StreamCover?
 
-    func startRip(_ items: [SealedItem]) {
+    func startRip(_ items: [SealedItem], hitsOnly: Bool = false) {
         guard !items.isEmpty else { return }
-        rip = RipSession(items: items)
+        rip = RipSession(items: items, hitsOnly: hitsOnly)
     }
 }
 
