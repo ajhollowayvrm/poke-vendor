@@ -4,9 +4,11 @@ import SwiftUI
 struct CardView: View {
     let card: RipCard
     var faceUp: Bool
+    /// False turns off the moving foil shine, for a card under other cards.
+    var shine = true
 
     var body: some View {
-        FlipCard(angle: faceUp ? 0 : 180, front: CardFace(card: card), back: CardBack())
+        FlipCard(angle: faceUp ? 0 : 180, front: CardFace(card: card, shine: shine), back: CardBack())
     }
 }
 
@@ -33,6 +35,7 @@ struct FlipCard<Front: View, Back: View>: View, Animatable {
 
 struct CardFace: View {
     let card: RipCard
+    var shine = true
 
     var body: some View {
         GeometryReader { geo in
@@ -42,7 +45,7 @@ struct CardFace: View {
                 } else {
                     RemoteCardImage(url: card.imageURL, name: card.name)
                 }
-                if card.foil != .none {
+                if card.foil != .none, shine {
                     FoilSheen(foil: card.foil)
                 }
             }

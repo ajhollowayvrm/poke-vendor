@@ -522,7 +522,9 @@ final class GameStore {
     /// When the tear breaks a product's seal, its other packs go back as loose packs, and its promo cards go
     /// to Raw (docs/18-ripping.md, Sealed products in the rip). Returns those promo cards.
     @discardableResult
-    func commitPack(from sourceID: UUID, setSlug: String, paidPerPack: Double, ripID: UUID, cards: [RipCard]) -> [CardPrint] {
+    /// `save` false lets a Hits only rip save once for all its packs.
+    func commitPack(from sourceID: UUID, setSlug: String, paidPerPack: Double, ripID: UUID, cards: [RipCard],
+                    save saves: Bool = true) -> [CardPrint] {
         var extras: [CardPrint] = []
         if let i = data.sealed.firstIndex(where: { $0.id == sourceID }) {
             let item = data.sealed.remove(at: i)
@@ -559,7 +561,7 @@ final class GameStore {
         } else if !bulk.isEmpty {
             data.bulk.append(BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day))
         }
-        save()
+        if saves { save() }
         return extras
     }
 

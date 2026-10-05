@@ -157,9 +157,11 @@ struct RipView: View {
                 }
 
                 if model.phase != .sealed && model.phase != .unbox {
-                    ForEach(model.allCards) { card in
+                    ForEach(visibleCards) { card in
                         let p = placement(for: card, layout: layout)
-                        CardView(card: card, faceUp: p.faceUp)
+                        // Only the cards on top shine. The foil animation is costly, and the cards under them do not show.
+                        CardView(card: card, faceUp: p.faceUp,
+                                 shine: card.id == model.stack.first?.id || card.id == model.pile.last?.id || model.allCards.count <= 24)
                             .frame(width: layout.cardW, height: layout.cardH)
                             .shadow(color: .black.opacity(0.45), radius: 6, y: 4)
                             .scaleEffect(p.scale)
@@ -282,7 +284,7 @@ struct RipView: View {
                 }
 
                 if peeking {
-                    PeekView(cards: model.stack, size: geo.size)
+                    PeekView(cards: Array(model.stack.prefix(30)), size: geo.size)
                         .transition(.opacity)
                         .zIndex(500)
                 }
@@ -385,6 +387,16 @@ struct RipView: View {
     }
 
     // MARK: - Pieces
+
+    /// The cards the table draws: the top of the pile and the front of the stack, plus the back card for the
+    /// pack trick. The other cards sit under them and do not show (a Hits only stack can hold hundreds).
+    private var visibleCards: [RipCard] {
+        let n = RipModel.window
+        guard model.allCards.count > n * 2 else { return model.allCards }
+        var cards = Array(model.pile.suffix(n)) + Array(model.stack.prefix(n))
+        if let last = model.stack.last, model.stack.count > n { cards.append(last) }
+        return cards
+    }
 
     /// The rainbow light of a god pack. In the Hits only row of tears, only the god pack's own tear has it.
     private var godLight: Bool {
@@ -824,11 +836,15 @@ struct RipView: View {
         tearingIndex = 0
         model.startOpening()
         let total = model.combinedSlugs?.count ?? 1
-        // A long queue tears faster, so a booster box does not take half a minute.
-        let step = max(0.16, min(0.5, 3.0 / Double(total)))
+        // A long queue plays at most 12 tears, and each tear opens a share of the packs. The counter still
+        // counts every pack, so three booster boxes do not take a minute.
+        let tears = min(total, 12)
+        let step = max(0.25, min(0.5, 3.0 / Double(tears)))
         Task {
-            for i in 0..<total {
-                if i > 0 {
+            for k in 0..<tears {
+                let first = k * total / tears, i = (k + 1) * total / tears - 1
+                if k == 0 { tearingIndex = i }
+                if k > 0 {
                     var still = Transaction()
                     still.disablesAnimations = true
                     withTransaction(still) {
@@ -841,17 +857,17 @@ struct RipView: View {
                 }
                 withAnimation(.easeOut(duration: step * 0.25)) { tearProgress = 1 }
                 try? await Task.sleep(for: .seconds(step * 0.25))
-                Haptics.tap(i == total - 1 ? .heavy : .medium)
-                if let layout = lastLayout { addFlecks(layout, count: i == total - 1 ? 26 : 10, across: true) }
+                Haptics.tap(k == tears - 1 ? .heavy : .medium)
+                if let layout = lastLayout { addFlecks(layout, count: k == tears - 1 ? 26 : 10, across: true) }
                 withAnimation(.easeOut(duration: step * 0.6)) { torn = true }
                 withAnimation(.easeOut(duration: 0.1)) { openFlash = 1 }
                 withAnimation(.easeIn(duration: step).delay(0.1)) { openFlash = 0.001 }
                 try? await Task.sleep(for: .seconds(step * 0.45))
-                if i < total - 1 {
+                if k < tears - 1 {
                     withAnimation(.easeIn(duration: step * 0.4)) { packGone = true }
                     try? await Task.sleep(for: .seconds(step * 0.3))
                 }
-                if i == model.godIndex { await playGodPack() }
+                if let god = model.godIndex, (first...i).contains(god) { await playGodPack() }
             }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { cardsRise = true }
             try? await Task.sleep(for: .milliseconds(500))

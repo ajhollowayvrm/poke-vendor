@@ -785,8 +785,9 @@ struct HubView: View {
         }
         if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {
             store.startRun()
-            // `-hitsonly` starts the rip in Hits only.
-            if let item = store.addTestProduct(args[i + 1]) { nav.startRip([item], hitsOnly: args.contains("-hitsonly")) }
+            // `-rip a,b,c` rips several products. `-hitsonly` starts the rip in Hits only.
+            let items = args[i + 1].split(separator: ",").compactMap { store.addTestProduct(String($0)) }
+            nav.startRip(items, hitsOnly: args.contains("-hitsonly"))
         }
         if args.contains("-coll") {
             store.startRun()

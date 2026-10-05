@@ -67,6 +67,8 @@ final class RipModel {
     private var packOf: [UUID: Int] = [:]
     /// Hits only: the place of each card in the face-up stack.
     private var rankOf: [UUID: Int] = [:]
+    /// Hits only: every card of each pack, the cards aside too, by queue order from 0.
+    private var packCards: [Int: [RipCard]] = [:]
     /// Hits only: the god pack in the row of tears, by queue order from 0. Its moment plays during the tears.
     private(set) var godIndex: Int?
     /// The cards that count toward the special pack moment. Nil: every card of the pack in hand.
@@ -225,6 +227,7 @@ final class RipModel {
         aside = []
         packOf = [:]
         rankOf = [:]
+        packCards = [:]
         godIndex = nil
         specialIDs = nil
         combinedSlugs = nil
@@ -260,7 +263,7 @@ final class RipModel {
     /// The value of the pack in hand. In Hits only, it is the pack of the card in hand.
     var shownValue: Double {
         guard let i = shownPack?.index else { return valueSoFar }
-        return everyCard.filter { packOf[$0.id] == i && seen.contains($0.id) }.reduce(0) { $0 + $1.market }
+        return (packCards[i] ?? []).filter { seen.contains($0.id) }.reduce(0) { $0 + $1.market }
     }
 
     /// The cost of the pack in hand. In Hits only, it is the pack of the card in hand.
@@ -321,8 +324,10 @@ final class RipModel {
             // The stack in hand already holds the first pack's cards.
             let built = i == 0 ? (cards: faceUp ? stack : stack.reversed(), special: special, resealed: resealed)
                                : buildCards(pack)
+            // One save at the end: a booster box is 36 packs, and each save writes the whole game.
             extras += store?.commitPack(from: pack.sourceID, setSlug: pack.setSlug, paidPerPack: pack.paidPerPack,
-                                        ripID: ripID, cards: built.cards) ?? []
+                                        ripID: ripID, cards: built.cards, save: false) ?? []
+            packCards[i] = built.cards
             if built.resealed, !fakes.contains(where: { $0.sourceID == pack.sourceID }) { fakes.append(pack) }
             if firstSpecial == nil, let special = built.special {
                 firstSpecial = special
@@ -339,6 +344,7 @@ final class RipModel {
         specialIDs = firstSpecialIndex.map { i in
             firstSpecial?.isGod == true ? [] : Set(hits.filter { packOf[$0.id] == i }.map(\.id))
         } ?? []
+        store?.save()
         for pack in fakes { store?.foundResealed(sourceID: pack.sourceID, name: pack.productName) }
         if !fakes.isEmpty { resealedMoment = UUID() }
         combinedSlugs = packs.map(\.setSlug)
@@ -352,7 +358,8 @@ final class RipModel {
         pile = []
         stack = combinedOrder(hits)
         trickDone = true
-        ImageStore.shared.prefetch(stack.compactMap(\.imageURL), upright: true)
+        // Each image takes work to load, so only the next cards load ahead.
+        ImageStore.shared.prefetch(stack.prefix(Self.window).compactMap(\.imageURL), upright: true)
     }
 
     /// Turning the stack over reverses its order. `remember` saves the choice for the next rip. Sift turns the
@@ -395,9 +402,15 @@ final class RipModel {
         reveal(front)
     }
 
+    /// The cards that the table draws from each end of a long stack. A Hits only rip can hold hundreds of cards.
+    static let window = 12
+
     func sendFrontToPile() {
         guard phase == .open, !stack.isEmpty else { return }
         let card = stack.removeFirst()
+        if stack.count >= Self.window, let url = stack[Self.window - 1].imageURL {
+            ImageStore.shared.prefetch([url], upright: true)
+        }
         showcaseID = nil
         reveal(card)
         pile.append(card)

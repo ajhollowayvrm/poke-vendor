@@ -226,11 +226,17 @@ struct SummaryView: View {
                     StatCell(label: "Rip net", value: signedMoney(ripNet), color: ripNet >= 0 ? Theme.green : Theme.orange)
                 }
             }
-            // A long rip holds many hits. The list scrolls, and the buttons stay on the screen.
-            ViewThatFits(in: .vertical) {
-                details(hits: hits, bulk: bulk)
+            // A long rip holds many hits. The list scrolls, and the buttons stay on the screen. A Hits only rip
+            // can hold hundreds, so a long list goes straight to a lazy scroll and is not measured first.
+            if hits.count > 12 {
                 ScrollView { details(hits: hits, bulk: bulk) }
                     .scrollIndicators(.visible)
+            } else {
+                ViewThatFits(in: .vertical) {
+                    details(hits: hits, bulk: bulk)
+                    ScrollView { details(hits: hits, bulk: bulk) }
+                        .scrollIndicators(.visible)
+                }
             }
             HStack(spacing: 10) {
                 Button(action: onClose) {
@@ -275,7 +281,7 @@ struct SummaryView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .kerning(0.8)
                 .foregroundStyle(Theme.muted)
-            VStack(spacing: 0) {
+            LazyVStack(spacing: 0) {
                 ForEach(hits) { card in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
