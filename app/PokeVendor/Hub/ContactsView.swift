@@ -59,9 +59,8 @@ struct ContactsView: View {
                         Text("mkt \(money(item.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         HStack(spacing: 8) {
                             Button("Hold it for me") { store.answerOffer(item.id, hold: true) }
-                                .buttonStyle(.borderedProminent)
+                                .primaryButton()
                                 .tint(Theme.green)
-                                .foregroundStyle(.black)
                             Button("No thanks") { store.answerOffer(item.id, hold: false) }
                                 .buttonStyle(.bordered)
                         }
@@ -109,7 +108,7 @@ struct ContactsView: View {
             }
         }
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 
     /// People the player dealt with who are not in the book.
@@ -123,7 +122,7 @@ struct ContactsView: View {
                 }
             }
             .background(Theme.surface)
-            .overlay(Rectangle().stroke(Theme.line))
+            .framed()
         }
     }
 
@@ -185,9 +184,8 @@ private struct ContactRow: View {
                 .font(.caption)
         } else if store.canRegister(contact) {
             Button { store.register(contact.id) } label: { Label("Add to the contact book", systemImage: "plus") }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.green)
-                .foregroundStyle(.black)
                 .controlSize(.small)
         } else {
             let familiar = StandingLevel(points: store.points(of: contact)).rank >= Balance.registerLevel.rank

@@ -196,7 +196,9 @@ A store account buys at 58% of MSRP, with no minimum order. The
 distributor allocates hot product: each week the account can buy only a
 few cases of each product. The limit grows with the total that the
 player spent with the distributor. A player at Respected with no store
-keeps the 72% price, the $500 minimum order, and no limit.
+keeps the 72% price and a $250 minimum order. That player can buy 1 case of
+each product and 2 cases a week. A case price is never under 62% of market (50%
+for a store account). Some orders ship short, and the distributor refunds the rest.
 
 ### Garage sales, estate finds, meets and shows
 

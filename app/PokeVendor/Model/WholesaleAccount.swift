@@ -48,9 +48,12 @@ extension GameStore {
 
     /// The cases the player can still buy this week. Nil when there is no limit.
     func wholesaleLeft(_ offer: WholesaleOffer) -> Int? {
-        guard hasStoreAccount else { return nil }
         let account = data.distributor
         let bought = account.week == data.day / 7 ? account.cases[offer.product.id] ?? 0 : 0
+        guard hasStoreAccount else {
+            let week = account.week == data.day / 7 ? account.cases.values.reduce(0, +) : 0
+            return max(0, min(1 - bought, Balance.wholesaleCasesPerWeek - week))
+        }
         return max(0, wholesaleCap(offer.product) - bought)
     }
 

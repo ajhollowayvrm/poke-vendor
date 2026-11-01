@@ -449,7 +449,7 @@ struct OwnedCard: Codable, Identifiable, Hashable {
         guard let grade else { return market(as: condition.wear) }
         if grade.blackLabel { return print.blackLabelPrice ?? Self.fallbackGradedPrice(raw: rawMarket, grade: grade) }
         if grade.pristine { return print.cgcPristinePrice ?? Self.fallbackGradedPrice(raw: rawMarket, grade: grade) }
-        if let price = print.graded[grade.priceKey] ?? nil { return price }
+        if let price = print.gradedPrice(grade.priceKey) { return price }
         return Self.fallbackGradedPrice(raw: rawMarket, grade: grade)
     }
 
@@ -547,8 +547,19 @@ struct BulkGroup: Codable, Identifiable, Hashable {
     var day = 0
     /// True for a group of cards that the player moved from Raw, not from a rip.
     var moved = false
+    /// The average wear of cards moved from Raw, as a share of the Near Mint price. Nil is 1.
+    var wearFactor: Double?
+    /// Fakes that the player moved here. A shop can find them when it buys the bulk.
+    var fakes: [FakeTier]?
 
-    var value: Double { cards.reduce(0) { $0 + ($1.market ?? 0) } }
+    var value: Double { cards.reduce(0) { $0 + ($1.market ?? 0) } * (wearFactor ?? 1) }
+
+    mutating func add(_ card: OwnedCard) {
+        let count = Double(cards.count)
+        wearFactor = ((wearFactor ?? 1) * count + card.condition.wear.valueFactor) / (count + 1)
+        cards.append(card.print)
+        if let fake = card.fake { fakes = (fakes ?? []) + [fake] }
+    }
 }
 
 struct LedgerEntry: Codable, Identifiable, Hashable {
@@ -561,6 +572,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case storeRent = "Store rent", storeSetup = "Store setup", wages = "Wages", storeEvents = "Store events"
         case storeOverhead = "Store overhead", supplies = "Supplies", paymentFees = "Payment fees", insurance = "Insurance"
         case loan = "Loans", interest = "Interest and fees", businessInterest = "Business interest"
+        case businessCosts = "Business costs"
     }
 
     var id = UUID()

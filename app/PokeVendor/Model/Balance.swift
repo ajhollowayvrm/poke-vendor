@@ -13,6 +13,19 @@ enum Balance {
     static let workEnd = 17.0
     static let sickDaysPerYear = 5
 
+    // The save file (docs/07-platform-and-scope.md, The save file)
+    static let saveDelay = 2.0
+
+    // Bulk (docs/14-counterfeit-risk.md)
+    static let bulkFakeFindChance = 0.5
+    static let bulkFakeReputation = 3
+
+    // Deals (docs/21-relationships-and-reputation.md)
+    static let fairDealMinPrice = 20.0
+    static let ledgerKeepDays = 182
+    static let activityKeepDays = 91
+    static let postsKept = 60
+
     // Upgrades (docs/09-upgrades.md). Each centering tool reads the cut more sharply than the one before it.
     static let centeringTools: [(name: String, cost: Double, detail: String)] = [
         ("Centering ruler", 40, "Gives numbers for the front, to about ±2, and words for the back."),

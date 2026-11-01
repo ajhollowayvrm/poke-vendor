@@ -18,7 +18,7 @@ struct WholesaleView: View {
                 }
                 if store.hasStoreAccount {
                     DetailBox(title: "Your allocation") {
-                        Text("Hot product is allocated. Each week you can buy a few cases of each product: \(Balance.allocationBase) of a hot one, \(Balance.allocationBase + 1) of the rest. The limit grows by 1 case for each \(money(Balance.allocationStep)) you spend here, up to \(Balance.allocationMax). There is no minimum order.")
+                        Text(store.hasStoreAccount ? "Hot product is allocated. Each week you can buy a few cases of each product: \(Balance.allocationBase) of a hot one, \(Balance.allocationBase + 1) of the rest. The limit grows by 1 case for each \(money(Balance.allocationStep)) you spend here, up to \(Balance.allocationMax). There is no minimum order." : "With no store, you can buy \(Balance.wholesaleCasesPerWeek) cases a week and 1 case of each product.")
                             .font(.caption).foregroundStyle(Theme.muted)
                         Text("Spent with the distributor: \(money(store.distributorSpent))")
                             .font(.caption.monospaced())
@@ -45,15 +45,14 @@ struct WholesaleView: View {
                             Stepper("\(n) case\(n == 1 ? "" : "s") · \(money(offer.casePrice * Double(n)))", value: Binding(get: { n }, set: { cases[offer.id] = $0 }), in: 1...top)
                                 .font(.caption)
                             Button("Order") { message = store.buyWholesale(offer, cases: n) ?? "Ordered. It arrives in \(Balance.wholesaleDeliveryDays) days." }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .controlSize(.small)
                                 .disabled(left == 0 || !store.canAfford(offer.casePrice * Double(n)))
                         }
                     }
                     .padding(12)
                     .background(Theme.surface)
-                    .overlay(Rectangle().stroke(Theme.line))
+                    .framed()
                 }
             }
             .padding(16)
@@ -99,8 +98,7 @@ struct CaseSplitsView: View {
                             }
                             HStack {
                                 Button("Take \(n)") { message = store.joinSplit(split.id, boxes: n) ?? "You are in. The boxes arrive on day \(split.arrivesDay + 1)." }
-                                    .buttonStyle(.borderedProminent)
-                                    .foregroundStyle(.black)
+                                    .primaryButton()
                                     .controlSize(.small)
                                     .disabled(!store.canAfford(split.pricePerBox * Double(n)))
                                 if split.mine == 0 {
@@ -111,7 +109,7 @@ struct CaseSplitsView: View {
                     }
                     .padding(12)
                     .background(Theme.surface)
-                    .overlay(Rectangle().stroke(Theme.line))
+                    .framed()
                 }
             }
             .padding(16)

@@ -84,6 +84,7 @@ extension GameStore {
         let job = Job.ladder[index]
         let hired = Double.random(in: 0..<1) < job.hireChance
         if hired {
+            payFinalWages()
             data.jobIndex = index
             // A quit and a new hire inside 8 weeks does not refill the sick days.
             let recentQuit = data.day - data.jobState.quitDay < Balance.jobOpensAfterDays
@@ -92,7 +93,8 @@ extension GameStore {
             data.jobState.timeOffBooked = []
             data.jobState.unexcused = []
             // The first paycheck covers the days from the hire, not the whole week.
-            data.jobState.unpaidDays = min(5, weekday)
+            // A weekend hire starts on Monday, so the whole next week is paid.
+            data.jobState.unpaidDays = weekday < 5 ? weekday : 0
             data.jobState.hiredDay = data.day
             log("You got the job: \(job.title), \(money(job.weeklyPay)) a week. The next shift is yours.")
         } else {
@@ -102,9 +104,23 @@ extension GameStore {
         return hired
     }
 
+    /// Pays the days worked since the last payday, when a job ends before Friday's End Day.
+    private func payFinalWages() {
+        guard let job, weekday < 5 else { return }
+        let today = skippedToday || (worksToday && data.hour >= Balance.workEnd) ? 1 : 0
+        let days = max(0, weekday + today - data.jobState.unpaidDays)
+        data.jobState.unpaidDays = 0
+        guard days > 0 else { return }
+        let pay = (job.weeklyPay * Double(days) / 5 * 100).rounded() / 100
+        addLedger(pay, .paycheck, "Final pay · \(job.title) · \(days) day\(days == 1 ? "" : "s")")
+        log("Final pay from \(job.title): \(money(pay)) for \(days) day\(days == 1 ? "" : "s").", cash: pay)
+        if let line = garnishWages(pay) { log(line) }
+    }
+
     /// Quitting is allowed at any time. The sick days and the time off are lost. Rent is still due.
     func quitJob() {
         guard let job else { return }
+        payFinalWages()
         data.jobIndex = nil
         data.jobState.quitDay = data.day
         data.jobState.timeOff = 0
@@ -150,6 +166,7 @@ extension GameStore {
         let chance = Balance.firedChances[min(count, Balance.firedChances.count) - 1]
         var line = "You skipped work. The day is unpaid."
         if Double.random(in: 0..<1) < chance {
+            payFinalWages()
             data.jobIndex = nil
             data.sickDaysLeft = 0
             data.jobState.quitDay = today
@@ -213,13 +230,6 @@ extension GameStore {
             log("You got up at 7 AM after a late night. You are \(tiredLabel?.lowercased() ?? "tired") today.")
         }
         data.lateHours = 0
-        save()
-    }
-
-    /// Test tool: 8 weeks at the current job, so the next one opens.
-    func testWeeksAtJob() {
-        guard let index = data.jobIndex else { return }
-        data.jobState.daysWorked[index, default: 0] += Balance.jobOpensAfterDays
         save()
     }
 }

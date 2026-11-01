@@ -141,6 +141,7 @@ final class RipModel {
     /// The set of each pack in the product that is opening.
     var unboxPackSlugs: [String] { queue.filter { $0.sourceID == currentPack?.sourceID }.map(\.setSlug) }
 
+    @discardableResult
     func openProduct() -> [CardPrint] {
         guard let pack = currentPack else { return [] }
         unboxed.insert(pack.sourceID)

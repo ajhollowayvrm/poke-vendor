@@ -55,7 +55,7 @@ struct BestOfferBox: View {
                         Text("\(o.buyer) offers \(Int(o.amount / max(o.listPrice, 0.01) * 100))% of your \(money(o.listPrice)). \(left <= 0 ? "Answer today." : "Open for \(left) more day\(left == 1 ? "" : "s").")")
                             .font(.caption).foregroundStyle(Theme.muted)
                         HStack {
-                            Button("Accept") { store.acceptBestOffer(o.id) }.buttonStyle(.borderedProminent).foregroundStyle(.black)
+                            Button("Accept") { store.acceptBestOffer(o.id) }.primaryButton()
                             Button("Counter") { countering = o }.buttonStyle(.bordered)
                             Button("Decline") { store.declineBestOffer(o.id) }.buttonStyle(.bordered)
                         }

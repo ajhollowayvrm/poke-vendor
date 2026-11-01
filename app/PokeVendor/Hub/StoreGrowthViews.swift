@@ -124,8 +124,7 @@ struct StoreSpaceBox: View {
                         }
                         Spacer()
                         Button(money(step.cost)) { store.upgradeSpace() }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                             .controlSize(.small)
                             .disabled(!store.canUpgradeSpace)
                     }

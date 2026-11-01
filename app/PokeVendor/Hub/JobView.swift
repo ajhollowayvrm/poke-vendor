@@ -112,8 +112,7 @@ struct JobView: View {
                             let hired = store.apply(i)
                             message = hired ? "You got the job: \(job.title)." : "\(job.title): they went with someone else. Try again tomorrow."
                         }
-                        .buttonStyle(.borderedProminent)
-                        .foregroundStyle(.black)
+                        .primaryButton()
                         .controlSize(.small)
                         .disabled(!store.canApply(i))
                     }

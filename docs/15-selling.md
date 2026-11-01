@@ -30,6 +30,14 @@ Specific fee values are not in this doc. Platform fees change, so the
 game pulls current values when it needs them. Grading fees follow the
 same rule (see [10-grading.md](10-grading.md#data-source)).
 
+## The demand limit
+
+**Status: built** (`Model/Demand.swift`). Each sale uses up some of the buyers.
+Recent sales on a channel lower the sale chance on that channel, and the channel
+recovers in days. Recent sales of one item lower its sale chance and its price,
+and the item recovers in weeks. More followers give each channel more room. Buyer
+problems also apply to Best Offer sales and to a shipped lot.
+
 ## Listing time
 
 A listing stays up for **4 weeks** (28 game days). The game has weeks
@@ -137,6 +145,11 @@ Facebook Marketplace.
   come back later (see [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)).
 - Items with a status (listed, at a grader, in the store) or the Keep
   tag cannot join a lot.
+
+### Lot limits
+
+A large lot sells more slowly, because it needs a buyer with more money. On
+Facebook, the buyer pays less, haggles, and does not always come.
 
 ## Facebook Marketplace
 

@@ -96,6 +96,15 @@ struct GameData: Codable {
     var insurance = InsuranceState()
     /// The credit score, loans, the line of credit, pawn tickets, and collections (docs/27-debt-and-loans.md).
     var debt = DebtState()
+    /// Every sale in ledger entries that the End Day trim removed. `lifetimeSales` adds it.
+    var archivedSales = 0.0
+    /// The moving market (docs/05-pricing-and-market.md). The seed gives each run its own waves.
+    var marketSeed: UInt64 = 0
+    var marketEvents: [MarketEvent] = []
+    /// The demand limit (docs/15-selling.md).
+    var demand = DemandState()
+    /// The goals the player reached, and the day of each (docs/03-currencies.md, Goals).
+    var goalsReached: [String: Int] = [:]
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -165,6 +174,11 @@ extension GameData {
         taxes = v(.taxes, taxes)
         insurance = v(.insurance, insurance)
         debt = v(.debt, debt)
+        archivedSales = v(.archivedSales, archivedSales)
+        marketSeed = v(.marketSeed, marketSeed)
+        marketEvents = v(.marketEvents, marketEvents)
+        demand = v(.demand, demand)
+        goalsReached = v(.goalsReached, goalsReached)
     }
 }
 
@@ -173,25 +187,33 @@ struct DayReport: Identifiable {
     let id = UUID()
     let day: Int
     var lines: [String]
+    /// The slabs that came back from a grader overnight.
+    var slabs: [OwnedCard] = []
 }
 
 @MainActor @Observable
 final class GameStore {
     var data: GameData
     var report: DayReport?
+    /// The route of a top goal the player just reached. It opens the "you made it" screen.
+    var madeIt: GoalRoute?
+    private var slabsBack: [OwnedCard] = []
     /// Sales that the receipt screen has not shown yet.
     var receipts: [SaleReceipt] = []
     private let url: URL
+    private var pendingSave: Task<Void, Never>?
+    private nonisolated static let saveQueue = DispatchQueue(label: "pokevendor.save", qos: .utility)
 
     init() {
         url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("game.json")
-        if let saved = try? JSONDecoder().decode(GameData.self, from: Data(contentsOf: url)) {
+        if let file = try? Data(contentsOf: url), let saved = Self.decodeSave(file) {
             data = saved
         } else {
             data = GameData()
             startRun()
         }
+        syncMarket()
         scheduleShows()
         scheduleSales()
         seedContacts()
@@ -360,17 +382,18 @@ final class GameStore {
     }
 
     func moveToBulk(_ ids: Set<UUID>) {
-        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.keep }
+        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.keep && !$0.isKnownFake }
         guard !cards.isEmpty else { return }
         for card in cards {
             data.openedPaid += card.paid ?? 0
             if let rip = card.ripID, let i = data.bulk.firstIndex(where: { $0.ripID == rip && $0.setSlug == card.setSlug }) {
-                data.bulk[i].cards.append(card.print)
-            } else if let i = data.bulk.firstIndex(where: { $0.moved && $0.day == data.day && $0.setSlug == card.setSlug }) {
-                data.bulk[i].cards.append(card.print)
+                data.bulk[i].add(card)
+            } else if let i = data.bulk.firstIndex(where: { [day = data.day] in $0.moved && $0.day == day && $0.setSlug == card.setSlug }) {
+                data.bulk[i].add(card)
             } else {
-                data.bulk.append(BulkGroup(ripID: UUID(), setSlug: card.setSlug, date: .now,
-                                           cards: [card.print], day: data.day, moved: true))
+                var group = BulkGroup(ripID: UUID(), setSlug: card.setSlug, date: .now, cards: [], day: data.day, moved: true)
+                group.add(card)
+                data.bulk.append(group)
             }
         }
         let moved = Set(cards.map(\.id))
@@ -426,6 +449,8 @@ final class GameStore {
 
     func startRun() {
         data = GameData()
+        data.marketSeed = UInt64.random(in: 1...UInt64.max)
+        syncMarket()
         addLedger(Balance.startingCash, .startingCapital, "Starting capital")
         log("Day 1. You have \(money(Balance.startingCash)) and a job as a retail associate.")
         scheduleShows()
@@ -434,6 +459,7 @@ final class GameStore {
         save()
     }
 
+    #if DEBUG
     // MARK: - Test tools
 
     /// A free loose pack for testing. It counts the market price as paid, and it does not touch cash.
@@ -473,6 +499,7 @@ final class GameStore {
         addLedger(amount, .test, "Test cash")
         save()
     }
+    #endif
 
     // MARK: - Ripping
 
@@ -766,12 +793,19 @@ final class GameStore {
     /// Bulk sells for store credit only.
     func sellBulk(_ id: UUID, at store: LocalStore) {
         guard let group = data.bulk.first(where: { $0.id == id }) else { return }
-        let credit = bulkCredit(group)
+        // The shop looks through the stack. It pays nothing for a fake it finds, and it remembers who brought it.
+        let found = (group.fakes ?? []).filter { _ in Double.random(in: 0..<1) < Balance.bulkFakeFindChance }.count
+        let good = 1 - Double(found) / Double(max(group.cards.count, 1))
+        let credit = (bulkCredit(group) * good * 100).rounded() / 100
         data.bulk.removeAll { $0.id == id }
         var state = shop(store)
         state.credit += credit
         data.shops[store.rawValue] = state
         log("Sold \(group.cards.count) bulk cards to \(store.rawValue) for \(money(credit)) in store credit.")
+        if found > 0 {
+            addReputation(-Balance.bulkFakeReputation * found)
+            log("\(store.rawValue) found \(found) fake\(found == 1 ? "" : "s") in your bulk and paid nothing for \(found == 1 ? "it" : "them"). Reputation −\(Balance.bulkFakeReputation * found).")
+        }
         save()
     }
 
@@ -907,6 +941,9 @@ final class GameStore {
         data.tiredToday = 1
         data.day += 1
         data.hour = Balance.dayStart
+        demandEndDay()
+        syncMarket()
+        lines += marketEndDay()
         data.sickToday = false
         data.boughtToday = []
         data.shelfBought = [:]
@@ -931,34 +968,44 @@ final class GameStore {
         lines += meetupsEndDay()
         lines += offersEndDay()
         lines += lotsEndDay()
-        data.priceBoosts = data.priceBoosts.filter { $0.value >= data.day }
+        let boostDay = data.day
+        data.priceBoosts = data.priceBoosts.filter { $0.value >= boostDay }
+        syncMarket()
         if data.lateHours > 0 {
             lines.append("You were up until \(GameStore.clock(Balance.dayEnd + data.lateHours)). Start tired, or sleep in.")
         }
 
         if data.day % Balance.rentCycleDays == 0 {
-            if coverWithLine(Balance.rent, for: "Rent") {
-                addLedger(-Balance.rent, .rent, "Rent")
-                lines.append("Rent paid: \(money(Balance.rent)).")
+            let rent = rentNow
+            if rent <= 0 {
+                // The player owns a home.
+            } else if coverWithLine(rent, for: "Rent") {
+                addLedger(-rent, .rent, "Rent")
+                lines.append("Rent paid: \(money(rent)).")
             } else {
                 data.gameOver = "Rent was due on day \(data.day + 1), and you had \(money(data.cash)). You could not pay it."
                 lines.append("You could not pay rent. The run is over.")
             }
-        } else if daysUntilRent == Balance.rentWarningDays {
-            lines.append("Rent of \(money(Balance.rent)) is due in \(Balance.rentWarningDays) days.")
+        } else if daysUntilRent == Balance.rentWarningDays, rentNow > 0 {
+            lines.append("Rent of \(money(rentNow)) is due in \(Balance.rentWarningDays) days.")
         }
         if data.gameOver == nil { lines += storeRentDue() }
         lines += taxesEndDay()
         // Debt payments come after rent and taxes. A missed debt payment adds a fee, and the run goes on.
         if data.gameOver == nil { lines += debtEndDay() }
+        if data.gameOver == nil { lines += collectionsEndDay() }
         if data.gameOver == nil { lines += lossesEndDay() }
         if data.gameOver == nil { lines += storeGrowthDay() }
+        if data.gameOver == nil { lines += businessCostsEndDay() }
+        if data.gameOver == nil { lines += goalsEndDay() }
 
         if isPokemonCenterDropLive {
             lines.append("A Pokemon Center drop is live today.")
         }
         for line in lines { log(line) }
-        report = DayReport(day: data.day, lines: lines)
+        trimHistory()
+        report = DayReport(day: data.day, lines: lines, slabs: slabsBack)
+        slabsBack = []
         save()
     }
 
@@ -987,7 +1034,7 @@ final class GameStore {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
             case .listed(let listing):
-                if let sale = rollSale(listing, market: realMarket(of: item), sealed: true) {
+                if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name) {
                     lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid,
                                               fake: item.fake, known: item.isKnownFake, sealedItem: item))
                     continue
@@ -1051,6 +1098,7 @@ final class GameStore {
                     card.grade = grade
                     card.verified = true
                     slabs.append(card)
+                    slabsBack.append(card)
                     lines.append("\(card.print.name) came back from \(company.rawValue): \(grade.label), worth \(money(card.market)).")
                     if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) {
                         data.ledger[i].label += " · \(card.print.name) \(grade.label)"
@@ -1155,22 +1203,25 @@ final class GameStore {
         if listing.channel == .tcgplayer {
             let lowest = card.grade == nil ? Self.tcgLowest(for: card.print, wear: card.listedWear(in: listing)) : Self.tcgLowest(for: card.print)
             let chance = listing.price <= lowest ? 0.30 : 0.30 * exp(-(listing.price / lowest - 1) * 35)
-            return Double.random(in: 0..<1) < chance * reachSaleFactor ? listing.price : nil
+            let demand = channelDemand(listing.channel) * itemDemand(card.print.name)
+            return Double.random(in: 0..<1) < chance * reachSaleFactor * demand ? listing.price : nil
         }
         // The buyer prices the card by the condition in the listing.
         let market = card.grade == nil ? card.market(as: card.listedWear(in: listing)) : card.realMarket
-        return rollSale(listing, market: market, sealed: false, slab: card.grade != nil)
+        return rollSale(listing, market: market, sealed: false, slab: card.grade != nil, name: card.print.name)
     }
 
     /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
     var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
 
-    func rollSale(_ listing: Listing, market: Double, sealed: Bool, slab: Bool = false) -> Double? {
-        let reach = reachSaleFactor
+    func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String) -> Double? {
+        let demand = channelDemand(listing.channel) * itemDemand(name)
+        let reach = reachSaleFactor * demand
+        let market = rawMarket * itemPriceFactor(name)
         switch listing.channel {
         case .ebayAuction:
             guard let end = listing.auctionEndDay, data.day >= end else { return nil }
-            if Double.random(in: 0..<1) < 0.05 { return nil }
+            if Double.random(in: 0..<1) < 0.05 + (1 - demand) * 0.6 { return nil }
             let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.35
             return max(0.99, (market * (0.95 + spread) * 100).rounded() / 100)
         case .ebay:
@@ -1181,7 +1232,7 @@ final class GameStore {
             let chance = 0.30 * exp(-(listing.price / max(market * 0.95, 0.01) - 1) * 35)
             return Double.random(in: 0..<1) < chance * reach ? listing.price : nil
         case .social:
-            return Double.random(in: 0..<1) < socialSaleChance(price: listing.price, market: market) ? listing.price : nil
+            return Double.random(in: 0..<1) < socialSaleChance(price: listing.price, market: market) * demand ? listing.price : nil
         case .whatnot:
             // Whatnot sells on a stream, not from a standing listing.
             return nil
@@ -1193,7 +1244,7 @@ final class GameStore {
 
     /// Finishes a sale from a listing. A fake may come back to bite later (docs/14, Consequences).
     func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
-                              known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil,
+                              known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil, lot: Lot? = nil,
                               slab: Bool = false, overstated: Bool = false) -> String {
         let line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
                                    paid: paid, slab: slab, overstated: overstated)
@@ -1202,7 +1253,7 @@ final class GameStore {
                           refunds: listing.channel.refundsFakes)
         }
         scheduleSaleProblems(name: name, channel: listing.channel, price: price, insured: listing.insured,
-                             overstated: overstated || listing.overstatedCondition == true, card: card, sealed: sealedItem)
+                             overstated: overstated || listing.overstatedCondition == true, card: card, sealed: sealedItem, lot: lot)
         return line
     }
 
@@ -1214,6 +1265,7 @@ final class GameStore {
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
         addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated)
+        noteDemand(name, channel: channel)
         if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
         notePlatformSale(channel: channel, price: price)
         let after = channel.ships ? "after fees and shipping" : "in cash"
@@ -1222,8 +1274,49 @@ final class GameStore {
 
     // MARK: - Saving
 
+    /// Asks for a save. Many changes in a short time make one write.
     func save() {
-        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try? JSONEncoder().encode(data).write(to: url, options: .atomic)
+        guard pendingSave == nil else { return }
+        pendingSave = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(Balance.saveDelay))
+            guard !Task.isCancelled else { return }
+            self?.saveNow()
+        }
+    }
+
+    /// Writes the save now, off the main thread. The file is compressed JSON. `decodeSave` also reads the old plain JSON.
+    func saveNow() {
+        pendingSave?.cancel()
+        pendingSave = nil
+        let snapshot = data
+        let url = url
+        Self.saveQueue.async {
+            try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            guard let json = try? JSONEncoder().encode(snapshot),
+                  let packed = try? (json as NSData).compressed(using: .lzfse) else { return }
+            try? (packed as Data).write(to: url, options: .atomic)
+        }
+    }
+
+    private nonisolated static func decodeSave(_ file: Data) -> GameData? {
+        let json = (try? (file as NSData).decompressed(using: .lzfse) as Data) ?? file
+        return try? JSONDecoder().decode(GameData.self, from: json)
+    }
+
+    /// Removes old history at End Day, once a week. Taxes and business loans read at most 91 days of the ledger.
+    func trimHistory() {
+        guard data.day % 7 == 0 else { return }
+        let ledgerStart = data.day - Balance.ledgerKeepDays
+        data.archivedSales += data.ledger.reduce(0) {
+            $1.day < ledgerStart && !$1.pending && $1.category == .sale && $1.amount > 0 ? $0 + $1.amount : $0
+        }
+        data.ledger.removeAll { $0.day < ledgerStart && !$0.pending }
+        let activityStart = data.day - Balance.activityKeepDays
+        data.activity.removeAll { $0.day < activityStart }
+        if data.social.posts.count > Balance.postsKept {
+            let old = data.social.posts.count - Balance.postsKept
+            let open = data.social.posts.prefix(old).filter { if case .open = $0.sale { return true }; return false }
+            data.social.posts = open + data.social.posts.suffix(Balance.postsKept)
+        }
     }
 }

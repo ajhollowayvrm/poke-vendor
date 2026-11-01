@@ -37,7 +37,7 @@ struct BuyView: View {
                         }
                     }
                     .background(Theme.surface)
-                    .overlay(Rectangle().stroke(Theme.line))
+                    .framed()
                 }
                 Text(local ? "A store run costs time. Each store adds 40 minutes. You learn what a store has only when you get there."
                            : "Buying online is a free action. You pay now, and the item arrives after its delivery time.")
@@ -107,7 +107,7 @@ struct StoreView: View {
                 if offers.isEmpty {
                     EmptyTab(text: store_ == .pokemonCenter ? "No drop live. Drops come with no notice." : "Nothing for sale today.")
                         .background(Theme.surface)
-                        .overlay(Rectangle().stroke(Theme.line))
+                        .framed()
                 }
                 VStack(spacing: 0) {
                     ForEach(SetLibrary.grouped(offers, by: { $0.setSlug }), id: \.slug) { group in
@@ -122,14 +122,14 @@ struct StoreView: View {
                     }
                 }
                 .background(Theme.surface)
-                .overlay(Rectangle().stroke(Theme.line))
+                .framed()
             }
             .padding(16)
         }
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle(store_.rawValue)
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog(confirm?.title ?? "", isPresented: Binding(get: { confirm != nil }, set: { if !$0 { confirm = nil } }),
+        .confirmationDialog(confirm?.title ?? "", isPresented: Binding(isPresent: $confirm),
                             titleVisibility: .visible, presenting: confirm) { offer in
             Button(buttonTitle(offer)) { purchase(offer) }
         } message: { offer in
@@ -230,8 +230,7 @@ struct OfferRow: View {
             VStack(alignment: .trailing, spacing: 6) {
                 Text(money(offer.price)).font(.subheadline.monospaced().weight(.semibold))
                 Button(bought ? "Bought" : offer.store == .pokemonCenter ? "Try" : "Buy", action: onBuy)
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
+                    .primaryButton()
                     .controlSize(.small)
                     .disabled(bought || locked)
             }

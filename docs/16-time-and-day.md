@@ -200,6 +200,16 @@ paycheck, the business must cover the rent. The local game shop's
 buylist is the last-resort way to raise cash before rent is due (see
 [15-selling.md](15-selling.md#the-local-game-shop)).
 
+## Costs that grow
+
+**Status: built** (`Model/LateGame.swift`). Rent rises by 5% each year. A large
+stock needs a storage unit, and large sales need a bookkeeper. Two large purchases
+are in Upgrades: a warehouse removes the storage unit, and a home ends rent and
+adds upkeep.
+
+A job that ends before Friday pays the days worked since the last payday. A
+weekend hire is paid for the whole next week.
+
 ## Late nights
 
 The player can stay up past 11 PM. The hours after 11 PM come out of

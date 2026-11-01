@@ -62,6 +62,11 @@ Every system in this folder is built. The list:
 - **Theft and insurance**: theft at a card show, a stolen bag from the
   car, water damage at home, three upgrades that lower the risk, and
   collection insurance in the Wallet.
+- **The moving market and demand**: price waves, market news, sealed
+  appreciation, and a demand limit on each channel and item.
+- **Goals and growth**: goal ladders, "You made it", growing costs, and
+  large purchases.
+- **Sound**: short sounds that the app makes in code, with a setting.
 - **Debt and loans**: the credit score, personal and business loans, the
   line of credit with overdraft protection, payday loans, the pawn shop,
   and collections with wage garnishment.
@@ -72,6 +77,12 @@ The values that the design leaves to balancing are in
 set data that the app reads, and `python3 tools/export/catalog.py`
 writes the sealed product catalog with each product's pack mix and
 promo cards.
+
+### The save file
+
+The save is compressed JSON in `game.json`. The game also reads an old plain save.
+The game trims old ledger, activity, and post history at End Day. See
+[19-prototype-values.md](19-prototype-values.md#the-save-file).
 
 The hub has no test menu.
 `-soak <days>` as a launch argument plays that many days by itself and

@@ -185,7 +185,8 @@ struct HitShockwave: View {
 }
 
 extension Haptics {
-    static func celebrate(_ tier: HitTier) {
+    @MainActor static func celebrate(_ tier: HitTier) {
+        if tier >= .medium { SoundFX.shared.play(.hitBig) } else if tier == .small { SoundFX.shared.play(.hitSmall) }
         switch tier {
         case .none:
             break

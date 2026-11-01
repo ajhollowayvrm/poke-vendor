@@ -172,6 +172,12 @@ Three missed payments in a row send a loan or a line to collections.
 The hub shows a banner for each payment that is due in 3 days or less,
 and for a debt in collections. The calendar shows each due day.
 
+### When collections grow
+
+A debt in collections grows by 2% of the balance every 4 weeks. With no job to
+garnish, the collector takes 25% of the cash each week. Quitting does not stop
+the collector.
+
 ## Open topics
 
 - Bankruptcy, as a way out of collections.

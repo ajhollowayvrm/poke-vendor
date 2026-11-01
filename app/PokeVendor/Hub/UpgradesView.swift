@@ -40,6 +40,10 @@ struct UpgradesView: View {
                     upgradeRow(.dehumidifier)
                     upgradeRow(.fireSafe)
                 }
+                DetailBox(title: "Large purchases") {
+                    upgradeRow(.warehouse)
+                    upgradeRow(.ownHome)
+                }
                 DetailBox(title: "Social media") {
                     row(name: "Analytics", detail: "The likes and the reach factors of each post, plus burnout and authenticity meters.",
                         cost: Balance.analyticsUpgradeCost, owned: store.social.analytics, icon: "chart.bar",
@@ -72,8 +76,7 @@ struct UpgradesView: View {
                 Tag(text: "OWNED", color: Theme.green)
             } else {
                 Button(money(cost), action: buy)
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
+                    .primaryButton()
                     .controlSize(.small)
                     .disabled(!canBuy)
             }

@@ -61,6 +61,8 @@ struct RemoteCardImage: View {
     /// True for a card: a sideways scan (a BREAK card) turns to portrait. False for a product image.
     let upright: Bool
     @State private var image: UIImage?
+    @State private var failed = false
+    @State private var attempt = 0
 
     init(url: URL?, name: String, upright: Bool = true) {
         self.url = url
@@ -78,14 +80,28 @@ struct RemoteCardImage: View {
             } else {
                 Color(white: 0.2)
                 VStack(spacing: 8) {
-                    ProgressView()
+                    if failed || url == nil {
+                        Image(systemName: "photo").foregroundStyle(.white.opacity(0.6))
+                    } else {
+                        ProgressView()
+                    }
                     Text(name).font(.caption).foregroundStyle(.white.opacity(0.8))
+                    if failed, url != nil {
+                        Button("Retry") {
+                            failed = false
+                            attempt += 1
+                        }
+                        .font(.caption.weight(.semibold))
+                    }
                 }
+                .multilineTextAlignment(.center)
+                .padding(4)
             }
         }
-        .task(id: url) {
+        .task(id: "\(url?.absoluteString ?? "")#\(attempt)") {
             guard image == nil, let url else { return }
             image = await ImageStore.shared.load(url, upright: upright)
+            failed = image == nil && !Task.isCancelled
         }
     }
 }

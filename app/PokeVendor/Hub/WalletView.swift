@@ -128,9 +128,8 @@ extension WalletView {
                     .buttonStyle(.bordered)
             } else {
                 Button("Sign up · \(money(store.insurancePremium))") { store.signInsurance() }
-                    .buttonStyle(.borderedProminent)
+                    .primaryButton()
                     .tint(Theme.cyan)
-                    .foregroundStyle(.black)
                     .disabled(!store.canSignInsurance)
             }
         }

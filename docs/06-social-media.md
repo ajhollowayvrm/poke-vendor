@@ -132,6 +132,13 @@ reach = base_follower_reach × content_quality_multiplier × timing_multiplier �
   Inactivity, controversy, and algorithm shifts cause real decay — an
   audience needs upkeep, not just a one-time build.
 
+## Limits on growth
+
+Posts stay free, but free posts do not compound without limit. A post about the
+same subject within 14 days has low quality. Only the first 3 posts of a day gain
+followers. One post gains a small share of the audience, and a viral post gains
+4 times as much.
+
 ## The analytics upgrade
 
 Without this upgrade, a post shows its views and the followers it

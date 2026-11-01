@@ -10,8 +10,6 @@ extension Balance {
     static let consignStandingPoints = 2
     /// The chance that a card at market sells inside the window. A higher price sells less often.
     static let consignSaleBase = 0.6
-    /// The display case prices over market.
-    static let consignPriceRange = 1.0...1.3
 }
 
 @MainActor

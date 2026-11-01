@@ -151,23 +151,4 @@ extension GameStore {
         data.meetsAttended.append(MeetRecord(kind: kind, day: today))
         data.meetsAttended.removeAll { $0.day < today - 14 }
     }
-
-    /// Test tool: a meet right now, on any weekday.
-    func testStartMeet(_ kind: MeetKind) -> ShowSession? {
-        let today = data.day
-        data.meetsAttended.removeAll { $0.kind == kind && $0.day == today }
-        if data.hour > kind.close - 1 { data.hour = max(Balance.dayStart, kind.open - 0.5) }
-        seedContacts()
-        let league = kind == .leagueNight
-        let shop = league ? leagueShop(day: data.day) : nil
-        let venue = Venue(kind: league ? .leagueNight : .meet,
-                          name: league ? "League night · \(shop?.rawValue ?? "")" : kind.label,
-                          detail: "\(kind.place) · \(kind.hoursText)", open: kind.open, close: kind.close,
-                          hours: Balance.meetHours, visitorsMean: league ? Balance.leagueVisitors : Balance.meetVisitors,
-                          sellerShare: Balance.meetSellerShare, regularShare: Balance.meetRegularShare,
-                          hasFloor: false, hasTable: true, fakeSource: .stranger, shop: shop)
-        data.hour = max(data.hour, kind.open)
-        save()
-        return ShowSession(venue: venue, store: self, vendors: [], regulars: meetRegulars(kind))
-    }
 }

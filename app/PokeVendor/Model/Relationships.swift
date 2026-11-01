@@ -320,7 +320,7 @@ extension GameStore {
     /// reputation too.
     func recordDeal(_ id: String?, what: String, price: Double, market: Double, slug: String?) {
         let fair = market > 0 && abs(price - market) / market <= 0.10
-        if fair { addReputation(1) }
+        if fair, price >= Balance.fairDealMinPrice { addReputation(1) }
         guard let id, let i = data.contacts.firstIndex(where: { $0.id == id }) else { return }
         data.contacts[i].deals += 1
         data.contacts[i].lastDealDay = data.day
@@ -330,7 +330,8 @@ extension GameStore {
             data.contacts[i].history.insert(slug, at: 0)
             data.contacts[i].history = Array(data.contacts[i].history.prefix(8))
         }
-        addPoints(id, fair ? 3 : 2)
+        // A small deal gives little standing, so a stack of cheap packs does not buy a relationship (docs/21).
+        addPoints(id, price < Balance.fairDealMinPrice ? (fair ? 1 : 0) : (fair ? 3 : 2))
         save()
     }
 
@@ -486,6 +487,7 @@ extension GameStore {
         return true
     }
 
+    #if DEBUG
     /// Test tool: every contact goes to Regular (40 points), the game shops go in the contact book, and they save
     /// something now.
     func testMakeRegular() {
@@ -501,6 +503,7 @@ extension GameStore {
         }
         save()
     }
+    #endif
 
     // MARK: - Each day
 

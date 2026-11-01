@@ -43,7 +43,7 @@ struct StoreRunPlanner: View {
                 }
             }
             .background(Theme.surface)
-            .overlay(Rectangle().stroke(Theme.line))
+            .framed()
 
             if let message { Banner(text: message, color: Theme.orange) }
 
@@ -61,8 +61,7 @@ struct StoreRunPlanner: View {
                      ?? "Not enough time today · \(formatHours(hours))")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .foregroundStyle(.black)
+            .primaryButton()
             .controlSize(.large)
             .disabled(chosen.isEmpty || start == nil)
         }
@@ -148,8 +147,7 @@ struct StoreRunView: View {
                                             bought.append(item.product.name)
                                         }
                                     }
-                                    .buttonStyle(.borderedProminent)
-                                    .foregroundStyle(.black)
+                                    .primaryButton()
                                     .controlSize(.small)
                                     .disabled(left == 0)
                                 }
@@ -167,8 +165,7 @@ struct StoreRunView: View {
                     Text(index + 1 < stops.count ? "Next stop: \(stops[index + 1].rawValue)" : "Finish the run")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .controlSize(.large)
             }
             .padding(16)
@@ -199,8 +196,7 @@ struct StoreRunView: View {
                 Button { onClose() } label: {
                     Text("Done").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .controlSize(.large)
             }
             .padding(16)
@@ -288,8 +284,7 @@ struct ShopView: View {
                             Button(bought ? "Bought" : money(single.price)) {
                                 store.buyCaseSingle(single, at: shop, credit: useCredit)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                             .controlSize(.small)
                             .disabled(bought)
                         }
@@ -350,8 +345,7 @@ struct BuyInBox: View {
                     Button(bought ? "Bought" : money(item.price)) {
                         store.buyBuyIn(item, at: shop, credit: useCredit)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
+                    .primaryButton()
                     .controlSize(.small)
                     .disabled(bought)
                 }
@@ -416,9 +410,8 @@ struct SavedBox: View {
                         }
                         Spacer()
                         Button(money(item.price)) { store.pickUp(item, credit: useCredit) }
-                            .buttonStyle(.borderedProminent)
+                            .primaryButton()
                             .tint(Theme.green)
-                            .foregroundStyle(.black)
                             .controlSize(.small)
                     }
                 }

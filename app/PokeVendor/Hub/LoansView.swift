@@ -142,9 +142,8 @@ struct LoansView: View {
                     Stepper("Draw \(money(min(drawAmount, line.available)))", value: $drawAmount, in: 50...max(50, line.available), step: 50)
                         .font(.subheadline)
                     Button("Draw the cash") { store.drawLine(drawAmount) }
-                        .buttonStyle(.borderedProminent)
+                        .primaryButton()
                         .tint(Theme.cyan)
-                        .foregroundStyle(.black)
                 }
                 if line.payoff >= 0.01 {
                     Button("Pay it all · \(money(line.payoff))") { store.payLine(line.payoff) }
@@ -165,9 +164,8 @@ struct LoansView: View {
                 Text("Borrow up to \(money(offer.limit)) at \(percent(offer.apr)) APR when you need it. Pay the interest and \(Int(Balance.lineMinShare * 100))% of the balance every 4 weeks. The application lowers your score by \(-Balance.scoreInquiry).")
                     .font(.caption).foregroundStyle(Theme.muted)
                 Button("Open the line") { store.openLine() }
-                    .buttonStyle(.borderedProminent)
+                    .primaryButton()
                     .tint(Theme.cyan)
-                    .foregroundStyle(.black)
             } else {
                 blocked(store.lineBlock() ?? "The bank has no offer for you now.")
             }
@@ -281,9 +279,8 @@ private struct LoanOfferForm: View {
             }
             Text("You get \(money(amount - fee)) today. \(note)").font(.caption).foregroundStyle(Theme.muted)
             Button("Sign for \(money(amount))") { store.takeLoan(offer, amount: amount, periods: term) }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.cyan)
-                .foregroundStyle(.black)
         }
     }
 }

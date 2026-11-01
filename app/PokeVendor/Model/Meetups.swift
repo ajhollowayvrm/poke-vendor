@@ -78,7 +78,7 @@ extension GameStore {
         for c in data.raw + data.slabs { if let l = listed(c.id, c.status) { candidates.append((c.id, c.print.name, l.price, false)) } }
         for s in data.sealed { if let l = listed(s.id, s.status) { candidates.append((s.id, s.name, l.price, true)) } }
         for (id, name, price, sealed) in candidates where !data.fbOffers.contains(where: { $0.itemID == id }) {
-            guard Double.random(in: 0..<1) < Balance.fbOfferChancePerDay * reachSaleFactor else { continue }
+            guard Double.random(in: 0..<1) < Balance.fbOfferChancePerDay * reachSaleFactor * channelDemand(.facebook) * itemDemand(name) else { continue }
             let later = Double.random(in: 0..<1) < Balance.fbLaterDayChance
             let offer = FBOffer(itemID: id, itemName: name, buyer: Self.buyers.randomElement() ?? "Jordan",
                                 offer: ShowSession.round(max(0.5, price * Double.random(in: Balance.fbOfferShare))), listPrice: price,
@@ -193,16 +193,5 @@ extension GameStore {
         log("Paid \(money(offer.price)) for \(product.name) on \(offer.store.rawValue). The pickup is on day \(day + 1).", cash: -offer.price)
         save()
         return true
-    }
-
-    /// Test tool: an offer on the first Facebook listing, or a listing plus an offer.
-    func testFBOffer() {
-        if let card = data.raw.first(where: { $0.status == nil && !$0.keep }) {
-            list([card.id], channel: .facebook, price: { _ in card.realMarket }, auctionDays: nil, insured: false)
-            data.fbOffers.append(FBOffer(itemID: card.id, itemName: card.print.name, buyer: "Jordan",
-                                         offer: ShowSession.round(max(0.5, card.realMarket * 0.8)), listPrice: card.realMarket,
-                                         day: data.day, meetupDay: data.day, sealed: false))
-            save()
-        }
     }
 }

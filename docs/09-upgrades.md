@@ -67,6 +67,11 @@ $200, and the player buys it from the detail screen of any card show
 
 See [21-relationships-and-reputation.md](21-relationships-and-reputation.md#the-contact-book).
 
+## Large purchases
+
+Your own warehouse and a home are large purchases for the late game. See
+[16-time-and-day.md](16-time-and-day.md#costs-that-grow).
+
 ## Open questions
 
 - How upgrades are purchased (cash only, or gated by other currencies

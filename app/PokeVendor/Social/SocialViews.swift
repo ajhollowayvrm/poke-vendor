@@ -17,8 +17,7 @@ struct SocialHubView: View {
                     } label: {
                         Label("New post", systemImage: "square.and.pencil").frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
+                    .primaryButton()
                     .controlSize(.large)
                     Button { goLive = true } label: {
                         Label(store.streamToday == nil ? "Go live" : "Your scheduled stream", systemImage: "dot.radiowaves.left.and.right").frame(maxWidth: .infinity)
@@ -53,10 +52,9 @@ struct SocialHubView: View {
                 .autocorrectionDisabled()
                 .padding(10)
                 .background(Theme.background)
-                .overlay(Rectangle().stroke(Theme.line))
+                .framed()
             Button("Create account") { store.createAccount(handle) }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .disabled(handle.trimmingCharacters(in: .whitespaces).isEmpty)
         }
     }
@@ -120,8 +118,7 @@ struct SocialHubView: View {
                             .foregroundStyle(Theme.muted)
                         HStack {
                             Button("Accept") { store.acceptOffer(offer.id) }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .disabled(store.activeDeal != nil)
                             Button("Decline") { store.declineOffer(offer.id) }.buttonStyle(.bordered)
                         }
@@ -147,8 +144,7 @@ struct SocialHubView: View {
                     Text("“\(sale.hint).” \(sale.hoursText)\(sale.far ? " · far" : "")").font(.caption).foregroundStyle(Theme.muted)
                     HStack {
                         Button("Add to calendar") { store.answerTip(sale.id, add: true) }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                         Button("Ignore") { store.answerTip(sale.id, add: false) }.buttonStyle(.bordered)
                     }
                     .controlSize(.small)

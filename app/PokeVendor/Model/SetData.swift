@@ -7,7 +7,8 @@ struct CardPrint: Codable, Hashable {
     let name: String
     let rarity: String
     let variant: String
-    let market: Double?
+    /// The real price from the set file. `market` is the price today.
+    let baseMarket: Double?
     /// Graded prices by key, for example "psa10" or "bgs9_5". A grade with no sales data is nil.
     let graded: [String: Double?]
     let image: String?
@@ -16,10 +17,16 @@ struct CardPrint: Codable, Hashable {
     var gradedReal: [String]? = nil
     /// The raw price is an estimate. Nil in an old file.
     var marketEstimated: Bool? = nil
+
+    enum CodingKeys: String, CodingKey {
+        case num, name, rarity, variant, baseMarket = "market", graded, image, gradedReal, marketEstimated
+    }
 }
 
 extension CardPrint {
-    func gradedPrice(_ key: String) -> Double? { graded[key] ?? nil }
+    var market: Double? { baseMarket.map { PriceCycle.price($0, marketFactor()) } }
+
+    func gradedPrice(_ key: String) -> Double? { (graded[key] ?? nil).map { PriceCycle.price($0, marketFactor()) } }
 
     /// The price of this key is an estimate. It is not an estimate when the price is real or the file has no list.
     func isGradedEstimated(_ key: String) -> Bool {
@@ -49,7 +56,7 @@ struct Product: Codable, Hashable, Identifiable {
         var marketEstimated: Bool? = nil
 
         var print: CardPrint {
-            CardPrint(num: num, name: name, rarity: rarity, variant: variant, market: market, graded: graded, image: image,
+            CardPrint(num: num, name: name, rarity: rarity, variant: variant, baseMarket: market, graded: graded, image: image,
                       gradedReal: gradedReal, marketEstimated: marketEstimated)
         }
     }
@@ -62,11 +69,18 @@ struct Product: Codable, Hashable, Identifiable {
     let promos: [Promo]
     /// True when the product holds one random promo from the list, for example a Surprise Box.
     let pickOnePromo: Bool
-    let market: Double
+    /// The real price from the catalog. `market` is the price today.
+    let baseMarket: Double
     let msrp: Double?
     let image: String?
     /// Still sold at retail (a Scarlet & Violet product).
     let inPrint: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, kind, packs, mix, promos, pickOnePromo, baseMarket = "market", msrp, image, inPrint
+    }
+
+    var market: Double { PriceCycle.price(baseMarket, marketFactor()) }
 
     /// The set of each pack, in order.
     var packSlugs: [String] { mix.flatMap { Array(repeating: $0.slug, count: $0.packs) } }

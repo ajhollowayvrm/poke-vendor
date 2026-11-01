@@ -53,6 +53,8 @@ struct EbayListed {
     let paid: Double?
     let fake: FakeTier?
     let known: Bool
+    var card: OwnedCard? = nil
+    var sealedItem: SealedItem? = nil
 }
 
 @MainActor
@@ -67,11 +69,11 @@ extension GameStore {
         }
         if let c = card(id), let l = fixed(c.status) {
             let name = c.grade.map { "\(c.print.name) \($0.label)" } ?? c.print.name
-            return EbayListed(name: name, listing: l, market: c.realMarket, sealed: false, paid: c.paid, fake: c.fake, known: c.isKnownFake)
+            return EbayListed(name: name, listing: l, market: c.realMarket, sealed: false, paid: c.paid, fake: c.fake, known: c.isKnownFake, card: c)
         }
         if let s = data.sealed.first(where: { $0.id == id }), let l = fixed(s.status) {
             return EbayListed(name: s.name, listing: l, market: realMarket(of: s), sealed: true, paid: s.paid, fake: s.fake,
-                              known: s.isKnownFake)
+                              known: s.isKnownFake, sealedItem: s)
         }
         return nil
     }
@@ -81,8 +83,6 @@ extension GameStore {
         for id in ids { data.offerTerms[id] = terms }
         save()
     }
-
-    func hasBestOffer(_ id: UUID) -> Bool { data.offerTerms[id] != nil && ebayListed(id) != nil }
 
     /// Offers that wait for the player: the item is still up, and the offer is not too old.
     var pendingBestOffers: [BestOffer] {
@@ -103,7 +103,8 @@ extension GameStore {
         data.sealed.removeAll { $0.id == id }
         data.offerTerms[id] = nil
         return completeSale(name: item.name, listing: item.listing, price: price, sealed: item.sealed, paid: item.paid,
-                            fake: item.fake, known: item.known)
+                            fake: item.fake, known: item.known, card: item.card, sealedItem: item.sealedItem,
+                            slab: item.card?.grade != nil)
     }
 
     /// New offers, and answers to counters. Runs at End Day, after the normal sales (docs/15-selling.md, Best Offer).

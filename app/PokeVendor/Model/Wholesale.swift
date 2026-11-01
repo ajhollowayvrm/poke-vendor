@@ -32,7 +32,15 @@ struct CaseSplit: Codable, Identifiable, Hashable {
 
 extension Balance {
     static let wholesaleDiscount = 0.72
-    static let wholesaleMinOrder = 500.0
+    static let wholesaleMinOrder = 250.0
+    /// A distributor does not sell far under market. The lowest case price, as a share of market.
+    static let wholesaleMarketFloor = 0.62
+    static let storeWholesaleMarketFloor = 0.5
+    /// A player with no store can buy this many cases in a week, and one case of each product.
+    static let wholesaleCasesPerWeek = 2
+    /// The chance that an order ships short, and the share of the boxes that ship then. The rest is refunded.
+    static let wholesaleShortChance = 0.12
+    static let wholesaleShortShare = 0.6...0.9
     static let wholesaleDeliveryDays = 5
     static let caseSizes: [String: Int] = ["Booster box": 6, "Elite Trainer Box": 10, "Booster bundle": 12, "Booster pack": 36]
     /// A split prices each box at this share of market.
@@ -52,7 +60,8 @@ extension GameStore {
     /// an account for a store (docs/22-own-store.md).
     var wholesaleOpen: Bool { reputationTier >= 3 || storeIsBuilt }
 
-    /// This week's cases: in-print product at 72% of MSRP, or 58% for a store account. The same week always gives the same cases.
+    /// This week's cases: in-print product at 72% of MSRP, or 58% for a store account, but never far under market.
+    /// The same week always gives the same cases.
     var wholesaleOffers: [WholesaleOffer] {
         guard wholesaleOpen else { return [] }
         var r = SeededRandom(seed: UInt64(data.day / 7 + 1) &* 57_559 &+ 909)
@@ -64,8 +73,9 @@ extension GameStore {
             let p = options[r.int(0...(options.count - 1))]
             if out.contains(where: { $0.product.id == p.id }) { continue }
             let size = Balance.caseSizes[p.kind] ?? 6
+            let floor = p.market * (hasStoreAccount ? Balance.storeWholesaleMarketFloor : Balance.wholesaleMarketFloor)
             out.append(WholesaleOffer(id: "w\(data.day / 7)-\(i)", product: p, caseSize: size,
-                                      unitPrice: Market.retail((p.msrp ?? p.market) * wholesaleDiscountNow)))
+                                      unitPrice: Market.retail(max((p.msrp ?? p.market) * wholesaleDiscountNow, floor))))
         }
         return out.sorted { $0.casePrice > $1.casePrice }
     }
@@ -81,7 +91,15 @@ extension GameStore {
         guard total >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
         guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }
         addLedger(-total, .wholesale, "\(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) · Distributor")
-        for _ in 0..<(offer.caseSize * cases) {
+        let ordered = offer.caseSize * cases
+        let boxes = Double.random(in: 0..<1) < Balance.wholesaleShortChance
+            ? max(1, Int(Double(ordered) * Double.random(in: Balance.wholesaleShortShare))) : ordered
+        if boxes < ordered {
+            let refund = offer.unitPrice * Double(ordered - boxes)
+            addLedger(refund, .wholesale, "Short shipment refund · \(offer.product.name)")
+            log("The distributor is short on \(offer.product.name). It ships \(boxes) of \(ordered) and refunds \(money(refund)).", cash: refund)
+        }
+        for _ in 0..<boxes {
             data.sealed.append(SealedItem(setSlug: offer.product.homeSlug, name: offer.product.name, packs: offer.product.packs,
                                           paid: offer.unitPrice, acquired: .now, source: "Wholesale", productID: offer.product.id,
                                           status: .arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor"),
@@ -166,6 +184,7 @@ extension GameStore {
         return lines
     }
 
+    #if DEBUG
     /// Test tool: one invite now.
     func testSplitInvite() {
         let saved = data.reputation
@@ -176,4 +195,5 @@ extension GameStore {
         data.reputation = saved
         save()
     }
+    #endif
 }

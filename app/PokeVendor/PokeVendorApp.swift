@@ -4,6 +4,7 @@ import SwiftUI
 struct PokeVendorApp: App {
     @State private var store = GameStore()
     @State private var nav = AppNav()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         // Card images come from the TCGplayer CDN. Keep them on disk between launches.
@@ -16,6 +17,9 @@ struct PokeVendorApp: App {
                 .environment(store)
                 .environment(nav)
                 .preferredColorScheme(.dark)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { store.saveNow() }
         }
     }
 }

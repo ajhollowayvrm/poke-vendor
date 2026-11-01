@@ -14,7 +14,7 @@ at the same time.
 | Work shift | Monday to Friday, 9 AM to 5 PM | [16-time-and-day.md](16-time-and-day.md#schedule) |
 | Paycheck | $640, paid when the player ends a Friday | [16-time-and-day.md](16-time-and-day.md#pay) |
 | Sick days | 5 each 52 weeks | [16-time-and-day.md](16-time-and-day.md#the-job-ladder) |
-| Rent | $1,200 every 28 days, with a warning 3 days before | [16-time-and-day.md](16-time-and-day.md#rent) |
+| Rent | $1,200 every 28 days, +5% each year, with a warning 3 days before | [16-time-and-day.md](16-time-and-day.md#rent) |
 
 ## Buying
 
@@ -70,7 +70,7 @@ a sleeved pack, a 1st Edition pack, a blister, or a bundle.
 | Buylist and standing | From [12-acquiring-product.md](12-acquiring-product.md#standing-levels) |
 
 In this build, the display case on a shop's own screen needs no store
-run. Holds, consignment, and league night are not built.
+run. Holds are not built. Consignment and league night are built.
 
 ## Selling
 
@@ -93,7 +93,8 @@ run. Holds, consignment, and league night are not built.
 | Best Offer: answers | An offer waits 2 days. One counter for each offer. The buyer says yes when the counter is at or under his most, and no above it. He answers at End Day |
 | Best Offer: auto rules | Auto-accept slider 80% to 100% of the price (default 95%). Auto-decline slider 50% to 90% (default 70%) |
 | Lot: buyer price | 85% of the sum of market values. The player's price slider runs from 50% to 110% of the sum |
-| Lot: sale chance | Each day: (6% + 22% / (1 + average item value / $20)) × e^(−8 × (price / buyer price − 1)). Cap 50%. A $2 item gives 26%, a $20 item 17%, a $100 item 10% |
+| Lot: sale chance | Each day: (6% + 22% / (1 + average item value / $20)) × e^(−8 × (price / buyer price − 1)) × 1 / (1 + (items − 2) / 8) × channel demand. Cap 50% |
+| Lot on Facebook | Buyer price 70% of the sum. The buyer pays 85% to 100% of the listed price. 20% of buyers do not come |
 | Lot: size | At least 2 items, all in one Inventory tab. A lot ends after 28 days |
 
 ## Grading
@@ -352,8 +353,8 @@ Other values:
 
 | Value | Prototype value |
 | --- | --- |
-| Wholesale | 72% of MSRP, $500 minimum, 5-day delivery. Cases of 6 boxes, 10 ETBs, 12 bundles, 36 packs |
-| Wholesale, store account | 58% of MSRP, no minimum. A weekly allocation of each product: 1 case, +1 for each $6,000 spent with the distributor, up to 5. +1 case for a product that is not hot (market under 1.2 × MSRP) |
+| Wholesale | 72% of MSRP or 62% of market, the higher price. $250 minimum, 5-day delivery. 1 case of each product and 2 cases a week. 12% of orders ship 60% to 90% of the boxes and refund the rest. Cases of 6 boxes, 10 ETBs, 12 bundles, 36 packs |
+| Wholesale, store account | 58% of MSRP or 50% of market, the higher price. No minimum. A weekly allocation of each product: 1 case, +1 for each $6,000 spent with the distributor, up to 5. +1 case for a product that is not hot (market under 1.2 × MSRP) |
 | Case splits | 85% of market a box (80% from a Friend vendor). Respected: 1 invite a week, 2 boxes. Elite: 2 a week, half the case. Closes in 3 days, arrives 4 days later |
 | Consignment | From Regular. The shop takes 20%, 12% at Trusted. 28 days. A card at market sells 60% of the time. +2 standing a sale |
 | Facebook selling | An offer 8% of days at 65–95% of the price. Half meet today, half in 1 to 3 days. 20% do not show. 1 hour, cash, no fees |
@@ -450,7 +451,7 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Missed payment | A penalty of 10% of the amount. The player still owes the amount. No game over |
 | Seller's permit | $50, one time. A requirement for a store lease. A store from an old save has one |
 | 1099-K note | $2,000 of gross sales on TCGplayer, eBay, and Whatnot in a year of 364 days |
-| Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, store events, and business interest |
+| Counted for income tax | Sales, tips, sponsorships, refunds, less sealed product, singles, grading, authentication, show fees, wholesale, store rent, overhead, wages, store events, business interest, and business costs |
 
 ## Theft, damage, and insurance
 
@@ -485,4 +486,55 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Payday loan | $100 to $500, at most half of one week of pay. $15 fee for each $100, due in 14 days. Up to 4 rollovers. $30 bounce fee |
 | Pawn shop | 40% of market. Items of $20 or more. 20% fee for each 28 days. The shop keeps the item after the last day |
 | Late fee | $30, or 5% of the payment when that is more |
-| Collections | After 3 missed payments in a row. 20% collection fee. 25% of each paycheck |
+| Collections | After 3 missed payments in a row. 20% collection fee. 25% of each paycheck. +2% of the balance every 28 days. With no job: 25% of cash each week |
+
+## The moving market
+
+| Value | Number |
+|---|---|
+| Whole market | ±18% over 420 days, plus ±7% over 97 days |
+| Card under $1 | Flat, except for news |
+| Card of $1 or more | Its share of the whole market grows with price, full at about $60 and up. Its own wave is up to ±20% over 60 to 240 days |
+| Card of $25 or more | +0% to +8% a year |
+| Sealed product | 60% of the whole market. In print +0% to +3% a year, out of print +5% to +15% a year |
+| Factor limits | 0.4 to 3 times the real price |
+| Market news | 6% each day, at most 3 at once. Hype +25% to +70%, 14 to 35 days. Reprint −15% to −35%, 30 to 70 days. Sealed hype +20% to +50%, 21 to 45 days |
+
+## The demand limit
+
+| Value | Number |
+|---|---|
+| Channel | Sale chance × 1 / (1 + recent sales / room). Room is 4, +2 for each follower tier. Recent sales keep 60% each day |
+| One item | Sale chance × 1 / (1 + 0.3 × recent sales). Price −5% for each recent sale, down to 60%. Recent sales keep 93% each day |
+| Auction | A no-sale chance of 5%, plus 60% of the demand lost |
+
+## Limits on follower growth
+
+| Value | Number |
+|---|---|
+| Same subject in 14 days | Quality × 0.35 |
+| Posts that gain followers | The first 3 of a day |
+| Gain of one post | At most 25 or 1.5% of followers, the higher number. A viral post: 4 times that |
+
+## Goals and costs that grow
+
+| Value | Number |
+|---|---|
+| Cash goals | $5,000, $25,000, $100,000, $500,000 |
+| Follower goals | 1,000, 10,000, 100,000, 1,000,000 |
+| Reputation goals | The Known, Trusted, Respected, and Elite tiers |
+| Collection goals | $1,000, $10,000, $50,000, $250,000 |
+| Storage unit | Every 28 days. 300 items $150, 800 items $400, 2,000 items $900. 10 bulk cards count as 1 item |
+| Bookkeeper | Every 28 days. 1.5% of the sales above $25,000 in that time |
+| Your own warehouse | $90,000. No storage unit |
+| Buy a home | $350,000. No rent, $600 upkeep every 28 days |
+| Unpaid business cost | Reputation −2 |
+
+## The save file
+
+| Value | Number |
+|---|---|
+| Write delay | 2 seconds after a change, and at once when the app leaves the screen |
+| Ledger | The last 182 days |
+| Activity | The last 91 days |
+| Posts | The last 60 |

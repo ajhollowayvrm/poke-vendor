@@ -131,7 +131,7 @@ struct StreamView: View {
         .frame(maxWidth: .infinity)
         .padding(12)
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 
     private var chat: some View {
@@ -234,7 +234,7 @@ struct StreamView: View {
             }
             .frame(maxWidth: .infinity, minHeight: 58)
             .background(Theme.background)
-            .overlay(Rectangle().stroke(Theme.line))
+            .framed()
         }
         .buttonStyle(.plain)
         .foregroundStyle(enabled ? Theme.cyan : Theme.muted)
@@ -375,8 +375,7 @@ struct StreamSummaryView: View {
                 .padding(16)
             }
             Button(action: onDone) { Text("Done").frame(maxWidth: .infinity) }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .controlSize(.large)
                 .padding(16)
         }

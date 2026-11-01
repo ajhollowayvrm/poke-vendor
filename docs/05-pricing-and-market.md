@@ -83,3 +83,25 @@ player actually gets sealed product in the first place.
 - **EV tension**: a player who understands pull rates can calculate whether
   it is better to open a box or sell it sealed. That tension is a deliberate
   in-game decision point.
+
+## The moving market
+
+**Status: built** (`Model/PriceCycle.swift`, `Hub/GoalsMarketViews.swift`).
+
+The set files and the catalog keep the real prices. The game does not change
+them. A factor for each day moves a price when the game reads it. All grades of
+a card use the same factor, so a ladder keeps its order and a 10 stays above
+its 9.
+
+- **Whole market**: two slow waves. Each run has its own waves.
+- **One card**: a card under $1 stays flat. A dearer card follows the whole
+  market more and has its own wave. A card of $25 or more gains value with time.
+- **Sealed product**: sealed product follows the whole market less. It gains
+  value with age, and it gains faster out of print.
+- **Market news**: a streamer pull lifts a card name, a reprint brings a card
+  name down, and collectors can chase the sealed product of a set. The End Day
+  report gives the news. The Market screen shows the news and the player's
+  biggest movers.
+- **Follower tier 4**: a post about a card lifts that card name for a week.
+
+With moving prices, the player can hold stock and choose when to sell.

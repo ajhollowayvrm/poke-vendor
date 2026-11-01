@@ -184,7 +184,7 @@ extension GameStore {
 
     /// Every sale over the whole run, after fees.
     var lifetimeSales: Double {
-        data.ledger.reduce(0) { $1.category == .sale && $1.amount > 0 ? $0 + $1.amount : $0 }
+        data.archivedSales + data.ledger.reduce(0) { $1.category == .sale && $1.amount > 0 ? $0 + $1.amount : $0 }
     }
 
     struct StoreRequirement: Identifiable {
@@ -246,7 +246,7 @@ extension GameStore {
     func closeStore(evicted: Bool = false) -> [String] {
         guard let s = data.cardStore else { return [] }
         let buyout = evicted ? 0 : leaseBuyout(s)
-        guard canAfford(buyout) else { return ["You need \(money(buyout)) to buy out the lease."] }
+        guard evicted || canAfford(buyout) else { return ["You need \(money(buyout)) to buy out the lease."] }
         let back = ItemStatus.arriving(daysLeft: 1, from: s.name)
         var count = 0
         for i in data.raw.indices where Self.isInStore(data.raw[i].status) {
@@ -657,6 +657,7 @@ extension GameStore {
                 recent.reduce(0) { $0 + $1.customers }, recent.reduce(0) { $0 + $1.sold })
     }
 
+    #if DEBUG
     // MARK: - Test tools
 
     /// A store that opens today, with no cost and no requirements. The lease runs for `term` periods.
@@ -668,4 +669,5 @@ extension GameStore {
         rivalShopsReact()
         save()
     }
+    #endif
 }

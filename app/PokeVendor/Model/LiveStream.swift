@@ -409,11 +409,6 @@ extension GameStore {
         save()
     }
 
-    func cancelStream(_ id: UUID) {
-        data.streams.removeAll { $0.id == id }
-        save()
-    }
-
     /// The free hours on a day ahead, for the day strip in the stream setup.
     func freeHours(on day: Int) -> Double {
         var hours = Balance.dayEnd - Balance.dayStart
@@ -487,10 +482,12 @@ extension GameStore {
         return lines
     }
 
+    #if DEBUG
     /// Test tool: 1,000 followers and an account.
     func testFollowers(_ count: Int) {
         if !hasAccount { createAccount("ajrips") }
         data.social.followers += count
         save()
     }
+    #endif
 }

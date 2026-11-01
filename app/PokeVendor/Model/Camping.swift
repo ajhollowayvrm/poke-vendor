@@ -103,16 +103,6 @@ extension GameStore {
         return CampHaul(store: store, items: items)
     }
 
-    /// Test tool: a restock at this store today, with the clock at the doors.
-    func testRestockToday(_ store: LocalStore) {
-        let key = "\(store.rawValue)-\(data.day)"
-        data.testRestocks.append(key)
-        data.campedDays.removeAll { $0 == key }
-        if data.hour > Balance.campStart { data.hour = Balance.dayStart }
-        if worksToday { callInSick() }
-        save()
-    }
-
     /// Today's restocks, the test ones included.
     var restocksNow: [Restock] {
         var out = restocksToday

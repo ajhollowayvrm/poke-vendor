@@ -194,25 +194,4 @@ extension GameStore {
         }
         save()
     }
-
-    // MARK: - Test tools
-
-    /// A sale that starts today, at the door, with a good lot.
-    @discardableResult
-    func addTestSale(_ kind: SaleKind) -> PostedSale {
-        let sale = PostedSale(kind: kind, address: "1 Test St", startDay: data.day, days: kind == .estate ? 3 : 1,
-                              postedDay: data.day, far: false, quality: 1.4, hint: "Old binders")
-        data.sales.append(sale)
-        if data.hour > kind.close - 1 { data.hour = kind.open }
-        save()
-        return sale
-    }
-
-    func addTestTip() {
-        let sale = PostedSale(kind: .garage, address: "2 Tip Ln", startDay: data.day + 2, days: 1, postedDay: data.day, far: false,
-                              quality: 1.6, hidden: true, hint: "Shoebox of cards from the 90s")
-        data.sales.append(sale)
-        data.saleTips.append(sale.id)
-        save()
-    }
 }

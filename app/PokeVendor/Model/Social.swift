@@ -89,6 +89,15 @@ extension Balance {
     static let bigSponsorFactor = 2.0
 }
 
+extension Balance {
+    static let postRepeatDays = 14
+    static let postRepeatQuality = 0.35
+    static let postsWithGain = 3
+    static let postGainFloor = 25.0
+    static let postGainShare = 0.015
+    static let postViralGain = 4.0
+}
+
 @MainActor
 extension GameStore {
     var social: SocialState { data.social }
@@ -137,7 +146,10 @@ extension GameStore {
               showID: UUID? = nil) -> SocialPost? {
         guard hasAccount else { return nil }
         var s = data.social
-        let quality = Self.contentQuality(type: type, value: value)
+        let today = data.day
+        // A post about the same subject again is old news (docs/06-social-media.md, Limits on growth).
+        let repeated = subject != nil && s.posts.contains { $0.subject == subject && today - $0.day < Balance.postRepeatDays }
+        let quality = Self.contentQuality(type: type, value: value) * (repeated ? Balance.postRepeatQuality : 1)
         let timing = postTiming
         var luck = exp((Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.5)
         if Double.random(in: 0..<1) < 0.02 { luck *= Double.random(in: 8...20) }
@@ -145,7 +157,11 @@ extension GameStore {
         let reach = base * quality * timing * luck * (1 - s.burnout * 0.7) * (0.4 + s.authenticity) * productionQuality
         let views = max(1, Int(reach))
         let gainRate = 0.02 * (quality - 0.7) * (0.5 + s.authenticity)
-        let change = Int((Double(views) * gainRate).rounded()) - (s.burnout > 0.8 ? Int(Double(s.followers) * 0.01) : 0)
+        // Only the first posts of a day gain followers, and one post gains a small share of the audience. A viral post gains more.
+        let postsToday = s.posts.filter { $0.day == today }.count
+        let gainLimit = max(Balance.postGainFloor, Double(s.followers) * Balance.postGainShare) * (luck >= 5 ? Balance.postViralGain : 1)
+        let gain = postsToday >= Balance.postsWithGain ? 0 : min(gainLimit, Double(views) * gainRate)
+        let change = Int(gain.rounded()) - (s.burnout > 0.8 ? Int(Double(s.followers) * 0.01) : 0)
         let likes = Int(Double(views) * Double.random(in: 0.04...0.12) * min(2, quality))
         s.followers = max(0, s.followers + change)
         s.burnout = min(1, s.burnout + (quality < 0.9 ? 0.2 : 0.12))
@@ -174,16 +190,11 @@ extension GameStore {
         // Follower tier 4: a post about a card moves its price for a week (docs/04).
         if followerTier >= 4, type == .pullReveal || type == .collectionFlex, let subject, value > 0 {
             data.priceBoosts[subject] = data.day + Balance.priceBoostDays
+            syncMarket()
         }
         log("Posted a \(type.rawValue.lowercased())\(subject.map { ": \($0)" } ?? ""). \(views) views, \(change >= 0 ? "+" : "")\(change) followers.")
         save()
         return post
-    }
-
-    /// The price factor for a card the player posted about at follower tier 4.
-    func priceBoost(for name: String) -> Double {
-        guard let until = data.priceBoosts[name], until >= data.day else { return 1 }
-        return Balance.priceBoostFactor
     }
 
     private func setStatus(_ id: UUID, _ status: ItemStatus?) {

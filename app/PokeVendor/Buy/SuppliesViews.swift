@@ -38,15 +38,14 @@ struct SuppliesView: View {
                                     value: Binding(get: { n }, set: { packs[item.rawValue] = $0 }), in: 1...20)
                                 .font(.caption)
                             Button("Buy") { message = store.buySupply(item, packs: n) ?? "Bought \(n * item.packSize) \(item.name.lowercased())." }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .controlSize(.small)
                                 .disabled(!store.canAfford(item.packPrice * Double(n)))
                         }
                     }
                     .padding(12)
                     .background(Theme.surface)
-                    .overlay(Rectangle().stroke(Theme.line))
+                    .framed()
                 }
                 if store.storeIsBuilt {
                     Text("STORE ACCESSORIES").font(.system(size: 10, weight: .semibold)).kerning(0.8)
@@ -68,15 +67,14 @@ struct SuppliesView: View {
                                 Button("Order") {
                                     message = store.buyAccessories(item, cases: n) ?? "Stocked \(n * item.caseSize) \(item.name.lowercased()) on the shelf."
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .controlSize(.small)
                                 .disabled(!store.canAfford(item.casePrice * Double(n)))
                             }
                         }
                         .padding(12)
                         .background(Theme.surface)
-                        .overlay(Rectangle().stroke(Theme.line))
+                        .framed()
                     }
                 }
             }

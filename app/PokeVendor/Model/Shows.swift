@@ -379,7 +379,7 @@ extension GameStore {
             out.append(CalendarEntry(kind: .paycheck, title: "Payday", detail: money(job.weeklyPay)))
         }
         if day > 0 && day % Balance.rentCycleDays == 0 {
-            out.append(CalendarEntry(kind: .rent, title: "Rent due", detail: money(Balance.rent)))
+            if rentNow > 0 { out.append(CalendarEntry(kind: .rent, title: "Rent due", detail: money(rentNow))) }
         }
         for show in data.shows where show.covers(day) {
             let dayText = show.size.days > 1 ? " · day \(day - show.startDay + 1) of \(show.size.days)" : ""

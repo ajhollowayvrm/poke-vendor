@@ -48,7 +48,7 @@ struct CardStoreView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $stocking) { StockShelvesSheet() }
         .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
-        .confirmationDialog("Sign the lease?", isPresented: Binding(get: { signing != nil }, set: { if !$0 { signing = nil } }),
+        .confirmationDialog("Sign the lease?", isPresented: Binding(isPresent: $signing),
                             titleVisibility: .visible, presenting: signing) { location in
             Button("Sign for \(money(location.upfront(term: term)))") { store.signLease(location, term: term, name: name) }
         } message: { location in
@@ -101,7 +101,7 @@ struct CardStoreView: View {
                 .textInputAutocapitalization(.words)
                 .padding(8)
                 .background(Theme.background)
-                .overlay(Rectangle().stroke(Theme.line))
+                .framed()
         }
         DetailBox(title: "The lease term") {
             Picker("Term", selection: $term) {
@@ -128,8 +128,7 @@ struct CardStoreView: View {
                 Button { signing = location } label: {
                     Text("Sign the lease · \(money(location.upfront(term: term)))").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .disabled(!store.canSignLease(location, term: term))
             }
         }
@@ -177,18 +176,9 @@ struct CardStoreView: View {
             Button {
                 if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
             } label: {
-                HStack {
-                    Image(systemName: "person.crop.square").foregroundStyle(Theme.cyan)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Work the counter").font(.subheadline.weight(.medium))
-                            .foregroundStyle(block == nil ? Theme.cyan : Theme.text)
-                        Text(block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(Balance.storeClose)) · buy, sell, and trade with walk-ins")
-                            .font(.caption).foregroundStyle(Theme.muted)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                }
-                .contentShape(Rectangle())
+                ChevronRow(icon: "person.crop.square", title: "Work the counter",
+                           detail: block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(Balance.storeClose)) · buy, sell, and trade with walk-ins",
+                           accent: block == nil)
             }
             .buttonStyle(.plain)
             .disabled(block != nil)
@@ -226,8 +216,7 @@ struct CardStoreView: View {
                 StatCell(label: "At your price", value: money(value))
             }
             Button { stocking = true } label: { Text("Stock the shelves").frame(maxWidth: .infinity) }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .disabled(store.stockable.cards.isEmpty && store.stockable.sealed.isEmpty)
             if items.isEmpty {
                 Text("The shelves are empty. Empty shelves turn customers away.").font(.caption).foregroundStyle(Theme.orange)
@@ -377,8 +366,7 @@ struct CardStoreView: View {
             }
             HStack(spacing: 8) {
                 Button { store.moveBulkToBox(Set(groups.map(\.id))) } label: { Text("Move all bulk").frame(maxWidth: .infinity) }
-                    .buttonStyle(.borderedProminent)
-                    .foregroundStyle(.black)
+                    .primaryButton()
                     .disabled(groups.isEmpty)
                 Button { store.takeBulkBack() } label: { Text("Take the box back").frame(maxWidth: .infinity) }
                     .buttonStyle(.bordered)
@@ -405,8 +393,7 @@ struct CardStoreView: View {
                         Tag(text: "OWNED", color: Theme.green)
                     } else {
                         Button(money(f.cost)) { store.buyFixture(f) }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                             .controlSize(.small)
                             .disabled(!store.canBuyFixture(f))
                     }
@@ -504,8 +491,7 @@ struct StockShelvesSheet: View {
                 } label: {
                     Text(fits > 0 ? "Put \(fits) in the store" : "Pick items").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .controlSize(.large)
                 .disabled(fits == 0)
                 .padding(16)

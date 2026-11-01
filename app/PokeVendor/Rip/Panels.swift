@@ -110,7 +110,7 @@ struct CardInfo: View {
         }
         .padding(12)
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 
 }
@@ -246,15 +246,14 @@ struct SummaryView: View {
                 Button(action: model.hasNextPack ? onNext : onDone) {
                     Text(model.hasNextPack ? "Next pack" : "Done").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.cyan)
-                .foregroundStyle(.black)
             }
             .controlSize(.large)
         }
         .padding(20)
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
         .padding(16)
     }
 

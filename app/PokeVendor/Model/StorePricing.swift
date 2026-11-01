@@ -140,7 +140,7 @@ extension GameStore {
             wouldSell = rollSale(listing, card: card) != nil
         } else if let item = data.sealed.first(where: { $0.id == id }), Self.isInStore(item.status),
                   let listing = item.onlineListing {
-            wouldSell = rollSale(listing, market: realMarket(of: item), sealed: true) != nil
+            wouldSell = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name) != nil
         }
         guard wouldSell, Double.random(in: 0..<1) < Balance.doubleSaleChance else { return }
         addReputation(Balance.doubleSaleReputation)
@@ -168,7 +168,7 @@ extension GameStore {
     /// The same for a sealed item in the store.
     func advanceOnlineListing(_ item: inout SealedItem) -> (line: String, sold: Bool)? {
         guard Self.isInStore(item.status), let listing = item.onlineListing else { return nil }
-        if let sale = rollSale(listing, market: realMarket(of: item), sealed: true) {
+        if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name) {
             let line = completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid, fake: item.fake,
                                     known: item.isKnownFake, sealedItem: item)
             return (line, true)

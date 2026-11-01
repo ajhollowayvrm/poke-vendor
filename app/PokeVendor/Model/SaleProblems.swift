@@ -29,6 +29,8 @@ struct SaleProblem: Codable, Identifiable, Hashable {
     let day: Int
     var card: OwnedCard?
     var sealed: SealedItem?
+    /// The sold lot. A problem with a lot covers its one shipment.
+    var lot: Lot?
 }
 
 extension Balance {
@@ -63,13 +65,14 @@ extension Balance {
 extension GameStore {
     /// Rolls the problems for one finished sale. Call it after the sale. A fake has its own bad-sale roll, so it gets none here.
     func scheduleSaleProblems(name: String, channel: Listing.Channel, price: Double, insured: Bool, overstated: Bool,
-                              card: OwnedCard?, sealed: SealedItem?) {
-        guard channel.ships, card != nil || sealed != nil, card?.fake == nil, sealed?.fake == nil else { return }
+                              card: OwnedCard?, sealed: SealedItem?, lot: Lot? = nil) {
+        let lotHasFake = lot.map { l in (l.raw + l.slabs).contains { $0.fake != nil } || l.sealed.contains { $0.fake != nil } } ?? false
+        guard channel.ships, card != nil || sealed != nil || lot != nil, card?.fake == nil, sealed?.fake == nil, !lotHasFake else { return }
         let tracked = price >= Balance.trackedFromPrice
         func add(_ kind: SaleProblemKind, _ days: ClosedRange<Int>) {
             data.saleProblems.append(SaleProblem(kind: kind, name: name, channel: channel, price: price, insured: insured,
                                                  tracked: tracked, overstated: overstated, day: data.day + Int.random(in: days),
-                                                 card: card, sealed: sealed))
+                                                 card: card, sealed: sealed, lot: lot))
         }
         if Double.random(in: 0..<1) < Balance.lossChance {
             add(.lost, Balance.lostDays)
@@ -94,7 +97,8 @@ extension GameStore {
 
     /// A cheap card from the set of the sold item. The scam buyer sends it back in place of the real one.
     private func scamReturnCard(_ problem: SaleProblem) -> OwnedCard? {
-        guard let slug = problem.card?.setSlug ?? problem.sealed?.setSlug else { return nil }
+        guard let slug = problem.card?.setSlug ?? problem.sealed?.setSlug
+                ?? problem.lot?.raw.first?.setSlug ?? problem.lot?.slabs.first?.setSlug ?? problem.lot?.sealed.first?.setSlug else { return nil }
         let prints = SetLibrary.set(slug).prints.filter { ($0.market ?? 0) > 0 }
         let limit = problem.price * Balance.scamReturnCardShare
         let cheap = prints.filter { ($0.market ?? 0) <= limit }
@@ -105,7 +109,9 @@ extension GameStore {
 
     /// Puts the sold item back in Inventory.
     private func returnToInventory(_ problem: SaleProblem) {
-        if var card = problem.card {
+        if let lot = problem.lot {
+            returnLot(lot)
+        } else if var card = problem.card {
             card.status = nil
             card.onlineListing = nil
             if card.grade == nil { data.raw.append(card) } else { data.slabs.append(card) }
@@ -157,7 +163,7 @@ extension GameStore {
                 refundBuyer(problem, "Return")
                 line = "The buyer of your \(name) on \(channel) returned it as not as described. You refunded \(money(problem.price))."
                 if problem.channel == .ebay || problem.channel == .ebayAuction {
-                    let shipping = Balance.shippingCost(for: problem.price, sealed: problem.sealed != nil)
+                    let shipping = Balance.shippingCost(for: problem.price, sealed: problem.sealed != nil || problem.lot?.hasSealed == true)
                     addLedger(-shipping, .refund, "Return shipping · \(name)")
                     line += " You paid \(money(shipping)) for return shipping."
                 }

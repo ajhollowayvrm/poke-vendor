@@ -235,7 +235,7 @@ extension GameStore {
     /// The market value of a card as if it were real: what a buyer who does not know pays.
     func realMarket(of item: SealedItem) -> Double {
         if let product = SetLibrary.product(item.productID, in: item.setSlug) { return product.market }
-        return (SetLibrary.set(item.setSlug).packCost ?? 0) * Double(item.packs)
+        return (SetLibrary.set(item.setSlug).packCost ?? 0) * Double(item.packs) * (1 + (PriceCycle.index() - 1) * 0.6)
     }
 
     // MARK: - Authentication
@@ -360,6 +360,7 @@ extension GameStore {
         return lines
     }
 
+    #if DEBUG
     // MARK: - Test tools
 
     /// A fake card of this tier in Raw, worth a lot if it were real.
@@ -384,12 +385,5 @@ extension GameStore {
         data.sealed.append(item)
         save()
     }
-
-    /// Every card at the authenticator comes back tomorrow.
-    func testAuthenticationTomorrow() {
-        for i in data.raw.indices {
-            if case .atAuthenticator(_, let l) = data.raw[i].status { data.raw[i].status = .atAuthenticator(daysLeft: 1, ledgerID: l) }
-        }
-        save()
-    }
+    #endif
 }

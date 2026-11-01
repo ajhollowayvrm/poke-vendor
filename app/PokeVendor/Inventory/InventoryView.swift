@@ -218,7 +218,7 @@ struct InventoryView: View {
             }
         }
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 
     /// A tap in select mode selects the whole stack.
@@ -284,8 +284,7 @@ struct InventoryView: View {
                            wear: { wears[$0] })
                 finishSelecting()
             }
-            .buttonStyle(.borderedProminent)
-            .foregroundStyle(.black)
+            .primaryButton()
             .frame(maxWidth: .infinity)
             .disabled(chosen.isEmpty || blocked || chosen.contains { id in store.data.raw.contains { $0.id == id && $0.isKnownFake } })
         }
@@ -299,17 +298,15 @@ struct InventoryView: View {
                     nav.startRip(store.data.sealed.filter { chosen.contains($0.id) })
                     finishSelecting()
                 }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .disabled(chosen.isEmpty || blocked)
                 // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
                 Button("Hits only") {
                     nav.startRip(store.data.sealed.filter { chosen.contains($0.id) }, hitsOnly: true)
                     finishSelecting()
                 }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.orange)
-                .foregroundStyle(.black)
                 .disabled(chosen.isEmpty || blocked)
                 sellButton(chosen, disabled: blocked)
                 lotButton(chosen, disabled: blocked)
@@ -485,7 +482,7 @@ struct PortfolioHeader: View {
         }
         .padding(12)
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 }
 

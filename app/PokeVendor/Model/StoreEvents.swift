@@ -69,8 +69,6 @@ extension Balance {
     static let afterglowShare = 0.3
     /// Tournament players buy singles more than packs. A pack is this likely to be picked, compared to a single.
     static let eventPackWeight = 0.4
-    /// The league adds small-budget customers.
-    static let leagueCasualBoost = 0.25
 }
 
 @MainActor

@@ -365,9 +365,8 @@ struct UnboxView: View {
                 Button { choose(0) } label: {
                     Text("Rip packs (\(packSlugs.count))").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.cyan)
-                .foregroundStyle(.black)
             }
             .controlSize(.large)
             .padding(16)

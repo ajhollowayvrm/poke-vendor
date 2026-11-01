@@ -42,9 +42,8 @@ struct SaleReceiptView: View {
                 Button(action: onDone) {
                     Text("Done").font(.headline).frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .primaryButton()
                 .tint(Theme.cyan)
-                .foregroundStyle(.black)
                 .controlSize(.large)
             }
             .padding(20)
@@ -88,7 +87,11 @@ private struct SaleReceiptsModifier: ViewModifier {
                     withAnimation(.easeOut(duration: 0.2)) { store.clearReceipts() }
                 }
                 .transition(.opacity.combined(with: .scale(scale: 0.96)))
-                .onAppear { UINotificationFeedbackGenerator().notificationOccurred(.success) }
+                .onAppear {
+                    let profit = store.receipts.reduce(0) { $0 + $1.profit }
+                    UINotificationFeedbackGenerator().notificationOccurred(profit < 0 ? .warning : .success)
+                    SoundFX.shared.play(profit < 0 ? .loss : .sale)
+                }
             }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.85), value: store.receipts.isEmpty)

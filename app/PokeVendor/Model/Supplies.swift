@@ -274,6 +274,7 @@ extension GameStore {
         if count > 0 {
             let parts = StoreAccessory.allCases.compactMap { item in sold[item].map { "\($0) \(item.name.lowercased())" } }
             addLedger(revenue, .sale, "Accessories · \(storeName) · \(parts.joined(separator: ", "))")
+            collectSalesTax(on: revenue, at: storeName)
             lines.append("\(storeName) sold \(count) accessor\(count == 1 ? "y" : "ies") for \(money(revenue)): \(parts.joined(separator: ", ")).")
         }
         if empty, s.stockedShelf {

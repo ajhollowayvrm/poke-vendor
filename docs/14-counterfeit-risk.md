@@ -126,3 +126,10 @@ Not one fake fidelity level — mirrors the grader-variance design in
   [12-acquiring-product.md](12-acquiring-product.md#open-topics)).
 - Interaction with a grading appeal/resubmission mechanic, if one gets
   designed (see [10-grading.md](10-grading.md#open-topics)).
+
+## Fakes in bulk
+
+A known fake cannot go to bulk. The player can move a fake that they do not know
+about. A shop that buys the bulk finds each fake half of the time. It pays nothing
+for a fake it finds, and each one costs 3 reputation. Bulk from Raw also keeps the
+wear of its cards in its value.

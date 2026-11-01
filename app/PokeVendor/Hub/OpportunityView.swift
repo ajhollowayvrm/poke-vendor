@@ -51,9 +51,8 @@ struct OpportunityView: View {
                         } label: {
                             Text(block ?? "Accept").frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .primaryButton()
                         .tint(Theme.orange)
-                        .foregroundStyle(.black)
                         .controlSize(.large)
                         .disabled(block != nil)
                         Button {
@@ -110,20 +109,18 @@ struct CampView: View {
                             }
                             Spacer()
                             Button(left > 0 ? money(item.price) : "Gone") { store.buyShelf(item, at: haul.store, credit: false) }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .controlSize(.small)
                                 .disabled(left == 0 || !store.canAfford(item.price))
                         }
                         .padding(10)
                         .background(Theme.surface)
-                        .overlay(Rectangle().stroke(Theme.line))
+                        .framed()
                     }
                 }
             }
             Button { dismiss() } label: { Text("Done").frame(maxWidth: .infinity) }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(.black)
+                .primaryButton()
                 .controlSize(.large)
         }
         .padding(20)

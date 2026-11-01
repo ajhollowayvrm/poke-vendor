@@ -52,3 +52,11 @@ different playstyles all look and feel legitimate:
 
 Keeping the currencies separate, connected only through unlocks, avoids the
 game collapsing into a single spreadsheet number to maximize.
+
+## Goals
+
+**Status: built** (`Model/Milestones.swift`). Each currency has a ladder of four
+goals, and the Goals screen shows them. Most goals give reputation or followers.
+The top goal of any ladder opens a "You made it" screen, and the run goes on.
+The collection ladder is the reason to keep cards. The numbers are in
+[19-prototype-values.md](19-prototype-values.md#goals-and-costs-that-grow).

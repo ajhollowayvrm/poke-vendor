@@ -60,6 +60,8 @@ extension Balance {
     /// Collections add this share of the debt, and take this share of each paycheck.
     static let collectionsFeeRate = 0.20
     static let garnishShare = 0.25
+    /// The growth of a debt in collections, every 4 weeks.
+    static let collectionsGrowth = 0.02
 }
 
 /// A loan with a fixed payment, or a payday loan. Interest accrues every day on the balance.
@@ -557,6 +559,29 @@ extension GameStore {
 
     // MARK: - The day
 
+    /// A debt in collections grows every 4 weeks. With no paycheck to garnish, the collector levies the bank account
+    /// each week. Quitting the job does not stop the collector.
+    func collectionsEndDay() -> [String] {
+        var lines: [String] = []
+        for i in data.debt.collections.indices {
+            var debt = data.debt.collections[i]
+            let age = data.day - debt.day
+            if age > 0, age % Balance.rentCycleDays == 0 {
+                debt.fees = cents(debt.fees + debt.balance * Balance.collectionsGrowth)
+            }
+            if job == nil, age > 0, age % 7 == 0, data.cash > 0, debt.owed >= 0.01 {
+                let take = cents(min(data.cash * Balance.garnishShare, debt.owed))
+                if take > 0 {
+                    book(take, accrued: &debt.fees, balance: &debt.balance, category: .interest, label: "Bank levy · \(debt.creditor)")
+                    lines.append("The collector took \(money(take)) from your bank account for \(debt.creditor). You still owe \(money(debt.owed)).")
+                }
+            }
+            data.debt.collections[i] = debt
+        }
+        data.debt.collections.removeAll { $0.owed < 0.01 }
+        return lines
+    }
+
     /// Moves a debt to collections, with the collection fee.
     private func sendToCollections(creditor: String, balance: Double, accrued: Double) -> String {
         let fees = cents(accrued + balance * Balance.collectionsFeeRate)
@@ -765,12 +790,14 @@ extension GameStore {
         return out
     }
 
+    #if DEBUG
     // MARK: - Test tools
 
     func testSetCreditScore(_ score: Int) {
         data.debt.score = score
         save()
     }
+    #endif
 }
 
 func percent(_ rate: Double) -> String {

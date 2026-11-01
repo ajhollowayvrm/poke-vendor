@@ -72,7 +72,7 @@ private struct DayRow: View {
         .padding(.vertical, 10)
         .padding(.horizontal, 12)
         .background(today ? Theme.cyan.opacity(0.08) : Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 }
 
@@ -166,9 +166,8 @@ struct ShowDetailView: View {
                             Button { store.buyVendorKit() } label: {
                                 Text("Buy the vendor kit · \(money(Balance.vendorKitCost))").frame(maxWidth: .infinity)
                             }
-                            .buttonStyle(.borderedProminent)
+                            .primaryButton()
                             .tint(Theme.cyan)
-                            .foregroundStyle(.black)
                             .controlSize(.large)
                             .disabled(!store.canAfford(Balance.vendorKitCost))
                             if !store.canAfford(Balance.vendorKitCost) {
@@ -179,9 +178,8 @@ struct ShowDetailView: View {
                         Button { store.bookTable(show.id) } label: {
                             Text("Book a table · \(money(show.size.tableFee))").frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .primaryButton()
                         .tint(Theme.cyan)
-                        .foregroundStyle(.black)
                         .controlSize(.large)
                         .disabled(!store.canBook(show))
                         if !store.canAfford(show.size.tableFee) {

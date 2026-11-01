@@ -36,6 +36,11 @@ extension Balance {
     /// The chance falls this fast for each 100% that the price is above the buyer price.
     static let lotPriceSlope = 8.0
     static let lotMinItems = 2
+    /// A big lot needs a buyer with more money. This many items above the minimum halve the sale chance.
+    static let lotSizeScale = 8.0
+    /// Facebook buyers pay less, haggle, and sometimes do not come.
+    static let lotFacebookBuyerShare = 0.7
+    static let lotFacebookHaggle = 0.85...1.0
     /// The limits of the lot price slider, as shares of the sum of market values.
     static let lotPriceRange = 0.50...1.10
 }
@@ -60,9 +65,11 @@ extension GameStore {
         let market = lotMarket(lot)
         let average = market / Double(max(lot.count, 1))
         let base = Balance.lotChanceFloor + Balance.lotChanceExtra / (1 + average / Balance.lotSpeedScale)
-        let buyer = max(market * Balance.lotBuyerShare, 0.01)
+        let share = lot.channel == .facebook ? Balance.lotFacebookBuyerShare : Balance.lotBuyerShare
+        let buyer = max(market * share, 0.01)
+        let size = 1 / (1 + Double(max(0, lot.count - Balance.lotMinItems)) / Balance.lotSizeScale)
         let chance = base * exp(-(lot.price / buyer - 1) * Balance.lotPriceSlope)
-        return min(Balance.lotChanceCap, chance * reachSaleFactor)
+        return min(Balance.lotChanceCap, chance * reachSaleFactor * size * channelDemand(lot.channel))
     }
 
     /// Takes the items out of Inventory and lists them as one lot. The items must be free: no status, not kept.
@@ -86,7 +93,7 @@ extension GameStore {
     }
 
     /// The lot ends. Its items go back to Inventory together.
-    private func returnLot(_ lot: Lot) {
+    func returnLot(_ lot: Lot) {
         data.raw += lot.raw
         data.slabs += lot.slabs
         data.sealed += lot.sealed
@@ -108,7 +115,12 @@ extension GameStore {
         var kept: [Lot] = []
         for lot in lots {
             if Double.random(in: 0..<1) < lotSaleChance(lot) {
-                lines.append(sellLot(lot))
+                if lot.channel == .facebook, Double.random(in: 0..<1) < Balance.fbNoShowChance {
+                    lines.append("The Facebook buyer of your \(lot.name.lowercased()) did not come. The listing stays up.")
+                    kept.append(lot)
+                } else {
+                    lines.append(sellLot(lot))
+                }
             } else if today - lot.dayListed >= Balance.listingDays {
                 returnLot(lot)
                 lines.append("Your \(lot.channel.rawValue) listing for \(lot.name.lowercased()) ended with no sale. The items are back in Inventory.")
@@ -122,17 +134,19 @@ extension GameStore {
 
     /// One sale, one shipment, one ledger entry. A fake in the lot can come back later, as in any sale.
     private func sellLot(_ lot: Lot) -> String {
-        let listing = Listing(channel: lot.channel, price: lot.price, dayListed: lot.dayListed, insured: lot.insured)
-        let line = completeSale(name: lot.name, listing: listing, price: lot.price, sealed: lot.hasSealed, paid: lot.paid)
+        let price = lot.channel == .facebook ? ShowSession.round(lot.price * Double.random(in: Balance.lotFacebookHaggle)) : lot.price
+        let listing = Listing(channel: lot.channel, price: price, dayListed: lot.dayListed, insured: lot.insured)
+        let line = completeSale(name: lot.name, listing: listing, price: price, sealed: lot.hasSealed, paid: lot.paid, lot: lot)
         let market = max(lotMarket(lot), 0.01)
+        noteDemand(lot.name, channel: lot.channel, count: Double(max(0, lot.count - 1)) * 0.5)
         for card in lot.raw + lot.slabs {
             guard let fake = card.fake else { continue }
-            recordBadSale(item: card.print.name, channel: lot.channel.rawValue, price: lot.price * card.realMarket / market, fake: fake,
+            recordBadSale(item: card.print.name, channel: lot.channel.rawValue, price: price * card.realMarket / market, fake: fake,
                           known: card.isKnownFake, refunds: lot.channel.refundsFakes)
         }
         for item in lot.sealed {
             guard let fake = item.fake else { continue }
-            recordBadSale(item: item.name, channel: lot.channel.rawValue, price: lot.price * realMarket(of: item) / market, fake: fake,
+            recordBadSale(item: item.name, channel: lot.channel.rawValue, price: price * realMarket(of: item) / market, fake: fake,
                           known: item.isKnownFake, refunds: lot.channel.refundsFakes)
         }
         return line

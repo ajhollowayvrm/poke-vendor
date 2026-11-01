@@ -123,8 +123,9 @@ above tells the player where it is.
 
 | Action | Points |
 | --- | --- |
-| A completed deal (buy, sell, or trade) | +2 |
-| A deal at a fair price (within 10% of market) | +1 more |
+| A completed deal of $20 or more (buy, sell, or trade) | +2 |
+| A deal at a fair price (within 10% of market) | +1 more. A fair deal of $20 or more also gives +1 reputation |
+| A deal under $20 | +1 at a fair price, otherwise 0 |
 | Paying more than a naive seller asked (see Fair dealing) | +4, and reputation |
 | Picking up a saved item | +3 |
 | A counter under 60% of market (a lowball) | −2 |
@@ -199,8 +200,7 @@ Reputation is a points total. It sets the five tiers from
 ## How it plays now
 
 - **Game shops:** the shop's standing is its relationship. Each shop buy
-  or buylist sale is a deal (+2, or +3 at a fair price), on top of +1
-  for each $50. At Regular, the shop's prices drop by the level's bonus,
+  or buylist sale is a deal (see the table), on top of +1 for each $50. At Regular, the shop's prices drop by the level's bonus,
   and the shop can save 1 item for 3 days ("Saved for you" on the shop
   screen and at a store run stop). Each day, a shop with room for a
   saved item saves one 1 time in 4.

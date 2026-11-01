@@ -15,7 +15,7 @@ struct DetailBox<Content: View>: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(Theme.surface)
-        .overlay(Rectangle().stroke(Theme.line))
+        .framed()
     }
 }
 
@@ -185,8 +185,7 @@ struct CardDetailView: View {
                                 .disabled(!free || card.keep)
                         }
                         Button(card.keep ? "Unkeep" : "Keep") { store.setKeep([card.id], !card.keep) }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                     }
                     .controlSize(.large)
                     if card.grade == nil {
@@ -460,13 +459,11 @@ struct SealedDetailView: View {
                             .buttonStyle(.bordered)
                             .disabled(!free)
                         Button("Rip") { nav.startRip([item]) }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(.black)
+                            .primaryButton()
                             .disabled(!free)
                         if mates.count > 1 {
                             Button("Rip all \(mates.count)") { nav.startRip(mates) }
-                                .buttonStyle(.borderedProminent)
-                                .foregroundStyle(.black)
+                                .primaryButton()
                                 .disabled(!free)
                         }
                     }
@@ -478,9 +475,8 @@ struct SealedDetailView: View {
                         Label(mates.count > 1 ? "Hits only · rip all \(mates.count)" : "Hits only", systemImage: "sparkles.rectangle.stack")
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .primaryButton()
                     .tint(Theme.orange)
-                    .foregroundStyle(.black)
                     .controlSize(.large)
                     .disabled(!free)
                     if item.keep {

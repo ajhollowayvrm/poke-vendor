@@ -242,26 +242,4 @@ extension GameStore {
             return .done("The estate sale on \(sale.address) is on your calendar. It starts tomorrow at \(GameStore.clock(sale.kind.open)).")
         }
     }
-
-    /// Test tool: this kind of opportunity, today.
-    func addTestOpportunity(_ kind: OpportunityKind) {
-        if kind == .lastMinuteTable {
-            data.vendorKit = true
-            if !data.shows.contains(where: { $0.startDay == data.day + 1 }) {
-                data.shows.append(CardShow(name: "Test Show Tomorrow", venue: "Test Hall", size: .local, startDay: data.day + 1))
-            }
-        }
-        if kind == .privateBuyer, !(data.raw + data.slabs).contains(where: { $0.market >= Balance.privateBuyerMinCard }) {
-            if let print = SetLibrary.set("prismatic-evolutions").prints.first(where: { ($0.market ?? 0) >= 60 }) { addTestCard(print) }
-        }
-        if kind == .vendorLiquidating, !data.contacts.contains(where: { $0.kind.isVendor && level($0.id).rank >= StandingLevel.trusted.rank }) {
-            seedContacts()
-            if let c = data.contacts.first(where: { $0.kind.isVendor }) { addPoints(c.id, 70) }
-        }
-        let saved = data.reputation
-        if kind == .vintageCollection, reputationTier < 4 { data.reputation = 700 }
-        if let o = makeOpportunity(notice: 0, kind: kind) { data.opportunities.append(o) }
-        data.reputation = saved
-        save()
-    }
 }

@@ -25,6 +25,8 @@ enum AppRoute: Hashable {
     case cardStore
     case supplies
     case loans
+    case market
+    case goals
 }
 
 struct StoreRunSession: Identifiable {
@@ -80,6 +82,8 @@ extension View {
             case .inventory(let tab): InventoryView(startTab: tab)
             case .wallet: WalletView()
             case .activity: ActivityView()
+            case .market: MarketView()
+            case .goals: GoalsView()
             case .buy: BuyView()
             case .buyLocal: BuyView(local: true)
             case .social: SocialHubView()

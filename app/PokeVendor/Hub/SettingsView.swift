@@ -5,10 +5,16 @@ struct SettingsView: View {
     @Environment(GameStore.self) private var store
     @State private var slug: String?
     @State private var search = ""
+    @AppStorage(SoundFX.settingKey) private var soundOn = true
 
     var body: some View {
         let rule = store.data.settings.stopRule
         Form {
+            Section {
+                Toggle("Sounds", isOn: $soundOn)
+            } footer: {
+                Text("The sounds follow the mute switch.")
+            }
             PaymentPolicySection()
             Section {
                 Picker("Rip mode", selection: Binding(get: { store.data.settings.ripMode }, set: { store.setRipMode($0) })) {
