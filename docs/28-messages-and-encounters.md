@@ -26,7 +26,7 @@ notoriety. A buyer pays 2% more for each point.
 | --- | --- | --- |
 | Wants your card | They want a card that the player owns, for 100% to 125% of market. They ask more often about a card the player posted. | Sell, ask for 15% more one time, or say no. It ends in 2 to 4 days. |
 | Looking for | They hunt for a card from a set, for 110% to 130% of market. | Find a raw copy and sell it before the message ends, in 5 to 10 days. |
-| Offers a card | They sell a raw card or a slab for 65% to 90% of market. | Buy it, or say no. It arrives in 3 days. It ends in 1 to 3 days. |
+| Offers a card | They sell a raw card, a slab, or (35% of the time) a sealed product, for 65% to 90% of market. Most of the sealed product is vintage or older. | Buy it, or say no. It arrives in 3 days. It ends in 1 to 3 days. |
 
 - **A sale by message** ships the card. The player pays the shipping and
   no fee. A clean sale of $20 or more gives +1 reputation, like an online
@@ -50,7 +50,7 @@ player. The chance is 30%, plus 4% for each point of notoriety, up to
 | --- | --- |
 | A kid with a hit | A kid asks what their card is worth. **Tell them the value**: +2 reputation and +3 standing at the shop. **Offer fair** (85% of market): the player buys it, +3 reputation and +2 standing. **Say it's not worth much** (30% of market): a scam that the kid can find out about later, like a naive seller at a show. |
 | A buyer | A player at the shop wants one of the player's cards, for 95% to 115% of market, in cash. With follower tier 1, they say that they follow the player. |
-| A seller | A regular sells a card from their binder for 60% to 85% of market. It can be a fake. |
+| A seller | A regular sells a card from their binder, or (35% of the time) an old sealed product from a closet, for 60% to 85% of market. It can be a fake. |
 | The owner's hold | At standing Regular, the owner holds a sealed product for the player at 85% of market. +2 standing. |
 | A tip | Another player tells the player about a garage sale tomorrow. It goes on the calendar. |
 

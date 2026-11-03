@@ -75,6 +75,18 @@ extension GameStore {
                              : "Someone said you deal cards. Got a \(name)? I'd give you \(money(price)) cash."
             return ShopEncounter(kind: kind, shop: shop, who: who, line: line, price: price, market: card.market, cardID: card.id)
         case .seller:
+            // About a third of sellers bring old sealed product from a closet.
+            if Double.random(in: 0..<1) < 0.35 {
+                let pool = VendorFloor.sealedPool(vintage: 0.4, older: 0.6)
+                if let product = SetLibrary.catalog.filter({ pool.contains($0.homeSlug) && $0.market > 0 && $0.market <= 400 + 400 * Double(notoriety) })
+                    .randomElement() {
+                    let price = max(1, ShowSession.round(product.market * Double.random(in: 0.6...0.85)))
+                    let fake = Counterfeit.roll(source: .stranger, sealed: true, slug: product.homeSlug, market: product.market)
+                    return ShopEncounter(kind: kind, shop: shop, who: who,
+                                         line: "Found this still sealed in my closet. \(money(price)) for the \(product.name)?",
+                                         price: price, market: product.market, goods: .sealed(product), fake: fake)
+                }
+            }
             let sets = Bool.random() ? Balance.modernSets : Balance.vintageSets + Balance.olderSets
             guard let (print, slug) = VendorFloor.randomPrint(from: sets, minMarket: 8, maxMarket: 60 + 40 * Double(notoriety)) else {
                 return nil
@@ -161,8 +173,8 @@ extension GameStore {
             buyCardAtShow(card, price: e.price, vendor: e.who, at: e.shop.rawValue)
             recordDeal(nil, what: "Bought \(print.name)", price: e.price, market: e.market, slug: slug)
         case .sealed(let product):
-            buySealedAtShow(product, price: e.price, vendor: e.who, at: e.shop.rawValue)
-            addPoints(shopContactID(e.shop), 2)
+            buySealedAtShow(product, price: e.price, vendor: e.who, at: e.shop.rawValue, fake: e.fake)
+            if e.kind == .ownerHold { addPoints(shopContactID(e.shop), 2) }
         default:
             return ""
         }

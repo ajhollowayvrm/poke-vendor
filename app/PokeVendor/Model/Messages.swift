@@ -30,6 +30,8 @@ struct DirectMessage: Codable, Identifiable, Hashable {
     var print: CardPrint?
     var slug: String?
     var grade: SlabGrade?
+    /// For `offersCard`: a sealed product instead of a card.
+    var product: Product?
     /// For `offersCard`: hidden, the card is a fake.
     var fake: FakeTier?
     var countered = false
@@ -114,6 +116,17 @@ extension GameStore {
             return DirectMessage(kind: kind, sender: sender, day: data.day, expiresDay: data.day + Int.random(in: 5...10), text: text,
                                  price: price, limit: price * Double.random(in: 1.0...1.1), print: print, slug: slug)
         case .offersCard:
+            // A third of the sellers offer sealed product, most of it old.
+            if Double.random(in: 0..<1) < 0.35 {
+                let pool = VendorFloor.sealedPool(vintage: 0.35, older: 0.4)
+                if let product = SetLibrary.catalog.filter({ pool.contains($0.homeSlug) && $0.market > 0 && $0.market <= top * 3 }).randomElement() {
+                    let price = ShowSession.round(product.market * Double.random(in: Balance.messageOffersShare))
+                    let fake = Counterfeit.roll(source: .stranger, sealed: true, slug: product.homeSlug, market: product.market)
+                    return DirectMessage(kind: kind, sender: sender, day: data.day, expiresDay: data.day + Int.random(in: 1...3),
+                                         text: "I have a sealed \(product.name). \(money(price)) shipped. Interested?",
+                                         price: price, limit: price, product: product, fake: fake)
+                }
+            }
             let sets = Bool.random() ? Balance.showSets : Balance.vintageSets + Balance.olderSets
             guard let (print, slug) = VendorFloor.randomPrint(from: sets, minMarket: 10, maxMarket: top) else { return nil }
             let grade: SlabGrade? = Double.random(in: 0..<1) < 0.3
@@ -197,8 +210,21 @@ extension GameStore {
             save()
             return line
         case .offersCard:
-            guard let print = m.print, let slug = m.slug else { return "The message is gone." }
             guard canAfford(m.price) else { return "You do not have \(money(m.price))." }
+            if let product = m.product {
+                var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: m.price,
+                                      acquired: .now, source: m.sender, productID: product.id, acquiredDay: data.day)
+                item.fake = m.fake
+                item.status = .arriving(daysLeft: Balance.messageShipDays, from: m.sender)
+                data.sealed.append(item)
+                addLedger(-m.price, .sealed, "\(product.name) · \(m.sender)")
+                data.messages[i].answered = true
+                data.messages[i].reply = "Shipped! It should get there in \(Balance.messageShipDays) days."
+                log("Bought \(product.name) from \(m.sender) for \(money(m.price)). It arrives in \(Balance.messageShipDays) days.", cash: -m.price)
+                save()
+                return "Paid \(money(m.price)). It arrives in \(Balance.messageShipDays) days."
+            }
+            guard let print = m.print, let slug = m.slug else { return "The message is gone." }
             var card = m.grade.map { OwnedCard(print: print, setSlug: slug, acquired: .now, paid: m.price, ripID: nil, grade: $0) }
                 ?? OwnedCard(print: print, setSlug: slug, acquired: .now, paid: m.price, ripID: nil,
                              condition: Balance.modernSets.contains(slug) ? .packFresh() : .played())

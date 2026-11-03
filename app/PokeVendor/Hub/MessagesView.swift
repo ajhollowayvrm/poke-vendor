@@ -69,8 +69,9 @@ private struct MessageCard: View {
                     .foregroundStyle(m.expiresDay == store.day ? Theme.orange : Theme.muted)
             }
             HStack(alignment: .top, spacing: 12) {
-                if let url = (card?.print ?? m.print)?.image.flatMap(URL.init(string:)) {
-                    RemoteCardImage(url: url, name: "")
+                if let url = (m.product?.image ?? (card?.print ?? m.print)?.image).flatMap(URL.init(string:)) {
+                    RemoteCardImage(url: url, name: "", upright: m.product == nil)
+                        .aspectRatio(contentMode: .fit)
                         .frame(width: 50, height: 70)
                         .clipShape(RoundedRectangle(cornerRadius: 3))
                 }
@@ -104,7 +105,7 @@ private struct MessageCard: View {
                 }
                 .controlSize(.small)
             case .offersCard:
-                let market = m.print.map { p in
+                let market = m.product?.market ?? m.print.map { p in
                     OwnedCard(print: p, setSlug: m.slug ?? "", acquired: .now, paid: nil, ripID: nil, grade: m.grade).market
                 } ?? 0
                 Text("Market \(money(market)) · it arrives in \(Balance.messageShipDays) days · no way to check it first")

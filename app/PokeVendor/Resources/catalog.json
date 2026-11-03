@@ -1238,6 +1238,86 @@
   "mixGuess": false
  },
  {
+  "id": "100494",
+  "name": "Ancient Origins 3 Pack Blister [Salamence]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "ancient-origins",
+    "packs": 2
+   },
+   {
+    "slug": "roaring-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 599.99,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/100494_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
+  "id": "659591",
+  "name": "Arceus 3 Pack Blister [Darkrai]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "arceus",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 45.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/659591_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "617025",
+  "name": "Arceus Blister Pack",
+  "kind": "Blister",
+  "packs": 2,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "arceus",
+    "packs": 2
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 38.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/617025_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "645314",
+  "name": "Arceus Blister Pack (Happiny & Lopunny)",
+  "kind": "Blister",
+  "packs": 2,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "arceus",
+    "packs": 2
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 38.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/645314_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "265524",
   "name": "Astral Radiance 3 Pack Blister [Eevee]",
   "kind": "Blister",
@@ -1929,6 +2009,37 @@
   "market": 52.28,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/256130_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "256142",
+  "name": "Brilliant Stars Premium Checklane Blister [Salamence]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "brilliant-stars",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Salamence",
+    "num": "109/203",
+    "setName": "Evolving Skies",
+    "rarity": "Holo Rare",
+    "variant": "Holo",
+    "market": 0.85,
+    "graded": {"psa1":6.2,"psa2":6.2,"psa3":6.2,"psa4":6.2,"psa5":6.2,"psa6":6.2,"psa7":6.2,"psa8":8.82,"psa9":13.42,"psa10":73.17,"cgc1":3.25,"cgc1_5":3.25,"cgc2":3.25,"cgc2_5":3.25,"cgc3":3.25,"cgc3_5":3.25,"cgc4":3.25,"cgc4_5":3.25,"cgc5":3.25,"cgc5_5":3.25,"cgc6":3.25,"cgc6_5":3.25,"cgc7":3.25,"cgc7_5":3.25,"cgc8":3.25,"cgc8_5":3.25,"cgc9":4.67,"cgc9_5":5.03,"cgc10":11.54,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":6.6,"bgs9":6.6,"bgs9_5":6.6,"bgs10":21.14},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/246909_in_800x800.jpg",
+    "gradedReal": []
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 23.19,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/256142_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -3105,6 +3216,37 @@
   "market": 33.16,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177874_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "477179",
+  "name": "Dark Explorers 3 Pack Blister [Luxray]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "dark-explorers",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Luxray",
+    "num": "46/99",
+    "setName": "Next Destinies",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 2.07,
+    "graded": {"psa1":6.21,"psa2":6.21,"psa3":6.21,"psa4":10.26,"psa5":14.78,"psa6":14.78,"psa7":15.91,"psa8":20.0,"psa9":132.5,"psa10":293.0,"cgc1":3.25,"cgc1_5":3.25,"cgc2":3.25,"cgc2_5":3.25,"cgc3":3.25,"cgc3_5":3.25,"cgc4":4.35,"cgc4_5":4.35,"cgc5":4.35,"cgc5_5":5.3,"cgc6":5.3,"cgc6_5":5.3,"cgc7":6.24,"cgc7_5":12.11,"cgc8":13.67,"cgc8_5":18.8,"cgc9":18.8,"cgc9_5":38.9,"cgc10":59.93,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.86,"bgs5_5":6.86,"bgs6":6.86,"bgs6_5":7.06,"bgs7":7.4,"bgs7_5":10.95,"bgs8":11.8,"bgs8_5":19.67,"bgs9":36.85,"bgs9_5":85.27,"bgs10":332.2},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/91399_in_800x800.jpg",
+    "gradedReal": ["psa8","psa9","psa10"]
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 2000.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/477179_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -4449,6 +4591,25 @@
   "mixGuess": false
  },
  {
+  "id": "118332",
+  "name": "Fates Collide Three Pack Pin Blisters [Mega Alakazam]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "fates-collide",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 153.5,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/118332_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "164301",
   "name": "Forbidden Light Single Pack Blister [Exeggcute]",
   "kind": "Blister",
@@ -5407,6 +5568,92 @@
   "mixGuess": false
  },
  {
+  "id": "99152",
+  "name": "Kanto Two Pack Blister [Starters]",
+  "kind": "Blister",
+  "packs": 2,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "dragon-vault",
+    "packs": 2
+   }
+  ],
+  "promos": [
+   {
+    "name": "Moltres",
+    "num": "14/99",
+    "setName": "Next Destinies",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 3.82,
+    "graded": {"psa1":18.5,"psa2":18.5,"psa3":18.5,"psa4":19.99,"psa5":20.25,"psa6":20.25,"psa7":45.13,"psa8":49.99,"psa9":74.0,"psa10":538.5,"cgc1":7.33,"cgc1_5":7.33,"cgc2":7.33,"cgc2_5":7.33,"cgc3":7.33,"cgc3_5":7.33,"cgc4":8.22,"cgc4_5":9.29,"cgc5":10.74,"cgc5_5":10.74,"cgc6":11.52,"cgc6_5":11.52,"cgc7":13.17,"cgc7_5":15.92,"cgc8":21.29,"cgc8_5":29.54,"cgc9":37.5,"cgc9_5":179.98,"cgc10":188.98,"bgs1":8.3,"bgs1_5":8.3,"bgs2":8.3,"bgs2_5":8.3,"bgs3":8.3,"bgs3_5":8.3,"bgs4":9.3,"bgs4_5":10.12,"bgs5":10.18,"bgs5_5":10.18,"bgs6":10.18,"bgs6_5":14.06,"bgs7":16.28,"bgs7_5":20.54,"bgs8":28.21,"bgs8_5":28.21,"bgs9":38.15,"bgs9_5":97.5,"bgs10":413.5},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/87564_in_800x800.jpg",
+    "gradedReal": ["psa4","psa6","psa8","psa9","psa10","cgc9","cgc9_5"]
+   },
+   {
+    "name": "Articuno",
+    "num": "27/99",
+    "setName": "Next Destinies",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 11.6,
+    "graded": {"psa1":20.0,"psa2":20.0,"psa3":20.0,"psa4":20.0,"psa5":20.0,"psa6":20.0,"psa7":20.0,"psa8":20.0,"psa9":190.25,"psa10":599.99,"cgc1":6.62,"cgc1_5":6.62,"cgc2":6.62,"cgc2_5":6.62,"cgc3":6.62,"cgc3_5":6.62,"cgc4":7.71,"cgc4_5":7.71,"cgc5":7.71,"cgc5_5":10.07,"cgc6":12.85,"cgc6_5":12.85,"cgc7":22.5,"cgc7_5":22.5,"cgc8":22.5,"cgc8_5":29.1,"cgc9":56.0,"cgc9_5":59.74,"cgc10":123.97,"bgs1":13.18,"bgs1_5":13.18,"bgs2":13.18,"bgs2_5":13.18,"bgs3":13.18,"bgs3_5":13.18,"bgs4":13.18,"bgs4_5":13.18,"bgs5":13.18,"bgs5_5":13.18,"bgs6":13.18,"bgs6_5":13.18,"bgs7":16.1,"bgs7_5":16.1,"bgs8":16.5,"bgs8_5":28.56,"bgs9":72.0,"bgs9_5":134.53,"bgs10":563.28},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/83652_in_800x800.jpg",
+    "gradedReal": ["psa8","psa9","psa10","cgc9","bgs8"]
+   },
+   {
+    "name": "Zapdos",
+    "num": "41/99",
+    "setName": "Next Destinies",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 8.72,
+    "graded": {"psa1":12.5,"psa2":12.5,"psa3":12.5,"psa4":12.5,"psa5":12.5,"psa6":12.5,"psa7":12.5,"psa8":33.99,"psa9":89.0,"psa10":606.88,"cgc1":5.47,"cgc1_5":5.47,"cgc2":5.47,"cgc2_5":5.47,"cgc3":5.47,"cgc3_5":5.47,"cgc4":6.11,"cgc4_5":7.24,"cgc5":7.24,"cgc5_5":8.5,"cgc6":10.81,"cgc6_5":10.81,"cgc7":19.15,"cgc7_5":19.15,"cgc8":19.15,"cgc8_5":25.98,"cgc9":49.99,"cgc9_5":49.99,"cgc10":104.34,"bgs1":14.48,"bgs1_5":14.48,"bgs2":14.48,"bgs2_5":14.48,"bgs3":14.48,"bgs3_5":14.48,"bgs4":14.48,"bgs4_5":14.48,"bgs5":14.48,"bgs5_5":14.48,"bgs6":14.48,"bgs6_5":14.48,"bgs7":14.48,"bgs7_5":14.69,"bgs8":21.16,"bgs8_5":26.44,"bgs9":50.37,"bgs9_5":109.53,"bgs10":502.7},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90721_in_800x800.jpg",
+    "gradedReal": ["psa7","psa8","psa9","psa10","cgc9"]
+   },
+   {
+    "name": "Virizion",
+    "num": "13/101",
+    "setName": "Noble Victories",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 1.97,
+    "graded": {"psa1":6.2,"psa2":6.2,"psa3":6.2,"psa4":6.2,"psa5":6.2,"psa6":6.71,"psa7":8.83,"psa8":14.5,"psa9":22.99,"psa10":333.16,"cgc1":3.25,"cgc1_5":3.25,"cgc2":3.25,"cgc2_5":3.25,"cgc3":3.25,"cgc3_5":3.25,"cgc4":3.25,"cgc4_5":3.25,"cgc5":3.25,"cgc5_5":3.25,"cgc6":3.25,"cgc6_5":3.25,"cgc7":3.55,"cgc7_5":5.0,"cgc8":5.72,"cgc8_5":8.6,"cgc9":9.13,"cgc9_5":15.77,"cgc10":31.72,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.61,"bgs8_5":10.8,"bgs9":14.9,"bgs9_5":44.22,"bgs10":98.22},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/90388_in_800x800.jpg",
+    "gradedReal": ["psa8","psa9"]
+   },
+   {
+    "name": "Terrakion",
+    "num": "73/101",
+    "setName": "Noble Victories",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 2.37,
+    "graded": {"psa1":10.85,"psa2":10.85,"psa3":10.85,"psa4":11.52,"psa5":11.52,"psa6":11.52,"psa7":11.52,"psa8":11.52,"psa9":42.07,"psa10":906.06,"cgc1":7.8,"cgc1_5":7.8,"cgc2":7.8,"cgc2_5":7.8,"cgc3":7.8,"cgc3_5":7.99,"cgc4":8.39,"cgc4_5":8.39,"cgc5":8.39,"cgc5_5":9.85,"cgc6":9.85,"cgc6_5":9.85,"cgc7":13.81,"cgc7_5":15.81,"cgc8":60.0,"cgc8_5":60.0,"cgc9":143.65,"cgc9_5":143.65,"cgc10":150.84,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":19.01,"bgs7_5":19.01,"bgs8":22.21,"bgs8_5":34.81,"bgs9":43.73,"bgs9_5":131.33,"bgs10":432.63},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/89887_in_800x800.jpg",
+    "gradedReal": ["psa8","psa9","psa10","cgc8","cgc9"]
+   },
+   {
+    "name": "Cobalion",
+    "num": "84/101",
+    "setName": "Noble Victories",
+    "rarity": "Rare",
+    "variant": "Holo",
+    "market": 1.61,
+    "graded": {"psa1":6.2,"psa2":6.2,"psa3":6.2,"psa4":6.2,"psa5":6.2,"psa6":6.79,"psa7":8.91,"psa8":18.99,"psa9":21.84,"psa10":341.34,"cgc1":3.25,"cgc1_5":3.25,"cgc2":3.25,"cgc2_5":3.25,"cgc3":3.25,"cgc3_5":3.25,"cgc4":3.25,"cgc4_5":3.25,"cgc5":3.25,"cgc5_5":3.25,"cgc6":3.25,"cgc6_5":3.25,"cgc7":3.51,"cgc7_5":5.03,"cgc8":5.61,"cgc8_5":8.56,"cgc9":9.16,"cgc9_5":15.61,"cgc10":31.01,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.61,"bgs8_5":11.35,"bgs9":14.88,"bgs9_5":46.81,"bgs10":105.03},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/84378_in_800x800.jpg",
+    "gradedReal": ["psa8","psa9"]
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 654.59,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/99152_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
   "id": "277329",
   "name": "Lost Origin 3 Pack Blister [Regigigas]",
   "kind": "Blister",
@@ -5677,6 +5924,37 @@
   "mixGuess": false
  },
  {
+  "id": "177905",
+  "name": "Lost Thunder 3 Pack Blister [Alolan Exeggutor]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "lost-thunder",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Alolan Exeggutor",
+    "num": "2a/131",
+    "setName": "Forbidden Light",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 3.15,
+    "graded": {"psa1":9.79,"psa2":9.79,"psa3":9.79,"psa4":9.79,"psa5":9.79,"psa6":9.79,"psa7":9.79,"psa8":9.79,"psa9":13.64,"psa10":61.07,"cgc1":3.69,"cgc1_5":3.69,"cgc2":3.69,"cgc2_5":3.69,"cgc3":3.69,"cgc3_5":3.69,"cgc4":3.69,"cgc4_5":3.69,"cgc5":3.69,"cgc5_5":3.93,"cgc6":4.24,"cgc6_5":4.24,"cgc7":4.24,"cgc7_5":4.24,"cgc8":4.46,"cgc8_5":5.73,"cgc9":7.38,"cgc9_5":9.19,"cgc10":20.65,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.85,"bgs8_5":7.05,"bgs9":9.4,"bgs9_5":15.16,"bgs10":50.34},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/180514_in_800x800.jpg",
+    "gradedReal": []
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 130.82,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/177905_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "177904",
   "name": "Lost Thunder 3 Pack Blister [Altaria]",
   "kind": "Blister",
@@ -5864,6 +6142,29 @@
   "mixGuess": false
  },
  {
+  "id": "99149",
+  "name": "Mega Evolution Collector's Pin Blisters [Rayquaza]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "roaring-skies",
+    "packs": 2
+   },
+   {
+    "slug": "primal-clash",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 355.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/99149_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "644361",
   "name": "Mega Evolution Premium Checklane Blister [Meowscarada]",
   "kind": "Blister",
@@ -6045,6 +6346,25 @@
   "market": 15.8,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/657489_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "282509",
+  "name": "Neo Discovery 2-Pack Blister [Unlimited Edition]",
+  "kind": "Blister",
+  "packs": 2,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "neo-discovery",
+    "packs": 2
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1026.35,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/282509_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -7526,6 +7846,25 @@
   "mixGuess": false
  },
  {
+  "id": "97784",
+  "name": "Phantom Forces 3 Pack Blister [Shiftry]",
+  "kind": "Blister",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "phantom-forces",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 658.66,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97784_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "692938",
   "name": "Pitch Black 3-Pack Blister [Binacle]",
   "kind": "Blister",
@@ -8077,6 +8416,44 @@
   "market": 20,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/210565_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98031",
+  "name": "Roaring Skies 3 Pack Blister [Pangoro]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "roaring-skies",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 131.25,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98031_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98032",
+  "name": "Roaring Skies 3 Pack Blister [Regirock]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "roaring-skies",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 131.25,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98032_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -9757,6 +10134,44 @@
   "mixGuess": false
  },
  {
+  "id": "181700",
+  "name": "Team Up 3 Pack Blister [Deoxys]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "team-up",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1226.09,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/181700_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "181701",
+  "name": "Team Up 3 Pack Blister [Ultra Necrozma]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "team-up",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 1226.09,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/181701_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "624521",
   "name": "Team Up Premium Checklane Blister [Gyarados]",
   "kind": "Blister",
@@ -11160,6 +11575,63 @@
   "mixGuess": false
  },
  {
+  "id": "224946",
+  "name": "XY - Evolutions 3 Pack Blister [Black Kyurem]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolutions",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 320.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/224946_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
+  "id": "224945",
+  "name": "XY - Evolutions 3 Pack Blister [Braixen]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolutions",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 235.3,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/224945_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
+  "id": "97734",
+  "name": "XY 3 Pack Blister [Gallade]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "xy",
+    "packs": 3
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 450.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97734_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
   "id": "276609",
   "name": "XY 3 Pack Blister [Giratina]",
   "kind": "Blister",
@@ -11276,6 +11748,37 @@
   "mixGuess": false
  },
  {
+  "id": "97735",
+  "name": "XY Three Pack Blister [Gyarados]",
+  "kind": "Blister",
+  "packs": 3,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "xy",
+    "packs": 3
+   }
+  ],
+  "promos": [
+   {
+    "name": "Giratina",
+    "num": "XY184",
+    "setName": "XY Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 18.32,
+    "graded": {"psa1":4.45,"psa2":4.45,"psa3":4.45,"psa4":4.45,"psa5":4.45,"psa6":5.5,"psa7":33.47,"psa8":65.0,"psa9":478.11,"psa10":19875.0,"cgc1":3.29,"cgc1_5":3.29,"cgc2":3.29,"cgc2_5":3.29,"cgc3":3.29,"cgc3_5":3.49,"cgc4":6.74,"cgc4_5":8.67,"cgc5":9.19,"cgc5_5":9.9,"cgc6":13.23,"cgc6_5":13.23,"cgc7":20.5,"cgc7_5":20.5,"cgc8":20.5,"cgc8_5":39.66,"cgc9":39.66,"cgc9_5":59.69,"cgc10":151.04,"bgs1":14.66,"bgs1_5":14.66,"bgs2":14.66,"bgs2_5":14.66,"bgs3":14.66,"bgs3_5":14.66,"bgs4":14.66,"bgs4_5":14.66,"bgs5":14.66,"bgs5_5":14.66,"bgs6":14.66,"bgs6_5":14.66,"bgs7":14.66,"bgs7_5":17.0,"bgs8":25.12,"bgs8_5":36.78,"bgs9":76.83,"bgs9_5":186.7,"bgs10":438.53},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/126558_in_800x800.jpg",
+    "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc8","bgs7_5"]
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 450.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97735_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
   "id": "97733",
   "name": "XY Two Pack Blister [Dragon Trio]",
   "kind": "Blister",
@@ -11329,6 +11832,25 @@
   "mixGuess": true
  },
  {
+  "id": "98593",
+  "name": "Arceus Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "arceus",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 14784.74,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98593_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "265519",
   "name": "Astral Radiance Booster Box",
   "kind": "Booster box",
@@ -11364,6 +11886,25 @@
   "market": 249.99,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/704916_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "107610",
+  "name": "Base Set 2 Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "base-set-2",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 18902.07,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/107610_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11405,6 +11946,44 @@
   "mixGuess": false
  },
  {
+  "id": "98552",
+  "name": "Black and White Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "black-white",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8459.22,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98552_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98555",
+  "name": "Boundaries Crossed Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "boundaries-crossed",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 13286.54,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98555_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "256141",
   "name": "Brilliant Stars Booster Box",
   "kind": "Booster box",
@@ -11443,6 +12022,25 @@
   "mixGuess": false
  },
  {
+  "id": "98514",
+  "name": "Call of Legends Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "call-of-legends",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 12250.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98514_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "170273",
   "name": "Celestial Storm Booster Box",
   "kind": "Booster box",
@@ -11478,6 +12076,25 @@
   "market": 194.75,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/684444_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "695395",
+  "name": "Chaos Rising Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "chaos-rising",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 114.26,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/695395_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11538,6 +12155,44 @@
   "mixGuess": false
  },
  {
+  "id": "98567",
+  "name": "Crystal Guardians Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "crystal-guardians",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 27686.27,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98567_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98520",
+  "name": "Dark Explorers Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "dark-explorers",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 21194.28,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98520_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "216853",
   "name": "Darkness Ablaze Booster Box",
   "kind": "Booster box",
@@ -11554,6 +12209,44 @@
   "market": 370.23,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/216853_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98943",
+  "name": "Delta Species Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "delta-species",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 25000.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98943_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98563",
+  "name": "Deoxys Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "deoxys",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 31266.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98563_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11592,6 +12285,101 @@
   "market": 306.47,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/624681_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98524",
+  "name": "Diamond and Pearl Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "diamond-and-pearl",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8550.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98524_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98532",
+  "name": "Dragon Frontiers Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "dragon-frontiers",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 10344.1,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98532_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98540",
+  "name": "Dragons Exalted Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "dragons-exalted",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 22850.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98540_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98547",
+  "name": "Emerald Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "emerald",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 14053.49,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98547_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98548",
+  "name": "Emerging Powers Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "emerging-powers",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8626.07,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98548_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11709,6 +12497,25 @@
   "mixGuess": false
  },
  {
+  "id": "98544",
+  "name": "Great Encounters Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "great-encounters",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4774.66,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98544_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "129888",
   "name": "Guardians Rising Booster Box",
   "kind": "Booster box",
@@ -11766,6 +12573,25 @@
   "mixGuess": false
  },
  {
+  "id": "98531",
+  "name": "HeartGold SoulSilver Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "heartgold-soulsilver",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 2018.48,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98531_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "98596",
   "name": "Hidden Legends Booster Box",
   "kind": "Booster box",
@@ -11782,6 +12608,25 @@
   "market": 52400.0,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/98596_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98523",
+  "name": "Holon Phantoms Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "holon-phantoms",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 12449.42,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98523_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11897,6 +12742,44 @@
   "mixGuess": false
  },
  {
+  "id": "98556",
+  "name": "Legend Maker Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "legend-maker",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 2209.37,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98556_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "691155",
+  "name": "Legendary Collection Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "legendary-collection",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 110200.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/691155_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "98580",
   "name": "Legendary Treasures Booster Box",
   "kind": "Booster box",
@@ -11913,6 +12796,25 @@
   "market": 18750,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/98580_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98536",
+  "name": "Legends Awakened Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "legends-awakened",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 7337.48,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98536_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -11951,6 +12853,25 @@
   "market": 1484.36,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175509_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98584",
+  "name": "Majestic Dawn Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "majestic-dawn",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 5900.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98584_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12020,6 +12941,82 @@
   "market": 312.5,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/644351_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98560",
+  "name": "Mysterious Treasures Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "mysterious-treasures",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 15400.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98560_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "563755",
+  "name": "Neo Destiny Booster Box [Unlimited Edition]",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "neo-destiny",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4798.1,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/563755_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98539",
+  "name": "Next Destinies Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "next-destinies",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 17100.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98539_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98571",
+  "name": "Noble Victories Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "noble-victories",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 9938.11,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98571_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12099,6 +13096,25 @@
   "mixGuess": false
  },
  {
+  "id": "649417",
+  "name": "Paradox Rift Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "paradox-rift",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 148.1,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/649417_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "672394",
   "name": "Perfect Order Booster Box",
   "kind": "Booster box",
@@ -12156,6 +13172,25 @@
   "mixGuess": false
  },
  {
+  "id": "98572",
+  "name": "Plasma Blast Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "plasma-blast",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 11800.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98572_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "98516",
   "name": "Plasma Freeze Booster Box",
   "kind": "Booster box",
@@ -12172,6 +13207,63 @@
   "market": 14999,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/98516_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98527",
+  "name": "Plasma Storm Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "plasma-storm",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 24897.75,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98527_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98592",
+  "name": "Platinum Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "platinum",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 19035.9,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98592_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98528",
+  "name": "Power Keepers Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "power-keepers",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 20298.73,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98528_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12194,6 +13286,44 @@
   "mixGuess": false
  },
  {
+  "id": "98543",
+  "name": "Rising Rivals Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "rising-rivals",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8869.46,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98543_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98559",
+  "name": "Ruby and Sapphire Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "ruby-sapphire",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 16476.55,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98559_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "476452",
   "name": "Scarlet & Violet Booster Box",
   "kind": "Booster box",
@@ -12210,6 +13340,44 @@
   "market": 292.46,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/476452_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "649407",
+  "name": "Scarlet & Violet Half Booster Box",
+  "kind": "Booster box",
+  "packs": 18,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "scarlet-violet",
+    "packs": 18
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 207.88,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/649407_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98568",
+  "name": "Secret Wonders Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "secret-wonders",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 11400.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98568_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12289,6 +13457,25 @@
   "mixGuess": false
  },
  {
+  "id": "98588",
+  "name": "Stormfront Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "stormfront",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 8548.54,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98588_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "126048",
   "name": "Sun & Moon Booster Box",
   "kind": "Booster box",
@@ -12305,6 +13492,25 @@
   "market": 973.15,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/126048_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98575",
+  "name": "Supreme Victors Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "supreme-victors",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 14190.32,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98575_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12365,6 +13571,25 @@
   "mixGuess": false
  },
  {
+  "id": "98551",
+  "name": "Team Magma vs Team Aqua Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "team-magma-vs-team-aqua",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 17500.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98551_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "209437",
   "name": "Team Rocket Booster Box [Unlimited Edition]",
   "kind": "Booster box",
@@ -12381,6 +13606,25 @@
   "market": 36000.0,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/209437_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98579",
+  "name": "Team Rocket Returns Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "team-rocket-returns",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 67654.0,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98579_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12438,6 +13682,25 @@
   "market": 189.71,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/649416_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98535",
+  "name": "Triumphant Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "triumphant",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 5188.71,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98535_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12517,6 +13780,25 @@
   "mixGuess": false
  },
  {
+  "id": "98587",
+  "name": "Undaunted Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "undaunted",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 7710.5,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98587_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "191882",
   "name": "Unified Minds Booster Box",
   "kind": "Booster box",
@@ -12533,6 +13815,44 @@
   "market": 3135.7,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/191882_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98583",
+  "name": "Unleashed Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "unleashed",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 3850.64,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98583_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98576",
+  "name": "Unseen Forces Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "unseen-forces",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 116244.82,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98576_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -12666,6 +13986,25 @@
   "market": 2754.99,
   "msrp": 161.64,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117478_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "94623",
+  "name": "XY Phantom Forces Booster Box",
+  "kind": "Booster box",
+  "packs": 36,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "phantom-forces",
+    "packs": 36
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 16808.51,
+  "msrp": 161.64,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/94623_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -14303,6 +15642,25 @@
   "mixGuess": false
  },
  {
+  "id": "98566",
+  "name": "Crystal Guardians Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "crystal-guardians",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 927.5,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98566_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "98521",
   "name": "Dark Explorers Booster Pack",
   "kind": "Booster pack",
@@ -14851,6 +16209,25 @@
   "market": 175.47,
   "msrp": 17.96,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/247497_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "662620",
+  "name": "Evolving Skies Fun Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "evolving-skies",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 22.19,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/662620_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -17020,6 +18397,25 @@
   "mixGuess": false
  },
  {
+  "id": "98565",
+  "name": "Sandstorm Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "sandstorm",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 462.29,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98565_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "476451",
   "name": "Scarlet & Violet Booster Pack",
   "kind": "Booster pack",
@@ -17305,6 +18701,25 @@
   "mixGuess": false
  },
  {
+  "id": "138153",
+  "name": "Skyridge Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "skyridge",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 3953.67,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/138153_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "130013",
   "name": "Steam Siege Booster Pack",
   "kind": "Booster pack",
@@ -17552,6 +18967,25 @@
   "mixGuess": false
  },
  {
+  "id": "628641",
+  "name": "Surging Sparks Fun Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": true,
+  "mix": [
+   {
+    "slug": "surging-sparks",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 9.38,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/628641_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "565602",
   "name": "Surging Sparks Sleeved Booster Pack",
   "kind": "Booster pack",
@@ -17701,6 +19135,25 @@
   "market": 325.48,
   "msrp": 4.49,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/138135_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98578",
+  "name": "Team Rocket Returns Booster Pack",
+  "kind": "Booster pack",
+  "packs": 1,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "team-rocket-returns",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 2127.17,
+  "msrp": 4.49,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98578_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -25954,6 +27407,25 @@
   "mixGuess": true
  },
  {
+  "id": "98614",
+  "name": "Collector's Album Box",
+  "kind": "Collection",
+  "packs": 2,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "black-white",
+    "packs": 2
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 159.19,
+  "msrp": 24.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98614_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "532385",
   "name": "Combined Powers Premium Collection",
   "kind": "Collection",
@@ -32406,6 +33878,29 @@
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/153454_in_800x800.jpg",
   "mixGuess": true
+ },
+ {
+  "id": "97742",
+  "name": "Krookodile EX Box",
+  "kind": "Collection",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "flashfire",
+    "packs": 2
+   },
+   {
+    "slug": "xy",
+    "packs": 2
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 319.83,
+  "msrp": 24.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97742_in_800x800.jpg",
+  "mixGuess": false
  },
  {
   "id": "286477",
@@ -41365,6 +42860,33 @@
   "mixGuess": true
  },
  {
+  "id": "91598",
+  "name": "Sylveon Collection",
+  "kind": "Collection",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "legendary-treasures",
+    "packs": 2
+   },
+   {
+    "slug": "plasma-blast",
+    "packs": 1
+   },
+   {
+    "slug": "plasma-storm",
+    "packs": 1
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4725.56,
+  "msrp": 24.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/91598_in_800x800.jpg",
+  "mixGuess": true
+ },
+ {
   "id": "200172",
   "name": "TAG TEAM Generations Premium Collection",
   "kind": "Collection",
@@ -43414,6 +44936,25 @@
   "mixGuess": true
  },
  {
+  "id": "98613",
+  "name": "Victini Box",
+  "kind": "Collection",
+  "packs": 5,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "black-white",
+    "packs": 5
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 64.13,
+  "msrp": 24.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98613_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "280847",
   "name": "Virizion V Box",
   "kind": "Collection",
@@ -44842,6 +46383,44 @@
   "mixGuess": false
  },
  {
+  "id": "97762",
+  "name": "Elite Trainer Box [Groudon]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "primal-clash",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 5969.74,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97762_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "97763",
+  "name": "Elite Trainer Box [Kyogre]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "primal-clash",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 7500.0,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97763_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "107106",
   "name": "Elite Trainer Box [Mewtwo X]",
   "kind": "Elite Trainer Box",
@@ -45029,6 +46608,25 @@
   "market": 686.16,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/164303_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "95284",
+  "name": "Furious Fists Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "furious-fists",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4750.0,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/95284_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -46051,6 +47649,25 @@
   "market": 288.44,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/654135_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "97786",
+  "name": "Phantom Forces Elite Trainer Box",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "phantom-forces",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 5873.07,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97786_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -47381,6 +48998,44 @@
   "market": 1099.99,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/111280_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "97747",
+  "name": "XY Elite Trainer Box [Xerneas]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "xy",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4320.61,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97747_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "97748",
+  "name": "XY Elite Trainer Box [Yveltal]",
+  "kind": "Elite Trainer Box",
+  "packs": 8,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "xy",
+    "packs": 8
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 4550.0,
+  "msrp": 54.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/97748_in_800x800.jpg",
   "mixGuess": false
  },
  {
@@ -54029,6 +55684,71 @@
   "mixGuess": false
  },
  {
+  "id": "91607",
+  "name": "Kalos Power Tin [Greninja]",
+  "kind": "Tin",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "flashfire",
+    "packs": 1
+   },
+   {
+    "slug": "plasma-blast",
+    "packs": 1
+   },
+   {
+    "slug": "plasma-freeze",
+    "packs": 1
+   },
+   {
+    "slug": "xy",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Chesnaught-EX",
+    "num": "XY18",
+    "setName": "XY Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 7.69,
+    "graded": {"psa1":4.25,"psa2":4.25,"psa3":4.25,"psa4":4.25,"psa5":4.25,"psa6":8.26,"psa7":8.26,"psa8":10.52,"psa9":28.57,"psa10":453.44,"cgc1":3.69,"cgc1_5":3.69,"cgc2":3.69,"cgc2_5":3.69,"cgc3":3.69,"cgc3_5":3.69,"cgc4":3.69,"cgc4_5":4.22,"cgc5":4.22,"cgc5_5":5.18,"cgc6":7.14,"cgc6_5":7.14,"cgc7":8.89,"cgc7_5":9.67,"cgc8":27.99,"cgc8_5":27.99,"cgc9":27.99,"cgc9_5":27.99,"cgc10":46.83,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.74,"bgs7_5":7.74,"bgs8":10.84,"bgs8_5":16.12,"bgs9":18.32,"bgs9_5":57.08,"bgs10":261.27},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/96380_in_800x800.jpg",
+    "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc8"]
+   },
+   {
+    "name": "Delphox-EX",
+    "num": "XY19",
+    "setName": "XY Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 8.86,
+    "graded": {"psa1":13.5,"psa2":13.5,"psa3":13.5,"psa4":32.08,"psa5":32.08,"psa6":32.08,"psa7":32.08,"psa8":32.08,"psa9":240.0,"psa10":1125.0,"cgc1":7.59,"cgc1_5":7.59,"cgc2":7.59,"cgc2_5":7.59,"cgc3":7.59,"cgc3_5":7.59,"cgc4":10.36,"cgc4_5":10.81,"cgc5":10.81,"cgc5_5":12.15,"cgc6":14.55,"cgc6_5":14.55,"cgc7":23.99,"cgc7_5":23.99,"cgc8":27.1,"cgc8_5":36.8,"cgc9":51.6,"cgc9_5":68.95,"cgc10":159.76,"bgs1":13.61,"bgs1_5":13.61,"bgs2":13.61,"bgs2_5":13.61,"bgs3":13.61,"bgs3_5":13.61,"bgs4":13.89,"bgs4_5":13.89,"bgs5":13.89,"bgs5_5":13.89,"bgs6":13.89,"bgs6_5":15.19,"bgs7":19.72,"bgs7_5":21.53,"bgs8":30.79,"bgs8_5":31.94,"bgs9":82.62,"bgs9_5":148.72,"bgs10":862.75},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/96381_in_800x800.jpg",
+    "gradedReal": ["psa3","psa8","psa9","psa10","cgc7_5"]
+   },
+   {
+    "name": "Greninja-EX",
+    "num": "XY20",
+    "setName": "XY Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 30.0,
+    "graded": {"psa1":8.5,"psa2":8.5,"psa3":8.5,"psa4":8.5,"psa5":14.0,"psa6":14.0,"psa7":19.5,"psa8":32.88,"psa9":85.87,"psa10":3675.0,"cgc1":12.42,"cgc1_5":12.42,"cgc2":12.42,"cgc2_5":12.42,"cgc3":12.42,"cgc3_5":12.42,"cgc4":12.42,"cgc4_5":12.42,"cgc5":12.42,"cgc5_5":12.42,"cgc6":12.75,"cgc6_5":12.75,"cgc7":18.18,"cgc7_5":18.18,"cgc8":47.24,"cgc8_5":47.24,"cgc9":47.24,"cgc9_5":67.43,"cgc10":165.23,"bgs1":10.44,"bgs1_5":10.44,"bgs2":10.44,"bgs2_5":10.44,"bgs3":10.44,"bgs3_5":10.44,"bgs4":10.44,"bgs4_5":10.44,"bgs5":11.1,"bgs5_5":11.1,"bgs6":11.1,"bgs6_5":11.87,"bgs7":18.02,"bgs7_5":18.02,"bgs8":26.17,"bgs8_5":36.79,"bgs9":57.43,"bgs9_5":173.31,"bgs10":613.95},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/96382_in_800x800.jpg",
+    "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc6","cgc8"]
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 400.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/91607_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
   "id": "185261",
   "name": "Kanto Friends Mini Tin [Bulbasaur]",
   "kind": "Tin",
@@ -55848,6 +57568,44 @@
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/162045_in_800x800.jpg",
   "mixGuess": true
+ },
+ {
+  "id": "98615",
+  "name": "New Legends Tin [Reshiram]",
+  "kind": "Tin",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "black-white",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 635.0,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98615_in_800x800.jpg",
+  "mixGuess": false
+ },
+ {
+  "id": "98616",
+  "name": "New Legends Tin [Zekrom]",
+  "kind": "Tin",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "black-white",
+    "packs": 4
+   }
+  ],
+  "promos": [],
+  "pickOnePromo": false,
+  "market": 707.5,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/98616_in_800x800.jpg",
+  "mixGuess": false
  },
  {
   "id": "484357",
@@ -61818,6 +63576,45 @@
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/236378_in_800x800.jpg",
   "mixGuess": true
+ },
+ {
+  "id": "238637",
+  "name": "V Strikers Tin [Empoleon V] (International Version)",
+  "kind": "Tin",
+  "packs": 4,
+  "inPrint": false,
+  "mix": [
+   {
+    "slug": "battle-styles",
+    "packs": 2
+   },
+   {
+    "slug": "darkness-ablaze",
+    "packs": 1
+   },
+   {
+    "slug": "sword-shield",
+    "packs": 1
+   }
+  ],
+  "promos": [
+   {
+    "name": "Empoleon V",
+    "num": "SWSH108",
+    "setName": "SWSH Black Star Promos",
+    "rarity": "Promo",
+    "variant": "Holo",
+    "market": 0.89,
+    "graded": {"psa1":9.0,"psa2":9.0,"psa3":25.0,"psa4":25.0,"psa5":25.0,"psa6":25.0,"psa7":25.0,"psa8":25.0,"psa9":29.01,"psa10":69.38,"cgc1":5.93,"cgc1_5":5.93,"cgc2":5.93,"cgc2_5":5.93,"cgc3":5.93,"cgc3_5":5.93,"cgc4":5.93,"cgc4_5":5.93,"cgc5":5.93,"cgc5_5":5.93,"cgc6":5.93,"cgc6_5":5.93,"cgc7":5.93,"cgc7_5":5.93,"cgc8":5.93,"cgc8_5":7.69,"cgc9":12.75,"cgc9_5":12.75,"cgc10":18.97,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":8.34,"bgs8":8.34,"bgs8_5":8.34,"bgs9":11.4,"bgs9_5":26.32,"bgs10":92.01},
+    "image": "https://tcgplayer-cdn.tcgplayer.com/product/238555_in_800x800.jpg",
+    "gradedReal": ["psa3","psa10","cgc9","cgc10"]
+   }
+  ],
+  "pickOnePromo": false,
+  "market": 75.11,
+  "msrp": 9.99,
+  "image": "https://tcgplayer-cdn.tcgplayer.com/product/238637_in_800x800.jpg",
+  "mixGuess": false
  },
  {
   "id": "257189",

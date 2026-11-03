@@ -1001,16 +1001,18 @@ final class ShowSession {
     /// One thing a seller could bring: a single (often old), a slab, or sealed product.
     private func sellerGoods() -> (VendorGoods, Double)? {
         let roll = Double.random(in: 0..<1)
-        if roll < 0.5, let (p, s) = VendorFloor.randomPrint(from: Double.random(in: 0..<1) < 0.6 ? Balance.vintageSets + Balance.olderSets
+        if roll < 0.45, let (p, s) = VendorFloor.randomPrint(from: Double.random(in: 0..<1) < 0.6 ? Balance.vintageSets + Balance.olderSets
                                                              : Balance.modernSets, minMarket: 4) {
             let c = Balance.vintageSets.contains(s) || Balance.olderSets.contains(s) ? Condition.played() : .packFresh()
             return (.single(p, slug: s, condition: c), (p.market ?? 0) * c.wear.valueFactor)
         }
-        if roll < 0.7, let (p, s) = VendorFloor.randomPrint(from: Balance.showSets, minMarket: 10) {
+        if roll < 0.6, let (p, s) = VendorFloor.randomPrint(from: Balance.showSets, minMarket: 10) {
             let grade = SlabGrade(company: Bool.random() ? .psa : .cgc, grade: [7.0, 8, 9, 9, 10].randomElement() ?? 9)
             return (.slab(p, slug: s, grade: grade), OwnedCard(print: p, setSlug: s, acquired: .now, paid: nil, ripID: nil, grade: grade).market)
         }
-        guard let product = SetLibrary.catalog.filter({ Balance.showSets.contains($0.homeSlug) && $0.market > 0 }).randomElement() else {
+        // Sealed is 40% of what sellers bring, and old sealed is most of it.
+        let pool = VendorFloor.sealedPool(vintage: 0.35, older: 0.3)
+        guard let product = SetLibrary.catalog.filter({ pool.contains($0.homeSlug) && $0.market > 0 }).randomElement() else {
             return nil
         }
         return (.sealed(product), product.market)

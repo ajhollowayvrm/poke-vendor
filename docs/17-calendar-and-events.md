@@ -95,6 +95,12 @@ buyers arrive too, and they take the good cards first.
   before. For example: 100% at the start, 75% after 1 hour, 56% after
   2 hours, and 32% after 4 hours.
 
+- **Sealed product:** a garage sale has 1 to 3 chances at an old
+  sealed item, and an estate sale has 1 to 4. Each chance hits 75% of
+  the time. Half of the items are vintage, and half are older. A garage
+  sale item is worth $1,500 at most, and an estate sale item $6,000 at
+  most.
+
 This makes the clock matter. A morning sale competes with sleep after
 a late night (see [16-time-and-day.md](16-time-and-day.md#late-nights)),
 and a weekday sale competes with the work shift.

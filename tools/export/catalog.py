@@ -10,7 +10,8 @@ Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game
   its promo set's TCGCSV group (PROMO_GROUPS, tools/cardlist/cache/tcgcsv/). A set card gets the price of its print in that set. A
   Surprise Box promo has a Prismatic Evolutions stamp, so it gets the stamped print from TCGCSV group 2374
   (Miscellaneous Cards & Products), with its own price and image, and no graded prices;
-- the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none), an estimated MSRP, and the image;
+- the market price (tools/ppt/cache/sealed/, or TCGCSV when PPT has none, or tools/ppt/sealed_pricecharting.json when
+  neither has one), an estimated MSRP, and the image;
 - "mixGuess": true when the contents name no set, or only a series. Then the packs come from the newest sets of that
   series (or of any series) that were out at the product's release (guess_mix).
   When the name holds a set name, a set that released 0 to 2 years before the product wins (newest first). A series base
@@ -30,6 +31,8 @@ APP_SETS = os.path.join(ROOT, "app", "PokeVendor", "Resources", "Sets")
 OUT = os.path.join(ROOT, "app", "PokeVendor", "Resources", "catalog.json")
 CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
 OVERRIDES = os.path.join(ROOT, "tools", "ppt", "sealed_overrides.json")
+# PriceCharting prices for old sealed product with no TCGplayer price (tools/ppt/pricecharting_sealed.py).
+PRICECHARTING = os.path.join(ROOT, "tools", "ppt", "sealed_pricecharting.json")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 TCGCSV = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv")
 TCGDEX_MAP = os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")
@@ -394,6 +397,7 @@ def main():
     out, skipped = [], []
     guessed = 0
     contents = json.load(open(CONTENTS))
+    pricecharting = json.load(open(PRICECHARTING)) if os.path.exists(PRICECHARTING) else {}
     dates = base_dates(contents)
     # A researched promo list (tools/ppt/sealed_overrides.json) is exact, so the name filter below does not touch it.
     overrides = {k: v for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_")}
@@ -423,9 +427,9 @@ def main():
             if not mix or any(slug not in sets for slug in mix) or sum(mix.values()) != packs:
                 continue
             guess = True
-        # PPT gives the sealed price and image. TCGCSV fills in when PPT has no price.
+        # PPT gives the sealed price and image. TCGCSV fills in when PPT has no price, then PriceCharting.
         p = prices.get(str(it["id"])) or {}
-        market = p.get("unopenedPrice") or tcgcsv_price(it["group"], it["id"])
+        market = p.get("unopenedPrice") or tcgcsv_price(it["group"], it["id"]) or (pricecharting.get(str(it["id"])) or {}).get("market")
         if not market:
             continue
         image = p.get("imageCdnUrl800") or p.get("imageUrl") or f"https://tcgplayer-cdn.tcgplayer.com/product/{it['id']}_in_800x800.jpg"

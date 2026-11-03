@@ -119,15 +119,18 @@ because this is where most vintage turns up.
 
 | Table | Stock | Price, share of market | Says yes to 10% off |
 | --- | --- | --- | --- |
-| Vintage dealer | Base Set singles, Base Set slabs, and some Base Set or older out-of-print sealed | 100% to 125% | 30% of the time |
-| Modern dealer | New singles, some slabs, and new sealed | 95% to 120% | 45% |
-| Game shop booth | Mostly new and older sealed, and a few singles | 95% to 112% | 40% |
-| Collector clearing out | A mixed collection: vintage and older cards, or new and older cards. Often worn. | 60% to 95% | 70% |
+| Vintage dealer | Vintage singles and slabs, and 4 to 7 sealed items (65% vintage, 35% older) | 100% to 125% | 30% of the time |
+| Modern dealer | New singles, some slabs, and 4 to 8 sealed items (75% new, 25% older) | 95% to 120% | 45% |
+| Game shop booth | Mostly new and older sealed, 0 to 2 vintage packs, and a few singles | 95% to 112% | 40% |
+| Collector clearing out | A mixed collection: vintage and older cards, or new and older cards. Often worn. 2 to 4 sealed items. | 60% to 95% | 70% |
 | Mystery packs | Three kinds of repack, and a few singles | 100% to 130% | Never asked |
+| Sealed dealer | Sealed only: 12 to 18 items (30% vintage, 35% older, 35% new) | 100% to 120% | 35% |
 
-- **Table count:** a local show has 12 tables, and 2 of them are
-  vintage dealers. A regional show has 30 tables, and 8 of them are
-  vintage dealers.
+- **Table count:** a local show has 13 tables: 2 vintage dealers and
+  1 sealed dealer. A regional show has 33 tables: 8 vintage dealers and
+  3 sealed dealers.
+- **Sellers at the table** bring sealed product 40% of the time. Of
+  that, 35% is vintage and 30% is older.
 - **Stock:** a dealer has 15 to 30 items. Each table has two
   sections: **Singles** (cards and slabs) and **Sealed** (sealed
   product and mystery packs).
