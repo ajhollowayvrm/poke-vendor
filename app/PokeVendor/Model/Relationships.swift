@@ -289,7 +289,7 @@ extension GameStore {
         return StandingLevel(points: points(of: c))
     }
 
-    /// Moves a relationship. A game shop's points live in its ShopState. Reaching Trusted or Friend the first time
+    /// Moves a relationship. A game shop's points live in its ShopState. Reaching Regular, Trusted, or Friend the first time
     /// raises reputation.
     func addPoints(_ id: String?, _ delta: Int) {
         guard let id, let i = data.contacts.firstIndex(where: { $0.id == id }) else { return }
@@ -304,7 +304,9 @@ extension GameStore {
         if level.rank > data.contacts[i].rewardedLevel {
             data.contacts[i].rewardedLevel = level.rank
             let name = data.contacts[i].name
-            if level == .trusted {
+            if level == .regular {
+                addReputation(Balance.regularContactReputation)
+            } else if level == .trusted {
                 addReputation(10)
                 log("\(name) trusts you now.")
             } else if level == .friend {
@@ -612,4 +614,8 @@ extension Balance {
     static let wantListSize = 10
     static let scamFoundChance = 0.35
     static let scamReputationCost = 30
+    /// An online sale of `fairDealMinPrice` or more, with no fake and no overstated condition.
+    static let onlineSaleReputation = 1
+    /// A contact who reaches Regular for the first time.
+    static let regularContactReputation = 5
 }

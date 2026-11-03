@@ -163,9 +163,11 @@ Reputation is a points total. It sets the five tiers from
 | 3 | Respected | 350–699 |
 | 4 | Elite | 700+ |
 
-- **What raises it:** each fair deal with anyone (+1), paying fair to a
-  naive seller (+5), each contact who reaches Trusted (+10) and Friend
-  (+20), and good word from social media.
+- **What raises it:** each fair deal with anyone (+1), each online
+  sale of $20 or more with no fake and no overstated condition (+1),
+  paying fair to a naive seller (+5), each contact who reaches Regular
+  (+5), Trusted (+10), and Friend (+20), and good word from social
+  media.
 - **What lowers it:** a scam that comes out (−30), selling a fake (−40),
   a missed booked show day (−5), and backlash from social media.
 - **What it does with strangers:** a stranger's first offer, patience,

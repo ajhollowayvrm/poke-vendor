@@ -1251,6 +1251,9 @@ final class GameStore {
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
+        } else if !overstated, listing.overstatedCondition != true, price >= Balance.fairDealMinPrice {
+            // A clean online sale is good feedback, and good feedback is reputation (docs/21).
+            addReputation(Balance.onlineSaleReputation)
         }
         scheduleSaleProblems(name: name, channel: listing.channel, price: price, insured: listing.insured,
                              overstated: overstated || listing.overstatedCondition == true, card: card, sealed: sealedItem, lot: lot)
