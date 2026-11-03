@@ -90,7 +90,7 @@ extension GameStore {
         }
         var r = SeededRandom(seed: UInt64(data.day + 1) &* 7_727 &+ UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0))
         let kinds = ["Elite Trainer Box", "Booster bundle", "Collection", "Tin", "Booster box", "Blister"]
-        let options = SetLibrary.catalog.filter { ($0.inPrint ?? true) && kinds.contains($0.kind) && $0.msrp != nil && !$0.isStoreExclusive }
+        let options = SetLibrary.catalog.filter { $0.isInPrint && kinds.contains($0.kind) && $0.msrp != nil && !$0.isStoreExclusive }
         var items: [ShelfItem] = []
         for i in 0..<r.int(Balance.campProducts) where !options.isEmpty {
             let p = options[r.int(0...(options.count - 1))]

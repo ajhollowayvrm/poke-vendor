@@ -397,6 +397,14 @@ struct SealedDetailView: View {
                         if mates.count > 1 {
                             Text("×\(mates.count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                         }
+                        if let product {
+                            // Print runs change during a run (docs/05-pricing-and-market.md, Print runs).
+                            let upcoming = store.upcomingPrintChanges.first { $0.slug == product.homeSlug }
+                            Text((product.isInPrint ? "In print" : "Out of print")
+                                 + (upcoming.map { " · \($0.inPrint ? "reprint" : "out of print") in \($0.day - store.day) days" } ?? ""))
+                                .font(.caption.monospaced())
+                                .foregroundStyle(product.isInPrint ? Theme.muted : Theme.green)
+                        }
                         Tags(keep: item.keep, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
                     }
                     DetailBox(title: "Contents") {

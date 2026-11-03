@@ -102,6 +102,38 @@ its 9.
   name down, and collectors can chase the sealed product of a set. The End Day
   report gives the news. The Market screen shows the news and the player's
   biggest movers.
+- **Character news**: a new product for a character lifts that character's
+  cards for 3 to 6 weeks (+10% to +30%). When stores sell out of a
+  character's products, sealed product with that character in its name rises
+  for 4 to 8 weeks (+20% to +50%).
 - **Follower tier 4**: a post about a card lifts that card name for a week.
+
+### Print runs
+
+**Status: built** (`Model/PrintRuns.swift`).
+
+At the start of a run, the Scarlet & Violet and Mega Evolution sets are in
+print, and every other set is out of print. The print status then changes
+during the run.
+
+- **A set goes out of print.** About once in 25 days, the game announces a
+  print change. 60% of them take a set out of print. The set is one of the 3
+  oldest sets in print. The game announces it 14 to 28 days ahead, so the
+  player can stock up. After that day, stores, camping, wholesale, and the
+  sponsor offers stop carrying the set. Its sealed product rises 10% to 30% over
+  a month, and then it gains value at the out-of-print rate. At least 8 sets
+  stay in print.
+- **A reprint wave.** 40% of the changes bring an out-of-print set from Sun &
+  Moon or later back to store shelves, 7 to 21 days after the news. The wave
+  lasts 6 to 13 weeks. Its sealed product falls 15% to 30% over a month. When
+  the wave ends, the set is out of print again, and its sealed product gets back
+  5% to 15%.
+- **A product with packs from more than one set** is in print only while every
+  one of its sets is in print.
+- **Where the player sees it**: the End Day report, the Print news box on the
+  Market screen (what comes next and the changes of the last 4 weeks), and the
+  "In print" or "Out of print" line on a sealed item's detail screen.
+- At most 2 announced changes wait at a time. A reprint wave plans its own end,
+  and that end does not count.
 
 With moving prices, the player can hold stock and choose when to sell.

@@ -103,6 +103,8 @@ struct GameData: Codable {
     /// The moving market (docs/05-pricing-and-market.md). The seed gives each run its own waves.
     var marketSeed: UInt64 = 0
     var marketEvents: [MarketEvent] = []
+    /// Sets that leave print or come back for a reprint wave (Model/PrintRuns.swift).
+    var printChanges: [PrintChange] = []
     /// The demand limit (docs/15-selling.md).
     var demand = DemandState()
     /// The goals the player reached, and the day of each (docs/03-currencies.md, Goals).
@@ -180,6 +182,7 @@ extension GameData {
         archivedSales = v(.archivedSales, archivedSales)
         marketSeed = v(.marketSeed, marketSeed)
         marketEvents = v(.marketEvents, marketEvents)
+        printChanges = v(.printChanges, printChanges)
         demand = v(.demand, demand)
         goalsReached = v(.goalsReached, goalsReached)
     }
@@ -946,6 +949,7 @@ final class GameStore {
         data.hour = Balance.dayStart
         demandEndDay()
         syncMarket()
+        lines += printEndDay()
         lines += marketEndDay()
         data.sickToday = false
         data.boughtToday = []

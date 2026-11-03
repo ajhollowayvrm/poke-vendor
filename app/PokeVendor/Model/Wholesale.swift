@@ -66,7 +66,7 @@ extension GameStore {
         guard wholesaleOpen else { return [] }
         var r = SeededRandom(seed: UInt64(data.day / 7 + 1) &* 57_559 &+ 909)
         let options = SetLibrary.catalog.filter {
-            ($0.inPrint ?? true) && Balance.caseSizes[$0.kind] != nil && $0.msrp != nil && !$0.isStoreExclusive
+            $0.isInPrint && Balance.caseSizes[$0.kind] != nil && $0.msrp != nil && !$0.isStoreExclusive
         }
         var out: [WholesaleOffer] = []
         for i in 0..<8 where !options.isEmpty {

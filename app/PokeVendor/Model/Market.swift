@@ -87,7 +87,7 @@ enum Market {
     static func offers(for store: Storefront, day: Int) -> [StoreOffer] {
         // Retail sells only in-print product. The reseller, eBay, and Facebook Marketplace also sell older sets.
         let retailOnly = [Storefront.amazon, .pokemonCenter].contains(store)
-        let products = SetLibrary.catalog.filter { !retailOnly || $0.inPrint ?? true }
+        let products = SetLibrary.catalog.filter { !retailOnly || $0.isInPrint }
         var r = rng(store, day: day)
         let delivery = Balance.deliveryDays[store] ?? 3
         var out: [StoreOffer] = []

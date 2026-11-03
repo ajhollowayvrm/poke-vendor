@@ -105,7 +105,7 @@ extension Market {
         }
         let kinds = ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection"]
         let options = SetLibrary.catalog.filter {
-            ($0.inPrint ?? true) &&
+            $0.isInPrint &&
             kinds.contains($0.kind) && $0.msrp != nil && !$0.isClubExclusive && $0.packs <= 11
         }
         guard !options.isEmpty else { return [] }
@@ -126,8 +126,8 @@ extension Market {
     private static func gameShopShelf(_ store: LocalStore, day: Int, _ r: inout SeededRandom) -> [ShelfItem] {
         let kinds = ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection", "Build & Battle",
                      "Booster box"]
-        let modern = SetLibrary.catalog.filter { ($0.inPrint ?? true) && kinds.contains($0.kind) && !$0.isStoreExclusive }
-        let older = SetLibrary.catalog.filter { !($0.inPrint ?? true) && kinds.contains($0.kind) && !$0.isStoreExclusive && $0.market < 600 }
+        let modern = SetLibrary.catalog.filter { $0.isInPrint && kinds.contains($0.kind) && !$0.isStoreExclusive }
+        let older = SetLibrary.catalog.filter { !$0.isInPrint && kinds.contains($0.kind) && !$0.isStoreExclusive && $0.market < 600 }
         guard !modern.isEmpty else { return [] }
         var out: [ShelfItem] = []
         for i in 0..<r.int(5...9) {

@@ -253,7 +253,7 @@ extension GameStore {
         data.social = s
         // Follower tier 2: a sponsor sends free product every 4 weeks (docs/04).
         if tier >= 2, data.day - data.lastFreeProductDay >= Balance.freeProductDays {
-            let options = SetLibrary.catalog.filter { ($0.inPrint ?? true) && ["Elite Trainer Box", "Booster bundle", "Collection"].contains($0.kind) }
+            let options = SetLibrary.catalog.filter { $0.isInPrint && ["Elite Trainer Box", "Booster bundle", "Collection"].contains($0.kind) }
             if let p = options.randomElement() {
                 data.lastFreeProductDay = data.day
                 data.sealed.append(SealedItem(setSlug: p.homeSlug, name: p.name, packs: p.packs, paid: 0, acquired: .now,

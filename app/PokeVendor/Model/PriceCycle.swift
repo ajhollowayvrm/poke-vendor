@@ -12,7 +12,14 @@ struct MarketEvent: Codable, Identifiable, Hashable {
         case reprint
         /// A set gets attention. Its sealed product rises.
         case sealedHype
+        /// A new product for a character is announced. Its cards rise.
+        case characterProduct
+        /// The character's products sell out at stores. Sealed product with the character in its name rises.
+        case characterSellOut
     }
+
+    /// True when the event moves card prices. The other kinds move sealed prices.
+    var movesCards: Bool { kind == .hype || kind == .reprint || kind == .characterProduct }
 
     var id = UUID()
     let kind: Kind
@@ -38,6 +45,8 @@ extension Balance {
     static let marketHype = 0.25...0.70
     static let marketReprint = -0.35 ... -0.15
     static let marketSealedHype = 0.20...0.50
+    static let marketCharacterProduct = 0.10...0.30
+    static let marketCharacterSellOut = 0.20...0.50
     static let marketFactorRange = 0.4...3.0
     /// The slow wave and the shorter wave of the whole market.
     static let marketSlowDays = 420.0
@@ -57,12 +66,15 @@ enum PriceCycle {
     nonisolated(unsafe) private(set) static var today = 0
     nonisolated(unsafe) private static var events: [MarketEvent] = []
     nonisolated(unsafe) private static var boosts: Set<String> = []
+    /// The print changes of each set, oldest first (Model/PrintRuns.swift).
+    nonisolated(unsafe) private(set) static var printChanges: [String: [PrintChange]] = [:]
 
-    static func sync(seed: UInt64, day: Int, events: [MarketEvent], boosts: Set<String>) {
+    static func sync(seed: UInt64, day: Int, events: [MarketEvent], boosts: Set<String>, printChanges: [PrintChange] = []) {
         self.seed = seed
         today = day
         self.events = events
         self.boosts = boosts
+        self.printChanges = Dictionary(grouping: printChanges.sorted { $0.day < $1.day }, by: \.slug)
     }
 
     /// A stable number from 0 to 1 for a text. The same run always gives the same number.
@@ -108,21 +120,30 @@ enum PriceCycle {
                 factor *= pow(1 + growth, Double(d) / 364)
             }
         }
-        for event in events where event.kind != .sealedHype && name.contains(event.subject) {
+        for event in events where event.movesCards && name.contains(event.subject) {
             factor *= event.factor(day: d)
         }
         if d == today, boosts.contains(name) { factor *= Balance.priceBoostFactor }
         return clamp(factor)
     }
 
-    /// The factor for sealed product. It follows the market, gains value with age, and moves with set news.
-    static func sealedFactor(id: String, slug: String, inPrint: Bool, day: Int? = nil) -> Double {
+    /// The factor for sealed product. It follows the market, gains value with age (faster out of print), moves with
+    /// each print change of its set, and moves with set news and character news.
+    static func sealedFactor(id: String, slug: String, slugs: Set<String>, name: String, day: Int? = nil) -> Double {
         let d = day ?? today
-        let range = inPrint ? Balance.sealedGrowthInPrint : Balance.sealedGrowthOutOfPrint
-        let growth = range.lowerBound + unit(id, salt: 4) * (range.upperBound - range.lowerBound)
-        var factor = (1 + (index(day: d) - 1) * 0.6) * pow(1 + growth, Double(d) / 364)
-        for event in events where event.kind == .sealedHype && event.subject == slug {
-            factor *= event.factor(day: d)
+        let r = unit(id, salt: 4)
+        func growth(_ range: ClosedRange<Double>) -> Double { range.lowerBound + r * (range.upperBound - range.lowerBound) }
+        let days = printDays(slugs, day: d)
+        var factor = (1 + (index(day: d) - 1) * 0.6)
+            * pow(1 + growth(Balance.sealedGrowthInPrint), days.inPrint / 364)
+            * pow(1 + growth(Balance.sealedGrowthOutOfPrint), days.outOfPrint / 364)
+            * printJumps(slug, day: d)
+        for event in events {
+            switch event.kind {
+            case .sealedHype where event.subject == slug: factor *= event.factor(day: d)
+            case .characterSellOut where name.contains(event.subject): factor *= event.factor(day: d)
+            default: break
+            }
         }
         return clamp(factor)
     }
@@ -145,7 +166,7 @@ extension CardPrint {
 
 extension Product {
     func marketFactor(day: Int? = nil) -> Double {
-        PriceCycle.sealedFactor(id: id, slug: homeSlug, inPrint: inPrint ?? true, day: day)
+        PriceCycle.sealedFactor(id: id, slug: homeSlug, slugs: Set(mix.map(\.slug)), name: name, day: day)
     }
 }
 
@@ -155,7 +176,7 @@ extension GameStore {
     func syncMarket() {
         let day = data.day
         let boosts = Set(data.priceBoosts.filter { $0.value >= day }.keys)
-        PriceCycle.sync(seed: data.marketSeed, day: day, events: data.marketEvents, boosts: boosts)
+        PriceCycle.sync(seed: data.marketSeed, day: day, events: data.marketEvents, boosts: boosts, printChanges: data.printChanges)
     }
 
     var activeMarketEvents: [MarketEvent] {
@@ -194,7 +215,7 @@ extension GameStore {
 
     private func rollMarketEvent() -> MarketEvent? {
         let day = data.day
-        let kind: MarketEvent.Kind = [.hype, .hype, .reprint, .sealedHype].randomElement() ?? .hype
+        let kind: MarketEvent.Kind = [.hype, .hype, .reprint, .sealedHype, .characterProduct, .characterSellOut].randomElement() ?? .hype
         let slugs = Balance.modernSets + Balance.olderSets
         guard let slug = slugs.randomElement() else { return nil }
         if kind == .sealedHype {
@@ -205,6 +226,17 @@ extension GameStore {
         guard let print = SetLibrary.set(slug).prints.filter({ ($0.baseMarket ?? 0) >= 10 }).randomElement() else { return nil }
         let subject = Self.species(print.name)
         guard !data.marketEvents.contains(where: { $0.subject == subject }) else { return nil }
+        if kind == .characterProduct {
+            return MarketEvent(kind: kind, subject: subject, title: "A new \(subject) collection is announced. \(subject) cards rise for some weeks.",
+                               startDay: day, days: Int.random(in: 21...42), peak: Double.random(in: Balance.marketCharacterProduct))
+        }
+        if kind == .characterSellOut {
+            // Only a character with sealed product in its name can sell out.
+            guard SetLibrary.catalog.contains(where: { $0.name.contains(subject) }) else { return nil }
+            return MarketEvent(kind: kind, subject: subject,
+                               title: "Stores sold out of \(subject) products. Sealed product with \(subject) in its name rises for some weeks.",
+                               startDay: day, days: Int.random(in: 28...56), peak: Double.random(in: Balance.marketCharacterSellOut))
+        }
         if kind == .reprint {
             return MarketEvent(kind: kind, subject: subject, title: "A reprint of \(subject) is coming. \(subject) cards fall for some weeks.",
                                startDay: day, days: Int.random(in: 30...70), peak: Double.random(in: Balance.marketReprint))

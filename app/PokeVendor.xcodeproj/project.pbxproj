@@ -139,6 +139,7 @@
 		8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */ = {isa = PBXBuildFile; fileRef = 40AFA031CD12EA2F8CAF859A /* ultra-prism.json */; };
 		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
+		90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31479E39C7B363F7E989E45 /* PrintRuns.swift */; };
 		916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B97517632F808C60DEBC0 /* CardStoreView.swift */; };
 		918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8331C960F48E73F49D7795EA /* flashfire.json */; };
 		91F76C21C2B3ABFF49543E30 /* Wholesale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A0BCABB4AA9FD6C9E14979 /* Wholesale.swift */; };
@@ -477,6 +478,7 @@
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E20845FB5280BA69E0BC46DC /* ShowDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowDayView.swift; sourceTree = "<group>"; };
 		E2C37728A75E9DAA553E18ED /* Milestones.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Milestones.swift; sourceTree = "<group>"; };
+		E31479E39C7B363F7E989E45 /* PrintRuns.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintRuns.swift; sourceTree = "<group>"; };
 		E389E8E864F1F2802B2B9E76 /* surging-sparks.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "surging-sparks.json"; sourceTree = "<group>"; };
 		E4C3DE0AE86F620B2D63227E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E6189A16D1D0CA7A824D0A89 /* noble-victories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "noble-victories.json"; sourceTree = "<group>"; };
@@ -745,6 +747,7 @@
 				15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */,
 				9881C74F0228AC7C882E6679 /* Payments.swift */,
 				0892155B07C10C47B42D6134 /* PriceCycle.swift */,
+				E31479E39C7B363F7E989E45 /* PrintRuns.swift */,
 				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
@@ -1133,6 +1136,7 @@
 				FCAD9164775A3F88F8F0FE00 /* Payments.swift in Sources */,
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
 				F85DCACE4F481C99EAC7F29B /* PriceCycle.swift in Sources */,
+				90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */,
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */,
 				3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */,

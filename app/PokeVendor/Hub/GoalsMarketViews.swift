@@ -48,6 +48,29 @@ struct MarketView: View {
                         }
                     }
                 }
+                DetailBox(title: "Print news") {
+                    let upcoming = store.upcomingPrintChanges
+                    let recent = store.recentPrintChanges
+                    if upcoming.isEmpty && recent.isEmpty {
+                        Text("No print news now.").font(.subheadline).foregroundStyle(Theme.muted)
+                    }
+                    ForEach(upcoming) { c in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.printTitle(c)).font(.subheadline)
+                            Text("In \(c.day - store.day) day\(c.day - store.day == 1 ? "" : "s") · sealed \(marketPercent(c.jump)) over a month after")
+                                .font(.caption.monospaced()).foregroundStyle(c.inPrint ? Theme.orange : Theme.green)
+                        }
+                    }
+                    ForEach(recent) { c in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(store.printTitle(c)).font(.subheadline)
+                            Text("\(store.day - c.day == 0 ? "Today" : "\(store.day - c.day) days ago")\(c.inPrint ? " · on store shelves now" : "")")
+                                .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                    }
+                    Text("\(store.setsInPrint.count) sets in print. Stores sell only product that is in print. Out of print, sealed gains value faster.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
                 DetailBox(title: "Your biggest movers, last 4 weeks") {
                     if movers.isEmpty {
                         Text("You have no cards of $5 or more.").font(.subheadline).foregroundStyle(Theme.muted)
