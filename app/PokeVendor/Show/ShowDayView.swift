@@ -49,6 +49,13 @@ struct ShowDayView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: session.phase)
+        .overlay {
+            if let flip = session.coinFlip {
+                CoinFlipView(flip: flip) { withAnimation { session.coinFlip = nil } }
+                    .id(flip.id)
+                    .transition(.opacity)
+            }
+        }
         .sheet(item: Bindable(session).reveal) { MysteryRevealView(reveal: $0) }
         .fullScreenCover(item: $rip) { rip in
             RipView(items: rip.items, store: store) { self.rip = nil }

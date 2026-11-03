@@ -142,6 +142,7 @@ struct DealButtons: View {
             case .buy:
                 let market = visitor.item?.market ?? visitor.offer
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
+                flipRow
                 CounterSlider(market: market, offer: visitor.offer, range: 50...150, startAbove: true,
                               verb: "Counter", passTitle: "Decline", pass: { session.decline() }) { session.counter($0) }
                     .id(visitor.id)
@@ -151,6 +152,7 @@ struct DealButtons: View {
             case .sell:
                 primary("Buy for \(money(visitor.offer))", color: Theme.cyan) { session.accept() }
                     .disabled(!store.canAfford(visitor.offer))
+                flipRow
                 if session.canPayCredit {
                     Button { withAnimation { session.acceptWithCredit() } } label: {
                         Text("Pay in store credit · \(money(session.creditOffer(visitor)))").frame(maxWidth: .infinity)
@@ -182,6 +184,28 @@ struct DealButtons: View {
         .controlSize(.large)
         .padding(.horizontal, 16)
         .padding(.bottom, 10)
+    }
+
+    /// A coin flip for the deal: the visitor's offer to flip, or the player's offer (docs/20-card-shows.md, Coin flips).
+    @ViewBuilder private var flipRow: some View {
+        if session.canFlip, let full = session.flipFull(visitor) {
+            let half = session.flipHalf(full)
+            let selling = visitor.intent == .buy
+            let short = !selling && !store.canAfford(full)
+            VStack(spacing: 4) {
+                Button { withAnimation { visitor.flipPrice != nil ? session.takeFlip() : session.offerFlip() } } label: {
+                    Label(visitor.flipPrice != nil ? "Flip for it" : "Offer a flip", systemImage: "circle.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(Theme.orange)
+                .disabled(visitor.flipAsked || short)
+                Text(selling ? "You win: they pay \(money(full)). They win: they pay \(money(half))."
+                             : "You win: you pay \(money(half)). They win: you pay \(money(full)).")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.muted)
+            }
+        }
     }
 
     private func primary(_ title: String, color: Color, action: @escaping () -> Void) -> some View {

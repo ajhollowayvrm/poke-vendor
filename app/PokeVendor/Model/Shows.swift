@@ -529,6 +529,21 @@ enum VisitorType: CaseIterable {
         }
     }
 
+    /// The chance that this person flips a coin for a deal (docs/20-card-shows.md, Coin flips).
+    var flipWillingness: Double {
+        switch self {
+        case .kid: 0.1
+        case .flipper: 0.8
+        case .dealer: 0.6
+        case .collector: 0.45
+        case .gradeHunter: 0.4
+        case .sealedCollector: 0.35
+        case .vintageFan: 0.3
+        case .closetCleaner: 0.25
+        case .trader: 0
+        }
+    }
+
     var icon: String {
         switch self {
         case .collector: "person.fill"
@@ -572,6 +587,10 @@ struct Visitor: Identifiable {
     var contactID: String?
     /// A seller who does not know what they have: they ask far under market.
     var naive = false
+    /// The full price of a coin flip that the visitor offers. The buyer wins: they pay half. Nil: no flip offered.
+    var flipPrice: Double?
+    /// The player offered a flip, and the visitor said no. The player can offer it only once.
+    var flipAsked = false
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
@@ -666,6 +685,8 @@ final class ShowSession {
     /// True once the table is set up and open.
     private(set) var opened = false
     var note: String?
+    /// The coin flip that just happened. The show screen shows the coin until the player taps Continue.
+    var coinFlip: CoinFlip?
     /// Minutes on the floor while the table stood empty, and the theft that happened (docs/24-theft-and-insurance.md).
     private var awayMinutes = 0.0
     private var theftRolled = false
@@ -811,6 +832,7 @@ final class ShowSession {
             strangerReputation(&visitor)
         }
         rollGoodsFake(&visitor)
+        maybeProposeFlip(&visitor)
         return visitor
     }
 
@@ -1039,12 +1061,13 @@ final class ShowSession {
         table.removeAll { $0.id == item.id }
     }
 
-    func accept() {
+    /// Closes the deal at the visitor's offer. `fakeChecked` is true when a coin flip already let the buyer look.
+    func accept(fakeChecked: Bool = false) {
         guard let v = current else { return }
         switch v.intent {
         case .buy:
             guard let item = v.item else { return }
-            if buyerCatchesFake(v, item) { return }
+            if !fakeChecked, buyerCatchesFake(v, item) { return }
             let pay = store.rollPayment(price: v.offer, contactID: v.contactID, atStore: venue.kind == .store, buyer: v.name)
             if pay.walked || pay.scam {
                 if pay.scam {
@@ -1135,6 +1158,95 @@ final class ShowSession {
         case .sealed(let p): p.homeSlug
         case .mystery: nil
         }
+    }
+
+    // MARK: Coin flips
+
+    /// Flips happen at shows and meets. At the player's own store, the price on the shelf is the price.
+    var canFlip: Bool { venue.isShow || venue.kind == .meet }
+
+    /// The full price of a flip with this visitor: their offer when they proposed it, else the player's ask to a
+    /// buyer, or the seller's price.
+    func flipFull(_ v: Visitor) -> Double? {
+        if let price = v.flipPrice { return price }
+        switch v.intent {
+        case .buy: return v.item.map(asking)
+        case .sell: return v.offer
+        case .trade: return nil
+        }
+    }
+
+    /// Half of the full price, for the side that wins as the buyer.
+    func flipHalf(_ full: Double) -> Double { max(0.25, Self.round(full / 2)) }
+
+    /// Some visitors ask to flip for it. A buyer flips at the player's price, a seller at their own price. They ask
+    /// only when the flip is worth it to them on average: the average cost of a flip is 75% of the full price.
+    private func maybeProposeFlip(_ v: inout Visitor) {
+        guard canFlip, !v.naive, let full = flipFull(v) else { return }
+        guard Double.random(in: 0..<1) < v.type.flipWillingness * Balance.flipProposeShare else { return }
+        let half = flipHalf(full)
+        switch v.intent {
+        case .buy:
+            guard full * 0.75 <= v.limit else { return }
+            v.line = "Want to flip for it? If I win, I pay \(money(half)). If you win, I pay your \(money(full))."
+        case .sell:
+            guard full * 0.75 >= v.limit else { return }
+            v.line = "\(money(full)), or we flip for it. If you win, you pay \(money(half)). If I win, you pay \(money(full))."
+        case .trade:
+            return
+        }
+        v.flipPrice = full
+    }
+
+    /// The player offers a flip. The visitor says yes when they like to gamble and the average price works for them.
+    func offerFlip() {
+        guard canFlip, var v = current, !v.flipAsked, v.flipPrice == nil, let full = flipFull(v) else { return }
+        if v.intent == .sell, !store.canAfford(full) {
+            note = "You do not have \(money(full))."
+            return
+        }
+        let fits = v.intent == .sell ? full * 0.75 >= v.limit : full * 0.75 <= v.limit
+        if fits, Double.random(in: 0..<1) < v.type.flipWillingness {
+            flip(v, full: full)
+            return
+        }
+        v.flipAsked = true
+        v.line = fits ? "No thanks. I don't gamble on cards." : "Not for that much. A flip doesn't work for me at that price."
+        setCurrent(v)
+        spend(1)
+    }
+
+    /// The player takes the flip that the visitor offered.
+    func takeFlip() {
+        guard canFlip, let v = current, let full = v.flipPrice else { return }
+        if v.intent == .sell, !store.canAfford(full) {
+            note = "You do not have \(money(full))."
+            return
+        }
+        flip(v, full: full)
+    }
+
+    /// Flips the coin and closes the deal at the price it picks. A buyer looks the item over before the flip.
+    private func flip(_ visitor: Visitor, full: Double) {
+        var v = visitor
+        if v.intent == .buy, let item = v.item, buyerCatchesFake(v, item) { return }
+        let won = Bool.random()
+        let half = flipHalf(full)
+        let price: Double
+        let line: String
+        switch v.intent {
+        case .buy:
+            price = won ? full : half
+            line = won ? "You win. \(v.name) pays \(money(full))." : "\(v.name) wins and pays \(money(half))."
+        default:
+            price = won ? half : full
+            line = won ? "You win. You pay \(money(half))." : "\(v.name) wins. You pay \(money(full))."
+        }
+        coinFlip = CoinFlip(playerWon: won, line: line)
+        v.offer = price
+        v.line = won ? "Ah, no! Fair is fair." : "Yes! Good flip."
+        setCurrent(v)
+        accept(fakeChecked: true)
     }
 
     // MARK: Fair dealing
@@ -1551,6 +1663,18 @@ final class ShowSession {
     private static let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia",
                                 "Jordan", "Kai", "Mia", "Ben", "Rosa", "Luis", "Hannah", "Theo", "Gabe", "Wes", "Tina",
                                 "Omar", "Lena", "Victor", "Ruth", "Andre", "Ellie", "Frank"]
+}
+
+/// The result of a coin flip at a show. Heads: the player wins.
+struct CoinFlip: Identifiable {
+    let id = UUID()
+    let playerWon: Bool
+    let line: String
+}
+
+extension Balance {
+    /// The share of a willing visitor who asks to flip without the player asking first.
+    static let flipProposeShare = 0.25
 }
 
 /// A mystery pack that the player just bought: the filler first, then the hit.

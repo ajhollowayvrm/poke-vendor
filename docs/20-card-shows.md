@@ -213,6 +213,25 @@ The summary shows the sales, the floor buys, the trades, the buyers
 missed, and the buyers who walked away. After day 1 of a regional show,
 the player ends the day from the hub and comes back for day 2.
 
+### Coin flips
+
+At a show or a meet, a buy deal or a sell deal can end with a coin
+flip. The flip has one full price. The buyer wins: they pay half. The
+seller wins: they pay the full price. Heads means the player wins.
+
+- **The full price.** When the player sells, it is the player's asking
+  price. When the player buys, it is the seller's price.
+- **A visitor offers a flip.** Some visitors ask to flip for it. They
+  ask only when the average price (75% of the full price) works for
+  them. The button is **Flip for it**.
+- **The player offers a flip.** The **Offer a flip** button asks one
+  time for each visitor. A visitor says yes when the average price
+  works for them and they like to gamble. A flipper or a dealer often
+  says yes. A kid's parent almost never does.
+- **Before the flip,** a buyer looks the item over. A fake that they
+  catch ends the deal with no flip.
+- **No flips** at the player's own store, and no flips on trades.
+
 ## Also built
 
 - **The show promo post** (see [06-social-media.md](06-social-media.md)):

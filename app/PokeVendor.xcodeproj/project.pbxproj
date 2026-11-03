@@ -60,6 +60,7 @@
 		36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */ = {isa = PBXBuildFile; fileRef = F608F1C0EB11E6D8282E4752 /* 151.json */; };
 		3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4C3DE0AE86F620B2D63227E /* Assets.xcassets */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
+		3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCAA7018CABF3E161025536 /* CoinFlipView.swift */; };
 		3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */ = {isa = PBXBuildFile; fileRef = 917BD5729F252442572920DA /* white-flare.json */; };
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
 		40AE7B5A28901732EAC66C43 /* StoreExpansion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */; };
@@ -464,6 +465,7 @@
 		DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paradox-rift.json"; sourceTree = "<group>"; };
 		DEFF895D495560C72743EFB4 /* gym-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-heroes.json"; sourceTree = "<group>"; };
 		DFA05E48B4793E422BDD8455 /* LocalStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStores.swift; sourceTree = "<group>"; };
+		DFCAA7018CABF3E161025536 /* CoinFlipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinFlipView.swift; sourceTree = "<group>"; };
 		E045FCAD07023E23A8B677B4 /* Vendors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vendors.swift; sourceTree = "<group>"; };
 		E0EB54699B33908D30FBF375 /* team-rocket-returns.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-rocket-returns.json"; sourceTree = "<group>"; };
 		E1E68A0973ED000EFC2D1072 /* PokeVendor.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PokeVendor.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -504,6 +506,7 @@
 		064A48322225BE4427467A9F /* Show */ = {
 			isa = PBXGroup;
 			children = (
+				DFCAA7018CABF3E161025536 /* CoinFlipView.swift */,
 				E20845FB5280BA69E0BC46DC /* ShowDayView.swift */,
 				0F00430F0834556CB005AAA2 /* ShowFloorStage.swift */,
 				72F1BB13FF5067254ABE6CDE /* ShowGoodsDetail.swift */,
@@ -1076,6 +1079,7 @@
 				FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */,
 				916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
+				3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */,
 				7FBD497BA4117277576E3E14 /* Components.swift in Sources */,
 				7596F82261D15C4D25D7DA64 /* Condition.swift in Sources */,
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
