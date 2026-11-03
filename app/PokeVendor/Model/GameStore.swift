@@ -53,6 +53,8 @@ struct GameData: Codable {
     var testRestocks: [String] = []
     /// Surprise opportunities (docs/17-calendar-and-events.md, Surprise entries).
     var opportunities: [Opportunity] = []
+    /// Direct messages about cards (docs/28-messages-and-encounters.md).
+    var messages: [DirectMessage] = []
     /// The upgrades the player owns, by `Upgrade.rawValue` (docs/09-upgrades.md).
     var upgrades: [String] = []
     /// Sales of fakes that the buyer will find out about (docs/14-counterfeit-risk.md).
@@ -151,6 +153,7 @@ extension GameData {
         campedDays = v(.campedDays, campedDays)
         testRestocks = v(.testRestocks, testRestocks)
         opportunities = v(.opportunities, opportunities)
+        messages = v(.messages, messages)
         upgrades = v(.upgrades, upgrades)
         badSales = v(.badSales, badSales)
         saleProblems = v(.saleProblems, saleProblems)
@@ -960,6 +963,7 @@ final class GameStore {
         lines += relationshipsEndDay()
         lines += followerTipsEndDay()
         lines += opportunitiesEndDay()
+        lines += messagesEndDay()
         lines += counterfeitsEndDay()
         lines += saleProblemsEndDay()
         lines += paymentsEndDay()

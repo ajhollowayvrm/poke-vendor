@@ -230,6 +230,11 @@ extension HubView {
             case "cardstore": nav.path = [.cardStore]
             case "wholesale": store.addReputation(400); nav.path = [.buy, .wholesale]
             case "splits": store.addReputation(400); store.testSplitInvite(); nav.path = [.buy, .caseSplits]
+            case "messages":
+                for kind in [MessageKind.wantsYourCard, .lookingFor, .offersCard] {
+                    if let m = store.makeMessage(kind: kind) { store.data.messages.append(m) }
+                }
+                nav.path = [.messages]
             default: break
             }
         }

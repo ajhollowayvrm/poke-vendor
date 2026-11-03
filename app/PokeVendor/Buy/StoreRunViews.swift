@@ -78,6 +78,9 @@ struct StoreRunView: View {
     @State private var startPoints: [LocalStore: Int] = [:]
     @State private var spent = 0.0
     @State private var bought: [String] = []
+    /// Someone who came up to the player at this stop (docs/28-messages-and-encounters.md).
+    @State private var encounter: ShopEncounter?
+    @State private var encounterResult: String?
 
     var body: some View {
         NavigationStack {
@@ -95,7 +98,9 @@ struct StoreRunView: View {
         .tint(Theme.cyan)
         .onAppear {
             for s in stops where s.isGameShop { startPoints[s] = store.shop(s).points }
+            rollEncounter()
         }
+        .onChange(of: index) { _, _ in rollEncounter() }
     }
 
     private func stopView(_ s: LocalStore) -> some View {
@@ -116,6 +121,11 @@ struct StoreRunView: View {
                         Toggle("Pay with credit", isOn: $useCredit).labelsHidden()
                         Text("Credit").font(.caption)
                     }
+                }
+                if let encounter, encounter.shop == s {
+                    ShopEncounterBox(encounter: encounter, result: $encounterResult) { self.encounter = nil }
+                } else if let encounterResult {
+                    Banner(text: encounterResult, color: Theme.cyan)
                 }
                 if s.isGameShop {
                     SavedBox(shop: s, useCredit: useCredit)
@@ -170,6 +180,11 @@ struct StoreRunView: View {
             }
             .padding(16)
         }
+    }
+
+    private func rollEncounter() {
+        encounterResult = nil
+        encounter = index < stops.count ? store.rollShopEncounter(stops[index]) : nil
     }
 
     private var summary: some View {
@@ -417,6 +432,96 @@ struct SavedBox: View {
                 }
                 Text("A hold you do not pick up costs standing.").font(.caption2).foregroundStyle(Theme.muted)
             }
+        }
+    }
+}
+
+/// Someone comes up to the player at a game shop stop. Each choice closes the encounter.
+struct ShopEncounterBox: View {
+    @Environment(GameStore.self) private var store
+    let encounter: ShopEncounter
+    @Binding var result: String?
+    let close: () -> Void
+
+    var body: some View {
+        let e = encounter
+        DetailBox(title: "Someone comes up to you") {
+            HStack(alignment: .top, spacing: 12) {
+                if let url = imageURL {
+                    RemoteCardImage(url: url, name: "", upright: !isSealed)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 70)
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(e.who).font(.subheadline.weight(.semibold))
+                    Text("“\(e.line)”").font(.subheadline.italic())
+                    if e.market > 0 {
+                        Text("Market \(money(e.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                }
+            }
+            buttons(e)
+                .controlSize(.small)
+        }
+    }
+
+    @ViewBuilder private func buttons(_ e: ShopEncounter) -> some View {
+        switch e.kind {
+        case .kidWithHit:
+            let fair = ShowSession.round(e.market * Balance.kidFairShare)
+            let low = max(1, ShowSession.round(e.market * Balance.kidLowballShare))
+            VStack(spacing: 6) {
+                HStack(spacing: 8) {
+                    choice("Tell them the value", tint: Theme.green) { store.tellKidValue(e) }
+                    choice("Offer fair · \(money(fair))", tint: Theme.cyan) { store.buyKidFair(e) }
+                        .disabled(!store.canAfford(fair))
+                }
+                choice("Say it's not worth much · \(money(low))", tint: Theme.orange) { store.lowballKid(e) }
+                    .disabled(!store.canAfford(low))
+            }
+        case .buyer:
+            HStack(spacing: 8) {
+                choice("Sell · \(money(e.price))", tint: Theme.green) { store.sellToShopBuyer(e) }
+                choice("No thanks", tint: Theme.muted) { "\(e.who) nodded and went back to their game." }
+            }
+        case .seller, .ownerHold:
+            HStack(spacing: 8) {
+                choice("Buy · \(money(e.price))", tint: Theme.cyan) { store.buyFromShopEncounter(e) }
+                    .disabled(!store.canAfford(e.price))
+                choice("Pass", tint: Theme.muted) { "You passed." }
+            }
+        case .tip:
+            HStack(spacing: 8) {
+                choice("Add to calendar", tint: Theme.green) { store.takeShopTip(e) }
+                choice("Ignore", tint: Theme.muted) { "You let it go." }
+            }
+        }
+    }
+
+    private func choice(_ title: String, tint: Color, action: @escaping () -> String) -> some View {
+        Button {
+            result = action()
+            close()
+        } label: {
+            Text(title).frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .tint(tint)
+    }
+
+    private var isSealed: Bool {
+        if case .sealed = encounter.goods { return true }
+        return false
+    }
+
+    private var imageURL: URL? {
+        switch encounter.goods {
+        case .single(let p, _, _), .slab(let p, _, _): return p.image.flatMap(URL.init(string:))
+        case .sealed(let product): return product.image.flatMap(URL.init(string:))
+        default:
+            guard let id = encounter.cardID, let card = store.card(id) else { return nil }
+            return card.print.image.flatMap(URL.init(string:))
         }
     }
 }

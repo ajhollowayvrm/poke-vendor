@@ -30,6 +30,7 @@
 		11FAB08F8FB8CBC9E40A5676 /* platinum.json in Resources */ = {isa = PBXBuildFile; fileRef = BC815F3A92A7F2CFF7E7BF36 /* platinum.json */; };
 		147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F38B7B3DE47AF76DF106787 /* stellar-crown.json */; };
 		1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB5E54A48F045F4D8D408CD /* plasma-storm.json */; };
+		14BC4B51E0FEAF475510B430 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */; };
 		1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */ = {isa = PBXBuildFile; fileRef = C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */; };
 		1AB42439306A09CF7C214382 /* phantasmal-flames.json in Resources */ = {isa = PBXBuildFile; fileRef = C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */; };
 		1B02016F771A2BDFE0D3A2B2 /* undaunted.json in Resources */ = {isa = PBXBuildFile; fileRef = CBAAA70DD15AB8D85C728652 /* undaunted.json */; };
@@ -40,6 +41,7 @@
 		1F4DF34D41F7780E560BF034 /* SetSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4991D07DE453E2A0BC35E7 /* SetSections.swift */; };
 		1F9E86DC8370859A17005ECC /* LateGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C913785BCCC6A46053CC9E7 /* LateGame.swift */; };
 		20ACDC2AD6EFF4506C4CFB33 /* journey-together.json in Resources */ = {isa = PBXBuildFile; fileRef = A54CEBF267C5CF60E282DE79 /* journey-together.json */; };
+		20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */; };
 		2219F859C69DE0AD1A553DB2 /* unified-minds.json in Resources */ = {isa = PBXBuildFile; fileRef = 523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */; };
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
 		26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E94D7F70903BA100DDFBA0F /* burning-shadows.json */; };
@@ -96,6 +98,7 @@
 		5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 367966CB515F1D60E1380F07 /* Panels.swift */; };
 		5C495FB58BD39174F59911D7 /* majestic-dawn.json in Resources */ = {isa = PBXBuildFile; fileRef = 1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */; };
 		5E314A75E9482AAE174AF1E4 /* LoansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B789AFBC7E60902CCEA9F3 /* LoansView.swift */; };
+		5F70D84EFAD160D690442153 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC667D87E2F82D64D9B1C45F /* MessagesView.swift */; };
 		5FB9D02054882C35C7069D88 /* SuppliesViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
 		6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */ = {isa = PBXBuildFile; fileRef = A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */; };
@@ -322,6 +325,7 @@
 		4755B9D1944633247C22C671 /* Counterfeits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counterfeits.swift; sourceTree = "<group>"; };
 		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
 		49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboxView.swift; sourceTree = "<group>"; };
+		4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		4B1D85597836B370B32E25FC /* GarageSales.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarageSales.swift; sourceTree = "<group>"; };
 		4BAC90EF53AF2640A15B85AF /* PaymentViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViews.swift; sourceTree = "<group>"; };
 		4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relationships.swift; sourceTree = "<group>"; };
@@ -446,6 +450,7 @@
 		CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViews.swift; sourceTree = "<group>"; };
 		CBAAA70DD15AB8D85C728652 /* undaunted.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = undaunted.json; sourceTree = "<group>"; };
 		CC0E8783F786B72E1D0FF385 /* evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = evolutions.json; sourceTree = "<group>"; };
+		CC667D87E2F82D64D9B1C45F /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
 		CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "evolving-skies.json"; sourceTree = "<group>"; };
 		CE9178C1573E5068893700E2 /* black-white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-white.json"; sourceTree = "<group>"; };
 		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
@@ -459,6 +464,7 @@
 		D9887FEE4EB6935793366540 /* ruby-sapphire.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ruby-sapphire.json"; sourceTree = "<group>"; };
 		DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "brilliant-stars.json"; sourceTree = "<group>"; };
 		DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-revelation.json"; sourceTree = "<group>"; };
+		DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopEncounters.swift; sourceTree = "<group>"; };
 		DB6AC5DEAC545E0CC2CCF008 /* perfect-order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "perfect-order.json"; sourceTree = "<group>"; };
 		DCC08691AB0384D342F8CF4F /* SaleProblems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleProblems.swift; sourceTree = "<group>"; };
 		DD8D77A5A8E706D88E3DF2B6 /* emerald.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emerald.json; sourceTree = "<group>"; };
@@ -732,6 +738,7 @@
 				642F08591A3569F0A27BA0D1 /* Market.swift */,
 				B263211917DE478A8911439F /* Meets.swift */,
 				9C25C4A7C5553E5A77DE8ACA /* Meetups.swift */,
+				4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */,
 				E2C37728A75E9DAA553E18ED /* Milestones.swift */,
 				AA0DCB9D1A8DADB810AE091A /* Offers.swift */,
 				358CC15CDFF4392C2418EBCB /* Opportunities.swift */,
@@ -745,6 +752,7 @@
 				DCC08691AB0384D342F8CF4F /* SaleProblems.swift */,
 				5BC5E06D2611E27D5195B7E9 /* Sales.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
+				DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 				38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */,
@@ -803,6 +811,7 @@
 				79825428637090327C8725BE /* HubView+Debug.swift */,
 				772DBF76AEF228531662272E /* JobView.swift */,
 				10B789AFBC7E60902CCEA9F3 /* LoansView.swift */,
+				CC667D87E2F82D64D9B1C45F /* MessagesView.swift */,
 				1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */,
 				4BAC90EF53AF2640A15B85AF /* PaymentViews.swift */,
 				B39FE2287AB7BA7F1781A41B /* SettingsView.swift */,
@@ -1110,6 +1119,8 @@
 				DA4F133419BB03A1679C5705 /* Market.swift in Sources */,
 				32208ECC539710AD0EA71CAD /* Meets.swift in Sources */,
 				EF4BDC3067074B30611134AD /* Meetups.swift in Sources */,
+				14BC4B51E0FEAF475510B430 /* Messages.swift in Sources */,
+				5F70D84EFAD160D690442153 /* MessagesView.swift in Sources */,
 				B4A27C292EC6E96D9E472C48 /* Milestones.swift in Sources */,
 				41FD00786AEA167B942F3092 /* OfferLotViews.swift in Sources */,
 				C543BD663BE10EFF32473BF6 /* Offers.swift in Sources */,
@@ -1138,6 +1149,7 @@
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
 				1F4DF34D41F7780E560BF034 /* SetSections.swift in Sources */,
 				A12FA90603696A823D4B70CE /* SettingsView.swift in Sources */,
+				20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */,
 				0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */,
 				F02229EEA06E9E4ACAC5F2AE /* ShowFloorStage.swift in Sources */,
 				C3659F9450E024207098B552 /* ShowGoodsDetail.swift in Sources */,

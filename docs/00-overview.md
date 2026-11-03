@@ -48,6 +48,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [26-taxes.md](26-taxes.md) — sales tax at the store and the show table, the seller's permit, estimated income tax every 13 weeks, the 1099-K note, and the tax box in the Wallet.
 - [05-pricing-and-market.md](05-pricing-and-market.md#the-moving-market) — the moving market: price waves, market news, and sealed appreciation.
 - [27-debt-and-loans.md](27-debt-and-loans.md) — the credit score, personal and business loans, the line of credit and overdraft protection, payday loans, the pawn shop, missed payments, collections and wage garnishment, and how interest counts for income tax.
+- [28-messages-and-encounters.md](28-messages-and-encounters.md) — notoriety, direct messages about cards, encounters at game shop stops, and the bulk buyer and sealed buyer opportunities.
 
 ## Open topics
 

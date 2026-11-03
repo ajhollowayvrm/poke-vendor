@@ -146,6 +146,14 @@ struct HubView: View {
         if store.hasUpgrade(.dropDiscord), store.isPokemonCenterDropLive(day: store.day + 1) {
             Banner(text: "Discord: a Pokemon Center drop is set for tomorrow.", color: Theme.cyan)
         }
+        // Messages about cards (docs/28-messages-and-encounters.md).
+        if store.unreadMessages > 0 {
+            Button { nav.path.append(.messages) } label: {
+                Banner(text: "\(store.unreadMessages) new message\(store.unreadMessages == 1 ? "" : "s") about cards. Tap to read.",
+                       color: Theme.green, icon: "bubble.left.and.text.bubble.right")
+            }
+            .buttonStyle(.plain)
+        }
         // Surprise opportunities: the alert banner (docs/08-ui-direction.md, tap target 5).
         ForEach(store.activeOpportunities) { o in
             Button { nav.path.append(.opportunity(o.id)) } label: {
@@ -374,6 +382,13 @@ struct HubView: View {
             .buttonStyle(.plain)
             Button { nav.path.append(.buyLocal) } label: {
                 ChevronRow(icon: "car", title: "Store run", detail: "40 min per store · big stores and game shops")
+            }
+            .buttonStyle(.plain)
+            Button { nav.path.append(.messages) } label: {
+                let open = store.openMessages.count
+                ChevronRow(icon: "bubble.left.and.text.bubble.right", title: "Messages",
+                           detail: open == 0 ? "People message you about cards as your notoriety grows" : "\(open) open message\(open == 1 ? "" : "s")",
+                           accent: open > 0)
             }
             .buttonStyle(.plain)
             if store.hasAccount {

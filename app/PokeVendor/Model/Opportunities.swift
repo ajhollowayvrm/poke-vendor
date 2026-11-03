@@ -16,6 +16,10 @@ enum OpportunityKind: String, Codable, CaseIterable, Hashable {
     case estateTipOff
     /// Someone's whole vintage collection, for Elite reputation only.
     case vintageCollection
+    /// A teacher or a club buys bulk cards for kids, for more than a shop pays.
+    case bulkBuyer
+    /// A collector wants one of the player's sealed products and pays over market.
+    case sealedBuyer
 
     var label: String {
         switch self {
@@ -25,6 +29,8 @@ enum OpportunityKind: String, Codable, CaseIterable, Hashable {
         case .privateBuyer: "A private buyer"
         case .estateTipOff: "An estate sale tip"
         case .vintageCollection: "A whole vintage collection"
+        case .bulkBuyer: "A bulk buyer"
+        case .sealedBuyer: "A sealed buyer"
         }
     }
 
@@ -36,6 +42,8 @@ enum OpportunityKind: String, Codable, CaseIterable, Hashable {
         case .privateBuyer: "person.crop.circle.badge.checkmark"
         case .estateTipOff: "house.and.flag"
         case .vintageCollection: "crown"
+        case .bulkBuyer: "square.stack.3d.up"
+        case .sealedBuyer: "shippingbox"
         }
     }
 
@@ -55,6 +63,8 @@ struct Opportunity: Codable, Identifiable, Hashable {
     var price: Double = 0
     var contactID: String?
     var cardID: UUID?
+    /// For a sealed buyer: the player's sealed item.
+    var sealedID: UUID?
     var showID: UUID?
     var answered = false
 }
@@ -76,6 +86,10 @@ extension Balance {
     static let privateBuyerMinCard = 40.0
     static let vintageCollectionShare = 0.7
     static let vintageCollectionItems = 15...25
+    /// A bulk buyer pays this much for each bulk card, and takes up to this many.
+    static let bulkBuyerPerCard = 0.03...0.05
+    static let bulkBuyerMinCards = 100
+    static let sealedBuyerShare = 1.15...1.3
 }
 
 @MainActor
@@ -110,6 +124,10 @@ extension GameStore {
         if bigCard == nil { kinds.removeAll { $0 == .privateBuyer } }
         let vendorContact = data.contacts.filter { $0.kind.isVendor && level($0.id).rank >= StandingLevel.trusted.rank }.randomElement()
         if vendorContact == nil { kinds.removeAll { $0 == .vendorLiquidating } }
+        let bulkCards = data.bulk.reduce(0) { $0 + $1.cards.count }
+        if bulkCards < Balance.bulkBuyerMinCards { kinds.removeAll { $0 == .bulkBuyer } }
+        let bigSealed = data.sealed.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && market(of: $0) >= 30 }.randomElement()
+        if bigSealed == nil { kinds.removeAll { $0 == .sealedBuyer } }
         guard let kind = forced ?? kinds.randomElement() else { return nil }
         let day = data.day + notice
         let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia"]
@@ -143,6 +161,18 @@ extension GameStore {
             return Opportunity(kind: kind, postedDay: data.day, day: day, title: "A whole vintage collection",
                                detail: "Word of your reputation got around. A family wants one trusted buyer for a whole vintage collection, at about 70% of market. It takes about 2 hours.",
                                hours: 2)
+        case .bulkBuyer:
+            let perCard = Double.random(in: Balance.bulkBuyerPerCard)
+            let price = ShowSession.round(Double(bulkCards) * perCard)
+            return Opportunity(kind: kind, postedDay: data.day, day: day, title: "A teacher wants your bulk",
+                               detail: "A teacher runs a card club and wants all \(bulkCards) of your bulk cards for the kids. They pay \(money(price)) in cash, about \(Int((perCard * 100).rounded())) cents a card. A shop pays less, and only in credit. The pickup takes 1 hour.",
+                               hours: 1, price: price)
+        case .sealedBuyer:
+            guard let item = bigSealed else { return nil }
+            let price = ShowSession.round(market(of: item) * Double.random(in: Balance.sealedBuyerShare))
+            return Opportunity(kind: kind, postedDay: data.day, day: day, title: "\(who) wants your \(item.name)",
+                               detail: "A collector is after a sealed \(item.name) and offers \(money(price)) cash. Market is \(money(market(of: item))). The meetup takes 1 hour.",
+                               hours: 1, price: price, sealedID: item.id)
         }
     }
 
@@ -240,6 +270,35 @@ extension GameStore {
             log("An estate sale tip went on the calendar: \(sale.address), starting tomorrow.")
             save()
             return .done("The estate sale on \(sale.address) is on your calendar. It starts tomorrow at \(GameStore.clock(sale.kind.open)).")
+        case .bulkBuyer:
+            guard !data.bulk.isEmpty else { return .failed("You have no bulk left.") }
+            guard spendHours(o.hours) else { return .failed("Not enough time today.") }
+            let count = data.bulk.reduce(0) { $0 + $1.cards.count }
+            let fakes = data.bulk.reduce(0) { $0 + ($1.fakes?.count ?? 0) }
+            data.bulk.removeAll()
+            addLedger(o.price, .sale, "\(count) bulk cards · a card club")
+            addReceipt(name: "\(count) bulk cards", venue: "A card club", price: o.price, net: o.price, paid: nil)
+            addReputation(2)
+            log("Sold \(count) bulk cards to a card club for \(money(o.price)).", cash: o.price)
+            save()
+            // A teacher does not check for fakes. The kids do not know either.
+            return .done("Sold \(count) cards for \(money(o.price)).\(fakes > 0 ? " Some fakes went with them." : " The kids will love them.")")
+        case .sealedBuyer:
+            guard let id = o.sealedID, let item = data.sealed.first(where: { $0.id == id }), item.status == nil, !item.keep else {
+                return .failed("You no longer have it.")
+            }
+            guard spendHours(o.hours) else { return .failed("Not enough time today.") }
+            data.sealed.removeAll { $0.id == id }
+            addLedger(o.price, .sale, "\(item.name) · a sealed collector")
+            addReceipt(name: item.name, venue: "A sealed collector", price: o.price, net: o.price, paid: item.paid)
+            addReputation(2)
+            if let fake = item.fake {
+                recordBadSale(item: item.name, channel: "a sealed collector", price: o.price, fake: fake, known: item.isKnownFake,
+                              refunds: false)
+            }
+            log("Sold \(item.name) to a sealed collector for \(money(o.price)).", cash: o.price)
+            save()
+            return .done("Sold for \(money(o.price)). Cash in hand.")
         }
     }
 }
