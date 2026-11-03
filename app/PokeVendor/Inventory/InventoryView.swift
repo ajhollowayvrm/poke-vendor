@@ -1,7 +1,18 @@
 import SwiftUI
 
 enum InventoryTab: String, CaseIterable, Hashable {
-    case sealed = "Sealed", raw = "Raw", slabs = "Slabs", bulk = "Bulk"
+    case sealed = "Sealed", raw = "Raw", slabs = "Slabs", bulk = "Bulk", grading = "At Grading"
+
+    /// The tab picker label. "At Grading" is too wide for a segment.
+    var label: String { self == .grading ? "Grading" : rawValue }
+}
+
+extension OwnedCard {
+    /// A raw card at a grader shows in the At Grading tab, not in Raw.
+    var isAtGrader: Bool {
+        if case .atGrader = status { return true }
+        return false
+    }
 }
 
 enum SortOrder: String, CaseIterable {
@@ -117,7 +128,7 @@ struct InventoryView: View {
     private var tabPicker: some View {
         Picker("Tab", selection: $tab) {
             ForEach(InventoryTab.allCases, id: \.self) { t in
-                Text("\(t.rawValue) \(count(t))").tag(t)
+                Text("\(t.label) \(count(t))").tag(t)
             }
         }
         .pickerStyle(.segmented)
@@ -125,7 +136,7 @@ struct InventoryView: View {
 
     private var controls: some View {
         HStack {
-            if tab != .bulk { filterMenu }
+            if tab != .bulk && tab != .grading { filterMenu }
             Spacer()
             if tab == .raw, !selecting {
                 // Cards that make no money on TCGplayer after the fees and the shipping.
@@ -146,7 +157,7 @@ struct InventoryView: View {
             Menu {
                 Picker("Sort", selection: $sort) {
                     // Only raw cards have a condition to sort by.
-                    ForEach(SortOrder.allCases.filter { $0 != .condition || tab == .raw }, id: \.self) { Text($0.rawValue).tag($0) }
+                    ForEach(SortOrder.allCases.filter { $0 != .condition || tab == .raw || tab == .grading }, id: \.self) { Text($0.rawValue).tag($0) }
                 }
             } label: {
                 Label(sort.rawValue, systemImage: "arrow.up.arrow.down")
@@ -159,9 +170,9 @@ struct InventoryView: View {
     private var filterMenu: some View {
         let items: [any Tagged] = switch tab {
         case .sealed: store.data.sealed
-        case .raw: store.data.raw
+        case .raw: rawInHand
         case .slabs: store.data.slabs
-        case .bulk: []
+        case .bulk, .grading: []
         }
         return Menu {
             Picker("Filter", selection: $filter) {
@@ -197,8 +208,16 @@ struct InventoryView: View {
                         }
                     }
                 }
+            case .grading:
+                let cards = sortedCards(atGrading)
+                if cards.isEmpty {
+                    EmptyTab(text: "Cards you send to a grader show here until they come back as slabs.")
+                }
+                ForEach(stacks(cards, key: store.stackKey)) { stack in
+                    rowButton(stack.ids, route: .card(stack.id)) { CardRow(card: stack.items[0], count: stack.items.count) }
+                }
             case .raw, .slabs:
-                let cards = sortedCards(tab == .raw ? store.data.raw : store.data.slabs)
+                let cards = sortedCards(tab == .raw ? rawInHand : store.data.slabs)
                 if cards.isEmpty {
                     EmptyTab(text: filter != .all ? "No cards match the filter."
                                  : tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
@@ -330,8 +349,10 @@ struct InventoryView: View {
                 lotButton(chosen, disabled: blocked)
             case .bulk:
                 Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
+            case .grading:
+                Text("These cards come back as slabs when the grades are done.").font(.caption).foregroundStyle(Theme.muted)
             }
-            if tab != .bulk {
+            if tab != .bulk && tab != .grading {
                 Button(allKept ? "Unkeep" : "Keep") {
                     store.setKeep(chosen, !allKept)
                 }
@@ -373,11 +394,17 @@ struct InventoryView: View {
     private func count(_ t: InventoryTab) -> Int {
         switch t {
         case .sealed: store.data.sealed.count
-        case .raw: store.data.raw.count
+        case .raw: rawInHand.count
         case .slabs: store.data.slabs.count
         case .bulk: store.data.bulk.count
+        case .grading: atGrading.count
         }
     }
+
+    /// The raw cards that are not at a grader.
+    private var rawInHand: [OwnedCard] { store.data.raw.filter { !$0.isAtGrader } }
+
+    private var atGrading: [OwnedCard] { store.data.raw.filter(\.isAtGrader) }
 
     private var sortedSealed: [SealedItem] {
         let items = store.data.sealed.filter { filter.matches($0) }
@@ -401,7 +428,7 @@ struct InventoryView: View {
         }
         case .setOrder: return items.sorted { setOrder($0.print.num) < setOrder($1.print.num) }
         // A slab's condition is its grade, so slabs sort by value.
-        case .condition: return tab == .raw ? items.sorted(by: store.conditionOrder) : items.sorted { $0.market > $1.market }
+        case .condition: return tab == .raw || tab == .grading ? items.sorted(by: store.conditionOrder) : items.sorted { $0.market > $1.market }
         }
     }
 
