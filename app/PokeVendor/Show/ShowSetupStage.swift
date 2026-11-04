@@ -41,6 +41,7 @@ struct SetupStage: View {
                         Spacer()
                         Button("Fill") { session.fillBring() }
                             .font(.caption.weight(.semibold))
+                            .disabled(session.packed)
                         Button("Clear") { session.clearBring() }
                             .font(.caption.weight(.semibold))
                             .padding(.leading, 8)
@@ -49,12 +50,12 @@ struct SetupStage: View {
                     let cards = items.filter { $0.kind == .card }
                     if !cards.isEmpty {
                         TitledGroup(title: "Singles and slabs", count: cards.count, list: "show") {
-                            ForEach(cards) { item in bringRow(item, used: used) }
+                            ForEach(cards) { item in bringRow(item, items: items, used: used) }
                         }
                     }
                     ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "show") {
-                            ForEach(group.items) { item in bringRow(item, used: used) }
+                            ForEach(group.items) { item in bringRow(item, items: items, used: used) }
                         }
                     }
                 }
@@ -95,13 +96,14 @@ struct SetupStage: View {
 
     /// The bins, and at a table, the setup time and the turnout of the load.
     private func loadBox(_ items: [ShowItem], used: [CarryBin: Int]) -> some View {
-        let minutes = Int(session.setupMinutes(items))
-        let late = session.setupRunsLate(items)
+        let setup = session.setupMinutes(items)
+        let minutes = Int(setup)
+        let late = session.setupRunsLate(setup: setup)
         return VStack(alignment: .leading, spacing: 4) {
             Text(CarryBin.allCases.map { "\($0.name) \(used[$0, default: 0])/\(store.capacity($0))" }.joined(separator: " · "))
                 .font(.caption.monospaced())
             if session.venue.tableRules {
-            Text("Setup \(minutes) min · open at \(session.openingClock(items)) · turnout \(Int((session.turnout(items) * 100).rounded()))%")
+            Text("Setup \(minutes) min · open at \(session.openingClock(setup: setup)) · turnout \(Int((session.turnout(items) * 100).rounded()))%")
                 .font(.caption.monospaced())
                 .foregroundStyle(late ? Theme.orange : Theme.muted)
             if late {
@@ -113,6 +115,7 @@ struct SetupStage: View {
 
     /// Why an item cannot go in the load.
     private func blockReason(_ item: ShowItem, used: [CarryBin: Int]) -> String {
+        if session.packed { return "Your load left the car. You can only take items out." }
         let bin = CarryBin.of(item)
         let room = store.capacity(bin)
         if CarryBin.space(item) > room {
@@ -121,13 +124,14 @@ struct SetupStage: View {
         return "Your \(bin.name.lowercased()) is full."
     }
 
-    private func bringRow(_ item: ShowItem, used: [CarryBin: Int]) -> some View {
+    private func bringRow(_ item: ShowItem, items: [ShowItem], used: [CarryBin: Int]) -> some View {
         let on = session.bring.contains(item.id)
-        let fits = session.fits(item, usage: used)
+        // After the first trip to the floor, the load can only get smaller.
+        let fits = on || (!session.packed && session.fits(item, usage: used))
         let shown = session.venue.tableRules ? store.tableShowings(item.id) : 0
         let blocked = fits ? nil : blockReason(item, used: used)
         return Button {
-            session.toggleBring(item)
+            session.toggleBring(item, items: items)
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: on ? "checkmark.circle.fill" : "circle")

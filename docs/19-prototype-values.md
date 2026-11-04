@@ -480,9 +480,9 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Binder | 40 raw cards. Vendor binder ($40): 160 |
 | Slab box | 3 slabs. Slab case ($90): 20 |
 | Tote | 8 spaces. Folding cart ($120): 30. Sealed: 1 pack is 1 space, more is 1 + 1 for each 6 packs |
-| Setup time | 10 minutes + 0.2 for each raw card + 0.5 for each slab + 1 for each sealed space. Day 2 of a regional show: 50% |
+| Setup time | 10 minutes + 0.2 for each raw card + 0.5 for each slab + 1 for each sealed space. Day 2 of a regional show: 50%, after a day 1 setup |
 | Spend cap | Park swap $60, league night $80, trade night $150, local show $400, no cap at the trading circle, the regional show, and the store. Budget: cap × 50% to 150% |
-| Trade share | A share of the visitors who do not sell: park swap 35%, trade night 40%, trading circle 25%, league night 20%, others 23% |
+| Trade share | A share of the visitors who do not sell: park swap 35%, trade night 40%, trading circle 25%, league night 20%, others 23%. The store counter: a flat 18% of all visitors |
 | Turnout | Mean × (0.7 + appeal ÷ 20), at most 1.3. Not at the store |
 | Stale stock | Records for 21 days. A regular passes at 30% for each time on a table, at most 75% |
 

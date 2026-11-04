@@ -127,6 +127,8 @@ extension Balance {
     static let setupMinutesPerSealedSpace = 1.0
     /// Day 2 of a regional show: the table stayed set up overnight.
     static let setupDayTwoShare = 0.5
+    /// The trade share at the player's own store, of all visitors. It did not change with the crowds.
+    static let storeTradeShare = 0.18
     /// A player buys sealed product with this many packs or less, to open.
     static let playerMaxPacks = 10
     /// Each buyer's budget is the crowd's spend cap times a value in this range.

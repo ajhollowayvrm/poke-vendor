@@ -678,6 +678,8 @@ final class ShowSession {
     var markup = 1.10
     /// The load. Only the packing methods change it, so it always fits the bins (docs/29-packing-and-crowds.md).
     private(set) var bring: Set<UUID> = []
+    /// True after the first trip to the floor from the setup. The load left the car, so it can only get smaller.
+    private(set) var packed = false
     private(set) var table: [ShowItem] = []
     /// The person at the player's table.
     private(set) var visitor: Visitor?
@@ -770,7 +772,8 @@ final class ShowSession {
     }
 
     func gradeOnSite(_ cardID: UUID) {
-        guard let line = store.gradeOnSite(cardID) else { return }
+        // Only a card in the load or the bag, at a show with a booth (docs/29-packing-and-crowds.md).
+        guard hasGradingBooth, gradableCards.contains(where: { $0.id == cardID }), let line = store.gradeOnSite(cardID) else { return }
         table.removeAll { $0.id == cardID }
         bring.remove(cardID)
         note = line
@@ -853,15 +856,19 @@ final class ShowSession {
         return filled([], from: loadItems.filter { last.contains($0.id.uuidString) })
     }
 
-    func toggleBring(_ item: ShowItem) {
+    /// `items` is the load list that the caller already built. Without it, the session builds it.
+    func toggleBring(_ item: ShowItem, items: [ShowItem]? = nil) {
         if bring.contains(item.id) {
             bring.remove(item.id)
-        } else if fits(item, usage: usage(loadItems)) {
+        } else if !packed, fits(item, usage: usage(items ?? loadItems)) {
             bring.insert(item.id)
         }
     }
 
-    func fillBring() { bring = venue.limitsLoad ? filled(bring, from: loadItems) : Set(stockItems.map(\.id)) }
+    func fillBring() {
+        guard !packed else { return }
+        bring = venue.limitsLoad ? filled(bring, from: loadItems) : Set(stockItems.map(\.id))
+    }
 
     func clearBring() { bring = [] }
 
@@ -876,15 +883,16 @@ final class ShowSession {
             case .tote: total += Balance.setupMinutesPerSealedSpace * Double(CarryBin.space(item))
             }
         }
-        if dayIndex > 0 { total *= Balance.setupDayTwoShare }
+        // The table stayed up overnight only when the player set it up on day 1.
+        if dayIndex > 0, show?.attended.contains(dayIndex - 1) == true { total *= Balance.setupDayTwoShare }
         return total.rounded()
     }
 
-    /// The clock time when the table opens, after the setup.
-    func openingClock(_ items: [ShowItem]) -> String { GameStore.clock(venue.open + min(closeMinute, minute + setupMinutes(items)) / 60) }
+    /// The clock time when the table opens, after a setup of this many minutes.
+    func openingClock(setup: Double) -> String { GameStore.clock(venue.open + min(closeMinute, minute + setup) / 60) }
 
-    /// True when the setup ends at or after the close.
-    func setupRunsLate(_ items: [ShowItem]) -> Bool { minute + setupMinutes(items) >= closeMinute }
+    /// True when a setup of this many minutes ends at or after the close.
+    func setupRunsLate(setup: Double) -> Bool { minute + setup >= closeMinute }
 
     /// The share of the crowd that wants the item at its asking price.
     func appeal(_ item: ShowItem) -> Double {
@@ -914,7 +922,8 @@ final class ShowSession {
                 table = table.filter { fitted.contains($0.id) }
             }
             minute = min(closeMinute, minute + setupMinutes(table))
-            store.recordTable(table)
+            // With no time left, no buyer sees the table: no stale record, and no theft roll.
+            if minute < closeMinute { store.recordTable(table) } else { theftRolled = true }
         }
         // More of what the crowd wants on the table draws more people, up to a point.
         var mean = venue.visitorsMean * max(0, 1 - minute / closeMinute)
@@ -961,7 +970,9 @@ final class ShowSession {
         var v: Visitor?
         if table.isEmpty || roll < sellers { v = makeSeller() }
         // The trade share is a share of the people who do not come to sell, so a high seller share leaves room for buyers.
-        else if roll < sellers + (1 - sellers) * venue.crowd.tradeShare, let trader = makeTrader() { v = trader }
+        // The store counter keeps its old flat trade share (docs/29-packing-and-crowds.md).
+        else if roll < sellers + (venue.kind == .store ? Balance.storeTradeShare : (1 - sellers) * venue.crowd.tradeShare),
+                let trader = makeTrader() { v = trader }
         else { v = makeBuyer(regular: regularID) }
         guard var visitor = v else { return nil }
         if let id = regularID {
@@ -1573,6 +1584,8 @@ final class ShowSession {
     func walkFloor() {
         // A walk-in leaves the car with the bag. The game keeps it for the next walk-in.
         if phase == .setup, !hasTable, venue.limitsLoad { store.data.lastBag = Array(bring).map(\.uuidString) }
+        // The load leaves the car with the player. Back at the setup, it can only get smaller.
+        if phase == .setup, venue.limitsLoad { packed = true }
         visitor = nil
         openVendorID = nil
         phase = isOver ? .summary : .floor
@@ -1731,6 +1744,8 @@ final class ShowSession {
             quote.problem = "Pick at least one item from their table."
         } else if mine.isEmpty {
             quote.problem = "Pick at least one item from your stock."
+        } else if mine.count < give.count {
+            quote.problem = "You can only trade what you brought."
         } else if let low = mine.first(where: { $0.market < Balance.tradeMinItem }) {
             quote.problem = "\(vendor.name) does not take \(low.name). It is worth less than \(money(Balance.tradeMinItem))."
         } else if -quote.cash > vendor.kind.tradeCashCap + 0.001 {

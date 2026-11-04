@@ -67,8 +67,9 @@ player opens the table.
   half a minute for each slab, plus 1 minute for each space of sealed.
 - A full load with no upgrades takes about 28 minutes. A full load with
   all three upgrades takes about 82 minutes.
-- Day 2 of a regional show takes half the time. The vendor left the
-  table set up overnight.
+- Day 2 of a regional show takes half the time when the player set up
+  on day 1. The table stayed set up overnight. A player who missed day 1
+  takes the full time.
 - Visitors arrive between the moment the table opens and the close.
   So a long setup means fewer visitors. A meet lasts 3 hours, so a
   big load at a meet costs much more than a big load at a show.
@@ -95,12 +96,13 @@ Each venue has a crowd. The crowd sets three things:
 | Trading circle | Collector 3, vintage collector 2, grading hunter 2, sealed collector 1 | No cap | 25% |
 | Local show | Collector 2, flipper 1, kid 1, grading hunter 1, vintage collector 1, sealed collector 1 | $400 | 23% |
 | Regional show | Collector 2, grading hunter 2, vintage collector 2, sealed collector 2, flipper 1, kid 0.5 | No cap | 23% |
-| Your store counter | The same as before this change | No cap | 23% |
+| Your store counter | The same as before this change | No cap | 18% of all visitors |
 
 At reputation tier 0, a show's seller share is 22%, so 23% of the rest
 is about 18% of all visitors. That is the trade share from before this
 change. A higher tier brings more sellers, so the trade share of all
-visitors goes down a little.
+visitors goes down a little. The store counter keeps the old flat 18%
+of all visitors, because its seller share is 32%.
 
 **The player** is a new buyer type. A player wants cards to play:
 
@@ -165,7 +167,8 @@ whole stock in hand. Now a walk-in packs a bag first.
 - There is no setup time, no crowd, no price, and no stale record.
   Nothing in the bag is for sale.
 - A vendor trade can only use items in the bag. The grading booth can
-  only take raw cards in the bag.
+  only take raw cards in the bag. The game checks both rules in the
+  model, not only on the screen.
 - **Walk the floor** closes the bag. The player cannot come back for
   more. The bag was packed at the car.
 - The bag starts as the last bag that the player packed, less the items
@@ -188,6 +191,13 @@ whole stock in hand. Now a walk-in packs a bag first.
 - **Sealed rows** show their space when it is more than 1.
 - **Items under 50 cents** are not in the list. They never go on a
   table, so they must not take space.
+- **The load leaves the car once.** At a booked show, the player can
+  walk the floor before the table opens. After that first trip, the load
+  can only get smaller: Fill is off, and a row that is not in the load
+  says "Your load left the car." So the player cannot trade or grade one
+  load, then pack a second one.
+- **A table with no time left** gets no stale record and no theft roll.
+  No buyer saw it.
 - **The load always fits.** Only the packing actions change the load.
   When the table opens, the game checks the load against the bins again,
   and keeps the dearest items that fit.
@@ -265,11 +275,19 @@ starts with the dearest items that fit.
 
 **Does the soak test still work?** Yes, and it now tests the packing
 rules. On every other table, the soak clears the load, picks items by
-hand, and fills. It checks that no bin is over its limit, that the
-table holds only the load, that an item too big for its bin never goes
-in, and that the passed list matches the counts. For a walk-in, it
-checks that vendor trades and the grading booth only use the bag, and
-that the game keeps the bag. It buys the three bin
+hand, and fills. It checks:
+
+- No bin is over its limit, and an item too big for its bin never goes
+  in.
+- At a booked show, the soak walks the floor, comes back, and tries to
+  add an item. The load must not grow.
+- The grading booth turns down a raw card that is not in the load, and
+  a vendor turns down a trade item that is not in the load.
+- Every item that leaves the stock during a visit was in the load.
+- The game keeps the bag, and the passed list matches the counts.
+
+The soak also grades one card at a regional booth. It counts each check,
+so a check that never ran shows as 0. It buys the three bin
 upgrades on day 30, so it plays both bin sizes. The soak prints one
 `SOAK PACK` line, and a `SOAK PACK FAIL` line for each broken rule. Run
 `-soak 60` after a change to this system.

@@ -17,7 +17,7 @@ extension HubView {
         store.addTestResealed()
         var log: [String] = []
         // Packing checks (docs/29-packing-and-crowds.md): each one that breaks prints a SOAK PACK FAIL line.
-        var packTables = 0, packBags = 0, packFound = 0, packStale = 0, packFails: [String] = []
+        var packTables = 0, packBags = 0, packGraded = 0, packRepack = 0, packBoothNo = 0, packVendorNo = 0, packGone = 0, packFound = 0, packStale = 0, packFails: [String] = []
         func checkLoad(_ session: ShowSession, _ step: String) {
             let used = session.usage(session.loadItems)
             for bin in CarryBin.allCases where used[bin, default: 0] > store.capacity(bin) {
@@ -43,24 +43,43 @@ extension HubView {
             }
             if session.loadItems.contains(where: { $0.market < 0.5 }) { packFails.append("an item under 50 cents is in the list") }
         }
+        func stockIDs() -> Set<UUID> { let s = store.showStock; return Set(s.cards.map(\.id) + s.sealed.map(\.id)) }
+        /// A raw card in hand that is not in the load: the booth and the vendors must turn it down.
+        func outsideCard(_ session: ShowSession) -> OwnedCard? {
+            store.data.raw.first { $0.status == nil && !$0.keep && !$0.isKnownFake && $0.market >= Balance.tradeMinItem && !session.bring.contains($0.id) }
+        }
         func play(_ session: ShowSession) {
+            // Every item that leaves the stock in this visit must come from the load that left the car.
+            let before = stockIDs()
+            var load: Set<UUID> = []
             if session.phase == .setup {
                 pack(session)
                 if !session.hasTable {
-                    // A walk-in: the bag goes to the floor. Trades and the booth may only use the bag.
                     packBags += 1
                     session.walkFloor()
-                    if session.gradableCards.contains(where: { !session.bring.contains($0.id) }) { packFails.append("the booth offers a card that is not in the bag") }
                     if store.data.lastBag.count != session.bring.count { packFails.append("the game did not keep the bag") }
                 } else {
-                session.openTable()
+                    // At a booked show: go to the floor, come back, and try to add an item. The load must not grow.
+                    if session.venue.hasFloor {
+                        let packedLoad = session.bring
+                        session.walkFloor()
+                        session.backToTable()
+                        if session.phase != .setup { packFails.append("back from the floor did not return to the setup") }
+                        if let extra = session.loadItems.first(where: { !packedLoad.contains($0.id) }) { session.toggleBring(extra); packRepack += 1 }
+                        session.fillBring()
+                        if !session.bring.isSubset(of: packedLoad) { packFails.append("the load grew after the trip to the floor") }
+                    }
+                    let opening = session.bring
+                    session.openTable()
+                    if session.table.contains(where: { !opening.contains($0.id) }) { packFails.append("the table holds an item that was not in the load") }
                 }
                 if session.venue.tableRules {
                     packTables += 1
-                    if session.table.contains(where: { !session.bring.contains($0.id) }) { packFails.append("the table holds an item that is not in the load") }
                     checkLoad(session, "open")
                 }
+                load = session.bring
             }
+            var boothTested = false
             var steps = 0
             // A player with a table walks the floor once, past a few vendors, and comes back.
             var floorVisits = 0
@@ -81,10 +100,30 @@ extension HubView {
                         session.backToTable()
                     } else if let vendor = session.vendors.first(where: { !$0.visited }) {
                         floorVisits += 1
+                        // The grading booth: a card outside the load must stay raw. Grade one card from the load.
+                        if session.venue.limitsLoad, session.hasGradingBooth, !boothTested {
+                            boothTested = true
+                            if let card = outsideCard(session) {
+                                session.gradeOnSite(card.id)
+                                packBoothNo += 1
+                                if !store.data.raw.contains(where: { $0.id == card.id }) { packFails.append("the booth graded a card that was not in the load") }
+                            }
+                            if let card = session.gradableCards.first, store.canAfford(Balance.onSiteGradingFee) {
+                                session.gradeOnSite(card.id)
+                                packGraded += 1
+                            }
+                        }
                         session.visit(vendor)
                         if let item = vendor.items.first(where: { $0.price < 60 }) { session.buy(item, from: vendor) }
                         // A trade: the two best brought items for the dearest items that they pay for.
                         if vendor.kind.trades, let now = session.vendors.first(where: { $0.id == vendor.id }) {
+                            // A vendor must turn down an item that is not in the load.
+                            if session.venue.limitsLoad, let card = outsideCard(session), let theirs = now.items.first {
+                                packVendorNo += 1
+                                if session.tradeQuote(give: [card.id], get: [theirs.id], at: now).problem == nil {
+                                    packFails.append("a vendor took a trade item that was not in the load")
+                                }
+                            }
                             let give = session.tradeStock.filter { $0.market >= Balance.tradeMinItem }.prefix(2)
                             let worth = give.reduce(0) { $0 + session.tradeValue($1, at: now) }
                             let goods = now.items.filter { if case .mystery = $0.goods { return false }; return true }.sorted { $0.price > $1.price }
@@ -103,10 +142,12 @@ extension HubView {
             }
             packFound += session.foundNothing
             packStale += session.stalePassed
-            if !session.hasTable, session.venue.limitsLoad, session.tradeStock.contains(where: { !session.bring.contains($0.id) }) {
-                packFails.append("a vendor trade can use an item that is not in the bag")
+            if session.venue.limitsLoad {
+                checkLoad(session, "end")
+                let gone = before.subtracting(stockIDs())
+                packGone += gone.count
+                if !gone.isSubset(of: load) { packFails.append("\(gone.subtracting(load).count) items left the stock at \(session.venue.name) from outside the load") }
             }
-            if session.venue.limitsLoad { checkLoad(session, "end") }
             if session.passedBy.count != session.foundNothing + session.stalePassed { packFails.append("the passed list does not match the counts") }
             store.finishEncounter(session)
             log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded, \(session.foundNothing) found nothing, \(session.stalePassed) stale")
@@ -253,7 +294,7 @@ extension HubView {
            store.data.tableDays.values.contains(where: { $0.contains { $0 < last - Balance.staleDays } }) {
             packFails.append("a stale record is older than 21 days")
         }
-        print("SOAK PACK: \(packTables) tables, \(packBags) bags, \(store.data.shows.filter { !$0.attended.isEmpty }.count) shows, \(packFound) found nothing, \(packStale) stale passes, \(store.data.tableDays.count) records, \(packFails.count) fails")
+        print("SOAK PACK: \(packTables) tables, \(packBags) bags, \(packGraded) graded, checks: \(packRepack) repack, \(packBoothNo) booth, \(packVendorNo) vendor, \(packGone) gone items, \(store.data.shows.filter { !$0.attended.isEmpty }.count) shows, \(packFound) found nothing, \(packStale) stale passes, \(store.data.tableDays.count) records, \(packFails.count) fails")
         for line in packFails.prefix(10) { print("SOAK PACK FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()
