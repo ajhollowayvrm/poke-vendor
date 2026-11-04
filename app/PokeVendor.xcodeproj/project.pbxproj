@@ -195,6 +195,7 @@
 		C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */; };
 		C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */ = {isa = PBXBuildFile; fileRef = 7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */; };
 		C31C63C7733ED165D21528FD /* Job.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BDDA1B76A85BD73D8A9400 /* Job.swift */; };
+		C3628ED56F834AE0680701D4 /* Haggling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A3F8FDD2CE737F599D33A89 /* Haggling.swift */; };
 		C3659F9450E024207098B552 /* ShowGoodsDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F1BB13FF5067254ABE6CDE /* ShowGoodsDetail.swift */; };
 		C3BA9223FB686ECAAA25A207 /* LiveStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */; };
 		C543BD663BE10EFF32473BF6 /* Offers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0DCB9D1A8DADB810AE091A /* Offers.swift */; };
@@ -414,6 +415,7 @@
 		9881C74F0228AC7C882E6679 /* Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payments.swift; sourceTree = "<group>"; };
 		99D48054DE8D081D34F8C24C /* fossil.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fossil.json; sourceTree = "<group>"; };
 		9A10F5C4AE81F84DCCB0FB86 /* ShowSetupStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSetupStage.swift; sourceTree = "<group>"; };
+		9A3F8FDD2CE737F599D33A89 /* Haggling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haggling.swift; sourceTree = "<group>"; };
 		9B2447127F65338C5A35C8B0 /* champions-path.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "champions-path.json"; sourceTree = "<group>"; };
 		9C25C4A7C5553E5A77DE8ACA /* Meetups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meetups.swift; sourceTree = "<group>"; };
 		9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "detective-pikachu.json"; sourceTree = "<group>"; };
@@ -732,6 +734,7 @@
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				38152100E3F21C13B7C61E1B /* GameStore.swift */,
 				4B1D85597836B370B32E25FC /* GarageSales.swift */,
+				9A3F8FDD2CE737F599D33A89 /* Haggling.swift */,
 				1B3A5E9B134DA765470B7666 /* Inventory.swift */,
 				96BDDA1B76A85BD73D8A9400 /* Job.swift */,
 				3C913785BCCC6A46053CC9E7 /* LateGame.swift */,
@@ -1109,6 +1112,7 @@
 				57856FEC663D96592E925B4F /* GameStore.swift in Sources */,
 				4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */,
 				97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */,
+				C3628ED56F834AE0680701D4 /* Haggling.swift in Sources */,
 				FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */,
 				E35DFC53EC82DCEE02ECC9BB /* HubView+Debug.swift in Sources */,
 				A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */,

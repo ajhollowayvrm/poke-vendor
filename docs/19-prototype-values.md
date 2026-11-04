@@ -488,6 +488,20 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 
 See [29-packing-and-crowds.md](29-packing-and-crowds.md).
 
+## Haggling and deal reputation
+
+| Item | Value |
+| --- | --- |
+| Fair band | Sell at 100% of market or less, buy at 70% or more, value trade cards at 80% or more |
+| Trader | Lowest valuation 70% to 90%. Cash up to 50% of the item's market, × 1.0 to 1.3 |
+| Deal fairness | $20 or more. Generous +2, fair +1, hard 0. At most 6 a day |
+| Stories | Generous 8%, hard 12%, lost flip 4%, +2% each notoriety step, ×2 at $200. 1 to 10 days later. 1 in 5 viral. Good +3 (viral +10), bad −4 (viral −12). Random 3% a week, ±3 |
+| Final offer | Within 10% of market of the limit: met 60%, or 30% by a flipper or a dealer |
+| Trade instead of cash | 110% of market, at most 150% of the goods. A closet cleaner says no half of the time |
+| Trader binder, bundles | 3 to 5 cards. 20% of buyers (not kids) ask for a bundle |
+
+See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
+
 ## Debt and loans
 
 | Item | Value |

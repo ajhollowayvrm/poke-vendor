@@ -37,6 +37,14 @@ struct SummaryStage: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                     }
+                    if session.politePasses > 0 {
+                        Text("\(session.politePasses) passed on good terms").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                    if session.dealRep > 0 {
+                        Text("Reputation +\(session.dealRep) from fair deals (at most \(Balance.dealRepDailyCap) a day)")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(Theme.green)
+                    }
                     list("PASSED YOUR TABLE", session.passedBy.map { ($0, "") })
                 }
                 .padding(16)

@@ -79,6 +79,10 @@ comes wants to sell.
   price follows it. An off-center card takes more off. The buyer says
   what they see, for example "There's some wear on the corners."
 - The buyer's top price is hidden. The first offer is 72% to 90% of it.
+- A counter inside the fair band never uses patience. A reply tells how
+  far apart the two sides are. The player can make one final offer.
+  Some buyers want two items as a bundle. See
+  [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 - **Sell** takes the offer. **Counter** uses a slider that snaps to
   5% steps of market, from 50% to 150%, and clicks at each step. It
   starts one step past the buyer's offer. A counter at or under the top

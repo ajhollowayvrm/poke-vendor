@@ -114,6 +114,9 @@ struct GameData: Codable {
     var lastLoadout: [String] = []
     /// The last bag of a walk-in at a show, by item ID.
     var lastBag: [String] = []
+    /// Reputation from deals today, and deal stories that come out later (docs/30-haggling-and-deal-reputation.md).
+    var dealRep = DealRepState()
+    var dealStories: [DealStory] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -193,6 +196,8 @@ extension GameData {
         tableDays = v(.tableDays, tableDays)
         lastLoadout = v(.lastLoadout, lastLoadout)
         lastBag = v(.lastBag, lastBag)
+        dealRep = v(.dealRep, dealRep)
+        dealStories = v(.dealStories, dealStories)
     }
 }
 
@@ -973,6 +978,7 @@ final class GameStore {
         scheduleShows()
         scheduleSales()
         lines += relationshipsEndDay()
+        lines += storiesEndDay()
         lines += followerTipsEndDay()
         lines += opportunitiesEndDay()
         lines += messagesEndDay()

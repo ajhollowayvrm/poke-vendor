@@ -17,6 +17,8 @@ extension HubView {
         store.addTestResealed()
         var log: [String] = []
         // Packing checks (docs/29-packing-and-crowds.md): each one that breaks prints a SOAK PACK FAIL line.
+        var dealSeen = 0, dealBundles = 0, dealFinals = 0, dealBinder = 0, dealInstead = 0, dealFairMoves = 0, dealPolite = 0, dealRepTotal = 0,
+            dealStoriesOut = 0, dealTheftAfter = 0, dealFails: [String] = []
         var packTables = 0, packBags = 0, packGraded = 0, packRepack = 0, packBoothNo = 0, packVendorNo = 0, packGone = 0, packFound = 0, packStale = 0, packFails: [String] = []
         func checkLoad(_ session: ShowSession, _ step: String) {
             let used = session.usage(session.loadItems)
@@ -44,6 +46,8 @@ extension HubView {
             if session.loadItems.contains(where: { $0.market < 0.5 }) { packFails.append("an item under 50 cents is in the list") }
         }
         func stockIDs() -> Set<UUID> { let s = store.showStock; return Set(s.cards.map(\.id) + s.sealed.map(\.id)) }
+        /// Every item the player owns, the store shelves included.
+        func ownedIDs() -> Set<UUID> { Set(store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id)) }
         /// A raw card in hand that is not in the load: the booth and the vendors must turn it down.
         func outsideCard(_ session: ShowSession) -> OwnedCard? {
             store.data.raw.first { $0.status == nil && !$0.keep && !$0.isKnownFake && $0.market >= Balance.tradeMinItem && !session.bring.contains($0.id) }
@@ -86,13 +90,63 @@ extension HubView {
             while session.phase != .summary, steps < 80 {
                 steps += 1
                 if let v = session.current {
+                    // Deal checks (docs/30-haggling-and-deal-reputation.md): each one that breaks prints SOAK DEALS FAIL.
+                    dealSeen += 1
+                    let angry = session.angryWalks
+                    var fairMove = false
                     switch v.intent {
-                    case .buy: session.accept()
-                    case .trade: session.proposeTrade(valuing: 90)
+                    case .buy:
+                        let market = session.marketTotal(v)
+                        if let item = v.item, let extra = v.extra {
+                            dealBundles += 1
+                            session.accept()
+                            let ids = ownedIDs()
+                            if ids.contains(item.id) != ids.contains(extra.id) { dealFails.append("a bundle sold one item and not the other") }
+                        } else {
+                            switch dealSeen % 4 {
+                            case 0: session.accept()
+                            case 1: session.counter(market * 1.0); fairMove = true
+                            case 2: session.finalOffer(market * 0.95); dealFinals += 1
+                            default: session.counter(market * 1.4)
+                            }
+                        }
+                    case .trade:
+                        if let more = v.binder.first(where: { card in !v.tradeCards.contains { $0.id == card.id } }) {
+                            session.toggleTradeCard(more.id)
+                            dealBinder += 1
+                            if let now = session.current, now.id == v.id, !now.tradeCards.contains(where: { $0.id == more.id }) {
+                                dealFails.append("a binder card did not go into the trade")
+                            }
+                        }
+                        let valuation = [60.0, 80, 90, 100][dealSeen % 4]
+                        session.proposeTrade(valuing: valuation)
+                        fairMove = valuation >= Balance.fairTradeMin
                     case .sell:
-                        if session.canPayCredit, Bool.random() { session.acceptWithCredit() }
-                        else if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.6) }
+                        if dealSeen % 5 == 0, session.hasTable, let item = session.table.first {
+                            let tradesBefore = session.trades.count
+                            let before = ownedIDs()
+                            session.offerTradeForGoods(item.id)
+                            if session.trades.count > tradesBefore {
+                                dealInstead += 1
+                                // The trade can end the day, and the theft roll at the end can take one more table item.
+                                let gone = before.subtracting(ownedIDs())
+                                let theft = session.theftLine != nil ? 1 : 0
+                                if !gone.contains(item.id) || gone.count > 1 + theft {
+                                    dealFails.append("a trade instead of cash moved \(gone.count) items (theft \(theft)), and the table item \(gone.contains(item.id) ? "left" : "stayed")")
+                                } else if gone.count > 1 { dealTheftAfter += 1 }
+                            }
+                        } else if session.canPayCredit, Bool.random() { session.acceptWithCredit() }
+                        else if v.naive { session.payFair() }
+                        else if dealSeen % 3 == 0 { session.counter(v.goodsMarket * 0.75); fairMove = true }
+                        else { session.counter(v.goodsMarket * 0.6) }
                     }
+                    if fairMove {
+                        dealFairMoves += 1
+                        if session.angryWalks > angry { dealFails.append("someone walked away after a fair \(v.intent == .trade ? "trade" : "counter")") }
+                        if let now = session.current, now.id == v.id, now.patience != v.patience { dealFails.append("a fair counter used patience") }
+                    }
+                    let rep = store.data.dealRep
+                    if rep.day == store.day, rep.points > Balance.dealRepDailyCap { dealFails.append("deal reputation \(rep.points) is over the cap") }
                 } else if session.phase == .table {
                     if session.hasTable, floorVisits == 0, steps > 3 { session.walkFloor() } else { session.nextVisitor() }
                 } else if session.phase == .floor {
@@ -140,6 +194,8 @@ extension HubView {
                     break
                 }
             }
+            dealPolite += session.politePasses
+            dealRepTotal += session.dealRep
             packFound += session.foundNothing
             packStale += session.stalePassed
             if session.venue.limitsLoad {
@@ -280,7 +336,10 @@ extension HubView {
             if store.day % 13 == 5 { _ = store.skipWork() }
             // A late night every 8 days: the hours past 11 PM come out of sleep.
             if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
+            let due = store.data.dealStories.filter { $0.day <= store.day + 1 }.count
             store.endDay()
+            dealStoriesOut += due
+            if store.data.dealStories.contains(where: { $0.day < store.day }) { dealFails.append("a story stayed in the queue past its day") }
         }
         print("SOAK STORE: \(store.cardStore?.name ?? "closed"), \(store.lifetimeSales.rounded()) lifetime sales, credit owed \(money(store.storeCreditOwed)), bulk box \(store.cardStore?.source.bulkCards ?? 0)")
         if let plan = store.cardStore?.eventPlan { print("SOAK EVENTS: standing \(plan.standing), afterglow \(plan.afterglowPlayers) on day \(plan.afterglowDay + 1)") }
@@ -296,6 +355,8 @@ extension HubView {
         }
         print("SOAK PACK: \(packTables) tables, \(packBags) bags, \(packGraded) graded, checks: \(packRepack) repack, \(packBoothNo) booth, \(packVendorNo) vendor, \(packGone) gone items, \(store.data.shows.filter { !$0.attended.isEmpty }.count) shows, \(packFound) found nothing, \(packStale) stale passes, \(store.data.tableDays.count) records, \(packFails.count) fails")
         for line in packFails.prefix(10) { print("SOAK PACK FAIL:", line) }
+        print("SOAK DEALS: \(dealSeen) visitors, \(dealFairMoves) fair moves, \(dealPolite) polite, \(dealFinals) finals, \(dealBundles) bundles, \(dealBinder) binder picks, \(dealInstead) trades instead (\(dealTheftAfter) then a theft), rep +\(dealRepTotal), \(dealStoriesOut) stories, \(store.data.dealStories.count) queued, \(dealFails.count) fails")
+        for line in dealFails.prefix(10) { print("SOAK DEALS FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")

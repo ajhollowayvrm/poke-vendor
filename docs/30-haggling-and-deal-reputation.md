@@ -1,8 +1,11 @@
 # Haggling and Deal Reputation
 
-**Status: plan.** This doc is the plan for a change to haggling, trades,
-and reputation from deals. It also answers the questions that the change
-raises. When the code is done, the doc stays as the design record.
+**Status: built.** This doc started as the plan for a change to
+haggling, trades, and reputation from deals. It also answers the
+questions that the change raises. It is now the design record
+(`Model/Haggling.swift`, with hooks in `Model/Shows.swift`,
+`Model/Relationships.swift`, `Show/ShowTableStage.swift`, and
+`Show/ShowSummaryStage.swift`).
 
 ## The problems
 
@@ -60,7 +63,8 @@ Each kind of deal has a fair band, as a share of market:
 
 **A counter outside the fair band** works as before. It uses a patience
 point, and the other side moves part of the way. With no patience left,
-they walk away, and a contact loses 1 standing point.
+they walk away, and a contact loses 1 standing point. A trader who walks
+away now costs standing too, the same as a buyer or a seller.
 
 A counter under 60% of market to a seller still counts as a lowball, and
 a contact still loses 2 standing points.
@@ -115,8 +119,9 @@ deal from the other person's side.
 - **Not scored:** coin flip deals, a naive seller paid fair (it keeps its
   +5), a lie to a naive seller (it keeps the scam rule), and buys at the
   sticker price on the floor.
-- This replaces the old "+1 for a fair deal" in `recordDeal`. The
-  standing points for contacts do not change.
+- This replaces the old "+1 for a fair deal" in `recordDeal` for table
+  deals only. Floor vendors, game shops, and saved items keep the old
+  +1. The standing points for contacts do not change.
 
 ## 5. Deal stories
 
@@ -156,6 +161,9 @@ of cash.
   larger than that is too big for them.
 - A closet cleaner wants cash. They say no half of the time.
 - No cash changes hands.
+- The seller looks the player's item over first. A fake that they catch
+  ends the deal, as with a buyer.
+- Each seller hears a trade offer once.
 - The deal fairness compares the market of the player's item with the
   market of what the seller sells.
 
@@ -255,7 +263,9 @@ instead of cash, and bundles. It checks:
 - Each story in the queue comes out on its day, and the queue empties.
 
 It prints one `SOAK DEALS` line, and a `SOAK DEALS FAIL` line for each
-broken rule.
+broken rule. The line counts each kind of move, so a move that never
+happened shows as 0. The soak tells an angry walk-away apart from a
+buyer who leaves because they have no cash.
 
 ## Not in this change
 

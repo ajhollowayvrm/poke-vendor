@@ -570,7 +570,7 @@ struct Visitor: Identifiable {
 
     let id = UUID()
     let type: VisitorType
-    let name: String
+    var name: String
     let intent: Intent
     /// The player's item that they want, to buy or to trade for.
     let item: ShowItem?
@@ -596,6 +596,23 @@ struct Visitor: Identifiable {
     var flipPrice: Double?
     /// The player offered a flip, and the visitor said no. The player can offer it only once.
     var flipAsked = false
+    /// The other side's first number: a buyer's offer or a seller's price. For a trade: the valuation, in percent, of
+    /// their first offer (docs/30-haggling-and-deal-reputation.md).
+    var firstOffer = 0.0
+    /// Counters inside the fair band that they turned down. The second one ends the visit politely.
+    var fairRefusals = 0
+    /// The player made a final offer. It works once for each visitor.
+    var finalUsed = false
+    /// A trader: the lowest valuation of their cards in percent, the most cash they carry, and their whole binder.
+    var minValuation = 0.0
+    var cashLimit = 0.0
+    var binder: [FloorListing] = []
+    /// A buyer who wants a second item asks for a bundle.
+    var extra: ShowItem?
+    /// A seller who turned down a trade instead of cash.
+    var tradeAsked = false
+    /// The deal closed on a coin flip. A flip is not scored for fairness.
+    var flipped = false
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
@@ -700,6 +717,11 @@ final class ShowSession {
     /// Buyers who found nothing for them, and regulars who passed on stale stock (docs/29-packing-and-crowds.md).
     private(set) var foundNothing = 0
     private(set) var stalePassed = 0
+    /// People who turned down a fair counter and left on good terms, and the reputation from deals in this visit.
+    private(set) var politePasses = 0
+    private(set) var dealRep = 0
+    /// People who walked away after a counter or a final offer. A buyer with no cash is not one of them.
+    private(set) var angryWalks = 0
     /// One line for each person who passed, for the summary. The banner can be busy with a more important line.
     private(set) var passedBy: [String] = []
     /// True once the table is set up and open.
@@ -981,6 +1003,7 @@ final class ShowSession {
             strangerReputation(&visitor)
         }
         rollGoodsFake(&visitor)
+        visitor.firstOffer = visitor.intent == .trade ? openingValuation(visitor) : visitor.offer
         maybeProposeFlip(&visitor)
         return visitor
     }
@@ -1003,9 +1026,11 @@ final class ShowSession {
     private func personalize(_ v: inout Visitor, _ id: String) {
         guard let c = store.contact(id) else { return }
         let lvl = store.level(id)
-        v = Visitor(type: v.type, name: c.name, intent: v.intent, item: v.item, limit: v.limit, offer: v.offer,
-                    patience: v.patience + lvl.patienceBonus, line: v.line, tradeCards: v.tradeCards, tradeCash: v.tradeCash,
-                    goods: v.goods, goodsMarket: v.goodsMarket, contactID: id, naive: false)
+        // Change the visitor in place, so the trader's binder and the bundle stay.
+        v.name = c.name
+        v.patience += lvl.patienceBonus
+        v.contactID = id
+        v.naive = false
         switch v.intent {
         case .buy, .trade: v.limit *= 1 + lvl.priceBonus
         case .sell:
@@ -1098,11 +1123,35 @@ final class ShowSession {
         }
         if type == .vintageFan { line = "I've been hunting for one of these. " + line }
         top = max(0.25, top)
-        let ask = asking(item)
+        // Some buyers want a second item in their budget, and ask for a bundle (docs/30-haggling-and-deal-reputation.md).
+        var extra: ShowItem?
+        if type != .kid, Double.random(in: 0..<1) < Balance.bundleChance {
+            let room = budget.map { $0 - asking(item) }
+            extra = pick(wanted.filter { one in one.id != item.id && (room.map { asking(one) <= $0 } ?? true) })
+        }
+        if let extra { top += extra.market * top / max(item.market, 0.25) }
+        let ask = asking(item) + (extra.map(asking) ?? 0)
         let offer = max(0.25, Self.round(min(ask, top * Double.random(in: 0.72...0.9))))
-        return Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: item, limit: min(top, ask),
-                       offer: offer, patience: type == .flipper ? 1 : 2,
-                       line: line + (offer >= ask ? "I'll take it at your price." : "Would you take \(money(offer))?"))
+        let pair = extra.map { "I'd take both, the \(item.name) and the \($0.name). " } ?? ""
+        var v = Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: item, limit: min(top, ask),
+                        offer: offer, patience: type == .flipper ? 1 : 2,
+                        line: (extra == nil ? line : pair) + (offer >= ask ? "I'll take \(extra == nil ? "it" : "them") at your price."
+                                                                             : "Would you take \(money(offer))\(extra == nil ? "" : " for the pair")?"))
+        v.extra = extra
+        return v
+    }
+
+    /// The player's asking price for what the buyer wants: one item, or the bundle.
+    func askingTotal(_ v: Visitor) -> Double { (v.item.map(asking) ?? 0) + (v.extra.map(asking) ?? 0) }
+
+    /// The market of what the buyer wants: one item, or the bundle.
+    func marketTotal(_ v: Visitor) -> Double { (v.item?.market ?? 0) + (v.extra?.market ?? 0) }
+
+    /// The valuation, in percent, at which the trader's current offer values their own cards.
+    func openingValuation(_ v: Visitor) -> Double {
+        let cards = tradeCardsValue(v)
+        guard let item = v.item, cards > 0 else { return 100 }
+        return (item.market - v.tradeCash) / cards * 100
     }
 
     /// A trade: one or two of their cards, and sometimes cash, for one of the player's items.
@@ -1122,6 +1171,14 @@ final class ShowSession {
                         line: "I'm after your \(item.name). My \(names)\(cash > 0 ? " plus \(money(cash))" : "") for it?")
         v.tradeCards = cards
         v.tradeCash = cash
+        // The binder: the cards they offer, plus a few more the player can pick (docs/30-haggling-and-deal-reputation.md).
+        var binder = cards
+        for _ in 0..<max(0, Int.random(in: Balance.binderSize) - cards.count) {
+            if let more = tradeCard(max: target * Double.random(in: 0.2...0.8)) { binder.append(more) }
+        }
+        v.binder = binder
+        v.minValuation = Double.random(in: Balance.traderValuationRange)
+        v.cashLimit = max(cash, item.market * Balance.traderCashShare) * Double.random(in: 1.0...1.3)
         return v
     }
 
@@ -1243,12 +1300,15 @@ final class ShowSession {
         switch v.intent {
         case .buy:
             guard let item = v.item else { return }
-            if !fakeChecked, buyerCatchesFake(v, item) { return }
+            // A bundle: the buyer checks each item. A fake that they catch ends the whole deal.
+            let items = [item] + (v.extra.map { [$0] } ?? [])
+            if !fakeChecked, items.contains(where: { buyerCatchesFake(v, $0) }) { return }
+            let names = items.map(\.name).joined(separator: " and ")
             let pay = store.rollPayment(price: v.offer, contactID: v.contactID, atStore: venue.kind == .store, buyer: v.name)
             if pay.walked || pay.scam {
                 if pay.scam {
-                    store.loseToScam(item.id, name: item.name, venue: venue.name)
-                    table.removeAll { $0.id == item.id }
+                    for one in items { store.loseToScam(one.id, name: one.name, venue: venue.name) }
+                    table.removeAll { one in items.contains { $0.id == one.id } }
                 } else {
                     walkedAway += 1
                 }
@@ -1256,16 +1316,26 @@ final class ShowSession {
                 finish(minutes: .random(in: 6...12))
                 return
             }
-            store.sellAtShow(item, price: v.offer, at: venue.name)
-            store.settlePayment(pay, item: item.name, venue: venue.name, price: v.offer)
-            if !pay.line.isEmpty { note = pay.line }
-            sold.append((item.name, v.offer))
-            table.removeAll { $0.id == item.id }
-            store.recordDeal(v.contactID, what: "Sold them \(item.name)", price: v.offer, market: item.market, slug: item.setSlug)
-            if let fake = item.fake {
-                store.recordBadSale(item: item.name, channel: venue.name, price: v.offer, fake: fake, known: item.fakeKnown,
-                                    refunds: pay.refundsFakes, contactID: v.contactID)
+            // Each item gets its own receipt: the price splits by the asking prices.
+            let asks = items.map(asking)
+            let total = max(asks.reduce(0, +), 0.01)
+            var left = v.offer
+            for (i, one) in items.enumerated() {
+                let part = i == items.count - 1 ? left : Self.round(v.offer * asks[i] / total)
+                left -= part
+                store.sellAtShow(one, price: part, at: venue.name)
+                sold.append((one.name, part))
+                table.removeAll { $0.id == one.id }
+                if let fake = one.fake {
+                    store.recordBadSale(item: one.name, channel: venue.name, price: part, fake: fake, known: one.fakeKnown,
+                                        refunds: pay.refundsFakes, contactID: v.contactID)
+                }
             }
+            store.settlePayment(pay, item: names, venue: venue.name, price: v.offer)
+            if !pay.line.isEmpty { note = pay.line }
+            let market = marketTotal(v)
+            store.recordDeal(v.contactID, what: "Sold them \(names)", price: v.offer, market: market, slug: item.setSlug, scored: true)
+            score(.sell, price: v.offer, market: market, pushed: v.offer > v.firstOffer + 0.001, v)
         case .trade:
             guard let item = v.item else { return }
             if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
@@ -1282,7 +1352,10 @@ final class ShowSession {
             trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
             table.removeAll { $0.id == item.id }
             store.recordDeal(v.contactID, what: "Traded \(item.name)", price: tradeCardsValue(v) + v.tradeCash, market: item.market,
-                             slug: item.setSlug)
+                             slug: item.setSlug, scored: true)
+            // A trade is scored by the valuation of the trader's cards.
+            let valuation = openingValuation(v)
+            score(.trade, price: item.market, market: item.market, pushed: valuation < v.firstOffer - 0.001, v, share: valuation / 100)
         case .sell:
             guard let goods = v.goods else { return }
             guard store.canAfford(v.offer) else {
@@ -1291,7 +1364,8 @@ final class ShowSession {
             }
             buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
             store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
-                             market: v.goodsMarket, slug: goodsSlug(goods))
+                             market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
+            score(.buy, price: v.offer, market: v.goodsMarket, pushed: v.offer < v.firstOffer - 0.001, v)
         }
         maybePromote(v, points: 12)
         finish(minutes: .random(in: 6...12))
@@ -1306,9 +1380,11 @@ final class ShowSession {
 
     func acceptWithCredit() {
         guard canPayCredit, let v = current, v.intent == .sell, let goods = v.goods else { return }
-        buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff, credit: creditOffer(v))
+        let credit = creditOffer(v)
+        buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff, credit: credit)
         store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
-                         market: v.goodsMarket, slug: goodsSlug(goods))
+                         market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
+        score(.credit, price: credit, market: v.goodsMarket, pushed: v.offer < v.firstOffer - 0.001, v)
         maybePromote(v, points: 12)
         finish(minutes: .random(in: 6...12))
         Haptics.hit()
@@ -1346,7 +1422,7 @@ final class ShowSession {
     func flipFull(_ v: Visitor) -> Double? {
         if let price = v.flipPrice { return price }
         switch v.intent {
-        case .buy: return v.item.map(asking)
+        case .buy: return v.item == nil ? nil : askingTotal(v)
         case .sell: return v.offer
         case .trade: return nil
         }
@@ -1405,7 +1481,7 @@ final class ShowSession {
     /// Flips the coin and closes the deal at the price it picks. A buyer looks the item over before the flip.
     private func flip(_ visitor: Visitor, full: Double) {
         var v = visitor
-        if v.intent == .buy, let item = v.item, buyerCatchesFake(v, item) { return }
+        if v.intent == .buy, let item = v.item, ([item] + (v.extra.map { [$0] } ?? [])).contains(where: { buyerCatchesFake(v, $0) }) { return }
         let won = Bool.random()
         let half = flipHalf(full)
         let price: Double
@@ -1421,6 +1497,9 @@ final class ShowSession {
         coinFlip = CoinFlip(playerWon: won, line: line)
         v.offer = price
         v.line = won ? "Ah, no! Fair is fair." : "Yes! Good flip."
+        // A flip is not scored for fairness. A flip that the player lost can make a fun story.
+        v.flipped = true
+        if !won { store.lostFlipStory(name: v.name, venue: venue.name, price: full) }
         setCurrent(v)
         accept(fakeChecked: true)
     }
@@ -1447,7 +1526,7 @@ final class ShowSession {
             v.contactID = store.promote(name: v.name, kind: .collector, interest: goodsSlug(goods).map { .set($0) }, points: 20)
         }
         store.recordDeal(v.contactID, what: "Paid fair for \(VendorItem(goods: goods, price: price, market: nil).name)", price: price,
-                         market: v.goodsMarket, slug: goodsSlug(goods))
+                         market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
         note = "\(v.name) couldn't believe it. Word will get around."
         finish(minutes: .random(in: 6...10))
         Haptics.hit()
@@ -1480,22 +1559,137 @@ final class ShowSession {
             accept()
             return
         }
-        if v.patience <= 0 {
-            v.line = v.intent == .sell ? "No, that's too low. I'll find someone else." : "That's too much for me. Good luck!"
+        let market = v.intent == .sell ? v.goodsMarket : marketTotal(v)
+        let gap = market > 0 ? abs(price - v.limit) / market : 1
+        // Inside the fair band: no patience used, and no standing lost (docs/30-haggling-and-deal-reputation.md).
+        if market > 0, Haggle.fair(v.intent == .sell ? .buy : .sell, share: price / market) {
+            if v.fairRefusals >= 1 {
+                leavePolitely(v)
+                return
+            }
+            v.fairRefusals += 1
+            v.offer = Self.round(v.limit)
+            v.line = "\(Haggle.tell(gap)) That's fair, but my best is \(money(v.offer))."
             setCurrent(v)
-            store.walkedAway(v.contactID)
-            walkedAway += 1
-            note = "\(v.name) walked away."
-            finish(minutes: .random(in: 4...8))
+            spend(3)
+            return
+        }
+        if v.patience <= 0 {
+            walkAway(v, line: v.intent == .sell ? "No, that's too low. I'll find someone else." : "That's too much for me. Good luck!")
             return
         }
         v.patience -= 1
         // A tired player haggles worse: the other side moves less (docs/16, Late nights).
         let moved = v.offer + (v.limit - v.offer) * Double.random(in: 0.5...0.9) * store.tiredFactor
         v.offer = Self.round(v.intent == .sell ? max(v.limit, moved) : min(v.limit, moved))
-        v.line = v.intent == .sell ? "I could do \(money(v.offer)). That's as low as I go." : "Hmm. I can go to \(money(v.offer)). That's about my limit."
+        v.line = Haggle.tell(gap) + " " + (v.intent == .sell ? "I could do \(money(v.offer)). That's as low as I go." : "Hmm. I can go to \(money(v.offer)). That's about my limit.")
         setCurrent(v)
         spend(3)
+    }
+
+    /// They turned down a fair number twice. They leave on good terms: no standing lost, and not "walked away".
+    private func leavePolitely(_ visitor: Visitor) {
+        var v = visitor
+        v.line = "I can't do it. No hard feelings."
+        setCurrent(v)
+        politePasses += 1
+        note = "\(v.name) passed, on good terms."
+        finish(minutes: .random(in: 3...6))
+    }
+
+    /// They walk away. A contact loses standing.
+    private func walkAway(_ visitor: Visitor, line: String) {
+        var v = visitor
+        v.line = line
+        setCurrent(v)
+        store.walkedAway(v.contactID)
+        walkedAway += 1
+        angryWalks += 1
+        note = "\(v.name) walked away."
+        finish(minutes: .random(in: 4...8))
+    }
+
+    /// The final offer: once for each buyer or seller. Near their limit and inside the fair band, they can meet it.
+    /// Otherwise they leave: politely inside the band, or they walk away outside it.
+    func finalOffer(_ price: Double) {
+        guard var v = current, v.intent != .trade, !v.finalUsed else { return }
+        v.finalUsed = true
+        let fits = v.intent == .sell ? price >= v.limit - 0.001 : price <= v.limit + 0.001
+        let market = v.intent == .sell ? v.goodsMarket : marketTotal(v)
+        let fair = market > 0 && Haggle.fair(v.intent == .sell ? .buy : .sell, share: price / market)
+        let near = market > 0 && abs(price - v.limit) / market <= Balance.finalOfferReach
+        let hard = v.type == .flipper || v.type == .dealer
+        if fits || (fair && near && Double.random(in: 0..<1) < (hard ? Balance.finalOfferMeetHard : Balance.finalOfferMeet)) {
+            if v.intent == .sell, !store.canAfford(price) {
+                note = "You do not have \(money(price))."
+                v.finalUsed = false
+                setCurrent(v)
+                return
+            }
+            v.offer = price
+            v.line = fits ? "Deal." : "Fine. You've got a deal."
+            setCurrent(v)
+            accept()
+        } else if fair {
+            leavePolitely(v)
+        } else {
+            walkAway(v, line: "Then we're done here.")
+        }
+    }
+
+    /// Adds a card from the trader's binder to the offer, or takes one out. The trader keeps their own valuation, so
+    /// the cash follows the cards, up to what they carry.
+    func toggleTradeCard(_ id: UUID) {
+        guard var v = current, v.intent == .trade, let item = v.item, let card = v.binder.first(where: { $0.id == id }) else { return }
+        let valuation = openingValuation(v)
+        if v.tradeCards.contains(where: { $0.id == id }) {
+            guard v.tradeCards.count > 1 else { return }
+            v.tradeCards.removeAll { $0.id == id }
+        } else {
+            v.tradeCards.append(card)
+        }
+        let cards = tradeCardsValue(v)
+        v.tradeCash = Self.round(min(v.cashLimit, item.market - cards * valuation / 100))
+        v.line = v.tradeCash >= 0 ? "Sure. Then I add \(money(v.tradeCash))." : "Sure. Then you add \(money(-v.tradeCash))."
+        setCurrent(v)
+    }
+
+    /// The seller can take an item from the player's table instead of cash, valued at 110% of market.
+    func offerTradeForGoods(_ itemID: UUID) {
+        guard var v = current, v.intent == .sell, !v.tradeAsked, let goods = v.goods, let item = table.first(where: { $0.id == itemID })
+        else { return }
+        v.tradeAsked = true
+        let value = item.market * Balance.tradeInstead
+        if v.type == .closetCleaner, Bool.random() {
+            v.line = "I'd rather have cash."
+        } else if value < v.limit - 0.001 {
+            v.line = "That's not enough for it."
+        } else if value > v.goodsMarket * Balance.tradeInsteadMax {
+            v.line = "That's too much. I can't take that for this."
+        } else {
+            if buyerCatchesFake(v, item) { return }
+            let got = VendorItem(goods: goods, price: item.market, market: v.goodsMarket, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+            store.tradeWithVendor(give: [item], get: [got], cash: 0, vendor: v.name, at: venue.name)
+            table.removeAll { $0.id == item.id }
+            bring.remove(item.id)
+            trades.append("\(item.name) → \(got.name)")
+            store.recordDeal(v.contactID, what: "Traded \(item.name) for \(got.name)", price: item.market, market: v.goodsMarket,
+                             slug: goodsSlug(goods), scored: true)
+            score(.buy, price: item.market, market: v.goodsMarket, pushed: false, v)
+            maybePromote(v, points: 12)
+            finish(minutes: .random(in: 6...12))
+            Haptics.hit()
+            return
+        }
+        setCurrent(v)
+        spend(2)
+    }
+
+    /// Scores a table deal for fairness (docs/30-haggling-and-deal-reputation.md).
+    private func score(_ side: DealSide, price: Double, market: Double, pushed: Bool, _ v: Visitor, share: Double? = nil) {
+        guard !v.flipped, market > 0 else { return }
+        dealRep += store.scoreDeal(side, price: price, market: market, share: share ?? price / market, pushed: pushed,
+                                   kid: v.type == .kid, with: v.name, at: venue.name)
     }
 
     /// Market value of the cards a trader offers.
@@ -1512,9 +1706,17 @@ final class ShowSession {
     /// value they give stays within their limit. If not, they add part of the cash, or walk away.
     func proposeTrade(valuing percent: Double) {
         guard var v = current, v.intent == .trade, let item = v.item else { return }
+        // The trader takes any valuation at or above their own lowest one, while the cash fits what they carry
+        // (docs/30-haggling-and-deal-reputation.md).
         let cash = tradeCash(v, valuing: percent)
-        let cards = tradeCardsValue(v)
-        if cards + cash <= v.limit + 0.001 {
+        let gap = abs(percent - v.minValuation) / 100
+        if percent >= v.minValuation - 0.001 {
+            if cash > v.cashLimit + 0.001 {
+                v.line = "I don't have \(money(cash)) on me. I can add \(money(Self.round(v.cashLimit))) at most."
+                setCurrent(v)
+                spend(2)
+                return
+            }
             if cash < 0, !store.canAfford(-cash) {
                 note = "You do not have \(money(-cash))."
                 return
@@ -1525,19 +1727,24 @@ final class ShowSession {
             accept()
             return
         }
-        if v.patience <= 0 {
-            v.line = "No, my cards are worth more than that. I'll keep them."
+        if Haggle.fair(.trade, share: percent / 100) {
+            if v.fairRefusals >= 1 {
+                leavePolitely(v)
+                return
+            }
+            v.fairRefusals += 1
+            let ask = (v.minValuation / 5).rounded(.up) * 5
+            v.line = "\(Haggle.tell(gap)) My cards are worth more to me. I'd do it at \(Int(ask))%."
             setCurrent(v)
-            walkedAway += 1
-            note = "\(v.name) walked away."
-            finish(minutes: .random(in: 4...8))
+            spend(3)
+            return
+        }
+        if v.patience <= 0 {
+            walkAway(v, line: "No, my cards are worth more than that. I'll keep them.")
             return
         }
         v.patience -= 1
-        let most = Self.round(v.limit - cards)
-        v.tradeCash = Self.round(max(v.tradeCash, v.tradeCash + (most - v.tradeCash) * Double.random(in: 0.5...0.9) * store.tiredFactor))
-        v.line = v.tradeCash > 0 ? "I can add \(money(v.tradeCash)) on top, for your \(item.name). That's my best."
-                                 : "My cards straight across for your \(item.name). That's my best."
+        v.line = "\(Haggle.tell(gap)) My cards are worth more than that, for your \(item.name)."
         setCurrent(v)
         spend(3)
     }

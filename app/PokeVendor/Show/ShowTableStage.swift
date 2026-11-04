@@ -9,7 +9,7 @@ struct TableStage: View {
             ScrollView {
                 VStack(spacing: 14) {
                     if let visitor = session.visitor {
-                        VisitorCard(visitor: visitor, asking: visitor.item.map(session.asking), tool: store.data.centeringTool)
+                        VisitorCard(visitor: visitor, asking: visitor.item == nil ? nil : session.askingTotal(visitor), tool: store.data.centeringTool)
                             .id(visitor.id)
                             .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                                     removal: .move(edge: .leading).combined(with: .opacity)))
@@ -52,6 +52,8 @@ struct CounterSlider: View {
     let verb: String
     let passTitle: String
     let pass: () -> Void
+    /// The final offer at the slider price, once for each visitor (docs/30-haggling-and-deal-reputation.md). Nil: none.
+    var final: ((Double) -> Void)? = nil
     let send: (Double) -> Void
     @State private var percent: Double = 100
 
@@ -76,6 +78,13 @@ struct CounterSlider: View {
                 .tint(Theme.line)
                 Button { withAnimation { pass() } } label: { Text(passTitle).frame(maxWidth: .infinity) }
                     .buttonStyle(.bordered)
+            }
+            if let final {
+                Button { withAnimation { final(price) } } label: {
+                    Text("Final offer · \(money(price))").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(Theme.orange)
             }
         }
         .padding(10)
@@ -103,6 +112,27 @@ struct TradeSlider: View {
                 Text("Their cards at \(Int(percent))%").font(.subheadline.monospaced())
                 Spacer()
                 Text(money(ShowSession.round(cards * percent / 100))).font(.headline.monospaced()).contentTransition(.numericText())
+            }
+            if visitor.binder.count > visitor.tradeCards.count || visitor.binder.count > 1 {
+                // Their binder: tap a card to add it to the trade or take it out.
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("THEIR BINDER · TAP TO PICK").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                    ForEach(visitor.binder) { card in
+                        let inTrade = visitor.tradeCards.contains { $0.id == card.id }
+                        Button { withAnimation { session.toggleTradeCard(card.id) } } label: {
+                            HStack {
+                                Image(systemName: inTrade ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(inTrade ? Color(red: 0.7, green: 0.55, blue: 1) : Theme.muted)
+                                Text(card.print.name).font(.caption)
+                                Spacer()
+                                Text(money(card.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            }
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(inTrade && visitor.tradeCards.count == 1)
+                    }
+                }
             }
             Slider(value: $percent, in: 50...120, step: 5)
                 .padding(.vertical, -4)
@@ -140,11 +170,12 @@ struct DealButtons: View {
         VStack(spacing: 8) {
             switch visitor.intent {
             case .buy:
-                let market = visitor.item?.market ?? visitor.offer
+                let market = visitor.item == nil ? visitor.offer : session.marketTotal(visitor)
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
                 flipRow
                 CounterSlider(market: market, offer: visitor.offer, range: 50...150, startAbove: true,
-                              verb: "Counter", passTitle: "Decline", pass: { session.decline() }) { session.counter($0) }
+                              verb: "Counter", passTitle: "Decline", pass: { session.decline() },
+                              final: visitor.finalUsed ? nil : { session.finalOffer($0) }) { session.counter($0) }
                     .id(visitor.id)
             case .trade:
                 primary("Accept the trade", color: Theme.green) { session.accept() }
@@ -176,8 +207,21 @@ struct DealButtons: View {
                         .tint(Theme.orange)
                     }
                 }
+                if session.hasTable, !session.table.isEmpty, !visitor.tradeAsked {
+                    // Offer an item from the table instead of cash, at 110% of its market (docs/30).
+                    Menu {
+                        ForEach(session.table) { item in
+                            Button("\(item.name) · worth \(money(item.market * Balance.tradeInstead)) to them") { withAnimation { session.offerTradeForGoods(item.id) } }
+                        }
+                    } label: {
+                        Text("Offer a trade instead").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Color(red: 0.7, green: 0.55, blue: 1))
+                }
                 CounterSlider(market: visitor.goodsMarket, offer: visitor.offer, range: 30...110, startAbove: false,
-                              verb: "Offer", passTitle: "Pass", pass: { session.decline() }) { session.counter($0) }
+                              verb: "Offer", passTitle: "Pass", pass: { session.decline() },
+                              final: visitor.finalUsed ? nil : { session.finalOffer($0) }) { session.counter($0) }
                     .id(visitor.id)
             }
         }
@@ -280,6 +324,17 @@ struct VisitorCard: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                         OwnedItemLines(item: item)
+                    }
+                }
+                if let extra = visitor.extra {
+                    HStack(alignment: .top, spacing: 12) {
+                        ItemImage(item: extra).frame(width: 64, height: 89)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("AND").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                            Text(extra.name).font(.subheadline.weight(.semibold))
+                            Text(extra.detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            Text("market \(money(extra.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
                     }
                 }
             }

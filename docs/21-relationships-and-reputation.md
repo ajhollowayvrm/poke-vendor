@@ -129,7 +129,7 @@ above tells the player where it is.
 | Paying more than a naive seller asked (see Fair dealing) | +4, and reputation |
 | Picking up a saved item | +3 |
 | A counter under 60% of market (a lowball) | −2 |
-| Walking away after three counters | −1 |
+| Walking away after a counter outside the fair band | −1. A counter inside the fair band costs nothing (see [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md#1-the-fair-band)) |
 | A saved item that the player does not pick up | −5 |
 | Selling them a fake | −20 (the game shop rule, for everyone) |
 | No deal for 8 weeks | −1 each week after that |
@@ -163,12 +163,16 @@ Reputation is a points total. It sets the five tiers from
 | 3 | Respected | 350–699 |
 | 4 | Elite | 700+ |
 
-- **What raises it:** each fair deal with anyone (+1), each online
+- **What raises it:** a deal at a table scores generous (+2) or fair
+  (+1), at most 6 a day (see
+  [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md#4-deal-fairness)).
+  Each fair deal with a floor vendor or a game shop (+1), each online
   sale of $20 or more with no fake and no overstated condition (+1),
   paying fair to a naive seller (+5), each contact who reaches Regular
   (+5), Trusted (+10), and Friend (+20), and good word from social
   media.
-- **What lowers it:** a scam that comes out (−30), selling a fake (−40),
+- **What lowers it:** a bad deal story (−4, or −12 when it goes viral),
+  a scam that comes out (−30), selling a fake (−40),
   a missed booked show day (−5), and backlash from social media.
 - **What it does with strangers:** a stranger's first offer, patience,
   and deal chance start better at a higher tier. More sellers come to

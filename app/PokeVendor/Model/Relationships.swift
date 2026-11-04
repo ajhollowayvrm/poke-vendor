@@ -320,9 +320,10 @@ extension GameStore {
 
     /// A finished deal with a contact or a stranger. A fair price (within 10% of market) counts more, and it raises
     /// reputation too.
-    func recordDeal(_ id: String?, what: String, price: Double, market: Double, slug: String?) {
+    /// `scored`: a table deal gets its reputation from `scoreDeal` instead (docs/30-haggling-and-deal-reputation.md).
+    func recordDeal(_ id: String?, what: String, price: Double, market: Double, slug: String?, scored: Bool = false) {
         let fair = market > 0 && abs(price - market) / market <= 0.10
-        if fair, price >= Balance.fairDealMinPrice { addReputation(1) }
+        if fair, !scored, price >= Balance.fairDealMinPrice { addReputation(1) }
         guard let id, let i = data.contacts.firstIndex(where: { $0.id == id }) else { return }
         data.contacts[i].deals += 1
         data.contacts[i].lastDealDay = data.day
