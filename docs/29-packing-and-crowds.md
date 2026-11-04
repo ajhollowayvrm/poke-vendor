@@ -4,6 +4,7 @@
 also answers the questions that the change raises. It is now the design
 record (`Model/Packing.swift`, with hooks in `Model/Shows.swift`,
 `Model/Meets.swift`, `Model/Upgrades.swift`, and `Show/ShowSetupStage.swift`).
+The bag for walk-ins came after the first build.
 
 ## The problem
 
@@ -153,6 +154,26 @@ Regulars remember what was on the player's table.
 Regulars are 60% of the visitors at a meet and 35% at a show. So stale stock hurts most at the weekly meets. This
 is the purpose: the player rotates stock between meets.
 
+## A bag for walk-ins
+
+A walk-in at a card show has no table, but they can trade with vendors
+and use the grading booth. Before this rule, a walk-in traded from the
+whole stock in hand. Now a walk-in packs a bag first.
+
+- The show opens on a **Pack your bag** screen, before the floor.
+- The bag uses the same three bins as a table, with the same upgrades.
+- There is no setup time, no crowd, no price, and no stale record.
+  Nothing in the bag is for sale.
+- A vendor trade can only use items in the bag. The grading booth can
+  only take raw cards in the bag.
+- **Walk the floor** closes the bag. The player cannot come back for
+  more. The bag was packed at the car.
+- The bag starts as the last bag that the player packed, less the items
+  that are gone. The first bag is empty, because most walk-ins come to
+  buy.
+- Surprise opportunities and garage and estate sales do not get a bag.
+  A garage or estate sale takes cash only, so a bag does nothing there.
+
 ## The setup screen
 
 - **The default load.** The screen starts from the last load that the
@@ -196,9 +217,9 @@ case of booster boxes needs 37 spaces, and the folding cart holds 30.
 A case stays home. The player sells a case online or to a dealer.
 
 **What about a walk-in at a show, and the surprise opportunities?**
-They do not change. A walk-in has no table, so there is no setup. A
-walk-in still trades from the whole stock. This is a known gap. A later
-change can give the walk-in a bag to pack.
+A walk-in packs a bag (see [A bag for walk-ins](#a-bag-for-walk-ins)).
+A surprise opportunity still trades from the whole stock. This is a
+known gap.
 
 **What about the player's own store?** The store counter does not
 change. The table is the stock on the shelves. There is no carry space,
@@ -246,7 +267,9 @@ starts with the dearest items that fit.
 rules. On every other table, the soak clears the load, picks items by
 hand, and fills. It checks that no bin is over its limit, that the
 table holds only the load, that an item too big for its bin never goes
-in, and that the passed list matches the counts. It buys the three bin
+in, and that the passed list matches the counts. For a walk-in, it
+checks that vendor trades and the grading booth only use the bag, and
+that the game keeps the bag. It buys the three bin
 upgrades on day 30, so it plays both bin sizes. The soak prints one
 `SOAK PACK` line, and a `SOAK PACK FAIL` line for each broken rule. Run
 `-soak 60` after a change to this system.
@@ -260,7 +283,6 @@ upgrades on day 30, so it plays both bin sizes. The soak prints one
 | Handling wear | A raw card can lose condition at a table. It ties into supplies, and it needs its own balance pass. |
 | Weather at the park swap | Rain lowers the turnout and puts raw cards at risk. It needs a canopy upgrade. |
 | Trade bait | Traders at some venues ask for certain items. |
-| A bag for walk-ins | See the questions above. |
 
 ## Values
 

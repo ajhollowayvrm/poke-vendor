@@ -635,8 +635,11 @@ struct Venue: Hashable {
     var eventID: UUID?
     /// Who comes, what they spend, and how many trade (docs/29-packing-and-crowds.md).
     var crowd = Crowd.general
-    /// Packing rules apply: carry space, setup time, and the stale record. Not at the player's own store.
-    var packs: Bool { hasTable && kind != .store }
+    /// The table rules apply: setup time, the crowd's turnout, buyers who find nothing, and the stale record. Not at
+    /// the player's own store.
+    var tableRules: Bool { hasTable && kind != .store }
+    /// The bins limit what the player carries: to a table, or in a bag as a walk-in at a show.
+    var limitsLoad: Bool { kind != .store && (hasTable || kind == .show) }
 
     var isShow: Bool { kind == .show }
 }
@@ -725,7 +728,8 @@ final class ShowSession {
         self.show = show
         self.store = store
         dayIndex = show.map { store.day - $0.startDay } ?? 0
-        phase = venue.hasTable ? .setup : .floor
+        // A walk-in at a show packs a bag first (docs/29-packing-and-crowds.md, A bag for walk-ins).
+        phase = venue.hasTable || venue.limitsLoad ? .setup : .floor
         // A player who arrives late loses the hours before they came.
         let start = max(0, (store.data.hour - venue.open) * 60)
         minute = start
@@ -752,7 +756,7 @@ final class ShowSession {
                 }
             }
         }
-        if venue.packs { bring = defaultLoad() }
+        if venue.tableRules { bring = defaultLoad() } else if venue.limitsLoad { bring = defaultBag() }
     }
 
     /// On-site grading at a regional show: one tier, the grade comes back the same day (docs/20-card-shows.md).
@@ -761,7 +765,7 @@ final class ShowSession {
     /// The raw cards the player can grade at the booth: free, and not known fakes.
     var gradableCards: [OwnedCard] {
         // With a table, only the cards the player brought (docs/29-packing-and-crowds.md).
-        store.data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && (!venue.packs || bring.contains($0.id)) }
+        store.data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && (!venue.limitsLoad || bring.contains($0.id)) }
             .sorted { $0.market > $1.market }
     }
 
@@ -800,7 +804,7 @@ final class ShowSession {
     // MARK: Packing (docs/29-packing-and-crowds.md)
 
     /// The items the player can pack. An item under 50 cents never goes on a table, so it is not in the list.
-    var loadItems: [ShowItem] { venue.packs ? stockItems.filter { $0.market >= 0.5 } : stockItems }
+    var loadItems: [ShowItem] { venue.limitsLoad ? stockItems.filter { $0.market >= 0.5 } : stockItems }
 
     /// Records a person who passed on the table. The banner shows it only when nothing else is on it.
     private func passed(_ line: String) {
@@ -818,7 +822,7 @@ final class ShowSession {
 
     /// True when the item is in the load, or there is room for it.
     func fits(_ item: ShowItem, usage: [CarryBin: Int], load: Set<UUID>? = nil) -> Bool {
-        guard venue.packs, !(load ?? bring).contains(item.id) else { return true }
+        guard venue.limitsLoad, !(load ?? bring).contains(item.id) else { return true }
         let bin = CarryBin.of(item)
         return usage[bin, default: 0] + CarryBin.space(item) <= store.capacity(bin)
     }
@@ -843,6 +847,12 @@ final class ShowSession {
         return load.isEmpty ? filled([], from: items) : load
     }
 
+    /// A walk-in's bag: the last bag, less what is gone. The first time, the bag is empty.
+    private func defaultBag() -> Set<UUID> {
+        let last = Set(store.data.lastBag)
+        return filled([], from: loadItems.filter { last.contains($0.id.uuidString) })
+    }
+
     func toggleBring(_ item: ShowItem) {
         if bring.contains(item.id) {
             bring.remove(item.id)
@@ -851,13 +861,13 @@ final class ShowSession {
         }
     }
 
-    func fillBring() { bring = venue.packs ? filled(bring, from: loadItems) : Set(stockItems.map(\.id)) }
+    func fillBring() { bring = venue.limitsLoad ? filled(bring, from: loadItems) : Set(stockItems.map(\.id)) }
 
     func clearBring() { bring = [] }
 
     /// The minutes to lay out the load. Day 2 of a regional show takes half.
     func setupMinutes(_ items: [ShowItem]) -> Double {
-        guard venue.packs else { return 0 }
+        guard venue.tableRules else { return 0 }
         var total = Balance.setupBaseMinutes
         for item in items where bring.contains(item.id) && item.market >= 0.5 {
             switch CarryBin.of(item) {
@@ -896,7 +906,7 @@ final class ShowSession {
     func openTable() {
         if !opened, venue.kind != .store { store.useTableSupplies() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
-        if venue.packs {
+        if venue.tableRules {
             // A guard: the load must fit the bins, whatever path built it.
             let fitted = filled([], from: table)
             if fitted.count < table.count {
@@ -908,7 +918,7 @@ final class ShowSession {
         }
         // More of what the crowd wants on the table draws more people, up to a point.
         var mean = venue.visitorsMean * max(0, 1 - minute / closeMinute)
-        mean *= venue.packs ? turnout(table) : min(1.3, 0.7 + Double(table.count) / 30)
+        mean *= venue.tableRules ? turnout(table) : min(1.3, 0.7 + Double(table.count) / 30)
         // A promo post and a good table spot bring more people (docs/20, docs/04).
         if show?.promoted == true { mean *= Balance.showPromoVisitorBonus }
         if show?.goodSpot == true { mean *= Balance.goodSpotBonus }
@@ -1019,7 +1029,7 @@ final class ShowSession {
         let budget = crowd.spendCap.map { $0 * Double.random(in: Balance.budgetRange) }
         var wanted = table.filter { item in type.wants(item) && (budget.map { asking(item) <= $0 } ?? true) }
         if wanted.isEmpty {
-            guard !venue.packs else {
+            guard !venue.tableRules else {
                 foundNothing += 1
                 passed(type.foundNothingLine)
                 return nil
@@ -1028,7 +1038,7 @@ final class ShowSession {
             wanted = table
         }
         // People look at the better items first. A regular looks at fresh items first.
-        let fresh = regular != nil && venue.packs
+        let fresh = regular != nil && venue.tableRules
         guard let item = pick(wanted, fresh: fresh) else { return nil }
         if fresh, let id = regular {
             let shown = store.tableShowings(item.id)
@@ -1561,6 +1571,8 @@ final class ShowSession {
 
     /// Leaves the table for the floor. The clock only moves when the player looks at a table, deals, or buys.
     func walkFloor() {
+        // A walk-in leaves the car with the bag. The game keeps it for the next walk-in.
+        if phase == .setup, !hasTable, venue.limitsLoad { store.data.lastBag = Array(bring).map(\.uuidString) }
         visitor = nil
         openVendorID = nil
         phase = isOver ? .summary : .floor

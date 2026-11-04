@@ -7,13 +7,16 @@ struct SetupStage: View {
     var body: some View {
         let items = session.loadItems
         let used = session.usage(items)
+        let table = session.hasTable
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text(session.venue.isShow ? "Set up your table" : "Lay out your cards").font(.title3.bold())
-                    Text("Pick what to bring, and set your prices. Buyers haggle, so a markup leaves room to come down.")
+                    Text(!table ? "Pack your bag" : session.venue.isShow ? "Set up your table" : "Lay out your cards").font(.title3.bold())
+                    Text(table ? "Pick what to bring, and set your prices. Buyers haggle, so a markup leaves room to come down."
+                         : "You have no table, so nothing in the bag is for sale. Pack what you want to trade to vendors\(session.hasGradingBooth ? " or grade at the booth" : ""). You cannot come back for more.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
+                    if table {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("PRICE").font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
                         Picker("Price", selection: Bindable(session).markup) {
@@ -25,14 +28,15 @@ struct SetupStage: View {
                         .pickerStyle(.segmented)
                     }
                     PaymentPolicyPicker()
-                    if session.venue.packs { crowdBox }
+                    }
+                    if session.venue.tableRules { crowdBox }
                     if items.isEmpty {
-                        Text("You have nothing to sell. Kept items, listed items, and items at a grader stay home.")
+                        Text("You have nothing to \(table ? "sell" : "carry"). Kept items, listed items, and items at a grader stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
                     }
                     HStack {
-                        Text("BRING · \(session.bring.count) of \(items.count)")
+                        Text("\(table ? "BRING" : "CARRY") · \(session.bring.count) of \(items.count)")
                             .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
                         Spacer()
                         Button("Fill") { session.fillBring() }
@@ -41,7 +45,7 @@ struct SetupStage: View {
                             .font(.caption.weight(.semibold))
                             .padding(.leading, 8)
                     }
-                    if session.venue.packs { loadBox(items, used: used) }
+                    if session.venue.limitsLoad { loadBox(items, used: used) }
                     let cards = items.filter { $0.kind == .card }
                     if !cards.isEmpty {
                         TitledGroup(title: "Singles and slabs", count: cards.count, list: "show") {
@@ -57,17 +61,23 @@ struct SetupStage: View {
                 .padding(16)
             }
             HStack(spacing: 10) {
-                if session.venue.hasFloor {
+                if !table {
+                    Button { session.walkFloor() } label: { Text("Walk the floor").frame(maxWidth: .infinity) }
+                        .primaryButton()
+                        .tint(Theme.cyan)
+                } else if session.venue.hasFloor {
                     Button("Walk the floor") { session.walkFloor() }
                         .buttonStyle(.bordered)
                 } else {
                     Button("Leave") { session.packUp() }
                         .buttonStyle(.bordered)
                 }
-                Button { session.openTable() } label: { Text(session.venue.isShow ? "Open the table" : "Start dealing").frame(maxWidth: .infinity) }
-                    .primaryButton()
-                    .tint(Theme.cyan)
-                    .disabled(session.bring.isEmpty)
+                if table {
+                    Button { session.openTable() } label: { Text(session.venue.isShow ? "Open the table" : "Start dealing").frame(maxWidth: .infinity) }
+                        .primaryButton()
+                        .tint(Theme.cyan)
+                        .disabled(session.bring.isEmpty)
+                }
             }
             .controlSize(.large)
             .padding(16)
@@ -83,18 +93,20 @@ struct SetupStage: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// The bins, the setup time, and the turnout of the load.
+    /// The bins, and at a table, the setup time and the turnout of the load.
     private func loadBox(_ items: [ShowItem], used: [CarryBin: Int]) -> some View {
         let minutes = Int(session.setupMinutes(items))
         let late = session.setupRunsLate(items)
         return VStack(alignment: .leading, spacing: 4) {
             Text(CarryBin.allCases.map { "\($0.name) \(used[$0, default: 0])/\(store.capacity($0))" }.joined(separator: " · "))
                 .font(.caption.monospaced())
+            if session.venue.tableRules {
             Text("Setup \(minutes) min · open at \(session.openingClock(items)) · turnout \(Int((session.turnout(items) * 100).rounded()))%")
                 .font(.caption.monospaced())
                 .foregroundStyle(late ? Theme.orange : Theme.muted)
             if late {
                 Text("The setup ends after the doors close. Bring less.").font(.caption).foregroundStyle(Theme.orange)
+            }
             }
         }
     }
@@ -112,7 +124,7 @@ struct SetupStage: View {
     private func bringRow(_ item: ShowItem, used: [CarryBin: Int]) -> some View {
         let on = session.bring.contains(item.id)
         let fits = session.fits(item, usage: used)
-        let shown = session.venue.packs ? store.tableShowings(item.id) : 0
+        let shown = session.venue.tableRules ? store.tableShowings(item.id) : 0
         let blocked = fits ? nil : blockReason(item, used: used)
         return Button {
             session.toggleBring(item)
@@ -125,7 +137,7 @@ struct SetupStage: View {
                     if shown > 0 {
                         Text("On a table \(shown)× in 3 weeks").font(.caption2).foregroundStyle(Theme.orange)
                     }
-                    if session.venue.packs, item.kind == .sealed, CarryBin.space(item) > 1 {
+                    if session.venue.limitsLoad, item.kind == .sealed, CarryBin.space(item) > 1 {
                         Text("\(CarryBin.space(item)) spaces").font(.caption2).foregroundStyle(Theme.muted)
                     }
                     if let blocked {
@@ -134,8 +146,12 @@ struct SetupStage: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(money(session.asking(item))).font(.subheadline.monospaced())
-                    Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                    if session.hasTable {
+                        Text(money(session.asking(item))).font(.subheadline.monospaced())
+                        Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                    } else {
+                        Text(money(item.market)).font(.subheadline.monospaced())
+                    }
                 }
             }
             .opacity(fits ? 1 : 0.5)

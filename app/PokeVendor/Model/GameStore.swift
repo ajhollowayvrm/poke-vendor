@@ -112,6 +112,8 @@ struct GameData: Codable {
     /// The days each item sat on a table, by item ID, and the last load the player brought (docs/29-packing-and-crowds.md).
     var tableDays: [String: [Int]] = [:]
     var lastLoadout: [String] = []
+    /// The last bag of a walk-in at a show, by item ID.
+    var lastBag: [String] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -190,6 +192,7 @@ extension GameData {
         goalsReached = v(.goalsReached, goalsReached)
         tableDays = v(.tableDays, tableDays)
         lastLoadout = v(.lastLoadout, lastLoadout)
+        lastBag = v(.lastBag, lastBag)
     }
 }
 

@@ -30,7 +30,9 @@ Saturdays.
 - **A missed day** at a booked show gives no refund. The morning report
   says that the table stayed empty.
 - A player with no table can **walk in** on the day, pay the entry fee,
-  and buy on the floor.
+  and buy on the floor. A walk-in packs a bag first: the items to trade
+  to vendors and to grade at the booth (see
+  [29-packing-and-crowds.md](29-packing-and-crowds.md#a-bag-for-walk-ins)).
 
 ## Show day
 
