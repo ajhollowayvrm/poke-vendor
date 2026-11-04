@@ -31,14 +31,14 @@ enum Crowd: Hashable {
         }
     }
 
-    /// The share of visitors who want to trade.
+    /// The share of the visitors who do not sell to the player that want to trade.
     var tradeShare: Double {
         switch self {
-        case .parkSwap: 0.28
-        case .tradeNight: 0.30
-        case .tradingCircle: 0.20
-        case .leagueNight: 0.15
-        case .general, .localShow, .regionalShow: 0.18
+        case .parkSwap: 0.35
+        case .tradeNight: 0.40
+        case .tradingCircle: 0.25
+        case .leagueNight: 0.20
+        case .general, .localShow, .regionalShow: 0.23
         }
     }
 

@@ -37,6 +37,7 @@ struct SummaryStage: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                     }
+                    list("PASSED YOUR TABLE", session.passedBy.map { ($0, "") })
                 }
                 .padding(16)
             }

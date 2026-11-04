@@ -5,7 +5,7 @@ struct SetupStage: View {
     let session: ShowSession
 
     var body: some View {
-        let items = session.stockItems
+        let items = session.loadItems
         let used = session.usage(items)
         VStack(spacing: 0) {
             ScrollView {
@@ -99,10 +99,21 @@ struct SetupStage: View {
         }
     }
 
+    /// Why an item cannot go in the load.
+    private func blockReason(_ item: ShowItem, used: [CarryBin: Int]) -> String {
+        let bin = CarryBin.of(item)
+        let room = store.capacity(bin)
+        if CarryBin.space(item) > room {
+            return "Too big: it needs \(CarryBin.space(item)) spaces, and your \(bin.name.lowercased()) holds \(room)."
+        }
+        return "Your \(bin.name.lowercased()) is full."
+    }
+
     private func bringRow(_ item: ShowItem, used: [CarryBin: Int]) -> some View {
         let on = session.bring.contains(item.id)
         let fits = session.fits(item, usage: used)
         let shown = session.venue.packs ? store.tableShowings(item.id) : 0
+        let blocked = fits ? nil : blockReason(item, used: used)
         return Button {
             session.toggleBring(item)
         } label: {
@@ -114,6 +125,12 @@ struct SetupStage: View {
                     if shown > 0 {
                         Text("On a table \(shown)× in 3 weeks").font(.caption2).foregroundStyle(Theme.orange)
                     }
+                    if session.venue.packs, item.kind == .sealed, CarryBin.space(item) > 1 {
+                        Text("\(CarryBin.space(item)) spaces").font(.caption2).foregroundStyle(Theme.muted)
+                    }
+                    if let blocked {
+                        Text(blocked).font(.caption2).foregroundStyle(Theme.muted)
+                    }
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
@@ -121,7 +138,7 @@ struct SetupStage: View {
                     Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                 }
             }
-            .opacity(fits ? 1 : 0.4)
+            .opacity(fits ? 1 : 0.5)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

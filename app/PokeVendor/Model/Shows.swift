@@ -673,7 +673,8 @@ final class ShowSession {
     let startMinute: Double
     let closeMinute: Double
     var markup = 1.10
-    var bring: Set<UUID> = []
+    /// The load. Only the packing methods change it, so it always fits the bins (docs/29-packing-and-crowds.md).
+    private(set) var bring: Set<UUID> = []
     private(set) var table: [ShowItem] = []
     /// The person at the player's table.
     private(set) var visitor: Visitor?
@@ -694,6 +695,8 @@ final class ShowSession {
     /// Buyers who found nothing for them, and regulars who passed on stale stock (docs/29-packing-and-crowds.md).
     private(set) var foundNothing = 0
     private(set) var stalePassed = 0
+    /// One line for each person who passed, for the summary. The banner can be busy with a more important line.
+    private(set) var passedBy: [String] = []
     /// True once the table is set up and open.
     private(set) var opened = false
     var note: String?
@@ -796,6 +799,15 @@ final class ShowSession {
 
     // MARK: Packing (docs/29-packing-and-crowds.md)
 
+    /// The items the player can pack. An item under 50 cents never goes on a table, so it is not in the list.
+    var loadItems: [ShowItem] { venue.packs ? stockItems.filter { $0.market >= 0.5 } : stockItems }
+
+    /// Records a person who passed on the table. The banner shows it only when nothing else is on it.
+    private func passed(_ line: String) {
+        passedBy.append(line)
+        if note == nil { note = line }
+    }
+
     /// The space the load takes in each bin.
     func usage(_ items: [ShowItem], load: Set<UUID>? = nil) -> [CarryBin: Int] {
         let ids = load ?? bring
@@ -813,7 +825,7 @@ final class ShowSession {
 
     /// Adds items from the dearest down, while they fit. `from` limits the items to look at.
     private func filled(_ start: Set<UUID>, from items: [ShowItem]) -> Set<UUID> {
-        let all = stockItems
+        let all = loadItems
         var load = start
         var used = usage(all, load: load)
         for item in items where !load.contains(item.id) && fits(item, usage: used, load: load) {
@@ -825,7 +837,7 @@ final class ShowSession {
 
     /// The last load, less what is gone. The first time, or when all of it is gone: the dearest items that fit.
     private func defaultLoad() -> Set<UUID> {
-        let items = stockItems
+        let items = loadItems
         let last = Set(store.data.lastLoadout)
         let load = filled([], from: items.filter { last.contains($0.id.uuidString) })
         return load.isEmpty ? filled([], from: items) : load
@@ -834,12 +846,12 @@ final class ShowSession {
     func toggleBring(_ item: ShowItem) {
         if bring.contains(item.id) {
             bring.remove(item.id)
-        } else if fits(item, usage: usage(stockItems)) {
+        } else if fits(item, usage: usage(loadItems)) {
             bring.insert(item.id)
         }
     }
 
-    func fillBring() { bring = venue.packs ? filled(bring, from: stockItems) : Set(stockItems.map(\.id)) }
+    func fillBring() { bring = venue.packs ? filled(bring, from: loadItems) : Set(stockItems.map(\.id)) }
 
     func clearBring() { bring = [] }
 
@@ -885,6 +897,12 @@ final class ShowSession {
         if !opened, venue.kind != .store { store.useTableSupplies() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
         if venue.packs {
+            // A guard: the load must fit the bins, whatever path built it.
+            let fitted = filled([], from: table)
+            if fitted.count < table.count {
+                bring = fitted
+                table = table.filter { fitted.contains($0.id) }
+            }
             minute = min(closeMinute, minute + setupMinutes(table))
             store.recordTable(table)
         }
@@ -932,7 +950,8 @@ final class ShowSession {
         let regularID: String? = Double.random(in: 0..<1) < venue.regularShare ? regulars.popLast() : nil
         var v: Visitor?
         if table.isEmpty || roll < sellers { v = makeSeller() }
-        else if roll < sellers + venue.crowd.tradeShare, let trader = makeTrader() { v = trader }
+        // The trade share is a share of the people who do not come to sell, so a high seller share leaves room for buyers.
+        else if roll < sellers + (1 - sellers) * venue.crowd.tradeShare, let trader = makeTrader() { v = trader }
         else { v = makeBuyer(regular: regularID) }
         guard var visitor = v else { return nil }
         if let id = regularID {
@@ -1002,7 +1021,7 @@ final class ShowSession {
         if wanted.isEmpty {
             guard !venue.packs else {
                 foundNothing += 1
-                note = type.foundNothingLine
+                passed(type.foundNothingLine)
                 return nil
             }
             type = .collector
@@ -1015,7 +1034,7 @@ final class ShowSession {
             let shown = store.tableShowings(item.id)
             if shown > 0, Double.random(in: 0..<1) < min(Balance.stalePassMax, Balance.stalePassPerShowing * Double(shown)) {
                 stalePassed += 1
-                note = "\(store.contact(id)?.name ?? "A regular") looked over your table. \"Same stuff as last time.\""
+                passed("\(store.contact(id)?.name ?? "A regular") looked over your table. \"Same stuff as last time.\"")
                 return nil
             }
         }

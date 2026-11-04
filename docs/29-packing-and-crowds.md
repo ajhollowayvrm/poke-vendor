@@ -82,17 +82,24 @@ Each venue has a crowd. The crowd sets three things:
 2. **How much they spend.** Each buyer has a budget. The budget is the
    crowd's spend cap times a random value from 50% to 150%. A buyer
    only wants items that ask no more than the budget.
-3. **How many want to trade.** The trader share of the visitors.
+3. **How many want to trade.** The trade share is a share of the
+   visitors who do not come to sell. So a high seller share at a meet
+   still leaves room for buyers.
 
 | Venue | Who comes (weight) | Spend cap | Trade share |
 | --- | --- | --- | --- |
-| Park swap | Kid 3, collector 2, player 1, flipper 1 | $60 | 28% |
-| League night | Player 4, kid 2, collector 1, sealed collector 1 | $80 | 15% |
-| Trade night | Collector 2, flipper 2, player 1, grading hunter 1, kid 1 | $150 | 30% |
-| Trading circle | Collector 3, vintage collector 2, grading hunter 2, sealed collector 1 | No cap | 20% |
-| Local show | Collector 2, flipper 1, kid 1, grading hunter 1, vintage collector 1, sealed collector 1 | $400 | 18% |
-| Regional show | Collector 2, grading hunter 2, vintage collector 2, sealed collector 2, flipper 1, kid 0.5 | No cap | 18% |
-| Your store counter | The same as before this change | No cap | 18% |
+| Park swap | Kid 3, collector 2, player 1, flipper 1 | $60 | 35% |
+| League night | Player 4, kid 2, collector 1, sealed collector 1 | $80 | 20% |
+| Trade night | Collector 2, flipper 2, player 1, grading hunter 1, kid 1 | $150 | 40% |
+| Trading circle | Collector 3, vintage collector 2, grading hunter 2, sealed collector 1 | No cap | 25% |
+| Local show | Collector 2, flipper 1, kid 1, grading hunter 1, vintage collector 1, sealed collector 1 | $400 | 23% |
+| Regional show | Collector 2, grading hunter 2, vintage collector 2, sealed collector 2, flipper 1, kid 0.5 | No cap | 23% |
+| Your store counter | The same as before this change | No cap | 23% |
+
+At reputation tier 0, a show's seller share is 22%, so 23% of the rest
+is about 18% of all visitors. That is the trade share from before this
+change. A higher tier brings more sellers, so the trade share of all
+visitors goes down a little.
 
 **The player** is a new buyer type. A player wants cards to play:
 
@@ -104,7 +111,9 @@ Each venue has a crowd. The crowd sets three things:
 found nothing they wanted turned into a collector who wanted anything.
 Now the buyer looks over the table and leaves. A banner says why, for
 example "A kid looked over your table and found nothing for $30 or
-less." The summary counts these people.
+less." The banner shows only when no other line is on it, so it never
+hides a more important line, such as a buyer who caught a fake. The
+summary lists each person who passed, under "Passed your table".
 
 **The crowd decides the turnout.** Before this change, more items
 always brought more visitors. Now each item has an appeal for the crowd:
@@ -130,6 +139,7 @@ Regulars remember what was on the player's table.
 - The game keeps a record of each item: the days when it was on a table
   at a show or a meet. Records older than 21 days drop off.
 - Today does not count. Day 1 of a regional show counts on day 2.
+- Only regular buyers remember. Regular traders and sellers do not.
 - **A regular looks at fresh items first.** A regular picks an item
   with a weight of 1 ÷ (1 + the times it was on a table).
 - **A regular can pass on a stale item.** When a regular picks an item
@@ -140,8 +150,7 @@ Regulars remember what was on the player's table.
 - The setup screen shows the count on each item, for example "On a
   table 2× in 3 weeks".
 
-Regulars are 60% of the visitors at a meet, 70% at the trading circle,
-and 35% at a show. So stale stock hurts most at the weekly meets. This
+Regulars are 60% of the visitors at a meet and 35% at a show. So stale stock hurts most at the weekly meets. This
 is the purpose: the player rotates stock between meets.
 
 ## The setup screen
@@ -153,7 +162,14 @@ is the purpose: the player rotates stock between meets.
   It does not read the crowd. Reading the crowd is the player's job.
 - **Clear** empties the load.
 - **A full bin** dims each item that does not fit. A tap on a dimmed
-  item does nothing.
+  item does nothing. The row says why: the bin is full, or the item is
+  too big for the bin.
+- **Sealed rows** show their space when it is more than 1.
+- **Items under 50 cents** are not in the list. They never go on a
+  table, so they must not take space.
+- **The load always fits.** Only the packing actions change the load.
+  When the table opens, the game checks the load against the bins again,
+  and keeps the dearest items that fit.
 - **The bins** show at the top, for example "Binder 23/40 · Slab box
   2/3 · Tote 5/8".
 - **The setup time** shows next to the bins, with the clock time when
@@ -226,9 +242,14 @@ and the local shows. One record is simple, and the player can read it.
 save loads with no stale records and no last load. The first table
 starts with the dearest items that fit.
 
-**Does the soak test still work?** The soak opens each table with the
-default load. The default load fits the bins, so the soak plays as
-before. Run `-soak 60` after the change.
+**Does the soak test still work?** Yes, and it now tests the packing
+rules. On every other table, the soak clears the load, picks items by
+hand, and fills. It checks that no bin is over its limit, that the
+table holds only the load, that an item too big for its bin never goes
+in, and that the passed list matches the counts. It buys the three bin
+upgrades on day 30, so it plays both bin sizes. The soak prints one
+`SOAK PACK` line, and a `SOAK PACK FAIL` line for each broken rule. Run
+`-soak 60` after a change to this system.
 
 ## Not in this change
 
