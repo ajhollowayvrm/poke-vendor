@@ -611,8 +611,9 @@ struct Visitor: Identifiable {
     var extra: ShowItem?
     /// A seller who turned down a trade instead of cash.
     var tradeAsked = false
-    /// The deal closed on a coin flip. A flip is not scored for fairness.
+    /// The deal closed on a coin flip. A flip is not scored for fairness. `lostFlip`: the player lost it.
     var flipped = false
+    var lostFlip = false
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.market } + tradeCash }
 }
@@ -1032,7 +1033,11 @@ final class ShowSession {
         v.contactID = id
         v.naive = false
         switch v.intent {
-        case .buy, .trade: v.limit *= 1 + lvl.priceBonus
+        case .buy: v.limit *= 1 + lvl.priceBonus
+        case .trade:
+            // A trader who knows the player takes a lower valuation and carries more cash (docs/21, docs/30).
+            v.minValuation *= 1 - lvl.priceBonus
+            v.cashLimit *= 1 + lvl.priceBonus
         case .sell:
             v.limit *= 1 - lvl.priceBonus
             v.offer = Self.round(max(v.limit, v.offer * (1 - lvl.priceBonus)))
@@ -1052,7 +1057,10 @@ final class ShowSession {
         let bonus = 0.02 * Double(store.reputationTier) + (store.hasAccount && store.followerTier >= 2 ? Balance.followerDealBonus : 0)
         guard bonus > 0 else { return }
         switch v.intent {
-        case .buy, .trade: v.limit *= 1 + bonus
+        case .buy: v.limit *= 1 + bonus
+        case .trade:
+            v.minValuation *= 1 - bonus
+            v.cashLimit *= 1 + bonus
         case .sell: v.limit *= 1 - bonus
         }
     }
@@ -1213,6 +1221,8 @@ final class ShowSession {
         v.goods = goods
         v.goodsMarket = market
         v.naive = type == .closetCleaner && ask <= market * 0.65
+        // A seller who stops the player on the floor, or a sale host, does not pass through makeVisitor.
+        v.firstOffer = ask
         return v
     }
 
@@ -1336,6 +1346,7 @@ final class ShowSession {
             let market = marketTotal(v)
             store.recordDeal(v.contactID, what: "Sold them \(names)", price: v.offer, market: market, slug: item.setSlug, scored: true)
             score(.sell, price: v.offer, market: market, pushed: v.offer > v.firstOffer + 0.001, v)
+            if v.lostFlip { store.lostFlipStory(name: v.name, venue: venue.name, price: v.offer) }
         case .trade:
             guard let item = v.item else { return }
             if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
@@ -1366,6 +1377,7 @@ final class ShowSession {
             store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
                              market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
             score(.buy, price: v.offer, market: v.goodsMarket, pushed: v.offer < v.firstOffer - 0.001, v)
+            if v.lostFlip { store.lostFlipStory(name: v.name, venue: venue.name, price: v.offer) }
         }
         maybePromote(v, points: 12)
         finish(minutes: .random(in: 6...12))
@@ -1499,7 +1511,7 @@ final class ShowSession {
         v.line = won ? "Ah, no! Fair is fair." : "Yes! Good flip."
         // A flip is not scored for fairness. A flip that the player lost can make a fun story.
         v.flipped = true
-        if !won { store.lostFlipStory(name: v.name, venue: venue.name, price: full) }
+        v.lostFlip = !won
         setCurrent(v)
         accept(fakeChecked: true)
     }
@@ -1641,7 +1653,8 @@ final class ShowSession {
     /// the cash follows the cards, up to what they carry.
     func toggleTradeCard(_ id: UUID) {
         guard var v = current, v.intent == .trade, let item = v.item, let card = v.binder.first(where: { $0.id == id }) else { return }
-        let valuation = openingValuation(v)
+        // The trader's valuation of their own offer stays fixed. Only the cash cap can change what they give.
+        let valuation = v.firstOffer
         if v.tradeCards.contains(where: { $0.id == id }) {
             guard v.tradeCards.count > 1 else { return }
             v.tradeCards.removeAll { $0.id == id }
@@ -1649,8 +1662,10 @@ final class ShowSession {
             v.tradeCards.append(card)
         }
         let cards = tradeCardsValue(v)
-        v.tradeCash = Self.round(min(v.cashLimit, item.market - cards * valuation / 100))
-        v.line = v.tradeCash >= 0 ? "Sure. Then I add \(money(v.tradeCash))." : "Sure. Then you add \(money(-v.tradeCash))."
+        let wanted = item.market - cards * valuation / 100
+        v.tradeCash = Self.round(min(v.cashLimit, wanted))
+        v.line = wanted > v.cashLimit + 0.001 ? "Sure, but I don't have that much on me. I can add \(money(v.tradeCash)) at most."
+            : v.tradeCash >= 0 ? "Sure. Then I add \(money(v.tradeCash))." : "Sure. Then you add \(money(-v.tradeCash))."
         setCurrent(v)
     }
 
@@ -1669,7 +1684,13 @@ final class ShowSession {
         } else {
             if buyerCatchesFake(v, item) { return }
             let got = VendorItem(goods: goods, price: item.market, market: v.goodsMarket, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+            store.settleOnlineListing(item.id, name: item.name)
             store.tradeWithVendor(give: [item], get: [got], cash: 0, vendor: v.name, at: venue.name)
+            // A fake that the seller did not catch can come out later, as with any trade.
+            if let fake = item.fake {
+                store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
+                                    refunds: false, contactID: v.contactID)
+            }
             table.removeAll { $0.id == item.id }
             bring.remove(item.id)
             trades.append("\(item.name) → \(got.name)")

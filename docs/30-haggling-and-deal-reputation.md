@@ -86,6 +86,9 @@ a contact still loses 2 standing points.
   raises the valuation.
 - The trader's first offer does not change. It stays at 80% to 102% of
   the item's market.
+- **Standing and reputation help.** A contact's price bonus, and a
+  stranger's reputation bonus, lower the trader's lowest valuation and
+  raise their cash by the same share.
 
 ## 3. Tells
 
@@ -108,7 +111,7 @@ deal from the other person's side.
 | --- | --- | --- | --- |
 | Sells | To a kid, at 90% of market or less | 80% to 110% of market | Over 115% of market, and the player pushed the price up |
 | Buys | 100% of market or more | 70% to 100% of market | Under 55% of market, and the player pushed the price down |
-| Trades | Values the cards at 100% or more | 80% to 100% | Under 65%, and the player pushed the valuation down |
+| Trades | Values the cards at 100% or more | 80% to 100% | Never. A trader does not accept a valuation under their lowest one, which is 70% or more |
 | Pays store credit | Credit at 100% of market or more | Credit at 70% to 100% | Credit under 55% |
 
 - **"Pushed"** means that the final price is worse for the other side
@@ -128,7 +131,10 @@ deal from the other person's side.
 A notable deal can come back days later as a story.
 
 - **The chance:** a generous deal 8%, a hard deal 12%, and a coin flip
-  that the player loses 4%. Each step of notoriety adds 2%. A deal of
+  that the player loses 4%. A generous deal makes a story only when it
+  gave reputation, so the daily cap holds for good stories too. A coin
+  flip makes a story only when the deal closes: a buyer who walks out on
+  the payment, or pays with a scam, makes no story. Each step of notoriety adds 2%. A deal of
   $200 or more doubles the chance.
 - **The delay:** 1 to 10 days. The story shows in the morning report.
 - **The effect:**
@@ -162,7 +168,9 @@ of cash.
 - A closet cleaner wants cash. They say no half of the time.
 - No cash changes hands.
 - The seller looks the player's item over first. A fake that they catch
-  ends the deal, as with a buyer.
+  ends the deal, as with a buyer. A fake that they miss can come out
+  later, as with any trade. An online listing of the item ends, as with
+  a sale.
 - Each seller hears a trade offer once.
 - The deal fairness compares the market of the player's item with the
   market of what the seller sells.
@@ -178,8 +186,10 @@ player can use it once for each visitor, with a buyer or a seller.
     it 60% of the time.
   - A flipper or a dealer meets it 30% of the time.
   - Otherwise, they leave politely.
-- Outside the fair band, or more than 10% away, they walk away. A
-  contact loses 1 standing point.
+- Inside the fair band but more than 10% away, they leave politely too.
+  A move inside the fair band never costs standing.
+- Outside the fair band, they walk away. A contact loses 1 standing
+  point.
 
 ## 8. Pick the trader's cards
 
@@ -189,6 +199,9 @@ player can use it once for each visitor, with a buyer or a seller.
   it or take it out. At least one card stays in.
 - The cash and the valuation follow the cards that are in.
 - The trader's lowest valuation is the same for every card.
+- The trader's own valuation of their offer stays fixed while the player
+  taps cards. When the cash would go over what they carry, they say so,
+  and they add their most.
 
 ## 9. Bundles
 

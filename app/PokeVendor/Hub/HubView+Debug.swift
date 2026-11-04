@@ -18,7 +18,7 @@ extension HubView {
         var log: [String] = []
         // Packing checks (docs/29-packing-and-crowds.md): each one that breaks prints a SOAK PACK FAIL line.
         var dealSeen = 0, dealBundles = 0, dealFinals = 0, dealBinder = 0, dealInstead = 0, dealFairMoves = 0, dealPolite = 0, dealRepTotal = 0,
-            dealStoriesOut = 0, dealTheftAfter = 0, dealFails: [String] = []
+            dealStoriesOut = 0, dealTheftAfter = 0, dealRepSeen = 0, dealFails: [String] = []
         var packTables = 0, packBags = 0, packGraded = 0, packRepack = 0, packBoothNo = 0, packVendorNo = 0, packGone = 0, packFound = 0, packStale = 0, packFails: [String] = []
         func checkLoad(_ session: ShowSession, _ step: String) {
             let used = session.usage(session.loadItems)
@@ -94,14 +94,26 @@ extension HubView {
                     dealSeen += 1
                     let angry = session.angryWalks
                     var fairMove = false
+                    // Reputation before the move. A level-up with a contact also gives reputation, so note the level.
+                    let repBefore = store.data.reputation
+                    let levelBefore = v.contactID.map { store.level($0).rank }
+                    let capLeft = Balance.dealRepDailyCap - (store.data.dealRep.day == store.day ? store.data.dealRep.points : 0)
+                    let naive = v.naive
                     switch v.intent {
                     case .buy:
                         let market = session.marketTotal(v)
                         if let item = v.item, let extra = v.extra {
                             dealBundles += 1
-                            session.accept()
+                            switch dealBundles % 3 {
+                            case 0: session.accept()
+                            case 1: session.counter(market * 1.0); fairMove = true
+                            default: session.finalOffer(market * 0.95); dealFinals += 1
+                            }
+                            // A theft at the end of the day can take one unsold bundle item, so skip the check then.
                             let ids = ownedIDs()
-                            if ids.contains(item.id) != ids.contains(extra.id) { dealFails.append("a bundle sold one item and not the other") }
+                            if session.theftLine == nil, ids.contains(item.id) != ids.contains(extra.id) {
+                                dealFails.append("a bundle sold one item and not the other")
+                            }
                         } else {
                             switch dealSeen % 4 {
                             case 0: session.accept()
@@ -122,7 +134,9 @@ extension HubView {
                         session.proposeTrade(valuing: valuation)
                         fairMove = valuation >= Balance.fairTradeMin
                     case .sell:
-                        if dealSeen % 5 == 0, session.hasTable, let item = session.table.first {
+                        // Offer the table item whose 110% value fits the seller best, so some offers succeed.
+                        if dealSeen % 2 == 0, session.hasTable,
+                           let item = session.table.min(by: { abs($0.market * Balance.tradeInstead - v.goodsMarket) < abs($1.market * Balance.tradeInstead - v.goodsMarket) }) {
                             let tradesBefore = session.trades.count
                             let before = ownedIDs()
                             session.offerTradeForGoods(item.id)
@@ -145,8 +159,18 @@ extension HubView {
                         if session.angryWalks > angry { dealFails.append("someone walked away after a fair \(v.intent == .trade ? "trade" : "counter")") }
                         if let now = session.current, now.id == v.id, now.patience != v.patience { dealFails.append("a fair counter used patience") }
                     }
-                    let rep = store.data.dealRep
-                    if rep.day == store.day, rep.points > Balance.dealRepDailyCap { dealFails.append("deal reputation \(rep.points) is over the cap") }
+                    // One move can give at most what is left under the cap. Paying a naive seller fair (+5) and a contact
+                    // level-up are their own rules, so the soak skips those moves.
+                    let gained = store.data.reputation - repBefore
+                    let levelAfter = v.contactID.map { store.level($0).rank }
+                    if !naive, levelAfter == levelBefore, gained > max(0, capLeft) {
+                        dealFails.append("a deal gave \(gained) reputation with \(capLeft) left under the cap")
+                    }
+                    if gained > 0 { dealRepSeen += 1 }
+                    // 9b: each story in the queue comes out 1 to 10 days from now.
+                    if store.data.dealStories.contains(where: { $0.day <= store.day || $0.day > store.day + Balance.storyDelay.upperBound }) {
+                        dealFails.append("a story is due outside 1 to 10 days")
+                    }
                 } else if session.phase == .table {
                     if session.hasTable, floorVisits == 0, steps > 3 { session.walkFloor() } else { session.nextVisitor() }
                 } else if session.phase == .floor {
@@ -355,7 +379,7 @@ extension HubView {
         }
         print("SOAK PACK: \(packTables) tables, \(packBags) bags, \(packGraded) graded, checks: \(packRepack) repack, \(packBoothNo) booth, \(packVendorNo) vendor, \(packGone) gone items, \(store.data.shows.filter { !$0.attended.isEmpty }.count) shows, \(packFound) found nothing, \(packStale) stale passes, \(store.data.tableDays.count) records, \(packFails.count) fails")
         for line in packFails.prefix(10) { print("SOAK PACK FAIL:", line) }
-        print("SOAK DEALS: \(dealSeen) visitors, \(dealFairMoves) fair moves, \(dealPolite) polite, \(dealFinals) finals, \(dealBundles) bundles, \(dealBinder) binder picks, \(dealInstead) trades instead (\(dealTheftAfter) then a theft), rep +\(dealRepTotal), \(dealStoriesOut) stories, \(store.data.dealStories.count) queued, \(dealFails.count) fails")
+        print("SOAK DEALS: \(dealSeen) visitors, \(dealFairMoves) fair moves, \(dealPolite) polite, \(dealFinals) finals, \(dealBundles) bundles, \(dealBinder) binder picks, \(dealInstead) trades instead (\(dealTheftAfter) then a theft), rep +\(dealRepTotal) (\(dealRepSeen) moves checked), \(dealStoriesOut) stories, \(store.data.dealStories.count) queued, \(dealFails.count) fails")
         for line in dealFails.prefix(10) { print("SOAK DEALS FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()

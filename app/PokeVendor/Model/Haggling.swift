@@ -125,9 +125,10 @@ extension GameStore {
             if given > 0 { addReputation(given) }
         }
         switch grade {
-        case .generous: maybeStory(good: true, chance: Balance.storyGenerous, price: price, text: goodStory(side, name: name, venue: venue, kid: kid))
+        // A good story needs a deal that gave reputation, so the daily cap holds for stories too.
+        case .generous where given > 0: maybeStory(good: true, chance: Balance.storyGenerous, price: price, text: goodStory(side, name: name, venue: venue, kid: kid))
         case .hard: maybeStory(good: false, chance: Balance.storyHard, price: price, text: badStory(side, name: name, venue: venue))
-        case .fair, .plain: break
+        case .generous, .fair, .plain: break
         }
         return given
     }
