@@ -174,9 +174,13 @@ extension GameStore {
                                            : "A regular vouched for you in a local Discord."))
         }
         for story in due {
+            // A random story is small: reputation only, no followers (docs/30-haggling-and-deal-reputation.md).
+            let random = !data.dealStories.contains(story)
             let rep: Int
             var text = story.text
-            if story.good {
+            if random {
+                rep = story.good ? Balance.storyRandomRep : -Balance.storyRandomRep
+            } else if story.good {
                 rep = story.viral ? Balance.storyGoodViralRep : Balance.storyGoodRep
                 if hasAccount {
                     let gain = story.viral ? max(Balance.storyViralFollowerMin, Int(Double(data.social.followers) * Balance.storyViralFollowerShare))
@@ -193,11 +197,8 @@ extension GameStore {
                     text += " You lost \(loss) followers."
                 }
             }
-            // A random story is small. A deal story says how far it went.
-            let random = !data.dealStories.contains(story)
-            let shown = random ? (story.good ? Balance.storyRandomRep : -Balance.storyRandomRep) : rep
-            addReputation(shown)
-            lines.append("\(story.viral ? "Viral: " : "")\(text) Reputation \(shown >= 0 ? "+" : "")\(shown).")
+            addReputation(rep)
+            lines.append("\(story.viral ? "Viral: " : "")\(text) Reputation \(rep >= 0 ? "+" : "")\(rep).")
             log(text)
         }
         data.dealStories.removeAll { $0.day <= today }
