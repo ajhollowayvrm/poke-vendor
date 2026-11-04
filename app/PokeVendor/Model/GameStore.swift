@@ -109,6 +109,9 @@ struct GameData: Codable {
     var demand = DemandState()
     /// The goals the player reached, and the day of each (docs/03-currencies.md, Goals).
     var goalsReached: [String: Int] = [:]
+    /// The days each item sat on a table, by item ID, and the last load the player brought (docs/29-packing-and-crowds.md).
+    var tableDays: [String: [Int]] = [:]
+    var lastLoadout: [String] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -185,6 +188,8 @@ extension GameData {
         printChanges = v(.printChanges, printChanges)
         demand = v(.demand, demand)
         goalsReached = v(.goalsReached, goalsReached)
+        tableDays = v(.tableDays, tableDays)
+        lastLoadout = v(.lastLoadout, lastLoadout)
     }
 }
 

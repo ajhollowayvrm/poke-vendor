@@ -423,7 +423,7 @@ struct HubView: View {
                 } label: {
                     ChevronRow(icon: kind.icon,
                             title: kind == .leagueNight ? "League night at \(store.leagueShop(day: store.day).rawValue)" : "\(kind.label) tonight",
-                            detail: block ?? "\(kind.hoursText) · \(kind.place) · \(formatHours(Balance.meetHours))",
+                            detail: block ?? "\(kind.hoursText) · \(kind.place) · \(kind.crowd.short)",
                             accent: block == nil)
                 }
                 .buttonStyle(.plain)

@@ -465,7 +465,7 @@ extension GameStore {
         let sealed = stock.sealed.map { item in
             ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
                      image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
-                     fake: item.fake, fakeKnown: item.isKnownFake)
+                     fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
@@ -491,6 +491,8 @@ struct ShowItem: Identifiable, Hashable {
     /// The grade of a slab, and the subgrades a BGS label prints.
     var grade: SlabGrade? = nil
     var subgrades: [Double]? = nil
+    /// The pack count of sealed product: it sets the carry space (docs/29-packing-and-crowds.md).
+    var packs = 0
 
     var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
 }
@@ -513,7 +515,7 @@ struct FloorListing: Identifiable, Hashable {
 
 /// The people who come up at a show.
 enum VisitorType: CaseIterable {
-    case collector, flipper, kid, gradeHunter, vintageFan, sealedCollector, trader, closetCleaner, dealer
+    case collector, flipper, kid, gradeHunter, vintageFan, sealedCollector, player, trader, closetCleaner, dealer
 
     var label: String {
         switch self {
@@ -523,6 +525,7 @@ enum VisitorType: CaseIterable {
         case .gradeHunter: "Grading hunter"
         case .vintageFan: "Vintage collector"
         case .sealedCollector: "Sealed collector"
+        case .player: "Player"
         case .trader: "Trader"
         case .closetCleaner: "Cleaning out a closet"
         case .dealer: "Dealer moving stock"
@@ -538,6 +541,7 @@ enum VisitorType: CaseIterable {
         case .collector: 0.45
         case .gradeHunter: 0.4
         case .sealedCollector: 0.35
+        case .player: 0.3
         case .vintageFan: 0.3
         case .closetCleaner: 0.25
         case .trader: 0
@@ -552,6 +556,7 @@ enum VisitorType: CaseIterable {
         case .gradeHunter: "magnifyingglass"
         case .vintageFan: "crown"
         case .sealedCollector: "shippingbox"
+        case .player: "suit.spade"
         case .trader: "arrow.triangle.swap"
         case .closetCleaner: "archivebox"
         case .dealer: "briefcase"
@@ -628,6 +633,10 @@ struct Venue: Hashable {
     var shop: LocalStore?
     /// A sale or an opportunity that the venue belongs to.
     var eventID: UUID?
+    /// Who comes, what they spend, and how many trade (docs/29-packing-and-crowds.md).
+    var crowd = Crowd.general
+    /// Packing rules apply: carry space, setup time, and the stale record. Not at the player's own store.
+    var packs: Bool { hasTable && kind != .store }
 
     var isShow: Bool { kind == .show }
 }
@@ -682,6 +691,9 @@ final class ShowSession {
     private(set) var bought: [(name: String, price: Double)] = []
     private(set) var trades: [String] = []
     private(set) var walkedAway = 0
+    /// Buyers who found nothing for them, and regulars who passed on stale stock (docs/29-packing-and-crowds.md).
+    private(set) var foundNothing = 0
+    private(set) var stalePassed = 0
     /// True once the table is set up and open.
     private(set) var opened = false
     var note: String?
@@ -696,7 +708,8 @@ final class ShowSession {
         let venue = Venue(kind: .show, name: show.name,
                           detail: "\(show.size.label)\(show.size.days > 1 ? " · day \(store.day - show.startDay + 1) of 2" : "") · \(show.booked ? "your table" : "walk-in")",
                           open: Balance.showOpen, close: Balance.showClose, hours: Balance.showClose - Balance.showOpen,
-                          visitorsMean: show.size.buyersPerDay, hasFloor: true, hasTable: show.booked, showID: show.id)
+                          visitorsMean: show.size.buyersPerDay, hasFloor: true, hasTable: show.booked, showID: show.id,
+                          crowd: show.size == .regional ? .regionalShow : .localShow)
         store.seedContacts()
         self.init(venue: venue, store: store, show: show,
                   vendors: VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show)),
@@ -736,6 +749,7 @@ final class ShowSession {
                 }
             }
         }
+        if venue.packs { bring = defaultLoad() }
     }
 
     /// On-site grading at a regional show: one tier, the grade comes back the same day (docs/20-card-shows.md).
@@ -743,7 +757,9 @@ final class ShowSession {
 
     /// The raw cards the player can grade at the booth: free, and not known fakes.
     var gradableCards: [OwnedCard] {
-        store.data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake }.sorted { $0.market > $1.market }
+        // With a table, only the cards the player brought (docs/29-packing-and-crowds.md).
+        store.data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && (!venue.packs || bring.contains($0.id)) }
+            .sorted { $0.market > $1.market }
     }
 
     func gradeOnSite(_ cardID: UUID) {
@@ -778,16 +794,107 @@ final class ShowSession {
         store.showItems(venue.kind == .store ? store.storeStock : store.showStock)
     }
 
+    // MARK: Packing (docs/29-packing-and-crowds.md)
+
+    /// The space the load takes in each bin.
+    func usage(_ items: [ShowItem], load: Set<UUID>? = nil) -> [CarryBin: Int] {
+        let ids = load ?? bring
+        var used: [CarryBin: Int] = [:]
+        for item in items where ids.contains(item.id) { used[CarryBin.of(item), default: 0] += CarryBin.space(item) }
+        return used
+    }
+
+    /// True when the item is in the load, or there is room for it.
+    func fits(_ item: ShowItem, usage: [CarryBin: Int], load: Set<UUID>? = nil) -> Bool {
+        guard venue.packs, !(load ?? bring).contains(item.id) else { return true }
+        let bin = CarryBin.of(item)
+        return usage[bin, default: 0] + CarryBin.space(item) <= store.capacity(bin)
+    }
+
+    /// Adds items from the dearest down, while they fit. `from` limits the items to look at.
+    private func filled(_ start: Set<UUID>, from items: [ShowItem]) -> Set<UUID> {
+        let all = stockItems
+        var load = start
+        var used = usage(all, load: load)
+        for item in items where !load.contains(item.id) && fits(item, usage: used, load: load) {
+            load.insert(item.id)
+            used[CarryBin.of(item), default: 0] += CarryBin.space(item)
+        }
+        return load
+    }
+
+    /// The last load, less what is gone. The first time, or when all of it is gone: the dearest items that fit.
+    private func defaultLoad() -> Set<UUID> {
+        let items = stockItems
+        let last = Set(store.data.lastLoadout)
+        let load = filled([], from: items.filter { last.contains($0.id.uuidString) })
+        return load.isEmpty ? filled([], from: items) : load
+    }
+
+    func toggleBring(_ item: ShowItem) {
+        if bring.contains(item.id) {
+            bring.remove(item.id)
+        } else if fits(item, usage: usage(stockItems)) {
+            bring.insert(item.id)
+        }
+    }
+
+    func fillBring() { bring = venue.packs ? filled(bring, from: stockItems) : Set(stockItems.map(\.id)) }
+
+    func clearBring() { bring = [] }
+
+    /// The minutes to lay out the load. Day 2 of a regional show takes half.
+    func setupMinutes(_ items: [ShowItem]) -> Double {
+        guard venue.packs else { return 0 }
+        var total = Balance.setupBaseMinutes
+        for item in items where bring.contains(item.id) && item.market >= 0.5 {
+            switch CarryBin.of(item) {
+            case .binder: total += Balance.setupMinutesPerRaw
+            case .slabBox: total += Balance.setupMinutesPerSlab
+            case .tote: total += Balance.setupMinutesPerSealedSpace * Double(CarryBin.space(item))
+            }
+        }
+        if dayIndex > 0 { total *= Balance.setupDayTwoShare }
+        return total.rounded()
+    }
+
+    /// The clock time when the table opens, after the setup.
+    func openingClock(_ items: [ShowItem]) -> String { GameStore.clock(venue.open + min(closeMinute, minute + setupMinutes(items)) / 60) }
+
+    /// True when the setup ends at or after the close.
+    func setupRunsLate(_ items: [ShowItem]) -> Bool { minute + setupMinutes(items) >= closeMinute }
+
+    /// The share of the crowd that wants the item at its asking price.
+    func appeal(_ item: ShowItem) -> Double {
+        let weights = venue.crowd.weights
+        let total = weights.reduce(0) { $0 + $1.1 }
+        guard total > 0 else { return 0 }
+        let ask = asking(item)
+        let cap = venue.crowd.spendCap
+        let want = weights.filter { $0.0.wants(item) && (cap.map { ask <= $0 } ?? true) }.reduce(0) { $0 + $1.1 }
+        return want / total
+    }
+
+    /// The turnout factor of a load: 0.7 plus the appeal over 20, at most 1.3.
+    func turnout(_ items: [ShowItem]) -> Double {
+        let appealSum = items.filter { bring.contains($0.id) && $0.market >= 0.5 }.reduce(0) { $0 + appeal($1) }
+        return min(Balance.turnoutCap, Balance.turnoutBase + appealSum / Balance.turnoutAppealDivisor)
+    }
+
     func openTable() {
         if !opened, venue.kind != .store { store.useTableSupplies() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
-        // More value on the table draws more people, up to a point.
-        var mean = venue.visitorsMean * (1 - minute / closeMinute)
-        mean *= min(1.3, 0.7 + Double(table.count) / 30)
+        if venue.packs {
+            minute = min(closeMinute, minute + setupMinutes(table))
+            store.recordTable(table)
+        }
+        // More of what the crowd wants on the table draws more people, up to a point.
+        var mean = venue.visitorsMean * max(0, 1 - minute / closeMinute)
+        mean *= venue.packs ? turnout(table) : min(1.3, 0.7 + Double(table.count) / 30)
         // A promo post and a good table spot bring more people (docs/20, docs/04).
         if show?.promoted == true { mean *= Balance.showPromoVisitorBonus }
         if show?.goodSpot == true { mean *= Balance.goodSpotBonus }
-        let count = max(0, Int((mean + Double.random(in: -2...2)).rounded()))
+        let count = minute < closeMinute ? max(0, Int((mean + Double.random(in: -2...2)).rounded())) : 0
         arrivals = (0..<count).map { _ in Double.random(in: minute..<closeMinute) }.sorted()
         opened = true
         phase = .table
@@ -821,12 +928,14 @@ final class ShowSession {
     private func makeVisitor() -> Visitor? {
         let roll = Double.random(in: 0..<1)
         let sellers = venue.sellerShare + 0.03 * Double(store.reputationTier)
+        // A regular comes first, so a regular buyer can look for fresh stock (docs/29-packing-and-crowds.md).
+        let regularID: String? = Double.random(in: 0..<1) < venue.regularShare ? regulars.popLast() : nil
         var v: Visitor?
         if table.isEmpty || roll < sellers { v = makeSeller() }
-        else if roll < sellers + 0.18, let trader = makeTrader() { v = trader }
-        else { v = makeBuyer() }
+        else if roll < sellers + venue.crowd.tradeShare, let trader = makeTrader() { v = trader }
+        else { v = makeBuyer(regular: regularID) }
         guard var visitor = v else { return nil }
-        if Double.random(in: 0..<1) < venue.regularShare, let id = regulars.popLast() {
+        if let id = regularID {
             personalize(&visitor, id)
         } else {
             strangerReputation(&visitor)
@@ -883,28 +992,40 @@ final class ShowSession {
         }
     }
 
-    private func makeBuyer() -> Visitor? {
-        var type = [VisitorType.collector, .collector, .flipper, .kid, .gradeHunter, .vintageFan, .sealedCollector]
-            .randomElement() ?? .collector
-        var wanted: [ShowItem] = switch type {
-        case .kid: table.filter { $0.market <= 30 }
-        case .gradeHunter: table.filter { $0.kind == .card && !$0.graded && $0.market >= 5 }
-        case .vintageFan: table.filter(\.isVintage)
-        case .sealedCollector: table.filter { $0.kind == .sealed }
-        default: table
-        }
+    /// A buyer from the crowd. The buyer wants items in their budget. With nothing for them, they leave. A regular
+    /// looks at fresh stock first, and can pass on stock that they saw before (docs/29-packing-and-crowds.md).
+    private func makeBuyer(regular: String? = nil) -> Visitor? {
+        let crowd = venue.crowd
+        var type = Self.weighted(crowd.weights) ?? .collector
+        let budget = crowd.spendCap.map { $0 * Double.random(in: Balance.budgetRange) }
+        var wanted = table.filter { item in type.wants(item) && (budget.map { asking(item) <= $0 } ?? true) }
         if wanted.isEmpty {
+            guard !venue.packs else {
+                foundNothing += 1
+                note = type.foundNothingLine
+                return nil
+            }
             type = .collector
             wanted = table
         }
-        // People look at the better items first.
-        guard let item = pick(wanted) else { return nil }
+        // People look at the better items first. A regular looks at fresh items first.
+        let fresh = regular != nil && venue.packs
+        guard let item = pick(wanted, fresh: fresh) else { return nil }
+        if fresh, let id = regular {
+            let shown = store.tableShowings(item.id)
+            if shown > 0, Double.random(in: 0..<1) < min(Balance.stalePassMax, Balance.stalePassPerShowing * Double(shown)) {
+                stalePassed += 1
+                note = "\(store.contact(id)?.name ?? "A regular") looked over your table. \"Same stuff as last time.\""
+                return nil
+            }
+        }
         var top: Double = switch type {
         case .flipper: item.market * Double.random(in: 0.68...0.82)
         case .kid: min(item.market * Double.random(in: 0.95...1.15), 30)
         case .gradeHunter: item.market * Double.random(in: 0.85...1.0)
         case .vintageFan: item.market * Double.random(in: 0.95...1.12)
         case .sealedCollector: item.market * Double.random(in: 0.9...1.05)
+        case .player: item.market * Double.random(in: 0.95...1.10)
         default: item.market * Double.random(in: 0.92...1.08)
         }
         var line = ""
@@ -1018,8 +1139,9 @@ final class ShowSession {
         return (.sealed(product), product.market)
     }
 
-    private func pick(_ items: [ShowItem]) -> ShowItem? {
-        let weights = items.map { sqrt(max($0.market, 0.5)) }
+    /// `fresh`: an item that was on a table before weighs less, 1 / (1 + the times).
+    private func pick(_ items: [ShowItem], fresh: Bool = false) -> ShowItem? {
+        let weights = items.map { sqrt(max($0.market, 0.5)) / (fresh ? Double(1 + store.tableShowings($0.id)) : 1) }
         let total = weights.reduce(0, +)
         guard total > 0 else { return items.first }
         var roll = Double.random(in: 0..<total)
@@ -1028,6 +1150,18 @@ final class ShowSession {
             roll -= w
         }
         return items.last
+    }
+
+    /// A random choice by weight.
+    static func weighted<T>(_ options: [(T, Double)]) -> T? {
+        let total = options.reduce(0) { $0 + $1.1 }
+        guard total > 0 else { return options.first?.0 }
+        var roll = Double.random(in: 0..<total)
+        for (option, w) in options {
+            if roll < w { return option }
+            roll -= w
+        }
+        return options.last?.0
     }
 
     // MARK: Deals

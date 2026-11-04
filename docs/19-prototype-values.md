@@ -371,6 +371,7 @@ Other values:
 | Corner loupe, edge light, raking lamp | $60, $90, $140 |
 | Studio lights, camera kit | $250, $600 |
 | Card reader | $80 |
+| Vendor binder, slab case, folding cart | $40, $90, $120 |
 
 ## Your own store
 
@@ -471,6 +472,21 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Sealed buylist | Off, or 60%, 70%, 80% of market in cash. Daily budget $100, $250 (default), $500, or $1,000. Walk-in sellers: 6% of the clerk-hour customers at 70%, scaled by rate ÷ 70%. A seller wants 55% to 85% of market at least. Product of $15 or more |
 | Consignment in the own store | Store cut 15%, 20% (default), or 25%. Up to 3 cards a day, 8% of the clerk-hour customers at 20%. Each point of cut over 20% takes 4 points of the sellers away. Card of $8 or more. Unsold cards go back after 28 days |
 | Bigger space | Bigger unit $2,500, large unit $4,500. Each step: +40 card slots, +40 sealed slots, +25% of the lease rent, +25% insurance and utilities |
+
+## Packing and crowds
+
+| Item | Value |
+| --- | --- |
+| Binder | 40 raw cards. Vendor binder ($40): 160 |
+| Slab box | 3 slabs. Slab case ($90): 20 |
+| Tote | 8 spaces. Folding cart ($120): 30. Sealed: 1 pack is 1 space, more is 1 + 1 for each 6 packs |
+| Setup time | 10 minutes + 0.2 for each raw card + 0.5 for each slab + 1 for each sealed space. Day 2 of a regional show: 50% |
+| Spend cap | Park swap $60, league night $80, trade night $150, local show $400, no cap at the trading circle, the regional show, and the store. Budget: cap × 50% to 150% |
+| Trade share | Park swap 28%, trade night 30%, trading circle 20%, league night 15%, others 18% |
+| Turnout | Mean × (0.7 + appeal ÷ 20), at most 1.3. Not at the store |
+| Stale stock | Records for 21 days. A regular passes at 30% for each time on a table, at most 75% |
+
+See [29-packing-and-crowds.md](29-packing-and-crowds.md).
 
 ## Debt and loans
 

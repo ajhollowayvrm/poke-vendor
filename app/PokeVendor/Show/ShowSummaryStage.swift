@@ -32,6 +32,11 @@ struct SummaryStage: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                     }
+                    if session.foundNothing + session.stalePassed > 0 {
+                        Text("\(session.foundNothing) found nothing for them · \(session.stalePassed) regular\(session.stalePassed == 1 ? "" : "s") saw nothing new")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(Theme.muted)
+                    }
                 }
                 .padding(16)
             }

@@ -32,6 +32,7 @@
 		1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB5E54A48F045F4D8D408CD /* plasma-storm.json */; };
 		14BC4B51E0FEAF475510B430 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */; };
 		1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */ = {isa = PBXBuildFile; fileRef = C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */; };
+		1A558BF86A2E9FD90EAD01C4 /* Packing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29666B46E0F524E81D932375 /* Packing.swift */; };
 		1AB42439306A09CF7C214382 /* phantasmal-flames.json in Resources */ = {isa = PBXBuildFile; fileRef = C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */; };
 		1B02016F771A2BDFE0D3A2B2 /* undaunted.json in Resources */ = {isa = PBXBuildFile; fileRef = CBAAA70DD15AB8D85C728652 /* undaunted.json */; };
 		1B0E9BD23A43FA287BC42EA1 /* triumphant.json in Resources */ = {isa = PBXBuildFile; fileRef = 773A4B023E31815EEDF2527B /* triumphant.json */; };
@@ -288,6 +289,7 @@
 		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
 		28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSealedBuylist.swift; sourceTree = "<group>"; };
 		292D3A115C43F52F2750F722 /* destined-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "destined-rivals.json"; sourceTree = "<group>"; };
+		29666B46E0F524E81D932375 /* Packing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packing.swift; sourceTree = "<group>"; };
 		297BD4F44B83A77E160F288F /* CardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViews.swift; sourceTree = "<group>"; };
 		2BB5E54A48F045F4D8D408CD /* plasma-storm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-storm.json"; sourceTree = "<group>"; };
 		2E04FD006DB8B88A9342A378 /* Support.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
@@ -745,6 +747,7 @@
 				AA0DCB9D1A8DADB810AE091A /* Offers.swift */,
 				358CC15CDFF4392C2418EBCB /* Opportunities.swift */,
 				15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */,
+				29666B46E0F524E81D932375 /* Packing.swift */,
 				9881C74F0228AC7C882E6679 /* Payments.swift */,
 				0892155B07C10C47B42D6134 /* PriceCycle.swift */,
 				E31479E39C7B363F7E989E45 /* PrintRuns.swift */,
@@ -1131,6 +1134,7 @@
 				E40D9ECDA8E9BF396927398D /* OpportunityView.swift in Sources */,
 				554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */,
 				8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */,
+				1A558BF86A2E9FD90EAD01C4 /* Packing.swift in Sources */,
 				5A8355AC964C42A1C26A50B1 /* Panels.swift in Sources */,
 				41754DEBB1E847E8C2ACDD13 /* PaymentViews.swift in Sources */,
 				FCAD9164775A3F88F8F0FE00 /* Payments.swift in Sources */,

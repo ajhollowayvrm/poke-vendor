@@ -64,6 +64,16 @@ enum MeetKind: String, Codable, CaseIterable, Hashable {
         }
     }
 
+    /// The people who come (docs/29-packing-and-crowds.md).
+    var crowd: Crowd {
+        switch self {
+        case .tradeNight: .tradeNight
+        case .parkSwap: .parkSwap
+        case .tradingCircle: .tradingCircle
+        case .leagueNight: .leagueNight
+        }
+    }
+
     var hoursText: String { "\(GameStore.clock(open)) – \(GameStore.clock(close))" }
 }
 
@@ -128,7 +138,7 @@ extension GameStore {
                           detail: "\(kind.place) · \(kind.hoursText)", open: kind.open, close: kind.close,
                           hours: Balance.meetHours, visitorsMean: league ? Balance.leagueVisitors : Balance.meetVisitors,
                           sellerShare: Balance.meetSellerShare, regularShare: Balance.meetRegularShare,
-                          hasFloor: false, hasTable: true, fakeSource: .stranger, shop: shop)
+                          hasFloor: false, hasTable: true, fakeSource: .stranger, shop: shop, crowd: kind.crowd)
         save()
         return ShowSession(venue: venue, store: self, vendors: [], regulars: meetRegulars(kind))
     }

@@ -56,6 +56,18 @@ Without it, the player can only walk in and buy on the floor. It costs
 $200, and the player buys it from the detail screen of any card show
 (see [20-card-shows.md](20-card-shows.md#shows-on-the-calendar)).
 
+## Carry space
+
+Three upgrades make the bins bigger, so the player can bring more to a
+table at a show or a meet (see
+[29-packing-and-crowds.md](29-packing-and-crowds.md#carry-space)):
+
+| Upgrade | Cost | Effect |
+| --- | --- | --- |
+| Vendor binder | $40 | 160 raw cards instead of 40 |
+| Slab case | $90 | 20 slabs instead of 3 |
+| Folding cart | $120 | 30 spaces of sealed instead of 8 |
+
 ## Contacts and selling
 
 | Upgrade | Cost | What it does |

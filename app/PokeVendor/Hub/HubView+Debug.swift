@@ -59,7 +59,7 @@ extension HubView {
                 }
             }
             store.finishEncounter(session)
-            log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded")
+            log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded, \(session.foundNothing) found nothing, \(session.stalePassed) stale")
         }
         for _ in 0..<days {
             // The store: open on day 3, stock it every few days, work the counter, buy fixtures, and close near the end.

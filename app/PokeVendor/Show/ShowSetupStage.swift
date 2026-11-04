@@ -6,6 +6,7 @@ struct SetupStage: View {
 
     var body: some View {
         let items = session.stockItems
+        let used = session.usage(items)
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
@@ -24,6 +25,7 @@ struct SetupStage: View {
                         .pickerStyle(.segmented)
                     }
                     PaymentPolicyPicker()
+                    if session.venue.packs { crowdBox }
                     if items.isEmpty {
                         Text("You have nothing to sell. Kept items, listed items, and items at a grader stay home.")
                             .font(.subheadline)
@@ -33,20 +35,22 @@ struct SetupStage: View {
                         Text("BRING · \(session.bring.count) of \(items.count)")
                             .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
                         Spacer()
-                        Button(session.bring.count == items.count ? "None" : "All") {
-                            session.bring = session.bring.count == items.count ? [] : Set(items.map(\.id))
-                        }
-                        .font(.caption.weight(.semibold))
+                        Button("Fill") { session.fillBring() }
+                            .font(.caption.weight(.semibold))
+                        Button("Clear") { session.clearBring() }
+                            .font(.caption.weight(.semibold))
+                            .padding(.leading, 8)
                     }
+                    if session.venue.packs { loadBox(items, used: used) }
                     let cards = items.filter { $0.kind == .card }
                     if !cards.isEmpty {
                         TitledGroup(title: "Singles and slabs", count: cards.count, list: "show") {
-                            ForEach(cards) { item in bringRow(item) }
+                            ForEach(cards) { item in bringRow(item, used: used) }
                         }
                     }
                     ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "show") {
-                            ForEach(group.items) { item in bringRow(item) }
+                            ForEach(group.items) { item in bringRow(item, used: used) }
                         }
                     }
                 }
@@ -70,22 +74,57 @@ struct SetupStage: View {
         }
     }
 
-    private func bringRow(_ item: ShowItem) -> some View {
-        Button {
-            if session.bring.contains(item.id) { session.bring.remove(item.id) } else { session.bring.insert(item.id) }
+    /// Who comes to this venue (docs/29-packing-and-crowds.md).
+    private var crowdBox: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("THE CROWD").font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            Text(session.venue.crowd.summary).font(.subheadline)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// The bins, the setup time, and the turnout of the load.
+    private func loadBox(_ items: [ShowItem], used: [CarryBin: Int]) -> some View {
+        let minutes = Int(session.setupMinutes(items))
+        let late = session.setupRunsLate(items)
+        return VStack(alignment: .leading, spacing: 4) {
+            Text(CarryBin.allCases.map { "\($0.name) \(used[$0, default: 0])/\(store.capacity($0))" }.joined(separator: " · "))
+                .font(.caption.monospaced())
+            Text("Setup \(minutes) min · open at \(session.openingClock(items)) · turnout \(Int((session.turnout(items) * 100).rounded()))%")
+                .font(.caption.monospaced())
+                .foregroundStyle(late ? Theme.orange : Theme.muted)
+            if late {
+                Text("The setup ends after the doors close. Bring less.").font(.caption).foregroundStyle(Theme.orange)
+            }
+        }
+    }
+
+    private func bringRow(_ item: ShowItem, used: [CarryBin: Int]) -> some View {
+        let on = session.bring.contains(item.id)
+        let fits = session.fits(item, usage: used)
+        let shown = session.venue.packs ? store.tableShowings(item.id) : 0
+        return Button {
+            session.toggleBring(item)
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: session.bring.contains(item.id) ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(session.bring.contains(item.id) ? Theme.cyan : Theme.muted)
-                ItemLine(item: item)
+                Image(systemName: on ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(on ? Theme.cyan : Theme.muted)
+                VStack(alignment: .leading, spacing: 2) {
+                    ItemLine(item: item)
+                    if shown > 0 {
+                        Text("On a table \(shown)× in 3 weeks").font(.caption2).foregroundStyle(Theme.orange)
+                    }
+                }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text(money(session.asking(item))).font(.subheadline.monospaced())
                     Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                 }
             }
+            .opacity(fits ? 1 : 0.4)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .disabled(!fits)
     }
 }

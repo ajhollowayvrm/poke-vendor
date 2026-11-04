@@ -150,6 +150,7 @@ struct ShowDetailView: View {
                         row("Days", show.size.days == 2 ? "2 (Saturday and Sunday)" : "1 (Saturday)")
                         row("Doors", "\(GameStore.clock(Balance.showOpen)) – \(GameStore.clock(Balance.showClose))")
                         row("Visitors at a table", "About \(Int(show.size.buyersPerDay)) a day")
+                        row("Crowd", (show.size == .regional ? Crowd.regionalShow : Crowd.localShow).short)
                         row("Table fee", money(show.size.tableFee) + (show.size.days == 2 ? " for both days" : ""))
                         row("Walk-in entry", money(show.size.entryFee) + " a day")
                         row("Booking closes", show.lastBookingDay < store.day ? "Closed"

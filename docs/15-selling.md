@@ -253,6 +253,10 @@ main channel (see [02-playstyles.md](02-playstyles.md#the-flipper-meets-and-show
 - Reputation gates the better meets: invite-only trading circles open
   at reputation tier 1 (see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#reputation-tiers)).
+- Each meet has its own crowd: the park swap draws families with small
+  budgets, league night draws players, trade night draws traders, and
+  the trading circle draws serious collectors (see
+  [29-packing-and-crowds.md](29-packing-and-crowds.md#crowds)).
 - The meet encounter itself, and trading, get their own design later.
 
 ## Shipping

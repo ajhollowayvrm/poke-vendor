@@ -49,6 +49,7 @@ tracks four separate currencies, and any one of them can be your route there.
 - [05-pricing-and-market.md](05-pricing-and-market.md#the-moving-market) — the moving market: price waves, market news, and sealed appreciation.
 - [27-debt-and-loans.md](27-debt-and-loans.md) — the credit score, personal and business loans, the line of credit and overdraft protection, payday loans, the pawn shop, missed payments, collections and wage garnishment, and how interest counts for income tax.
 - [28-messages-and-encounters.md](28-messages-and-encounters.md) — notoriety, direct messages about cards, encounters at game shop stops, and the bulk buyer and sealed buyer opportunities.
+- [29-packing-and-crowds.md](29-packing-and-crowds.md) — what to bring to a table: three carry bins and their upgrades, setup time, the crowd at each show and meet (who comes, their budgets, the trade share), buyers who find nothing and leave, and regulars who pass on stale stock.
 
 ## Open topics
 

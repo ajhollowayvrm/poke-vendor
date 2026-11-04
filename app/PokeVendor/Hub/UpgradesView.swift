@@ -25,6 +25,9 @@ struct UpgradesView: View {
                     upgradeRow(.salesAnalytics)
                     upgradeRow(.cardReader)
                     upgradeRow(.authTool)
+                    upgradeRow(.vendorBinder)
+                    upgradeRow(.slabCase)
+                    upgradeRow(.foldingCart)
                 }
                 DetailBox(title: "Contacts") {
                     upgradeRow(.contactBook)

@@ -46,7 +46,10 @@ they came.
   that are shipping, and items at a grader stay home.
 - The player sets one price for the table: 90% of market, market,
   110%, or 125%. The default is 110%, which leaves room to haggle.
-- More value on the table draws more buyers, up to 30% more.
+- Three bins limit the load, and a big load takes longer to set up.
+  Each show has a crowd, and the items that the crowd wants draw more
+  buyers, up to 30% more. Regulars pass on stale stock. See
+  [29-packing-and-crowds.md](29-packing-and-crowds.md).
 
 ### Visitors at the table
 
@@ -64,6 +67,7 @@ comes wants to sell.
 | Flipper | Anything | 68% to 82% of market. Less patience. |
 | Kid with a parent | Items of $30 or less | 95% to 115% of market, and never more than $30 |
 | Grading hunter | Raw cards of $5 or more | 85% to 100% of market, more for a clean, centered card, and much less for an off-center card |
+| Player | Raw cards and small sealed from the newer sets | 95% to 110% of market. Mostly at meets (see [29-packing-and-crowds.md](29-packing-and-crowds.md#crowds)) |
 | Vintage collector | Vintage and older cards and sealed | 95% to 112% of market |
 | Sealed collector | Sealed product | 90% to 105% of market |
 
@@ -243,6 +247,10 @@ seller wins: they pay the full price. Heads means the player wins.
 - **A better table spot** from reputation Trusted: 15% more people at
   the table (see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md)).
+- **Packing and crowds** (see [29-packing-and-crowds.md](29-packing-and-crowds.md)):
+  carry space, setup time, the crowd at each show and meet, and stale
+  stock. With a table, the grading booth only takes raw cards that the
+  player brought.
 - **A first look** from reputation Trusted: a recurring vendor shows
   the player their 2 best items before the table opens, at 5% off.
 - **The grading booth** at a regional show: PSA, $40 a card, the slab
