@@ -150,6 +150,7 @@
 		976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */; };
 		97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45590D9E41CDC734C72A2FA8 /* GoalsMarketViews.swift */; };
 		99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */ = {isa = PBXBuildFile; fileRef = 514263C9681529DF5523A095 /* astral-radiance.json */; };
+		9CB15D4A7DECA40699DFDEA7 /* AuctionHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */; };
 		9E137F2DE0EED4CCFDA16759 /* sandstorm.json in Resources */ = {isa = PBXBuildFile; fileRef = FE24D22F379B1A8349AED4A6 /* sandstorm.json */; };
 		9E264DB7991475D250875154 /* crystal-guardians.json in Resources */ = {isa = PBXBuildFile; fileRef = 51D032B98E3876431FC5F38E /* crystal-guardians.json */; };
 		9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1814D1AECBB8B1DC0276EA /* ResealedBanner.swift */; };
@@ -165,6 +166,7 @@
 		A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */; };
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
+		A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5188F9BDD662DDFD44100F /* AuctionViews.swift */; };
 		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
 		ACF5B660614980C8BD8B47D3 /* firered-leafgreen.json in Resources */ = {isa = PBXBuildFile; fileRef = 38930186931A1B4CDBBF0541 /* firered-leafgreen.json */; };
 		AD9AD35F481816554B112EE4 /* RipView+Special.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A7717FDB86F90E3D73A2C6 /* RipView+Special.swift */; };
@@ -511,11 +513,13 @@
 		FA2426C0050E11BB75D79A1E /* Losses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Losses.swift; sourceTree = "<group>"; };
 		FAF0483A8B75F89A628B7214 /* neo-discovery.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery.json"; sourceTree = "<group>"; };
 		FAFC1AB6090289298D64A7E6 /* Condition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Condition.swift; sourceTree = "<group>"; };
+		FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionHouse.swift; sourceTree = "<group>"; };
 		FB1006AA43D16FB5FB572A8A /* legend-maker.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legend-maker.json"; sourceTree = "<group>"; };
 		FB443286D950ABAD944C7A64 /* dragon-frontiers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-frontiers.json"; sourceTree = "<group>"; };
 		FDDB3709D7BFD861D4F66368 /* celebrations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = celebrations.json; sourceTree = "<group>"; };
 		FE044E20B20FB2490087A1C9 /* temporal-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "temporal-forces.json"; sourceTree = "<group>"; };
 		FE24D22F379B1A8349AED4A6 /* sandstorm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sandstorm.json; sourceTree = "<group>"; };
+		FF5188F9BDD662DDFD44100F /* AuctionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionViews.swift; sourceTree = "<group>"; };
 		FFB84E50DD5B533FE4BD8643 /* sun-moon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sun-moon.json"; sourceTree = "<group>"; };
 		FFCA10E0346065DAC9FB7BF1 /* RipView+Tear.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RipView+Tear.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -542,6 +546,7 @@
 		20039E26AAF34D635C5565E0 /* Inventory */ = {
 			isa = PBXGroup;
 			children = (
+				FF5188F9BDD662DDFD44100F /* AuctionViews.swift */,
 				7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */,
 				544120DEF70C6BCBC2EF918A /* DetailViews.swift */,
 				A28FE1FAED611C80FC163221 /* InventoryView.swift */,
@@ -731,6 +736,7 @@
 		96C1692A0ED7B2E72EE64380 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */,
 				3BE8F9A509ED85647311ACD5 /* Balance.swift */,
 				D85667450A30BCA2B91E3829 /* Camping.swift */,
 				3553A3A890986D3D87A796A8 /* CardStore.swift */,
@@ -1101,6 +1107,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */,
+				9CB15D4A7DECA40699DFDEA7 /* AuctionHouse.swift in Sources */,
+				A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */,
 				7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,

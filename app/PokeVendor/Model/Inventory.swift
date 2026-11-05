@@ -378,6 +378,8 @@ enum ItemStatus: Codable, Hashable {
     case consigned(Consignment)
     /// On a shelf or in a case at the player's own store (docs/22-own-store.md).
     case inStore(since: Int)
+    /// At an auction house until its catalog auction (docs/15-selling.md, Auction houses).
+    case atAuctionHouse(AuctionConsignment)
 
     /// A listing that the player can take down: any listing except a running eBay auction.
     var isRemovableListing: Bool {
@@ -394,6 +396,7 @@ enum ItemStatus: Codable, Hashable {
         case .arriving(let days, _): "ARRIVING · \(days)D"
         case .consigned(let c): "CONSIGNED · \(c.shop.rawValue.uppercased())"
         case .inStore: "IN YOUR STORE"
+        case .atAuctionHouse(let a): "AT \(a.house.rawValue.uppercased()) · DAY \(a.auctionDay + 1)"
         }
     }
 }
@@ -578,7 +581,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case storeRent = "Store rent", storeSetup = "Store setup", wages = "Wages", storeEvents = "Store events"
         case storeOverhead = "Store overhead", supplies = "Supplies", paymentFees = "Payment fees", insurance = "Insurance"
         case loan = "Loans", interest = "Interest and fees", businessInterest = "Business interest"
-        case businessCosts = "Business costs"
+        case businessCosts = "Business costs", auctionFees = "Auction fees"
     }
 
     var id = UUID()

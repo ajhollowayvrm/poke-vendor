@@ -518,6 +518,19 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Late fee | $30, or 5% of the payment when that is more |
 | Collections | After 3 missed payments in a row. 20% collection fee. 25% of each paycheck. +2% of the balance every 28 days. With no job: 25% of cash each week |
 
+## Auction houses
+
+| Value | Number |
+|---|---|
+| Least market | $1,000 |
+| Seller fee | Goldin 10%, Heritage 15%, Fanatics Collect 12%. −2% for each reputation tier above the house's tier, −3% from $10,000, −5% from $50,000 |
+| Buyer's premium | Goldin 15%, Heritage 20%, Fanatics Collect 15% |
+| Bidder strength | Goldin 1.22, Heritage 1.27, Fanatics Collect 1.15 times market, ±30% |
+| Reputation gate | Fanatics Collect tier 1, Goldin and Heritage tier 2 |
+| Timeline | Check after 5 days. The auction at least 14 days after the consign day, on day 7, 14, or 21 of each 28. Payout 14 days after |
+| Costs | $30 insured shipping. 3% of the reserve when the reserve is not met |
+| Fake slab | −15 reputation, refused for 180 days |
+
 ## The moving market
 
 | Value | Number |

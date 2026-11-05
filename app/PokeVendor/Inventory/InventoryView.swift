@@ -36,7 +36,7 @@ extension SealedItem: Tagged {}
 enum InventoryFilter: String, CaseIterable, Hashable {
     case all = "All", kept = "Kept", free = "No status"
     case onTheWay = "On the way", arriving = "Arriving", atGrader = "At grader", authenticating = "Authenticating"
-    case listed = "Listed", consigned = "Consigned", inStore = "In your store"
+    case listed = "Listed", consigned = "Consigned", inStore = "In your store", atAuction = "At auction"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -59,6 +59,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         case .listed: return self == .listed
         case .consigned: return self == .consigned
         case .inStore: return self == .inStore
+        case .atAuctionHouse: return self == .atAuction
         case nil: return false
         }
     }

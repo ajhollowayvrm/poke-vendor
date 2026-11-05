@@ -117,6 +117,9 @@ struct GameData: Codable {
     /// Reputation from deals today, and deal stories that come out later (docs/30-haggling-and-deal-reputation.md).
     var dealRep = DealRepState()
     var dealStories: [DealStory] = []
+    /// Auction houses: the payouts that come later, and the houses that refuse the player until a day (docs/15).
+    var auctionPayouts: [AuctionPayout] = []
+    var auctionBans: [String: Int] = [:]
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -198,6 +201,8 @@ extension GameData {
         lastBag = v(.lastBag, lastBag)
         dealRep = v(.dealRep, dealRep)
         dealStories = v(.dealStories, dealStories)
+        auctionPayouts = v(.auctionPayouts, auctionPayouts)
+        auctionBans = v(.auctionBans, auctionBans)
     }
 }
 
@@ -504,6 +509,17 @@ final class GameStore {
     func addTestCard(_ print: CardPrint, slug: String = "prismatic-evolutions") {
         data.raw.append(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: nil, ripID: nil, acquiredDay: data.day))
         save()
+    }
+
+    /// A slab for tests. Returns its ID.
+    @discardableResult
+    func addTestSlab(_ print: CardPrint, grade: SlabGrade, slug: String = "prismatic-evolutions", fake: FakeTier? = nil) -> UUID {
+        var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: nil, ripID: nil, acquiredDay: data.day)
+        card.grade = grade
+        card.fake = fake
+        data.slabs.append(card)
+        save()
+        return card.id
     }
 
     /// A card show that starts today, with a table booked and no fee.
@@ -1022,6 +1038,7 @@ final class GameStore {
         lines += meetupsEndDay()
         lines += offersEndDay()
         lines += lotsEndDay()
+        lines += auctionHouseEndDay()
         let boostDay = data.day
         data.priceBoosts = data.priceBoosts.filter { $0.value >= boostDay }
         syncMarket()
@@ -1203,6 +1220,10 @@ final class GameStore {
         }
         for var card in data.slabs where card.status != nil {
             switch card.status {
+            case .atAuctionHouse(let a):
+                let result = advanceAuction(&card, a)
+                if let line = result.line { lines.append(line) }
+                if result.sold { continue }
             case .inStore:
                 if let result = advanceOnlineListing(&card) {
                     lines.append(result.line)

@@ -64,6 +64,14 @@ struct StatusBox: View {
                     Button("Take it back") { store.takeBackFromStore([id]) }
                         .buttonStyle(.bordered)
                 }
+            case .atAuctionHouse(let a):
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("At \(a.house.rawValue) · auction on day \(a.auctionDay + 1)").font(.subheadline)
+                    Text("Estimate \(money(a.estimate)) · seller fee \(Int((a.sellerFee * 100).rounded()))%\(a.reserve.map { " · reserve \(money($0))" } ?? " · no reserve")")
+                        .font(.caption.monospaced())
+                        .foregroundStyle(Theme.muted)
+                    Text("The slab cannot come back before its auction.").font(.caption).foregroundStyle(Theme.muted)
+                }
             case .listed(let listing):
                 VStack(alignment: .leading, spacing: 6) {
                     if let end = listing.auctionEndDay {
@@ -92,6 +100,7 @@ struct CardDetailView: View {
     @State private var grade: GradeRequest?
     @State private var post: NewPostRequest?
     @State private var key: String?
+    @State private var auction: AuctionRequest?
 
     /// The card, or the next card of its stack after this one leaves.
     private var resolved: OwnedCard? {
@@ -192,6 +201,10 @@ struct CardDetailView: View {
                         Button("Move to bulk") { store.moveToBulk([card.id]) }
                             .buttonStyle(.bordered)
                             .disabled(!free || card.keep)
+                    } else if card.realMarket >= Balance.auctionMinValue {
+                        Button("Consign to an auction house") { auction = AuctionRequest(id: card.id) }
+                            .buttonStyle(.bordered)
+                            .disabled(!free || card.keep || card.isKnownFake)
                     }
                     if store.hasAccount {
                         HStack(spacing: 10) {
@@ -211,6 +224,7 @@ struct CardDetailView: View {
             .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
             .sheet(item: $post) { NewPostSheet(request: $0) }
+            .sheet(item: $auction) { AuctionConsignSheet(cardID: $0.id) }
         } else {
             GoneView()
         }

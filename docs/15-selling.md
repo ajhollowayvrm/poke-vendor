@@ -25,6 +25,7 @@ every card.
 | Social media | Anything your followers want | A fixed price that you set | Depends on followers | No fees, shipping | Free action |
 | Local game shop | Fast cash, bulk, or a consigned single | The shop's offer, or a consignment price | Instant (buylist) or slow (consignment) | A low price, or the shop's cut | A stop on a store run |
 | Local meets | Raw singles, trades | Face-to-face haggling | During the meet | No fees | Time-cost |
+| Auction houses | Slabs of $1,000 or more | A catalog auction; the buyer's premium comes out of the bids | Weeks: the next catalog, then a payout 14 days later | A seller fee, insured shipping | Free action |
 
 Specific fee values are not in this doc. Platform fees change, so the
 game pulls current values when it needs them. Grading fees follow the
@@ -258,6 +259,56 @@ main channel (see [02-playstyles.md](02-playstyles.md#the-flipper-meets-and-show
   the trading circle draws serious collectors (see
   [29-packing-and-crowds.md](29-packing-and-crowds.md#crowds)).
 - The meet encounter itself, and trading, get their own design later.
+
+## Auction houses
+
+**Status: built** (`Model/AuctionHouse.swift`, `Inventory/AuctionViews.swift`).
+
+Goldin, Heritage, and Fanatics Collect sell high-end slabs to big
+buyers. A slab sells for more than on eBay on average, but the player
+waits weeks for the money, and the slab cannot come back before its
+auction.
+
+- **What a house takes**: a slab with a market of $1,000 or more. It must
+  have no status, no Keep flag, and it must not be a known fake. The
+  button "Consign to an auction house" is on the slab's detail screen.
+- **Reputation gate**: Fanatics Collect takes Known sellers (tier 1).
+  Goldin and Heritage take Trusted sellers (tier 2).
+- **The houses**:
+
+  | House | Seller fee | Buyer's premium | Bidders | Catalog day in each 28 days |
+  |---|---|---|---|---|
+  | Goldin | 10% | 15% | Strong | 7th |
+  | Heritage | 15% | 20% | The strongest | 14th |
+  | Fanatics Collect | 12% | 15% | Fewer big bidders | 21st |
+
+- **Seller fee discounts**: −2% for each reputation tier above the house's
+  tier, −3% for a slab of $10,000 or more, and −5% for a slab of $50,000 or
+  more. The fee never goes below 0%. The fee is fixed on the consign day.
+- **Timeline**: the player pays $30 for insured shipping. The house checks
+  the slab 5 days later. The auction is on the house's first catalog day that
+  is at least 14 days after the consign day. The house pays 14 days after the
+  auction.
+- **The hammer**: the top bidder pays up to a total of the market × the
+  house's bidder strength (Goldin 1.22, Heritage 1.27, Fanatics Collect 1.15),
+  ±30% (the mean of two rolls), × the season factor for singles. The bidder
+  pays the buyer's premium on top of the hammer, so the hammer is that total ÷
+  (1 + the premium), rounded to $5.
+- **Reserve**: none, or 80%, 90%, or 100% of the market. When the hammer is
+  under the reserve, the slab comes back in 5 days, and the player pays 3% of
+  the reserve.
+- **A fake slab**: the house's check finds every fake. The house sends the
+  slab back, the player learns that it is a fake, the player loses 15
+  reputation, and the house refuses the player for 180 days.
+- **A sale**: the sale receipt shows the hammer and the net. A clean sale
+  gives reputation like an online sale. Theft and damage at home do not touch a
+  slab at a house.
+- **Where the player sees it**: the slab's status box (the house, the
+  auction day, the estimate, the fee, and the reserve), the "At auction"
+  filter in Inventory, and the Calendar (each auction and each payout).
+
+Confidence: the fees come from a second-hand fee calculator, not from each
+house's own terms. The bidder strengths are design values.
 
 ## Shipping
 

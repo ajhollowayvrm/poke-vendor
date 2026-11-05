@@ -398,6 +398,7 @@ extension GameStore {
                                      detail: "\(GameStore.clock(plan.startHour)) · \(formatHours(plan.hours)) · \(plan.itemIDs.count) items"))
         }
         out += eventEntries(day: day)
+        out += auctionHouseEntries(day: day)
         let offset = day - data.day
         guard offset > 0 else { return out }
         let arriving = data.sealed.filter { if case .onTheWay(let d, _) = $0.status { return d == offset }; return false }

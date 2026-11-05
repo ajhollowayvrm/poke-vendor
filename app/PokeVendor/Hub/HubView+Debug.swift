@@ -232,7 +232,46 @@ extension HubView {
             store.finishEncounter(session)
             log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded, \(session.foundNothing) found nothing, \(session.stalePassed) stale")
         }
+        // Auction houses (docs/15-selling.md): three slabs of $1,000 or more go to the three houses on day 2, one of them
+        // a fake. Each must leave the house by its auction day, a sale must pay out 14 days later, and the fake comes back.
+        var auctionIDs: [UUID: AuctionHouse] = [:]
+        var fakeAuctionID: UUID?
+        var auctionDays: [UUID: Int] = [:]
+        var auctionFails: [String] = []
+        var auctionSold = 0, auctionBack = 0
         for _ in 0..<days {
+            if store.day == 2 {
+                let dear = Balance.modernSets.flatMap { slug in SetLibrary.set(slug).prints.map { (slug, $0) } }
+                    .filter { ($0.1.gradedPrice("psa10") ?? 0) >= 1_500 }
+                    .sorted { ($0.1.gradedPrice("psa10") ?? 0) > ($1.1.gradedPrice("psa10") ?? 0) }
+                    .prefix(3)
+                for (i, (slug, print)) in dear.enumerated() {
+                    let house = AuctionHouse.allCases[i % AuctionHouse.allCases.count]
+                    let id = store.addTestSlab(print, grade: SlabGrade(company: .psa, grade: 10), slug: slug, fake: i == 2 ? .convincing : nil)
+                    if store.consignToAuction(id, house: house, reserveShare: i == 1 ? 1.0 : nil, ignoreGate: true) {
+                        auctionIDs[id] = house
+                        if i == 2 { fakeAuctionID = id }
+                        if case .atAuctionHouse(let a) = store.card(id)?.status { auctionDays[id] = a.auctionDay }
+                    } else {
+                        auctionFails.append("could not consign \(print.name)")
+                    }
+                }
+                if dear.count < 3 { auctionFails.append("found only \(dear.count) slabs of $1,500 or more") }
+            }
+            // The day after the house's check, the fake is known and on its way back.
+            if let id = fakeAuctionID, store.day == 2 + Balance.auctionIntakeDays + 1 {
+                var back = false
+                if case .arriving = store.card(id)?.status { back = true }
+                if store.card(id)?.isKnownFake != true || !back { auctionFails.append("the house did not catch the fake") }
+            }
+            // The day after its auction, a slab is gone (sold) or on its way back (reserve not met).
+            for (id, day) in auctionDays where store.day == day + 1 && id != fakeAuctionID {
+                switch store.card(id)?.status {
+                case nil where store.card(id) == nil: auctionSold += 1
+                case .arriving: auctionBack += 1
+                default: auctionFails.append("a slab is not sold or on its way back after its auction")
+                }
+            }
             // The store: open on day 3, stock it every few days, work the counter, buy fixtures, and close near the end.
             // A one-period lease: an early close with a buyout, a second lease, and a renewal.
             if store.day == 3 { store.testOpenCardStore(.stripMall, term: 1); store.setClerk(true) }
@@ -392,6 +431,18 @@ extension HubView {
         }
         let holidayDays = (0..<366).filter { PriceCycle.seasonName(day: $0) == "Holiday season" }.count
         print("SOAK SEASONS: start week \(startWeek), today \(PriceCycle.monthName()) (\(PriceCycle.seasonName() ?? "no season")), holiday days in a year \(holidayDays), \(seasonFails.count) fails \(seasonFails.prefix(3))")
+        for (id, house) in auctionIDs {
+            if id == fakeAuctionID {
+                if store.data.auctionBans[house.rawValue] == nil { auctionFails.append("the fake did not get a ban") }
+                continue
+            }
+        }
+        let paid = store.data.ledger.filter { $0.category == .sale && $0.label.hasSuffix("payout") }.count
+        if store.day > (auctionDays.values.max() ?? 0) + Balance.auctionPayoutDays, paid != auctionSold {
+            auctionFails.append("\(auctionSold) sold but \(paid) payouts")
+        }
+        if store.data.auctionPayouts.contains(where: { $0.day < store.day }) { auctionFails.append("a payout is past due") }
+        print("SOAK AUCTION: \(auctionIDs.count) consigned, \(auctionSold) sold, \(auctionBack) back, \(paid) paid, \(auctionFails.count) fails \(auctionFails.prefix(3))")
         // Bulk unlist: every item with a listing that can come down comes down, and its Facebook offers end.
         var unlistFails: [String] = []
         let listedIDs = Set((store.data.raw + store.data.slabs).filter { $0.status?.isRemovableListing == true }.map(\.id)
