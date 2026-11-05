@@ -35,8 +35,9 @@ marketing-grade.
 - The sales a day is the mean, for a machine with stock at fair
   prices. The seasonal demand for sealed product moves it (see
   [05-pricing-and-market.md](05-pricing-and-market.md#seasons)).
-- When the player's store closes, its machine comes home. The stock goes
-  back to Inventory, and the cash box goes to the bank.
+- When the player's store closes, its machine comes home the same day, as
+  the shelf stock does. The stock arrives in Inventory the next day, and
+  the cash box goes to the bank.
 
 ## Stock and prices
 
@@ -46,7 +47,8 @@ marketing-grade.
   the market value.
 - The default price is the market × 1.25, at a retail price. During a
   visit the player can set every price to the market × 1, 1.15, 1.25, or
-  1.4, and take items out.
+  1.4, and take items out. The machine keeps that markup, and new stock
+  gets it too.
 - Each sale picks an item by weight. A cheap item and a fair price sell
   more. A buyer at a dear item often walks away.
 
@@ -58,6 +60,10 @@ marketing-grade.
 - With a card reader, 60% of the sales are by card. Card sales go to the
   bank at once, less a 3% fee.
 - The cash in machines counts in net worth.
+- A machine sale is an in-person sale. It collects sales tax, it makes a
+  sale receipt, and it uses up some buyers of that product. A sealed
+  item that is a fake the player does not know about can still be found
+  out, as at the player's store.
 
 ## Problems
 
@@ -66,8 +72,8 @@ marketing-grade.
   box and 30% to 60% of the stock. The repair costs $150 to $400.
   Collection insurance does not cover a machine.
 - **Neglect**: when a machine at an outside host is empty or jammed for 7
-  days after the last visit, the host ends the contract. The machine and
-  its stock come home.
+  days in a row, the host ends the contract. The machine comes home, and
+  its stock arrives the next day.
 
 ## Parts for each machine
 

@@ -268,6 +268,7 @@ extension GameStore {
         data.cardStore = nil
         var lines: [String] = []
         if let line = consignmentCloseLine(s) { lines.append(line) }
+        if let line = storeMachineHome() { lines.append(line) }
         let stock = count > 0 ? " \(count) item\(count == 1 ? "" : "s") come\(count == 1 ? "s" : "") home tomorrow." : ""
         if evicted {
             addReputation(-Balance.evictionReputationCost)

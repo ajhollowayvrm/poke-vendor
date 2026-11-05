@@ -90,6 +90,16 @@ struct VendingMachine: Codable, Hashable, Identifiable {
     var salesSinceVisit = 0
     var grossSinceVisit = 0.0
     var lifetimeGross = 0.0
+    /// The markup on market for the machine's prices. Nil: the default.
+    var markup: Double?
+    /// The first day of the current run of empty or jammed days. Nil while the machine sells.
+    var idleSince: Int?
+    /// Every item that left the machine: sold, stolen, or sent back to Inventory.
+    var soldCount = 0
+    var stolenCount = 0
+    var returnedCount = 0
+
+    var priceMarkup: Double { markup ?? Balance.vendMarkup }
 }
 
 /// A part that the player can add to one machine.
@@ -130,7 +140,7 @@ extension Balance {
     /// A break-in takes the cash box and this share of the stock, and the repair costs this much.
     static let vendBreakInStock = 0.3...0.6
     static let vendRepair = 150.0...400.0
-    /// A host ends the contract when the machine is empty or jammed this many days in a row.
+    /// An outside host ends the contract when the machine is empty or jammed this many days in a row.
     static let vendNeglectDays = 7
     /// The default price of an item: its market times this, at a retail price.
     static let vendMarkup = 1.25
@@ -183,6 +193,7 @@ extension GameStore {
         guard let i = data.machines.firstIndex(where: { $0.id == id }), let host = data.machines[i].host,
               spendHours(host.visitHours) else { return }
         collect(i)
+        data.machines[i].returnedCount += data.machines[i].stock.count
         data.sealed += data.machines[i].stock.map(\.item)
         data.machines[i].stock = []
         data.machines[i].host = nil
@@ -202,6 +213,7 @@ extension GameStore {
         let wasJammed = m.jammed
         collect(i)
         data.machines[i].jammed = false
+        if !data.machines[i].stock.isEmpty { data.machines[i].idleSince = nil }
         save()
         var text = "\(sales) sale\(sales == 1 ? "" : "s") since your last visit. You collected \(money(collected)) from the cash box."
         if wasJammed { text += " The machine was jammed. You cleared it." }
@@ -224,10 +236,12 @@ extension GameStore {
         data.sealed.filter { $0.status == nil && !$0.keep && !$0.isKnownFake }
     }
 
-    /// The default machine price of a sealed item.
-    func vendPrice(_ item: SealedItem) -> Double {
-        Market.retail(realMarket(of: item) * Balance.vendMarkup)
+    /// The machine price of a sealed item at a markup.
+    func vendPrice(_ item: SealedItem, markup: Double = Balance.vendMarkup) -> Double {
+        Market.retail(realMarket(of: item) * markup)
     }
+
+    private func cents(_ value: Double) -> Double { (value * 100).rounded() / 100 }
 
     /// True when the player visited the machine today, so the player can restock it and change its prices.
     func atMachine(_ id: UUID) -> Bool {
@@ -243,7 +257,9 @@ extension GameStore {
         let picked = vendableSealed.filter { ids.contains($0.id) }.prefix(max(0, room))
         guard !picked.isEmpty else { return 0 }
         let moved = Set(picked.map(\.id))
-        data.machines[i].stock += picked.map { VendItem(item: $0, price: vendPrice($0)) }
+        let markup = data.machines[i].priceMarkup
+        data.machines[i].stock += picked.map { VendItem(item: $0, price: vendPrice($0, markup: markup)) }
+        data.machines[i].idleSince = nil
         data.sealed.removeAll { moved.contains($0.id) }
         save()
         return picked.count
@@ -254,6 +270,7 @@ extension GameStore {
         guard atMachine(id), let i = data.machines.firstIndex(where: { $0.id == id }),
               let j = data.machines[i].stock.firstIndex(where: { $0.id == item }) else { return }
         data.sealed.append(data.machines[i].stock.remove(at: j).item)
+        data.machines[i].returnedCount += 1
         save()
     }
 
@@ -263,6 +280,7 @@ extension GameStore {
         var stock = data.machines[i].stock
         for j in stock.indices { stock[j].price = Market.retail(realMarket(of: stock[j].item) * markup) }
         data.machines[i].stock = stock
+        data.machines[i].markup = markup
         save()
     }
 
@@ -283,35 +301,56 @@ extension GameStore {
         return exp(-(v.price / market - 1) * Balance.vendPriceSlope) / (1 + market / 50)
     }
 
+    /// Brings a machine home from its host: its stock arrives in Inventory tomorrow, and its cash box goes to the bank.
+    /// `machine` is a copy, so the write to `data` does not overlap it.
+    private func sendHome(_ machine: inout VendingMachine, host: VendingHost) {
+        var items = machine.stock.map(\.item)
+        for k in items.indices { items[k].status = .arriving(daysLeft: 1, from: "the \(host.rawValue.lowercased())") }
+        data.sealed += items
+        machine.returnedCount += items.count
+        if machine.cashBox > 0 { addLedger(machine.cashBox, .sale, "Vending · \(host.rawValue) · cash box") }
+        machine.stock = []
+        machine.cashBox = 0
+        machine.host = nil
+        machine.jammed = false
+        machine.idleSince = nil
+    }
+
+    /// Brings the machine in the player's store home. The store closes today.
+    func storeMachineHome() -> String? {
+        guard let i = data.machines.firstIndex(where: { $0.host == .ownStore }) else { return nil }
+        var machine = data.machines[i]
+        let count = machine.stock.count
+        sendHome(&machine, host: .ownStore)
+        data.machines[i] = machine
+        return "Your store's vending machine comes home\(count > 0 ? ", and its \(count) item\(count == 1 ? "" : "s") arrive tomorrow" : "")."
+    }
+
     /// The day's sales, jams, break-ins, and neglect for each machine. Runs at End Day.
     func vendingEndDay() -> [String] {
         var lines: [String] = []
         var machines = data.machines
         let today = data.day
-        let ownStore = data.cardStore != nil
         let season = PriceCycle.seasonDemand(sealed: true)
         for i in machines.indices {
             guard let host = machines[i].host else { continue }
-            // A machine in the player's store goes home when the store closes.
-            if host == .ownStore && !ownStore {
-                data.sealed += machines[i].stock.map(\.item)
-                if machines[i].cashBox > 0 { addLedger(machines[i].cashBox, .sale, "Vending · \(host.rawValue) · cash box") }
-                machines[i].stock = []
-                machines[i].cashBox = 0
-                machines[i].host = nil
-                lines.append("Your store closed, so its vending machine came home. Its stock is back in Inventory.")
+            let place = "the \(host.rawValue.lowercased())"
+            // A machine in the player's store goes home when the store closes (closeStore does it; this is the backstop).
+            if host == .ownStore && data.cardStore == nil {
+                sendHome(&machines[i], host: host)
+                lines.append("Your store closed, so its vending machine came home. Its stock arrives tomorrow.")
                 continue
             }
-            // Neglect: an empty or jammed machine for too long loses its host.
-            if (machines[i].stock.isEmpty || machines[i].jammed) && today - machines[i].lastVisit >= Balance.vendNeglectDays && host != .ownStore {
+            // Neglect: an outside host ends the contract when the machine is empty or jammed for days in a row.
+            if machines[i].stock.isEmpty || machines[i].jammed {
+                machines[i].idleSince = machines[i].idleSince ?? today
+            } else {
+                machines[i].idleSince = nil
+            }
+            if host != .ownStore, let since = machines[i].idleSince, today - since >= Balance.vendNeglectDays {
                 let why = machines[i].jammed ? "jammed" : "empty"
-                data.sealed += machines[i].stock.map(\.item)
-                if machines[i].cashBox > 0 { addLedger(machines[i].cashBox, .sale, "Vending · \(host.rawValue) · cash box") }
-                machines[i].stock = []
-                machines[i].cashBox = 0
-                machines[i].host = nil
-                machines[i].jammed = false
-                lines.append("The \(host.rawValue.lowercased()) ended your vending contract: the machine sat \(why) too long. The machine and its stock are back home.")
+                sendHome(&machines[i], host: host)
+                lines.append("The \(host.rawValue.lowercased()) ended your vending contract: the machine sat \(why) for \(Balance.vendNeglectDays) days. The machine came home, and its stock arrives tomorrow.")
                 continue
             }
             // A break-in takes the cash box and some stock, and needs a repair.
@@ -319,18 +358,19 @@ extension GameStore {
             if Double.random(in: 0..<1) < breakIn {
                 let lostCash = machines[i].cashBox
                 let share = Double.random(in: Balance.vendBreakInStock)
-                let lostCount = Int((Double(machines[i].stock.count) * share).rounded())
+                let lostCount = min(machines[i].stock.count, Int((Double(machines[i].stock.count) * share).rounded()))
                 machines[i].stock.shuffle()
-                machines[i].stock.removeFirst(min(lostCount, machines[i].stock.count))
+                machines[i].stock.removeFirst(lostCount)
+                machines[i].stolenCount += lostCount
                 machines[i].cashBox = 0
                 let repair = Double.random(in: Balance.vendRepair).rounded()
                 addLedger(-repair, .businessCosts, "Vending machine repair · \(host.rawValue)")
-                lines.append("Someone broke into your vending machine at the \(host.rawValue.lowercased()). They took \(money(lostCash)) and \(lostCount) item\(lostCount == 1 ? "" : "s"). The repair cost \(money(repair)).")
+                lines.append("Someone broke into your vending machine at \(place). They took \(money(lostCash)) and \(lostCount) item\(lostCount == 1 ? "" : "s"). The repair cost \(money(repair)).")
             }
             if machines[i].jammed { continue }
             if Double.random(in: 0..<1) < Balance.vendJamChance {
                 machines[i].jammed = true
-                if machines[i].telemetry { lines.append("Your vending machine at the \(host.rawValue.lowercased()) jammed. A visit clears it.") }
+                if machines[i].telemetry { lines.append("Your vending machine at \(place) jammed. A visit clears it.") }
                 continue
             }
             // Sales: a Poisson count of vends, each picks an item by weight.
@@ -339,6 +379,7 @@ extension GameStore {
             let limit = exp(-mean)
             var product = Double.random(in: 0..<1)
             while product > limit && count < 30 { count += 1; product *= Double.random(in: 0..<1) }
+            let venue = "Vending · \(host.rawValue)"
             var gross = 0.0, toBank = 0.0, sold = 0
             for _ in 0..<count {
                 let weights = machines[i].stock.map(vendWeight)
@@ -351,30 +392,39 @@ extension GameStore {
                     roll -= w
                 }
                 // A buyer at a dear item often walks away.
-                let item = machines[i].stock[pick]
-                let fair = min(1, weights[pick] * (1 + max(realMarket(of: item.item), 0.5) / 50))
+                let vend = machines[i].stock[pick]
+                let fair = min(1, weights[pick] * (1 + max(realMarket(of: vend.item), 0.5) / 50))
                 guard Double.random(in: 0..<1) < fair else { continue }
                 machines[i].stock.remove(at: pick)
-                let net = item.price * (1 - host.share)
-                gross += item.price
+                machines[i].soldCount += 1
+                let net = cents(vend.price * (1 - host.share))
+                gross += vend.price
                 sold += 1
                 if machines[i].cardReader && Double.random(in: 0..<1) < Balance.vendCardShare {
-                    toBank += net * (1 - Balance.vendCardFee)
+                    toBank += cents(net * (1 - Balance.vendCardFee))
                 } else {
                     machines[i].cashBox += net
+                }
+                // A machine sale is an in-person sale: sales tax, a receipt, the item's demand, and a fake's risk.
+                collectSalesTax(on: vend.price, at: venue)
+                addReceipt(name: vend.item.name, venue: venue, price: vend.price, net: net, paid: vend.item.paid)
+                data.demand.items[vend.item.name, default: 0] += 1
+                if let fake = vend.item.fake {
+                    recordBadSale(item: vend.item.name, channel: venue, price: vend.price, fake: fake,
+                                  known: vend.item.fakeKnown == true, refunds: false)
                 }
             }
             if sold > 0 {
                 machines[i].salesSinceVisit += sold
                 machines[i].grossSinceVisit += gross
                 machines[i].lifetimeGross += gross
-                if toBank > 0 { addLedger((toBank * 100).rounded() / 100, .sale, "Vending · \(host.rawValue) · card sales") }
+                if toBank > 0 { addLedger(cents(toBank), .sale, "\(venue) · card sales") }
                 if machines[i].telemetry {
-                    lines.append("Your vending machine at the \(host.rawValue.lowercased()) sold \(sold) item\(sold == 1 ? "" : "s") for \(money(gross)).")
+                    lines.append("Your vending machine at \(place) sold \(sold) item\(sold == 1 ? "" : "s") for \(money(gross)).")
                 }
             }
             if machines[i].telemetry && machines[i].stock.isEmpty && sold > 0 {
-                lines.append("Your vending machine at the \(host.rawValue.lowercased()) is empty.")
+                lines.append("Your vending machine at \(place) is empty.")
             }
         }
         data.machines = machines

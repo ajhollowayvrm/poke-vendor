@@ -151,7 +151,7 @@ private struct RestockSheet: View {
             if let m = store.machine(machineID) {
                 List {
                     Section("In the machine · \(m.stock.count)/\(Balance.vendCapacity)") {
-                        Picker("Prices", selection: Binding(get: { currentMarkup(m) }, set: { store.setVendMarkup(machineID, markup: $0) })) {
+                        Picker("Prices", selection: Binding(get: { m.priceMarkup }, set: { store.setVendMarkup(machineID, markup: $0) })) {
                             ForEach(Balance.vendMarkups, id: \.self) { Text("\(Int((($0 - 1) * 100).rounded()))% over").tag($0) }
                         }
                         .pickerStyle(.segmented)
@@ -176,7 +176,7 @@ private struct RestockSheet: View {
                                         .foregroundStyle(chosen.contains(item.id) ? Theme.cyan : Theme.muted)
                                     Text(item.name).font(.subheadline).lineLimit(2)
                                     Spacer()
-                                    Text(money(store.vendPrice(item))).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                    Text(money(store.vendPrice(item, markup: m.priceMarkup))).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -199,12 +199,5 @@ private struct RestockSheet: View {
                 GoneView()
             }
         }
-    }
-
-    /// The markup that the machine's prices are closest to.
-    private func currentMarkup(_ m: VendingMachine) -> Double {
-        guard let v = m.stock.first else { return Balance.vendMarkup }
-        let ratio = v.price / max(store.realMarket(of: v.item), 0.01)
-        return Balance.vendMarkups.min { abs($0 - ratio) < abs($1 - ratio) } ?? Balance.vendMarkup
     }
 }

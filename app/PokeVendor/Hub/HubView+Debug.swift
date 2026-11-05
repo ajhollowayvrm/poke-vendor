@@ -474,10 +474,15 @@ extension HubView {
         }
         if store.data.auctionPayouts.contains(where: { $0.day < store.day }) { auctionFails.append("a payout is past due") }
         print("SOAK AUCTION: \(auctionIDs.count) consigned, \(auctionSold) sold, \(auctionBack) back, \(paid) paid, \(auctionFails.count) fails \(auctionFails.prefix(3))")
-        let vendSold = store.machines.reduce(0) { $0 + Int($1.lifetimeGross > 0 ? 1 : 0) }
+        let vendSold = store.machines.reduce(0) { $0 + $1.soldCount }
+        let vendStolen = store.machines.reduce(0) { $0 + $1.stolenCount }
+        let vendReturned = store.machines.reduce(0) { $0 + $1.returnedCount }
+        if vendStocked != vendItemsNow() + vendSold + vendStolen + vendReturned {
+            vendFails.append("\(vendStocked) stocked but \(vendItemsNow()) in stock + \(vendSold) sold + \(vendStolen) stolen + \(vendReturned) back")
+        }
         if store.machines.contains(where: { $0.cashBox < 0 }) { vendFails.append("a cash box is negative") }
         if vendStocked > 0, store.machines.allSatisfy({ $0.lifetimeGross == 0 }) { vendFails.append("no machine sold anything") }
-        print("SOAK VENDING: \(store.machines.count) machines, \(vendStocked) stocked, \(vendItemsNow()) in stock, \(money(store.machines.reduce(0) { $0 + $1.lifetimeGross })) gross, \(money(vendCollected)) collected, \(vendSold) machines sold, \(vendFails.count) fails \(vendFails.prefix(3))")
+        print("SOAK VENDING: \(store.machines.count) machines, \(vendStocked) stocked, \(vendItemsNow()) in stock, \(money(store.machines.reduce(0) { $0 + $1.lifetimeGross })) gross, \(money(vendCollected)) collected, \(vendSold) sold, \(vendStolen) stolen, \(vendReturned) back, \(vendFails.count) fails \(vendFails.prefix(3))")
         // Bulk unlist: every item with a listing that can come down comes down, and its Facebook offers end.
         var unlistFails: [String] = []
         let listedIDs = Set((store.data.raw + store.data.slabs).filter { $0.status?.isRemovableListing == true }.map(\.id)
