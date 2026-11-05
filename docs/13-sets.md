@@ -57,11 +57,11 @@ records only its set data and its exceptions to the template.
 
 ## Sets in the game
 
-The game has 131 English sets: every English booster expansion from
-Base Set to the current Mega Evolution sets, plus the McDonald's
-Collection 2021 and 2022. `tools/export/rip_set.py` exports each set
+The game has 133 English sets: every English booster expansion from
+Base Set to the current Mega Evolution sets (Delta Reign and 30th
+Celebration included), plus the McDonald's Collection 2021 and 2022. `tools/export/rip_set.py` exports each set
 file to `app/PokeVendor/Resources/Sets/`, `tools/export/set_index.py`
-writes the list of sets, and `tools/export/catalog.py` writes 1,716
+writes the list of sets, and `tools/export/catalog.py` writes 1,836
 sealed products from them.
 
 - **Prices:** PPT's sealed price first. When PPT has none, the TCGCSV
@@ -254,7 +254,9 @@ set with booster packs has a file.
   [Phantasmal Flames](sets/phantasmal-flames.md),
   [Ascended Heroes](sets/ascended-heroes.md),
   [Perfect Order](sets/perfect-order.md),
-  [Chaos Rising](sets/chaos-rising.md), [Pitch Black](sets/pitch-black.md).
+  [Chaos Rising](sets/chaos-rising.md), [Pitch Black](sets/pitch-black.md),
+  [30th Celebration](sets/30th-celebration.md),
+  [Delta Reign](sets/delta-reign.md).
 - **Play! Pokémon Prize Packs (2022–2026)** — no era file. Each pack holds 6
   stamped reprints; no source gives slots or odds: [Series One](sets/prize-pack-series-one.md), [Series Two](sets/prize-pack-series-two.md), [Series Three](sets/prize-pack-series-three.md), [Series Four](sets/prize-pack-series-four.md), [Series Five](sets/prize-pack-series-five.md), [Series Six](sets/prize-pack-series-six.md), [Series Seven](sets/prize-pack-series-seven.md), [Series Eight](sets/prize-pack-series-eight.md), [Series Nine](sets/prize-pack-series-nine.md).
 

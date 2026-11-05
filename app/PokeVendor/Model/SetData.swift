@@ -141,6 +141,9 @@ struct SetData: Codable {
     let trick: Int?
     /// Rare pack types that replace the slot map, for example a god pack.
     let specialPacks: [SpecialPack]?
+    /// Prints that come as a pair, for example the two halves of a Legendary Stadium (tools/export/rip_set.py,
+    /// PAIRED_CARDS). When a slot draws one print of a pair, the next card of that slot is the other print.
+    let pairs: [[Int]]?
 
     /// For the wrapper, for example "10 CARDS + 1 ENERGY".
     var packLabel: String {

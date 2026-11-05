@@ -18,22 +18,37 @@ struct PackBuilder {
         if let special, let ids = special.cards, let order = cardSet.order {
             return Pack(cards: fullPack(ids, order: order), special: special)
         }
-        var bySlot: [String: [RipCard]] = [:]
+        var drawn: [String: [Int]] = [:]
+        let pairs = (cardSet.pairs ?? []).filter { $0.count == 2 }
         // A pack does not repeat a print, also across slots that share a pool. When the outcome has no print
         // left, for example a second roll of a one-card secret rare, the slot rolls its outcome again.
         var used = Set<Int>()
         for slot in cardSet.slots {
-            for _ in 0..<slot.count {
+            var list: [Int] = []
+            while list.count < slot.count {
+                // A half of a pair needs room for its partner, so the last card of a slot is never a half.
+                let room = slot.count - list.count >= 2
                 var candidates: [Int] = []
                 for _ in 0..<20 {
-                    candidates = pick(slot.outcomes).prints.filter { !used.contains($0) }
+                    candidates = pick(slot.outcomes).prints.filter { index in
+                        !used.contains(index) && (room || !pairs.contains { $0.contains(index) })
+                    }
                     if !candidates.isEmpty { break }
                 }
                 if candidates.isEmpty { candidates = pick(slot.outcomes).prints }
-                guard let index = candidates.randomElement() else { continue }
-                used.insert(index)
-                bySlot[slot.name, default: []].append(RipCard(print: cardSet.prints[index], energy: nil, slot: slot.name))
+                guard let index = candidates.randomElement() else { break }
+                // The two halves of a pair come together, the left half first.
+                let cards = pairs.first { pair in
+                    room && pair.contains(index) && pair.allSatisfy { $0 == index || !used.contains($0) }
+                } ?? [index]
+                used.formUnion(cards)
+                list += cards
             }
+            drawn[slot.name] = list
+        }
+        var bySlot: [String: [RipCard]] = [:]
+        for (name, list) in drawn {
+            bySlot[name] = list.map { RipCard(print: cardSet.prints[$0], energy: nil, slot: name) }
         }
         // A demigod pack puts a different card from its pool in each of its slots.
         if let special, let slots = special.slots, let pool = special.pool {

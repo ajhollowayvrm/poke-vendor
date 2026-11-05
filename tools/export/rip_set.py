@@ -50,6 +50,29 @@ ERA_ORDERS = {
 }
 
 
+# A set whose pack order breaks its era order: slot names, front card first. Source: the set file, section "Pack order".
+# - 30th Celebration: the Pikachu card comes after the rare slot (docs/sets/30th-celebration.md).
+SET_ORDERS = {
+    "30th-celebration": ["Common", "Common", "Third card", "Rare slot", "Pikachu", "ENERGY"],
+}
+
+# Cards that come as a pair: when a pack draws one card of a pair, the next card of the same slot is the other card.
+# - Delta Reign: each Legendary Stadium has a left half and a right half (docs/sets/delta-reign.md).
+PAIRED_CARDS = {
+    "delta-reign": [(("094/103", "Normal"), ("095/103", "Normal")), (("096/103", "Normal"), ("097/103", "Normal")),
+                    (("098/103", "Normal"), ("099/103", "Normal"))],
+}
+
+
+def paired_cards(slug, index):
+    out = []
+    for a, b in PAIRED_CARDS.get(slug, []):
+        if a not in index or b not in index:
+            sys.exit(f"{slug}: the pair {a}, {b} names prints that no slot produces")
+        out.append([index[a], index[b]])
+    return out
+
+
 def slot_kind(name):
     """The kind of a slot in ERA_ORDERS. A slot with no known kind is "extra"."""
     n = name.lower()
@@ -115,14 +138,18 @@ SERIES = {"wizards-of-the-coast": "Wizards of the Coast", "e-card": "e-Card", "e
           "sword-shield": "Sword & Shield", "scarlet-violet": "Scarlet & Violet", "mega-evolution": "Mega Evolution"}
 
 
-def pack_order(era, slots, has_energy_row):
+def pack_order(era, slots, has_energy_row, slug=None):
     """Return (order, trick, series). The order uses each slot exactly as often as the slot map says. The trick is
     the number of cards behind the last rare slot, so the rare slot is the last card after the trick. A pack with
     no rare slot, or with the rare slot at the back, has a trick of 0."""
     series = SERIES.get(era, era.replace("-", " ").title() if era else "")
     names = [s["name"] for s in slots for _ in range(s["count"])] + (["ENERGY"] if has_energy_row else [])
     kinds = ERA_ORDERS.get(era)
-    if kinds:
+    if slug in SET_ORDERS:
+        order = SET_ORDERS[slug]
+        if sorted(order) != sorted(names):
+            sys.exit(f"{slug}: SET_ORDERS {order} does not use each slot as often as the slot map {names}")
+    elif kinds:
         order = [n for kind in kinds for n in names if slot_kind(n) == kind]
     else:
         order = names
@@ -167,25 +194,39 @@ def ebay_sales(pc):
 
 
 def ppt_matches(slug, cards):
-    """Return {card number: [PPT cards]} with the match order of tools/ppt/join.py."""
+    """Return {card number: [PPT cards]} with the match order of tools/ppt/join.py. When the set has one TCGCSV group
+    for each card list part, a card matches only inside the group of its part."""
     groups = J.ppt_groups(slug)
     ids = J.TCGDEX_MAP.get(slug, [])
-    by_ext, by_num, by_name = collections.defaultdict(list), collections.defaultdict(list), collections.defaultdict(list)
-    for gid, data in groups:
+    t = open(os.path.join(ROOT, "docs", "sets", f"{slug}.md")).read()
+    parts = [l[4:].strip() for l in (V.section(t, "Card list") or "").splitlines() if l.startswith("### ")] or ["main"]
+    scoped = len(groups) == len(parts) > 1
+    by_ext, by_num, by_name, by_pid = (collections.defaultdict(list) for _ in range(4))
+    for gi, (gid, data) in enumerate(groups):
+        scope = gi if scoped else 0
         for pc in data:
             pc["_group"] = gid
             if pc.get("externalCatalogId"):
                 by_ext[pc["externalCatalogId"]].append(pc)
-            by_num[J.num_key(pc.get("cardNumber"))].append(pc)
-            by_name[J.norm_name(pc.get("name"))].append(pc)
+            if pc.get("tcgPlayerId"):
+                by_pid[int(pc["tcgPlayerId"])].append(pc)
+            by_num[(scope, J.num_key(pc.get("cardNumber")))].append(pc)
+            by_name[(scope, J.norm_name(pc.get("name")))].append(pc)
     out = {}
     for c in cards:
+        pi = parts.index(c["part"]) if c.get("part") in parts else 0
+        sid = ids[pi] if pi < len(ids) else (ids[0] if ids else "")
+        scope = pi if scoped else 0
         local = c["num"].split("/")[0].split(" ")[-1]
+        pid = J.PRODUCT_IDS.get(sid, {}).get(local)
+        if pid:
+            out[c["num"]] = list(by_pid.get(pid, []))
+            continue
         m = list(by_ext.get(f"{ids[0]}-{local}", [])) if ids else []
         if not m:
-            m = list(by_num.get(J.num_key(local), []))
+            m = list(by_num.get((scope, J.num_key(local)), []))
         if not m:
-            cand = by_name.get(J.norm_name(c["name"]), [])
+            cand = by_name.get((scope, J.norm_name(c["name"])), [])
             base = [x for x in cand if "(" not in (x.get("name") or "")]
             m = cand if len(base) == 1 else []
         out[c["num"]] = m
@@ -299,12 +340,15 @@ def export(slug):
     cost, image = pack_cost(slug)
     image = image or pack_image(slug)
     os.makedirs(OUT, exist_ok=True)
-    order, trick, series = pack_order(eras.get(slug), slots, has_energy_row)
+    order, trick, series = pack_order(eras.get(slug), slots, has_energy_row, slug)
     out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": image,
            "slots": slots, "order": order, "trick": trick, "prints": prints}
     specials = special_packs(slug, prints, index)
     if specials:
         out["specialPacks"] = specials
+    pairs = paired_cards(slug, index)
+    if pairs:
+        out["pairs"] = pairs
     path = os.path.join(OUT, f"{slug}.json")
     json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
     unpriced = sum(1 for p in prints if p["market"] is None)

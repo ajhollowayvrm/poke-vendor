@@ -26,6 +26,8 @@ import validate as V  # noqa: E402
 CACHE = os.path.join(HERE, "cache")
 TCGDEX_MAP = json.load(open(os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")))
 TCGCSV_MAP = json.load(open(os.path.join(ROOT, "tools", "cardlist", "tcgcsv-map.json")))
+PRODUCT_IDS = {k: v for k, v in json.load(open(os.path.join(ROOT, "tools", "cardlist", "product-ids.json"))).items()
+               if not k.startswith("_")}
 SHADOWLESS_GROUPS = {"1663"}
 GRADES = ("psa10", "psa9", "cgc10", "cgc9")
 PROXY = "1999–2000 copyright"
@@ -108,13 +110,15 @@ def join(slug):
     groups = ppt_groups(slug)
     same_shape = len(groups) == len(parts) and len(parts) > 1
     # Indexes over all PPT cards of the set.
-    by_ext, by_num, by_name = collections.defaultdict(list), collections.defaultdict(list), collections.defaultdict(list)
+    by_ext, by_num, by_name, by_pid = (collections.defaultdict(list) for _ in range(4))
     for gi, (gid, data) in enumerate(groups):
         scope = gi if same_shape else 0
         for pc in data:
             pc["_group"] = gid
             if pc.get("externalCatalogId"):
                 by_ext[pc["externalCatalogId"]].append(pc)
+            if pc.get("tcgPlayerId"):
+                by_pid[int(pc["tcgPlayerId"])].append(pc)
             by_num[(scope, num_key(pc.get("cardNumber")))].append(pc)
             by_name[(scope, norm_name(pc.get("name")))].append(pc)
     used = pack_prints(t, cards)
@@ -125,8 +129,10 @@ def join(slug):
         sid = ids[pi] if pi < len(ids) else (ids[0] if ids else "")
         local = c["num"].split("/")[0].split(" ")[-1]
         scope = pi if same_shape else 0
-        matches = list(by_ext.get(f"{sid}-{local}", [])) + (list(by_ext.get(f"{ids[0]}-{local}", [])) if ids and sid != ids[0] else [])
-        if not matches:
+        pid = PRODUCT_IDS.get(sid, {}).get(local)
+        matches = list(by_pid.get(pid, [])) if pid else []
+        matches = matches or list(by_ext.get(f"{sid}-{local}", [])) + (list(by_ext.get(f"{ids[0]}-{local}", [])) if ids and sid != ids[0] else [])
+        if not matches and not pid:
             matches = list(by_num.get((scope, num_key(local)), []))
         if not matches:
             cand = by_name.get((scope, norm_name(c["name"])), [])

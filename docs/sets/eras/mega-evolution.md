@@ -19,14 +19,11 @@ Released English sets with booster packs, in release order:
 | Perfect Order | POR (ME03) | 2026-03-27 | 88 + 36 = 124 | [perfect-order.md](../perfect-order.md) |
 | Chaos Rising | CRI (ME04) | 2026-05-22 | 86 + 36 = 122 | [chaos-rising.md](../chaos-rising.md) |
 | Pitch Black | PBL (ME05) | 2026-07-17 | 84 + 36 = 120 | [pitch-black.md](../pitch-black.md) |
+| 30th Celebration | 30C | 2026-09-16 | 128 + 33 = 161, plus 30 Classic Collection | [30th-celebration.md](../30th-celebration.md) |
+| Delta Reign | DLR (ME06) | 2026-11-06 | 103 + 38 = 141 | [delta-reign.md](../delta-reign.md) |
 
 ### Not covered here
 
-- **30th Celebration**: a special set of the Mega Evolution Series. The
-  English release is 2026-09-16, after the research date. Its packs
-  hold 5 cards, 1 Basic Energy, and 1 code card. Sources say that it has
-  no booster boxes. Research it after release.
-- **Delta Reign**: announced for 2026-11-06. Not released.
 - **Decks without booster packs**: for example the Mega Battle Decks
   (Mega Gengar ex, Mega Diancie ex) and the Mega Lucario ex League
   Battle Deck. These are not sets, so they have no set file.
@@ -151,6 +148,17 @@ the sample, and the confidence.
     the other sets.
 - **Mega Evolution**: 2 Mega Hyper Rares. It also has an 18-pack half
   booster box and an Enhanced Booster Box.
+- **30th Celebration** (special set, see
+  [../30th-celebration.md](../30th-celebration.md)):
+  - No booster boxes. Each pack holds 5 foil cards, 1 foil Basic
+    Energy, and 1 code card.
+  - No Uncommon cards and no reverse holos. Every card is foil.
+  - 2 commons, a third card (common, Illustration Rare, or Classic
+    Collection), the rare slot, then a Pikachu rare in every pack.
+    The rare slot is not the last card before the Energy.
+  - New rarities: Pikachu rare (30 cards), Futuristic Rare (2 cards),
+    and RGB Rare (3 cards).
+  - Much higher hit odds: IR 1 in 5, SIR 1 in 21 (TCGplayer study).
 - No other released set breaks the template on the data found.
 
 ## Sealed product template
@@ -177,13 +185,16 @@ Each value is the median odds in the slot, from the sets of this era that give i
 
 | Rarity list entry | Median odds in slot | Sets |
 |---|---|---|
-| Double Rare | 20.05% | 6 |
-| Illustration Rare | 11.06% | 6 |
-| Mega Hyper Rare | 0.08% | 6 |
-| Rare | 71.59% | 6 |
-| Special Illustration Rare | 1.24% | 6 |
-| Ultra Rare | 8.29% | 6 |
-| Reverse holo | 87.78% | 5 |
+| Double Rare | 20.20% | 8 |
+| Illustration Rare | 11.06% | 8 |
+| Rare | 71.45% | 8 |
+| Special Illustration Rare | 1.25% | 8 |
+| Mega Hyper Rare | 0.09% | 7 |
+| Ultra Rare | 8.30% | 7 |
+| Reverse holo | 87.76% | 6 |
+| Classic Collection | 10.15% | 1 |
+| Common | 70.13% | 1 |
+| Futuristic Rare | 0.83% | 1 |
 | Mega Attack Rare | 3.45% | 1 |
 | Poké Ball pattern reverse holo | 87.46% | 1 |
 
@@ -229,4 +240,5 @@ pages. Verify them by hand before implementation.
   six codes as this file (MEG, PFL, ASC, POR, CRI, PBL). This is a
   second community source, not an official TPCi list. Searched
   2026-09-12: no official list found.
-- **30th Celebration** and **Delta Reign**: research after release.
+- **30th Celebration** and **Delta Reign**: researched 2026-11-05. See
+  their set files for the open topics of each set.

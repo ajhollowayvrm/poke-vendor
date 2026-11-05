@@ -9,7 +9,13 @@ import collections, json, os, re, sys
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
 HERE = os.path.dirname(os.path.abspath(__file__))
 MAP = json.load(open(os.path.join(HERE, "tcgdex-map.json")))
-FETCHED = "2026-09-12"
+
+
+def fetched(path):
+    """The date that a cache file was written, for example 2026-11-05."""
+    import datetime
+    return datetime.date.fromtimestamp(os.path.getmtime(path)).isoformat()
+
 PREFER_TCGCSV = "--keep-tcgdex-plain" not in sys.argv
 
 TYPE = {"normal": "Normal", "reverse": "Reverse holo", "holo": "Holo"}
@@ -85,6 +91,8 @@ def sort_key(c):
 CACHE = os.path.join(HERE, "cache")
 TCGCSV_DIR = os.path.join(CACHE, "tcgcsv")
 TCGCSV_MAP = json.load(open(os.path.join(HERE, "tcgcsv-map.json")))
+# TCGdex parts whose card numbers differ from TCGplayer: TCGdex set id -> local number -> TCGplayer product ID.
+PRODUCT_IDS = {k: v for k, v in json.load(open(os.path.join(HERE, "product-ids.json"))).items() if not k.startswith("_")}
 PRINT_QUALIFIER = re.compile(r"(?i)pattern|\bball\b|pre-?release|staff|jumbo|oversize|cosmos|stamp|promo|league|championship|winner|peelable|non-holo|\bholo\b(?! common)|texture|error|misprint|sealed|code card|build|deck")
 SKIPPED = {}
 SUBTYPE = {"Normal": "Normal", "Holofoil": "Holo", "Reverse Holofoil": "Reverse holo",
@@ -128,9 +136,10 @@ def tcgcsv_types(slug, part_index, part_count):
                 continue
             v = SUBTYPE.get(r.get("subTypeName"))
             if v:
-                lst = out.setdefault(key_of(ext["Number"].split("/")[0]), [])
-                if v not in lst:
-                    lst.append(v)
+                for k in (key_of(ext["Number"].split("/")[0]), ("PID", r["productId"])):
+                    lst = out.setdefault(k, [])
+                    if v not in lst:
+                        lst.append(v)
     return out
 
 
@@ -155,9 +164,10 @@ def build(slug):
         extra = tcgcsv_types(slug, ids.index(sid), len(ids))
         def cell_for(c):
             text = variants_cell(c)
-            tcg = extra.get(key_of(c["localId"]), [])
+            pid = PRODUCT_IDS.get(sid, {}).get(c["localId"])
+            k = ("PID", pid) if pid else key_of(c["localId"])
+            tcg = extra.get(k, [])
             items = [v.strip() for v in re.split(r",\s*(?![^()]*\))", text) if v.strip() and v.strip() != "—"]
-            k = key_of(c["localId"])
             if tcg and PREFER_TCGCSV and k not in SKIPPED.get((slug, ids.index(sid)), set()):
                 tcg_kinds = {base_kind(v) for v in tcg}
                 if "Holo" in tcg_kinds and "Normal" not in tcg_kinds and "Normal" in items:
@@ -177,16 +187,38 @@ def build(slug):
             parts.append("\n".join(table))
         report.append(f"{sid}: {len(cards)} cards (TCGdex total {(s.get('cardCount') or {}).get('total')}), TCGCSV added so far {added[0]}, removed so far {dict(removed)}")
     ids_text = ", ".join(f"`{i}`" for i in ids)
+    set_paths = [os.path.join(CACHE, "tcgdex", "sets", f"{i}.json") for i in ids]
+    groups = TCGCSV_MAP.get(slug, [])
+    group_text = ", ".join(f"`{g}`" for g in groups)
+    group_date = max((fetched(os.path.join(TCGCSV_DIR, f"{g}-prices.json")) for g in groups
+                      if os.path.exists(os.path.join(TCGCSV_DIR, f"{g}-prices.json"))), default="unknown")
+    from_tcgcsv = any("tcgcsvGroup" in json.load(open(p)) for p in set_paths)
+    if from_tcgcsv:
+        head = (
+            f"Every card in the set, with its variants. Source: the TCGplayer catalog (TCGCSV group {group_text}), "
+            f"fetched {group_date}. TCGdex does not have this set yet. `tools/cardlist/from_tcgcsv.py` built "
+            f"TCGdex-shaped cache files (set {ids_text}) from TCGCSV, and `tools/cardlist/cardlist.py` built this table "
+            f"from them. The list has {total_cards} cards.\n\n"
+            "- **Rebuild this list from the TCGdex API when TCGdex adds the set.** Delete the set's cache files, then "
+            "run `download.py` and `cardlist.py --write`.\n"
+            "- **Rarity** is the TCGplayer rarity, with the TCGdex spelling, for example \"Double rare\". It can differ "
+            "from the name in the rarity list below.\n"
+            "- **Variants** come from the TCGCSV price rows of each card. A card with no price row gets Normal and "
+            "Reverse holo when it is a Common, Uncommon, or Rare, else Holo only.\n"
+        )
+    else:
+        head = (
+            f"Every card in the set, with its variants. Source: the TCGdex API (set {ids_text}), fetched "
+            f"{min(fetched(p) for p in set_paths)}. The list has {total_cards} cards.\n\n"
+            "- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.\n"
+            "- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil "
+            "pattern, for example \"Reverse holo (Poké Ball pattern)\". \"1st Edition\" is a stamp.\n"
+        )
     intro = (
-        "## Card list\n\n"
-        f"Every card in the set, with its variants. Source: the TCGdex API (set {ids_text}), fetched {FETCHED}. "
-        f"The list has {total_cards} cards.\n\n"
-        "- **Rarity** is the TCGdex rarity name. It can differ from the name in the rarity list below.\n"
-        "- **Variants** are the print versions that TCGdex records for the card. A pattern in parentheses is the foil "
-        "pattern, for example \"Reverse holo (Poké Ball pattern)\". \"1st Edition\" is a stamp.\n"
-        "- A variant in this list can come from a product other than a booster pack.\n"
-        + (f"- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group {', '.join(f'`{g}`' for g in TCGCSV_MAP.get(slug, []))}, fetched {FETCHED}). This added {added[0]} variants.\n" if added[0] else "")
-        + (f"- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed {removed['Normal']} prints.\n" if removed.get("Normal") else "")
+        "## Card list\n\n" + head
+        + "- A variant in this list can come from a product other than a booster pack.\n"
+        + (f"- Where TCGdex records no Normal, Holo, or Reverse holo version of a card, the list adds that print type from the TCGplayer catalog (TCGCSV group {group_text}, fetched {group_date}). This added {added[0]} variants.\n" if added[0] and not from_tcgcsv else "")
+        + (f"- Where the TCGplayer catalog lists a card only as holo, the list removes the plain Normal print that TCGdex gives it. This removed {removed['Normal']} prints.\n" if removed.get("Normal") and not from_tcgcsv else "")
         + "\n"
     )
     return intro + "\n\n".join(parts) + "\n", report, total_cards
