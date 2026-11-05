@@ -37,17 +37,25 @@ extension Balance {
 
 extension PriceCycle {
     /// The week of the year (0 to 51) on day 0 of the run. The run's market seed sets it, so an old save gets one too.
-    static var startWeek: Int { Int(seasonUnit * Balance.weeksPerYear) % Int(Balance.weeksPerYear) }
+    static var startWeek: Int {
+        if let cached = startWeekCache, cached.seed == seed { return cached.week }
+        let week = startWeek(seed: seed)
+        startWeekCache = (seed, week)
+        return week
+    }
 
-    /// A stable number from 0 to 1 for the run.
-    private static var seasonUnit: Double {
+    nonisolated(unsafe) private static var startWeekCache: (seed: UInt64, week: Int)?
+
+    /// The start week for a market seed: a stable number from 0 to 51.
+    static func startWeek(seed: UInt64) -> Int {
         var h = seed ^ 0x9E37_79B9_7F4A_7C15
         h ^= h >> 30
         h = h &* 0xBF58_476D_1CE4_E5B9
         h ^= h >> 27
         h = h &* 0x94D0_49BB_1331_11EB
         h ^= h >> 31
-        return Double(h >> 11) / Double(1 << 53)
+        let unit = Double(h >> 11) / Double(1 << 53)
+        return Int(unit * Balance.weeksPerYear) % Int(Balance.weeksPerYear)
     }
 
     /// The week of the year on a day, with a fraction: 0 is the first day of January, 51.9 is the end of December.
@@ -83,9 +91,9 @@ extension PriceCycle {
     /// The season on a day, for the Market screen and the End Day report. Nil when no season moves the market.
     static func seasonName(day: Int? = nil) -> String? {
         let w = weekOfYear(day: day)
-        if Balance.seasonHolidaySealed.value(week: w) > 0.02 { return "Holiday season" }
-        if Balance.seasonWinterSealedPrice.value(week: w) < -0.02 { return "After the holidays" }
-        if Balance.seasonSummer.value(week: w) < -0.01 { return "Summer slump" }
+        if Balance.seasonHolidaySealed.value(week: w) != 0 { return "Holiday season" }
+        if Balance.seasonWinterSealedPrice.value(week: w) != 0 { return "After the holidays" }
+        if Balance.seasonSummer.value(week: w) != 0 { return "Summer slump" }
         return nil
     }
 

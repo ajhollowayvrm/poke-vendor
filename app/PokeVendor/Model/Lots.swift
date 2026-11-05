@@ -69,7 +69,7 @@ extension GameStore {
         let buyer = max(market * share, 0.01)
         let size = 1 / (1 + Double(max(0, lot.count - Balance.lotMinItems)) / Balance.lotSizeScale)
         let chance = base * exp(-(lot.price / buyer - 1) * Balance.lotPriceSlope)
-        return min(Balance.lotChanceCap, chance * reachSaleFactor * size * channelDemand(lot.channel) * PriceCycle.seasonDemand(sealed: false))
+        return min(Balance.lotChanceCap, chance * reachSaleFactor * size * channelDemand(lot.channel) * PriceCycle.seasonDemand(sealed: lot.hasSealed))
     }
 
     /// Takes the items out of Inventory and lists them as one lot. The items must be free: no status, not kept.

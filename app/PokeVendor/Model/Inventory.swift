@@ -379,6 +379,12 @@ enum ItemStatus: Codable, Hashable {
     /// On a shelf or in a case at the player's own store (docs/22-own-store.md).
     case inStore(since: Int)
 
+    /// A listing that the player can take down: any listing except a running eBay auction.
+    var isRemovableListing: Bool {
+        if case .listed(let listing) = self { return listing.auctionEndDay == nil }
+        return false
+    }
+
     var tag: String {
         switch self {
         case .onTheWay(let days, _): "ON THE WAY · \(days)D"

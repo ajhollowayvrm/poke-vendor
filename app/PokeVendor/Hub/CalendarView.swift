@@ -17,7 +17,7 @@ struct CalendarView: View {
                 ForEach(0..<6, id: \.self) { w in
                     let start = first + w * 7
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("WEEK \(start / 7 + 1) · \(PriceCycle.monthName(day: max(start, store.day)).uppercased())")
+                        Text("WEEK \(start / 7 + 1) · \(PriceCycle.monthName(day: start).uppercased())")
                             .font(.system(size: 11, weight: .semibold))
                             .kerning(0.8)
                             .foregroundStyle(Theme.muted)

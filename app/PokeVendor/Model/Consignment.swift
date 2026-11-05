@@ -32,7 +32,7 @@ extension GameStore {
         func placed(_ card: OwnedCard) -> OwnedCard? {
             guard ids.contains(card.id), card.status == nil, !card.keep else { return nil }
             let price = max(0.5, (card.realMarket * percent / 100 * 100).rounded() / 100)
-            let chance = Balance.consignSaleBase * exp(-(percent / 100 - 1) * 4)
+            let chance = Balance.consignSaleBase * exp(-(percent / 100 - 1) * 4) * PriceCycle.seasonDemand(sealed: false)
             let sellDay: Int? = Double.random(in: 0..<1) < chance ? today + Int.random(in: 2...Balance.consignDays) : nil
             var out = card
             out.status = .consigned(Consignment(shop: shop, price: price, cut: cut, dayListed: today, sellDay: sellDay))

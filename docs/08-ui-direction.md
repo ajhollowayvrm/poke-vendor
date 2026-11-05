@@ -293,6 +293,13 @@ here, and the rip-or-hold decision happens here.
   shows its count. The menu shows only the entries that match an item
   in the tab. On the Raw tab, "Select all" selects only the listable
   cards that the filter shows.
+- **Bulk unlist.** On the Sealed, Raw, and Slabs tabs, select mode shows
+  "Select listed" and "Unlist" when the tab has listed items. "Select
+  listed" selects every item in the tab with a listing that can come down.
+  "Unlist" takes down the listings of the selected items. A running eBay
+  auction cannot come down, and an item with no listing keeps its status.
+  Open Facebook Marketplace offers for those items end too. The single
+  "Remove listing" button on an item's detail screen works the same way.
 - **Collection value counts only kept items** (see
   [03-currencies.md](03-currencies.md#collection-value)). Stock for
   sale is future cash, not collection. The hub's Collection target

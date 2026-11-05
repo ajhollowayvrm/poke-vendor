@@ -154,13 +154,22 @@ sealed product.
 - **Summer slump** (mid June to early September): everything sells up to 5%
   less often.
 - **Singles keep their price.** A season changes only how often a single sells.
+- **Where the demand factor applies**: online listings, eBay auctions (the
+  no-sale chance never falls below 5%), lots (a lot with sealed product uses
+  the sealed factor), Facebook Marketplace offers, game shop consignment, and
+  stream auctions and buy-now offers.
+- **Sealed value moves with the season.** The sealed price factor is part of
+  the market price, so a collection of sealed product is worth about 15% less
+  in February than at the holiday peak. This is the buying window, not market
+  news.
 - **The player's store** gets the mean of the sealed and the singles demand as
   more or fewer customers.
 - Card shows keep their own crowds. A season does not change them.
 - Each season is a smooth bump over its weeks, so no factor jumps from one day
   to the next.
 - **Where the player sees it**: the Season box on the Market screen (the
-  month, the season, and the four factors), the month on each week of the
+  month, the season name over the whole time that the season moves the market,
+  and the four factors), the month on each week of the
   Calendar, and a line in the End Day report when a season starts or ends.
 
 Confidence: the research found only vendor guides for the holiday rush and

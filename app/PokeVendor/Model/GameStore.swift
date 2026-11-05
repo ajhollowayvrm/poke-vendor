@@ -864,10 +864,42 @@ final class GameStore {
     }
 
     func removeListing(_ id: UUID) {
-        for i in data.raw.indices where data.raw[i].id == id { data.raw[i].status = nil }
-        for i in data.slabs.indices where data.slabs[i].id == id { data.slabs[i].status = nil }
-        for i in data.sealed.indices where data.sealed[i].id == id { data.sealed[i].status = nil }
+        removeListings([id])
+    }
+
+    /// Takes the items down from their listings. A running eBay auction cannot come down, and an item with no listing
+    /// keeps its status. Open Facebook Marketplace offers for the items end too. Returns the number taken down.
+    @discardableResult
+    func removeListings(_ ids: Set<UUID>) -> Int {
+        var removed = Set<UUID>()
+        var raw = data.raw, slabs = data.slabs, sealed = data.sealed
+        for i in raw.indices where ids.contains(raw[i].id) && raw[i].status?.isRemovableListing == true {
+            raw[i].status = nil
+            removed.insert(raw[i].id)
+        }
+        for i in slabs.indices where ids.contains(slabs[i].id) && slabs[i].status?.isRemovableListing == true {
+            slabs[i].status = nil
+            removed.insert(slabs[i].id)
+        }
+        for i in sealed.indices where ids.contains(sealed[i].id) && sealed[i].status?.isRemovableListing == true {
+            sealed[i].status = nil
+            removed.insert(sealed[i].id)
+        }
+        guard !removed.isEmpty else { return 0 }
+        data.raw = raw
+        data.slabs = slabs
+        data.sealed = sealed
+        data.fbOffers.removeAll { removed.contains($0.itemID) }
+        if removed.count > 1 { log("Took down \(removed.count) listings.") }
         save()
+        return removed.count
+    }
+
+    /// True when the item has a listing that can come down.
+    func canRemoveListing(_ id: UUID) -> Bool {
+        let status = data.raw.first { $0.id == id }?.status ?? data.slabs.first { $0.id == id }?.status
+            ?? data.sealed.first { $0.id == id }?.status
+        return status?.isRemovableListing == true
     }
 
     /// The fees and shipping for a sale at a price.
@@ -1243,7 +1275,8 @@ final class GameStore {
         switch listing.channel {
         case .ebayAuction:
             guard let end = listing.auctionEndDay, data.day >= end else { return nil }
-            if Double.random(in: 0..<1) < 0.05 + (1 - demand) * 0.6 { return nil }
+            // A season can lift demand above 1. The no-sale chance never falls below its 5% floor.
+            if Double.random(in: 0..<1) < 0.05 + max(0, 1 - demand) * 0.6 { return nil }
             let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.35
             return max(0.99, (market * (0.95 + spread) * 100).rounded() / 100)
         case .ebay:

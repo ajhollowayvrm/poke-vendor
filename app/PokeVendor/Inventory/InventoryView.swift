@@ -271,6 +271,7 @@ struct InventoryView: View {
         let allKept = !chosen.isEmpty && chosen.allSatisfy { store.isKept($0) }
         return VStack(spacing: 8) {
             if tab == .raw { quickListRow(chosen, blocked: blocked) }
+            if !listedInTab.isEmpty { unlistRow(chosen) }
             actionRow(chosen, blocked: blocked, allKept: allKept)
         }
         .controlSize(.large)
@@ -306,6 +307,38 @@ struct InventoryView: View {
             .primaryButton()
             .frame(maxWidth: .infinity)
             .disabled(chosen.isEmpty || blocked || chosen.contains { id in store.data.raw.contains { $0.id == id && $0.isKnownFake } })
+        }
+    }
+
+    /// The items in this tab with a listing that can come down (not a running eBay auction).
+    private var listedInTab: Set<UUID> {
+        let ids: [UUID] = switch tab {
+        case .sealed: store.data.sealed.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .raw: store.data.raw.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .slabs: store.data.slabs.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .bulk, .grading: []
+        }
+        return Set(ids)
+    }
+
+    /// Select every listed item in the tab, and take the selected listings down.
+    private func unlistRow(_ chosen: Set<UUID>) -> some View {
+        let listed = listedInTab
+        let allChosen = listed == chosen
+        let removable = chosen.filter { store.canRemoveListing($0) }
+        return HStack(spacing: 8) {
+            Button(allChosen ? "Clear" : "Select listed \(listed.count)") {
+                selection = allChosen ? [] : listed
+            }
+            .buttonStyle(.bordered)
+            Button("Unlist \(removable.count)") {
+                store.removeListings(removable)
+                finishSelecting()
+            }
+            .buttonStyle(.bordered)
+            .tint(Theme.orange)
+            .frame(maxWidth: .infinity)
+            .disabled(removable.isEmpty)
         }
     }
 

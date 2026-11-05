@@ -255,7 +255,7 @@ final class StreamSession {
             }
             return
         }
-        let chance = min(0.9, 0.15 * (0.3 + interest) * Double(a.bidders))
+        let chance = min(0.9, 0.15 * (0.3 + interest) * Double(a.bidders) * PriceCycle.seasonDemand(sealed: a.item.sealed))
         guard Double.random(in: 0..<1) < chance else { return }
         let next = a.topBidder == nil ? a.top : ShowSession.round(max(a.top + 1, a.top * Double.random(in: 1.03...1.10)))
         guard next <= a.ceiling || a.topBidder == nil else { return }
@@ -290,7 +290,7 @@ final class StreamSession {
             add(.system, "Nobody took the \(b.item.name) at \(money(b.price)).")
             return
         }
-        let chance = viewers * 0.002 * exp(-(b.price / max(b.item.market, 0.01) - 1) * 6)
+        let chance = viewers * 0.002 * exp(-(b.price / max(b.item.market, 0.01) - 1) * 6) * PriceCycle.seasonDemand(sealed: b.item.sealed)
         guard Double.random(in: 0..<1) < chance else { return }
         buyNow = nil
         let fees = sell(b.item, price: b.price)

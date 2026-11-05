@@ -385,9 +385,29 @@ extension HubView {
                 seasonFails.append("sealed price jumps on day \(d)")
             }
         }
-        if PriceCycle.startWeek != startWeek { seasonFails.append("the start week changed") }
+        if let saved = try? JSONEncoder().encode(store.data),
+           let loaded = try? JSONDecoder().decode(GameData.self, from: saved),
+           PriceCycle.startWeek(seed: loaded.marketSeed) != startWeek {
+            seasonFails.append("a save and a load changed the start week")
+        }
         let holidayDays = (0..<366).filter { PriceCycle.seasonName(day: $0) == "Holiday season" }.count
         print("SOAK SEASONS: start week \(startWeek), today \(PriceCycle.monthName()) (\(PriceCycle.seasonName() ?? "no season")), holiday days in a year \(holidayDays), \(seasonFails.count) fails \(seasonFails.prefix(3))")
+        // Bulk unlist: every item with a listing that can come down comes down, and its Facebook offers end.
+        var unlistFails: [String] = []
+        let listedIDs = Set((store.data.raw + store.data.slabs).filter { $0.status?.isRemovableListing == true }.map(\.id)
+                            + store.data.sealed.filter { $0.status?.isRemovableListing == true }.map(\.id))
+        let auctions = (store.data.raw + store.data.slabs).filter {
+            if case .listed(let l) = $0.status { return l.auctionEndDay != nil }
+            return false
+        }.map(\.id)
+        let taken = store.removeListings(listedIDs.union(auctions))
+        if taken != listedIDs.count { unlistFails.append("took down \(taken) of \(listedIDs.count)") }
+        if listedIDs.contains(where: { store.canRemoveListing($0) }) { unlistFails.append("a listing stayed up") }
+        if store.data.fbOffers.contains(where: { listedIDs.contains($0.itemID) }) { unlistFails.append("an offer outlived its listing") }
+        if auctions.contains(where: { id in !(store.data.raw + store.data.slabs).contains { $0.id == id && $0.status != nil } }) {
+            unlistFails.append("an auction came down")
+        }
+        print("SOAK UNLIST: \(taken) listings taken down, \(auctions.count) auctions kept, \(unlistFails.count) fails \(unlistFails)")
         print("SOAK MARKET: index \(PriceCycle.index()), events \(store.data.marketEvents.count), goals \(store.data.goalsReached.count), storage \(money(store.storageCost))")
         // The records prune when a table opens. Right after a table, none may be older than 21 days.
         if let last = store.data.tableDays.values.flatMap({ $0 }).max(),
