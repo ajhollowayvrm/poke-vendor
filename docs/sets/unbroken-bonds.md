@@ -115,12 +115,12 @@ TCGplayer group `2420`: 19 products.
 | 524331 | Unbroken Bonds Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Unbroken Bonds | Product set | — | 2019 Q2 (set) | Yes |
 | 276585 | Unbroken Bonds Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Unbroken Bonds | Product set | — | 2019 Q2 (set) | Yes |
 | 656707 | Unbroken Bonds Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2019 Q2 (set) | No |
-| 189658 | Alolan Marowak GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q2 | Yes |
-| 192230 | Blastoise GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2019 Q2 (set) | Yes |
-| 192083 | Kangaskhan GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q2 (set) | Yes |
-| 194597 | Reshiram & Charizard GX Figure Collection | Collection | 4 | Description | — | Unknown | — | 2019 Q2 (set) | Yes |
+| 189658 | Alolan Marowak GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 | Yes |
+| 192230 | Blastoise GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 (set) | Yes |
+| 192083 | Kangaskhan GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 (set) | Yes |
+| 194597 | Reshiram & Charizard GX Figure Collection | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 (set) | Yes |
 | 232315 | Unbroken Bonds 3 Pack Hanger Box | Collection | 3 | Description | 3 Unbroken Bonds | Exact | — | 2019 Q2 (set) | Yes |
-| 185719 | Unbroken Bonds Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Unbroken Bonds | Exact | — | 2019 Q2 | No |
+| 185719 | Unbroken Bonds Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Unbroken Bonds | Exact | — | 2019 Q2 | Yes |
 | 189823 | Unbroken Bonds Prerelease Kit | Other | 4 | Description | 4 Unbroken Bonds | Exact | — | 2019 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 

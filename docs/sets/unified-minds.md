@@ -116,16 +116,16 @@ TCGplayer group `2464`: 21 products.
 | 267046 | Unified Minds Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Unified Minds | Product set | — | 2019 Q3 (set) | Yes |
 | 276586 | Unified Minds Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Unified Minds | Product set | — | 2019 Q3 (set) | No |
 | 656716 | Unified Minds Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2019 Q3 (set) | No |
-| 198528 | Pale Moon GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
-| 198521 | Porygon-Z GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q3 | Yes |
+| 198528 | Pale Moon GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q4 | Yes |
+| 198521 | Porygon-Z GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q3 | Yes |
 | 232313 | Unified Minds 3 Pack Hanger Box | Collection | 3 | Description | 3 Unified Minds | Exact | — | 2019 Q3 (set) | Yes |
 | 193052 | Unified Minds Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Unified Minds | Exact | — | 2019 Q3 | Yes |
 | 686509 | Unified Minds Mini Pack | Other | Unknown | Unknown | — | Unknown | — | 2019 Q3 (set) | Yes |
 | 195612 | Unified Minds Prerelease Kit | Other | 4 | Description | 4 Unified Minds | Exact | — | 2019 Q3 | Yes |
-| 194737 | Power Partnership Tin [Garchomp & Giratina GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q3 | Yes |
-| 194736 | Power Partnership Tin [Lucario & Melmetal GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q3 | Yes |
-| 194735 | Power Partnership Tin [Mewtwo & Mew GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q3 | Yes |
-| 195611 | Power Partnership Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2019 Q3 | No |
+| 194737 | Power Partnership Tin [Garchomp & Giratina GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q3 | Yes |
+| 194736 | Power Partnership Tin [Lucario & Melmetal GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q3 | Yes |
+| 194735 | Power Partnership Tin [Mewtwo & Mew GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q3 | Yes |
+| 195611 | Power Partnership Tin [Set of 3] | Tin | 12 | Research | 12 Sun & Moon Series (set unknown) | Partial | — | 2019 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

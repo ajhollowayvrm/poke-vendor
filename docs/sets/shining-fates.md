@@ -131,7 +131,7 @@ TCGplayer group `2754`, `2781`: 28 products.
 | 228828 | Shining Fates Mad Party Pin Collection [Galarian Mr. Rime] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 | 228829 | Shining Fates Mad Party Pin Collection [Polteageist] | Collection | 3 | Description | 3 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 | 238606 | Shining Fates Mad Party Pin Collection [Set of 4] | Collection | 12 | Description | 12 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
-| 284772 | Shining Fates Premium Collection [Set of 2] | Collection | 14 | Description | 8 Shining Fates | Partial | — | 2021 Q1 (set) | Yes |
+| 284772 | Shining Fates Premium Collection [Set of 2] | Collection | 14 | Research | 14 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 | 230391 | Shining Fates Premium Collection [Shiny Crobat] | Collection | 7 | Description | 7 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 | 230392 | Shining Fates Premium Collection [Shiny Dragapult] | Collection | 7 | Description | 7 Shining Fates | Exact | — | 2021 Q1 (set) | Yes |
 | 228821 | Shining Fates Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Shining Fates | Exact | — | 2021 Q1 | Yes |

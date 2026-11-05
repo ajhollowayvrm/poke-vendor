@@ -127,7 +127,7 @@ TCGplayer group `2054`: 14 products.
 | 155062 | Shining Legends Special Collection: Raichu GX | Collection | 5 | Description | 5 Shining Legends | Exact | — | 2017 Q4 (set) | Yes |
 | 149378 | Shining Legends Special Collection: Zoroark GX | Collection | 5 | Bulbapedia | 5 Shining Legends | Exact | — | 2017 Q4 (set) | Yes |
 | 148412 | Shining Legends Super-Premium Collection [Ho-Oh GX] | Collection | 10 | Description | 10 Shining Legends | Exact | — | 2017 Q4 (set) | Yes |
-| 169543 | Shining Legends: Shiny Zygarde GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q4 (set) | No |
+| 169543 | Shining Legends: Shiny Zygarde GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q4 (set) | No |
 | 145847 | Shining Legends Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Shining Legends | Exact | — | 2017 Q4 | Yes |
 <!-- product-catalog:end -->
 

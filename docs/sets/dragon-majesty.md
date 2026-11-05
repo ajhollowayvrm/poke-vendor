@@ -129,7 +129,7 @@ TCGplayer group `2295`: 9 products.
 | 180522 | Dragon Majesty Special Collection: Salamence GX | Collection | 5 | Description | 5 Dragon Majesty | Exact | — | 2018 Q3 (set) | Yes |
 | 180526 | Dragon Majesty Special Collection: White Kyurem GX | Collection | 5 | Description | 5 Dragon Majesty | Exact | — | 2018 Q3 (set) | No |
 | 175560 | Dragon Majesty Super-Premium Collection | Collection | 10 | Description | 10 Dragon Majesty | Exact | — | 2018 Q3 (set) | Yes |
-| 179033 | Legends of Unova GX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2018 Q3 (set) | Yes |
+| 179033 | Legends of Unova GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 (set) | Yes |
 | 179038 | Ultra Necrozma GX Figure Collection | Collection | 4 | Description | 4 Dragon Majesty | Exact | — | 2018 Q3 (set) | No |
 | 173393 | Dragon Majesty Elite Trainer Box | Elite Trainer Box | 10 | Bulbapedia | 10 Dragon Majesty | Exact | — | 2018 Q3 | Yes |
 <!-- product-catalog:end -->

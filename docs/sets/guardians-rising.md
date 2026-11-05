@@ -119,28 +119,28 @@ TCGplayer group `1919`: 35 products.
 | 616825 | Guardians Rising Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
 | 276578 | Guardians Rising Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Guardians Rising | Product set | — | 2017 Q2 (set) | Yes |
 | 618840 | Guardians Rising Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2017 Q2 (set) | No |
-| 132238 | Bewear GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 133806 | Decidueye GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | No |
-| 137523 | Espeon GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 133807 | Incineroar GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 218328 | Lunala GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q2 (set) | No |
-| 131693 | Mega Powers Collection | Collection | 8 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 133808 | Mega Tyranitar EX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | No |
-| 133805 | Primarina GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 218327 | Solgaleo GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 131734 | Tapu Koko Figure Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 132237 | Tapu Koko Pin Collection | Collection | 3 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 137524 | Umbreon GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 132238 | Bewear GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 133806 | Decidueye GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | No |
+| 137523 | Espeon GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 133807 | Incineroar GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 218328 | Lunala GX Challenge Box | Collection | 2 | Research | 2 Guardians Rising | Exact | — | 2017 Q2 (set) | No |
+| 131693 | Mega Powers Collection | Collection | 8 | Research | 8 unknown set | Partial | — | 2017 Q2 (set) | Yes |
+| 133808 | Mega Tyranitar EX Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2017 Q2 (set) | Yes |
+| 133809 | Premium Collection [Set of 3] Decidueye GX, Primarina GX, & Incineroar GX | Collection | 18 | Research | 18 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | No |
+| 133805 | Primarina GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 137872 | Shiny Tapu Koko GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 218327 | Solgaleo GX Challenge Box | Collection | 2 | Research | 2 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
+| 131734 | Tapu Koko Figure Collection | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 132237 | Tapu Koko Pin Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2017 Q2 (set) | Yes |
+| 137524 | Umbreon GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
 | 129890 | Guardians Rising Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
 | 131273 | Guardians Rising Prerelease Kit | Other | 4 | Description | 4 Guardians Rising | Exact | — | 2017 Q2 (set) | Yes |
-| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 177868 | Triple Effect Tin [Flareon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
-| 177869 | Triple Effect Tin [Jolteon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 131726 | Island Guardians Tin [Tapu Bulu GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 131725 | Island Guardians Tin [Tapu Koko GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 177868 | Triple Effect Tin [Flareon] | Tin | 3 | Research | 3 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
+| 177869 | Triple Effect Tin [Jolteon] | Tin | 3 | Research | 3 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
 | 177871 | Triple Effect Tin [Set of 3] | Tin | 9 | Description | — | Unknown | — | 2017 Q2 (set) | No |
-| 177870 | Triple Effect Tin [Vaporeon] | Tin | 3 | Description | — | Unknown | — | 2017 Q2 (set) | Yes |
+| 177870 | Triple Effect Tin [Vaporeon] | Tin | 3 | Research | 3 Sun & Moon Series (set unknown) | Partial | — | 2017 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

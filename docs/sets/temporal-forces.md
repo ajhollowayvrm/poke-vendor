@@ -201,8 +201,8 @@ TCGplayer group `23381`: 31 products.
 | 532848 | Temporal Forces Elite Trainer Box [Iron Leaves ex] | Elite Trainer Box | 9 | Description | 9 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
 | 532849 | Temporal Forces Elite Trainer Box [Set of 2] | Elite Trainer Box | 18 | Description | 18 Temporal Forces | Exact | — | 2024 Q1 | Yes |
 | 532845 | Temporal Forces Elite Trainer Box [Walking Wake] | Elite Trainer Box | 9 | Description | 9 Temporal Forces | Exact | — | 2024 Q1 | Yes |
-| 532853 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Iron Leaves] | Elite Trainer Box | 11 | Description | 9 Temporal Forces | Partial | — | 2024 Q1 (set) | Yes |
-| 538775 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Walking Wake] | Elite Trainer Box | 11 | Description | 9 Temporal Forces | Partial | — | 2024 Q1 (set) | Yes |
+| 532853 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Iron Leaves] | Elite Trainer Box | 11 | Research | 11 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
+| 538775 | Temporal Forces Pokemon Center Elite Trainer Box (Exclusive) [Walking Wake] | Elite Trainer Box | 11 | Research | 11 Temporal Forces | Exact | — | 2024 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

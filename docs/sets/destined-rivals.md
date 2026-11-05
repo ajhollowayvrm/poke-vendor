@@ -215,7 +215,7 @@ TCGplayer group `24269`: 25 products.
 | 628398 | Destined Rivals Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2025 Q2 | Yes |
 | 628413 | Destined Rivals Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of tins | 2025 Q2 | Yes |
 | 624676 | Destined Rivals Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Destined Rivals | Exact | — | 2025 Q2 (set) | Yes |
-| 624675 | Destined Rivals Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Destined Rivals | Partial | — | 2025 Q2 | Yes |
+| 624675 | Destined Rivals Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Destined Rivals | Exact | — | 2025 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

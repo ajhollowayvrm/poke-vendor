@@ -150,7 +150,7 @@ TCGplayer group `23120`: 27 products.
 | 622968 | Paldea Evolved Premium Checklane Blister [Arboliva] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 | 622967 | Paldea Evolved Premium Checklane Blister [Pawmot] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 | 618829 | Paldea Evolved Single Pack Blister [Armarouge] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
-| 617015 | Paldea Evolved Single Pack Blister [Dondonzo] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
+| 617015 | Paldea Evolved Single Pack Blister [Dondonzo] | Blister | 1 | Research | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 | 494001 | Paldea Evolved Single Pack Blister [Growlithe] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 | 493999 | Paldea Evolved Single Pack Blister [Smoliv] | Blister | 1 | Description | 1 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 | 493975 | Paldea Evolved Booster Box | Booster box | 36 | Description | 36 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
@@ -170,7 +170,7 @@ TCGplayer group `23120`: 27 products.
 | 537410 | Paldea Evolved Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | Unknown | 2023 Q2 (set) | Yes |
 | 609027 | Paldea Evolved Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2023 Q2 (set) | Yes |
 | 493974 | Paldea Evolved Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
-| 493973 | Paldea Evolved Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Paldea Evolved | Partial | — | 2023 Q2 (set) | Yes |
+| 493973 | Paldea Evolved Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Paldea Evolved | Exact | — | 2023 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

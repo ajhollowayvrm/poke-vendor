@@ -109,12 +109,12 @@ TCGplayer group `2071`: 18 products.
 | 146996 | Crimson Invasion Booster Pack | Booster pack | 1 | Kind default | 1 Crimson Invasion | Product set | — | 2017 Q4 | Yes |
 | 267039 | Crimson Invasion Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Crimson Invasion | Product set | — | 2017 Q4 (set) | Yes |
 | 276580 | Crimson Invasion Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Crimson Invasion | Product set | — | 2017 Q4 (set) | Yes |
-| 155061 | Guzzlord GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q1 | No |
-| 152602 | Marshadow Figure Collection | Collection | 4 | Description | — | Unknown | — | 2017 Q4 | Yes |
-| 166410 | Mimikyu Sidekick Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q4 (set) | Yes |
-| 166409 | Pikachu Sidekick Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q4 (set) | Yes |
-| 152598 | Shiny Silvally GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q4 | Yes |
-| 152601 | Silvally Figure Collection | Collection | 4 | Description | — | Unknown | — | 2017 Q4 | Yes |
+| 155061 | Guzzlord GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 | Yes |
+| 152602 | Marshadow Figure Collection | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q4 | Yes |
+| 166410 | Mimikyu Sidekick Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2017 Q4 (set) | Yes |
+| 166409 | Pikachu Sidekick Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2017 Q4 (set) | Yes |
+| 152598 | Shiny Silvally GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q4 | Yes |
+| 152601 | Silvally Figure Collection | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q4 | Yes |
 | 149376 | Ultra Beasts GX Premium Collection [Buzzwole GX & Xurkitree GX] | Collection | 8 | Description | 8 Crimson Invasion | Exact | — | 2017 Q4 | Yes |
 | 149375 | Ultra Beasts GX Premium Collection [Pheromosa GX & Celesteela GX] | Collection | 8 | Description | 8 Crimson Invasion | Exact | — | 2017 Q4 | Yes |
 | 149377 | Crimson Invasion Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Crimson Invasion | Exact | — | 2017 Q4 (set) | Yes |

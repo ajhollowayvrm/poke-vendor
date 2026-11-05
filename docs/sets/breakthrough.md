@@ -109,34 +109,34 @@ TCGplayer group `1661`: 33 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 108636 | BREAKthrough 3 Pack Blister [Celebi] | Blister | 3 | Description | 3 BREAKthrough | Exact | — | 2015 Q4 (set) | No |
 | 108635 | BREAKthrough 3 Pack Blister [Sableye] | Blister | 3 | Description | 3 BREAKthrough | Exact | — | 2015 Q4 (set) | Yes |
-| 117275 | BREAKthrough Collector Pin 3 Pack Blister [Mega Blaziken] | Blister | 3 | Description | 3 BREAKpoint | Exact | — | 2015 Q4 (set) | Yes |
-| 117276 | BREAKthrough Collector Pin 3 Pack Blister [Mega Swampert] | Blister | 3 | Description | 3 BREAKpoint | Exact | — | 2015 Q4 (set) | Yes |
+| 117275 | BREAKthrough Collector Pin 3 Pack Blister [Mega Blaziken] | Blister | 3 | Research | 3 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
+| 117276 | BREAKthrough Collector Pin 3 Pack Blister [Mega Swampert] | Blister | 3 | Research | 3 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
 | 107111 | BREAKthrough Mega Evolution 3 Pin Blister | Blister | 3 | Description | 3 BREAKthrough | Exact | — | 2015 Q4 (set) | No |
 | 107110 | BREAKthrough Pin Blisters [Mega Mewtwo] (Set of 2) | Blister | 6 | Bulbapedia | 6 BREAKthrough | Product set | — | 2015 Q4 (set) | No |
-| 108638 | BREAKthrough Single Pack Blister [Hawlucha] | Blister | 1 | Description | 1 BREAKthrough | Exact | — | 2015 Q4 (set) | No |
+| 108638 | BREAKthrough Single Pack Blister [Hawlucha] | Blister | 1 | Description | 1 BREAKthrough | Exact | — | 2015 Q4 (set) | Yes |
 | 108637 | BREAKthrough Single Pack Blister [Jirachi] | Blister | 1 | Description | 1 BREAKthrough | Exact | — | 2015 Q4 (set) | Yes |
 | 107112 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo X] | Blister | 3 | Name | 3 BREAKthrough | Product set | — | 2015 Q4 (set) | No |
 | 107113 | BREAKthrough Three Pack Pin Blisters [Mega Mewtwo Y] | Blister | 3 | Name | 3 BREAKthrough | Product set | — | 2015 Q4 (set) | No |
-| 228155 | XY 3 Pack Blister [Xerneas] | Blister | 3 | Description | — | Unknown | — | 2015 Q4 (set) | Yes |
+| 228155 | XY 3 Pack Blister [Xerneas] | Blister | 3 | Research | 1 Evolutions, 1 Roaring Skies, 1 Steam Siege | Exact | — | 2015 Q4 (set) | Yes |
 | 228154 | XY 3 Pack Blister [Yveltal] | Blister | 3 | Description | — | Unknown | — | 2015 Q4 (set) | No |
 | 107101 | XY BREAKthrough Booster Box | Booster box | 36 | Kind default | 36 BREAKthrough | Product set | — | 2015 Q4 (set) | Yes |
 | 531445 | BREAKthrough Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 BREAKthrough | Product set | — | 2015 Q4 (set) | Yes |
 | 550675 | BREAKthrough Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 BREAKthrough | Product set | — | 2015 Q4 (set) | No |
 | 276596 | BREAKthrough Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 BREAKthrough | Product set | — | 2015 Q4 (set) | Yes |
 | 107666 | XY BREAKthrough Booster Pack | Booster pack | 1 | Kind default | 1 BREAKthrough | Product set | — | 2015 Q4 (set) | Yes |
-| 117278 | Aurorus EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q4 (set) | Yes |
+| 117278 | Aurorus EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
 | 107117 | BREAKthrough Legendary Collection (Set of 2) | Collection | Unknown | Unknown | — | Unknown | — | 2015 Q4 (set) | No |
 | 117274 | Break Evolution Box [Empoleon] | Collection | 5 | Bulbapedia | — | Unknown | — | 2015 Q4 (set) | No |
-| 107115 | Hoopa EX Legendary Collection | Collection | 5 | Bulbapedia | 5 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
-| 117277 | Mega Aerodactyl EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | No |
+| 107115 | Hoopa EX Legendary Collection | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
+| 117277 | Mega Aerodactyl EX Premium Collection | Collection | 6 | Research | 6 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | No |
 | 107108 | Mega Blaziken EX & Mega Swampert EX Premium Collection (Set of 2) | Collection | 16 | Bulbapedia | 4 Ancient Origins, 4 BREAKthrough, 4 Primal Clash, 4 Roaring Skies | Exact | — | 2015 Q4 (set) | No |
 | 107104 | Mega Blaziken EX Premium Collection | Collection | 8 | Bulbapedia | 2 Ancient Origins, 2 BREAKthrough, 2 Primal Clash, 2 Roaring Skies | Exact | — | 2015 Q4 (set) | No |
 | 107116 | Mega Mewtwo Collection (Set of 2) | Collection | 8 | Bulbapedia | 8 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | No |
-| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
-| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
+| 107118 | Mega Mewtwo Collection [Mega Mewtwo X] | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
+| 107119 | Mega Mewtwo Collection [Mega Mewtwo Y] | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
 | 107105 | Mega Swampert EX Premium Collection | Collection | 8 | Bulbapedia | 2 Ancient Origins, 2 BREAKthrough, 2 Primal Clash, 2 Roaring Skies | Exact | — | 2015 Q4 (set) | No |
-| 107114 | Pikachu EX Legendary Collection | Collection | 5 | Bulbapedia | — | Unknown | — | 2015 Q4 (set) | Yes |
-| 107109 | XY BREAKthrough Collector Chest | Collection | 5 | Bulbapedia | — | Unknown | — | 2015 Q4 (set) | Yes |
+| 107114 | Pikachu EX Legendary Collection | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
+| 107109 | XY BREAKthrough Collector Chest | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2015 Q4 (set) | Yes |
 | 229477 | XY BREAKthrough Pin Collection [Zoroark] | Collection | 3 | Description | 3 BREAKthrough | Exact | — | 2015 Q4 (set) | No |
 | 107106 | Elite Trainer Box [Mewtwo X] | Elite Trainer Box | 8 | Bulbapedia | 8 BREAKthrough | Exact | — | 2015 Q4 (set) | Yes |
 | 107107 | Elite Trainer Box [Mewtwo Y] | Elite Trainer Box | 8 | Bulbapedia | 8 BREAKthrough | Exact | — | 2015 Q4 (set) | Yes |

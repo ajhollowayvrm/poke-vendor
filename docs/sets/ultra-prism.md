@@ -118,17 +118,17 @@ TCGplayer group `2178`: 19 products.
 | 155662 | Ultra Prism Booster Pack | Booster pack | 1 | Kind default | 1 Ultra Prism | Product set | — | 2018 Q1 | Yes |
 | 267040 | Ultra Prism Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Ultra Prism | Product set | — | 2018 Q1 (set) | Yes |
 | 276581 | Ultra Prism Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Ultra Prism | Product set | — | 2018 Q1 (set) | No |
-| 186105 | Charmander Sidekick Collection | Collection | 3 | Description | — | Unknown | — | 2018 Q1 (set) | Yes |
+| 186105 | Charmander Sidekick Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2018 Q1 (set) | Yes |
 | 246416 | Legends of Johto GX Collection Box | Collection | 5 | Description | — | Unknown | — | 2018 Q1 (set) | No |
-| 164232 | Legends of Johto GX Premium Collection Box | Collection | 6 | Description | — | Unknown | — | 2018 Q1 (set) | Yes |
+| 164232 | Legends of Johto GX Premium Collection Box | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 (set) | Yes |
 | 161256 | Lucario GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q1 | No |
 | 232314 | Ultra Prism 3 Pack Hanger Box | Collection | 3 | Description | 3 Ultra Prism | Exact | — | 2018 Q1 (set) | Yes |
 | 155663 | Ultra Prism Elite Trainer Box [Dawn Wings Necrozma] | Elite Trainer Box | 8 | Bulbapedia | 8 Ultra Prism | Exact | — | 2018 Q1 (set) | Yes |
 | 155664 | Ultra Prism Elite Trainer Box [Dusk Mane Necrozma] | Elite Trainer Box | 8 | Bulbapedia | 8 Ultra Prism | Exact | — | 2018 Q1 (set) | Yes |
 | 158254 | Ultra Prism Prerelease Kit | Other | 4 | Description | 4 Ultra Prism | Exact | — | 2018 Q1 (set) | Yes |
-| 162046 | Necrozma Prism Tin [Dawn Wings Necrozma GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q1 | No |
-| 162045 | Necrozma Prism Tin [Dusk Mane Necrozma GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q1 | Yes |
-| 162044 | Spring 2018 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | 2018 Q1 (set) | Yes |
+| 162046 | Necrozma Prism Tin [Dawn Wings Necrozma GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 | Yes |
+| 162045 | Necrozma Prism Tin [Dusk Mane Necrozma GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 | Yes |
+| 162044 | Spring 2018 Collector's Chest Tin | Tin | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

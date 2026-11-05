@@ -115,7 +115,7 @@ TCGplayer group `2906`: 32 products.
 | 247676 | Fusion Strike Premium Checklane Blister [Rillaboom] | Blister | 1 | Description | 1 Evolving Skies | Exact | — | 2021 Q4 (set) | Yes |
 | 247670 | Fusion Strike Single Pack Blister [Blitzle] | Blister | 1 | Description | 1 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
 | 247669 | Fusion Strike Single Pack Blister [Tepig] | Blister | 1 | Description | 1 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
-| 263545 | Unova Two Pack Blister [Forces of Nature Trio] | Blister | 2 | Name | — | Unknown | — | 2021 Q4 (set) | Yes |
+| 263545 | Unova Two Pack Blister [Forces of Nature Trio] | Blister | 2 | Research | 2 unknown set | Partial | — | 2021 Q4 (set) | Yes |
 | 247654 | Fusion Strike Booster Box | Booster box | 36 | Description | 36 Fusion Strike | Product set | — | 2021 Q4 (set) | Yes |
 | 247646 | Fusion Strike Booster Pack | Booster pack | 1 | Kind default | 1 Fusion Strike | Product set | — | 2021 Q4 (set) | Yes |
 | 247651 | Fusion Strike Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Fusion Strike | Product set | — | 2021 Q4 | Yes |
@@ -124,23 +124,23 @@ TCGplayer group `2906`: 32 products.
 | 247657 | Fusion Strike Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Fusion Strike | Product set | — | 2021 Q4 (set) | Yes |
 | 247658 | Fusion Strike Sleeved Booster Pack Bundle [Set of 8] | Booster pack | 8 | Description | 8 Fusion Strike | Product set | — | 2021 Q4 (set) | Yes |
 | 247659 | Fusion Strike Build & Battle Box | Build & Battle | 4 | Description | 4 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
-| 247666 | Fusion Strike Build & Battle Stadium | Build & Battle | 12 | Set file | 4 Fusion Strike | Partial | — | 2021 Q4 (set) | Yes |
+| 247666 | Fusion Strike Build & Battle Stadium | Build & Battle | 12 | Research | 12 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
 | 638064 | Fusion Strike 3-Pack Blister Case | Case or display | — | — | — | — | Unknown number of blisters | 2021 Q4 (set) | No |
 | 247655 | Fusion Strike Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2021 Q4 (set) | Yes |
 | 247660 | Fusion Strike Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2021 Q4 (set) | Yes |
 | 256271 | Fusion Strike Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q4 (set) | Yes |
 | 557076 | Fusion Strike Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2021 Q4 (set) | Yes |
 | 547703 | Fusion Strike Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2021 Q4 (set) | Yes |
-| 245876 | Dragonite V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q4 | Yes |
+| 245876 | Dragonite V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2021 Q4 | Yes |
 | 635742 | Fusion Strike 3 Pack Hanger Box | Collection | 3 | Description | 3 Fusion Strike | Exact | — | 2021 Q4 (set) | No |
-| 282721 | Hisuian Electrode V Box | Collection | 4 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 247817 | Hoopa V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q4 | Yes |
-| 249619 | Hoopa V Box / Dragonite V Box [Set of 2] | Collection | 8 | Description | — | Unknown | — | 2021 Q4 | Yes |
-| 253454 | Rapid Strike Urshifu VMAX Premium Collection | Collection | 8 | Description | 8 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
-| 253455 | Single Strike Urshifu VMAX Premium Collection | Collection | 8 | Description | — | Unknown | — | 2021 Q4 | Yes |
-| 283851 | Urshifu VMAX Premium Collection [Set of 2] | Collection | 16 | Description | — | Unknown | — | 2021 Q4 (set) | Yes |
+| 282721 | Hisuian Electrode V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q4 | Yes |
+| 247817 | Hoopa V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2021 Q4 | Yes |
+| 249619 | Hoopa V Box / Dragonite V Box [Set of 2] | Collection | 8 | Research | — | Unknown | — | 2021 Q4 | Yes |
+| 253454 | Rapid Strike Urshifu VMAX Premium Collection | Collection | 8 | Research | 8 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
+| 253455 | Single Strike Urshifu VMAX Premium Collection | Collection | 8 | Research | 8 unknown set | Partial | — | 2021 Q4 | Yes |
+| 283851 | Urshifu VMAX Premium Collection [Set of 2] | Collection | 16 | Research | 8 Sword & Shield Series (set unknown), 8 unknown set | Partial | — | 2021 Q4 (set) | Yes |
 | 247671 | Fusion Strike Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
-| 247673 | Fusion Strike Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | 8 Fusion Strike | Partial | — | 2021 Q4 (set) | Yes |
+| 247673 | Fusion Strike Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Research | 10 Fusion Strike | Exact | — | 2021 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

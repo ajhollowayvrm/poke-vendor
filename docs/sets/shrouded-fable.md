@@ -185,7 +185,7 @@ TCGplayer group `23529`: 23 products.
 | 553000 | Kingambit Illustration Collection | Collection | 4 | Description | 4 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
 | 553001 | Kingdra ex Special Illustration Collection | Collection | 5 | Description | 5 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
 | 552999 | Shrouded Fable Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
-| 552998 | Shrouded Fable Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Shrouded Fable | Partial | — | 2024 Q3 | Yes |
+| 552998 | Shrouded Fable Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
 | 553023 | Shrouded Fable Mini Tin (Dusknoir) | Tin | 2 | Description | 2 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
 | 553018 | Shrouded Fable Mini Tin (Fezandipiti) | Tin | 2 | Description | 2 Shrouded Fable | Exact | — | 2024 Q3 | Yes |
 | 553011 | Shrouded Fable Mini Tin (Munkidori) | Tin | 2 | Description | 2 Shrouded Fable | Exact | — | 2024 Q3 | Yes |

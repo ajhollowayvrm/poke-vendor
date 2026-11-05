@@ -159,7 +159,7 @@ TCGplayer group `24326`: 12 products.
 | 630698 | White Flare Booster Bundle Display | Case or display | — | — | — | — | 10 booster bundles | 2025 Q3 | Yes |
 | 630693 | White Flare Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2025 Q3 (set) | Yes |
 | 630692 | White Flare Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | 4 elite trainer boxes | 2025 Q3 | No |
-| 685927 | White Flare Binder & Unova Poster Collection (Sam's Club) | Collection | 9 | Description | 2 Black Bolt, 2 White Flare | Partial | — | 2025 Q3 (set) | Yes |
+| 685927 | White Flare Binder & Unova Poster Collection (Sam's Club) | Collection | 9 | Research | 7 White Flare, 2 Black Bolt | Exact | — | 2025 Q3 (set) | Yes |
 | 630695 | White Flare Binder Collection | Collection | 5 | Bulbapedia | 5 White Flare | Exact | — | 2025 Q3 | Yes |
 | 630700 | White Flare Tech Sticker Collection | Collection | 3 | Description | 3 White Flare | Exact | — | 2025 Q3 | Yes |
 | 630689 | White Flare Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 White Flare | Exact | — | 2025 Q3 | Yes |

@@ -126,7 +126,7 @@ TCGplayer group `1392`: 2 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 98564 | Sandstorm Booster Box | Booster box | 36 | Kind default | 36 EX Sandstorm | Product set | — | 2003 Q3 (set) | No |
-| 98565 | Sandstorm Booster Pack | Booster pack | 1 | Kind default | 1 EX Sandstorm | Product set | — | 2003 Q3 (set) | No |
+| 98565 | Sandstorm Booster Pack | Booster pack | 1 | Kind default | 1 EX Sandstorm | Product set | — | 2003 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

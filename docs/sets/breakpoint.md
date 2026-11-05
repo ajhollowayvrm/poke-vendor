@@ -112,9 +112,9 @@ TCGplayer group `1701`: 16 products.
 | 111279 | XY BREAKpoint Booster Pack | Booster pack | 1 | Kind default | 1 BREAKpoint | Product set | — | 2016 Q1 | Yes |
 | 117279 | Shiny Mega Gyarados Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | No |
 | 111280 | XY BREAKpoint Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 BREAKpoint | Exact | — | 2016 Q1 (set) | Yes |
-| 117699 | Triple Power Tin [Machamp EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | No |
-| 117698 | Triple Power Tin [Mewtwo EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | No |
-| 117700 | Triple Power Tin [Shiny Gyarados EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | Yes |
+| 117699 | Triple Power Tin [Machamp EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | No |
+| 117698 | Triple Power Tin [Mewtwo EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | No |
+| 117700 | Triple Power Tin [Shiny Gyarados EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

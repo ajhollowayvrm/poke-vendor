@@ -110,7 +110,7 @@ TCGplayer group `1494`: 17 products.
 | 276592 | Phantom Forces Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Phantom Forces | Product set | — | 2014 Q4 (set) | No |
 | 94622 | XY Phantom Forces Booster Pack | Booster pack | 1 | Kind default | 1 Phantom Forces | Product set | — | 2014 Q4 (set) | Yes |
 | 97788 | Collector Chest | Collection | 5 | Bulbapedia | — | Unknown | — | 2014 Q4 (set) | No |
-| 97794 | Gallade EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | Yes |
+| 97794 | Gallade EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | Yes |
 | 97789 | Hoenn Collection [Primal Groudon EX] | Collection | 3 | Bulbapedia | 3 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | No |
 | 97790 | Hoenn Collection [Primal Kyogre EX] | Collection | 3 | Bulbapedia | 3 XY Series (set unknown) | Partial | — | 2014 Q4 (set) | No |
 | 97793 | Mega Diancie EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2014 Q4 (set) | No |

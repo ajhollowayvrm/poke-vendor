@@ -192,7 +192,7 @@ TCGplayer group `24073`: 27 products.
 | 625583 | Journey Together Enhanced Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2025 Q1 (set) | Yes |
 | 624925 | Journey Together Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2025 Q1 (set) | Yes |
 | 610930 | Journey Together Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
-| 610929 | Journey Together Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Journey Together | Partial | — | 2025 Q1 (set) | Yes |
+| 610929 | Journey Together Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Journey Together | Exact | — | 2025 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

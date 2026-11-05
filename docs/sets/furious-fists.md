@@ -84,7 +84,7 @@ TCGplayer group `1481`: 22 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 97773 | Furious Fists 2 Pack Blister [Dusknoir] | Blister | 2 | Description | 2 Furious Fists | Exact | — | 2014 Q3 (set) | Yes |
-| 97772 | Furious Fists 2 Pack Blister [Unova Trio] | Blister | 2 | Description | 2 Furious Fists | Exact | — | 2014 Q3 (set) | No |
+| 97772 | Furious Fists 2 Pack Blister [Unova Trio] | Blister | 2 | Research | 2 Furious Fists | Exact | — | 2014 Q3 (set) | No |
 | 97768 | Furious Fists 3 Pack Blister [Slurpuff] | Blister | 3 | Description | 3 Furious Fists | Exact | — | 2014 Q3 (set) | Yes |
 | 97769 | Furious Fists 3 Pack Blister [Trevenant] | Blister | 3 | Description | 3 Furious Fists | Exact | — | 2014 Q3 (set) | No |
 | 97770 | Furious Fists Single Pack Blister [Gogoat] | Blister | 1 | Description | 1 Furious Fists | Exact | — | 2014 Q3 (set) | No |

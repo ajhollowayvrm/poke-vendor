@@ -102,7 +102,7 @@ TCGplayer group `648`: 1 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 610709 | Southern Islands Collection | Collection | 3 | Description | — | Unknown | — | 2001 Q3 (set) | Yes |
+| 610709 | Southern Islands Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2001 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -140,8 +140,8 @@ TCGplayer group `24655`: 23 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 684458 | Chaos Rising 3-Pack Blister [Charmeleon] | Blister | 3 | Description | 3 Chaos Rising | Product set | — | 2026 Q2 (set) | Yes |
-| 684460 | Chaos Rising Premium Checklane Blister [Flygon Line] | Blister | 1 | Description | 1 Chaos Rising | Product set | — | 2026 Q2 | Yes |
-| 684459 | Chaos Rising Premium Checklane Blister [Pawmot Line] | Blister | 1 | Description | 1 Chaos Rising | Product set | — | 2026 Q2 | Yes |
+| 684460 | Chaos Rising Premium Checklane Blister [Flygon Line] | Blister | 1 | Research | 1 Chaos Rising | Exact | — | 2026 Q2 | Yes |
+| 684459 | Chaos Rising Premium Checklane Blister [Pawmot Line] | Blister | 1 | Research | 1 Chaos Rising | Exact | — | 2026 Q2 | Yes |
 | 696150 | Chaos Rising Single Pack Blister [Reshiram/Moltres] | Blister | 1 | Description | 1 Chaos Rising | Product set | — | 2026 Q2 (set) | Yes |
 | 684457 | Chaos Rising Single Pack Blister [Toxel] | Blister | 1 | Description | 1 Chaos Rising | Product set | — | 2026 Q2 | Yes |
 | 696144 | Chaos Rising Single Pack Blister [Zacian/Mimikyu] | Blister | 1 | Description | 1 Chaos Rising | Product set | — | 2026 Q2 (set) | Yes |

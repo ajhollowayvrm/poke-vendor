@@ -123,13 +123,13 @@ TCGplayer group `2701`: 24 products.
 | 221749 | Vivid Voltage Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q4 (set) | Yes |
 | 278642 | Vivid Voltage Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2020 Q4 (set) | Yes |
 | 653200 | Vivid Voltage Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2020 Q4 (set) | Yes |
-| 228979 | Alakazam V Box | Collection | 4 | Description | 2 Vivid Voltage, 1 Sun & Moon, 1 unknown set | Partial | — | 2021 Q1 | Yes |
-| 228978 | Galar Sidekicks Premium Collection | Collection | 11 | Description | 2 Steam Siege, 2 Vivid Voltage, 1 Burning Shadows, 1 Celestial Storm, 1 Crimson Invasion, 1 Darkness Ablaze, 1 Rebel Clash, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 (set) | Yes |
-| 226137 | Orbeetle V Box | Collection | 4 | Description | 2 Chilling Reign, 2 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
+| 228979 | Alakazam V Box | Collection | 4 | Research | 2 Vivid Voltage, 1 Sun & Moon, 1 unknown set | Partial | — | 2021 Q1 | Yes |
+| 228978 | Galar Sidekicks Premium Collection | Collection | 11 | Research | 2 Steam Siege, 2 Vivid Voltage, 1 Burning Shadows, 1 Celestial Storm, 1 Crimson Invasion, 1 Darkness Ablaze, 1 Rebel Clash, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 (set) | Yes |
+| 226137 | Orbeetle V Box | Collection | 4 | Research | 2 Vivid Voltage, 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
 | 222987 | Sword & Shield Elite Trainer Box Plus [Zacian] | Elite Trainer Box | 12 | Description | 3 Darkness Ablaze, 3 Rebel Clash, 3 Sword & Shield, 3 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
 | 222986 | Sword & Shield Elite Trainer Box Plus [Zamazenta] | Elite Trainer Box | 12 | Description | 3 Darkness Ablaze, 3 Rebel Clash, 3 Sword & Shield, 3 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
 | 221752 | Vivid Voltage Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Vivid Voltage | Exact | — | 2020 Q4 (set) | Yes |
-| 222985 | Fall 2020 Collector's Chest Tin | Tin | 5 | Description | 2 Vivid Voltage, 1 Burning Shadows, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 | Yes |
+| 222985 | Fall 2020 Collector's Chest Tin | Tin | 5 | Research | 2 Vivid Voltage, 1 Burning Shadows, 1 Sun & Moon, 1 Sword & Shield | Exact | — | 2020 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

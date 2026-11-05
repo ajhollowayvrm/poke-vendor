@@ -132,7 +132,7 @@ TCGplayer group `1413`: 5 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 99153 | Kanto Two Pack Blister [Legendary Birds] | Blister | 2 | Name | 2 Black & White Series (set unknown) | Partial | — | 2013 Q1 (set) | No |
+| 99153 | Kanto Two Pack Blister [Legendary Birds] | Blister | 2 | Research | 1 Next Destinies, 1 Plasma Storm | Exact | — | 2013 Q1 (set) | Yes |
 | 99152 | Kanto Two Pack Blister [Starters] | Blister | 2 | Name | 2 Black & White Series (set unknown) | Partial | — | 2013 Q1 (set) | No |
 | 98527 | Plasma Storm Booster Box | Booster box | 36 | Kind default | 36 Plasma Storm | Product set | — | 2013 Q1 (set) | No |
 | 98526 | Plasma Storm Booster Pack | Booster pack | 1 | Kind default | 1 Plasma Storm | Product set | — | 2013 Q1 (set) | Yes |

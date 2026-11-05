@@ -100,7 +100,7 @@ TCGplayer group `2807`: 28 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 245856 | Chilling Reign 2 Pack Blister [Galarian Zapdos V, Articuno V, Moltres V] | Blister | 2 | Description | 2 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
+| 245856 | Chilling Reign 2 Pack Blister [Galarian Zapdos V, Articuno V, Moltres V] | Blister | 2 | Research | 2 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
 | 236268 | Chilling Reign 3 Pack Blister [Eevee] | Blister | 3 | Description | 3 Chilling Reign | Exact | — | 2021 Q2 | Yes |
 | 236269 | Chilling Reign 3 Pack Blister [Snorlax] | Blister | 3 | Description | 3 Chilling Reign | Exact | — | 2021 Q2 | Yes |
 | 236276 | Chilling Reign Premium Checklane Blister [Blaziken] | Blister | 1 | Description | 1 Chilling Reign | Exact | — | 2021 Q2 | Yes |
@@ -121,8 +121,8 @@ TCGplayer group `2807`: 28 products.
 | 657837 | Chilling Reign Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q2 (set) | No |
 | 657836 | Chilling Reign Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2021 Q2 (set) | No |
 | 256972 | Ice Rider/ Shadow Rider Calyrex V Box Case | Case or display | — | — | — | — | Unknown | 2021 Q2 (set) | Yes |
-| 240975 | Ice Rider Calyrex V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q3 | Yes |
-| 240977 | Shadow Rider Calyrex V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q3 | Yes |
+| 240975 | Ice Rider Calyrex V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2021 Q3 | Yes |
+| 240977 | Shadow Rider Calyrex V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2021 Q3 | Yes |
 | 236260 | Chilling Reign Elite Trainer Box [Ice Rider Calyrex] | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
 | 244410 | Chilling Reign Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |
 | 236261 | Chilling Reign Elite Trainer Box [Shadow Rider Calyrex] | Elite Trainer Box | 8 | Description | 8 Chilling Reign | Exact | — | 2021 Q2 (set) | Yes |

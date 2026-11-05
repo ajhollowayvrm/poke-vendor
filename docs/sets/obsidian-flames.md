@@ -161,7 +161,7 @@ TCGplayer group `23228`: 24 products.
 | 534087 | Obsidian Flames Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
 | 513422 | Obsidian Flames Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Obsidian Flames | Product set | — | 2023 Q3 (set) | Yes |
 | 501268 | Obsidian Flames Build & Battle Box | Build & Battle | 4 | Description | 4 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
-| 501267 | Obsidian Flames Build & Battle Stadium | Build & Battle | 11 | Set file | 3 Obsidian Flames | Partial | — | 2023 Q3 (set) | Yes |
+| 501267 | Obsidian Flames Build & Battle Stadium | Build & Battle | 11 | Research | 11 Obsidian Flames | Exact | — | 2023 Q3 (set) | Yes |
 | 501258 | Obsidian Flames Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2023 Q3 (set) | Yes |
 | 514193 | Obsidian Flames Build & Battle Box Display | Case or display | — | — | — | — | Unknown number of build & battle boxes | 2023 Q3 (set) | Yes |
 | 501265 | Obsidian Flames Elite Trainer Box Case | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2023 Q3 (set) | Yes |

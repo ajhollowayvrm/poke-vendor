@@ -118,19 +118,19 @@ TCGplayer group `1842`: 34 products.
 | 125740 | Alola Collection [Lunala] | Collection | 5 | Research | — | Unknown | — | 2016 Q4 (set) | Yes |
 | 125739 | Alola Collection [Solgaleo] | Collection | 5 | Research | — | Unknown | — | 2016 Q4 (set) | Yes |
 | 169636 | Autumn 2016 Collector Chest | Collection | 5 | Description | — | Unknown | — | 2016 Q4 (set) | No |
-| 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
-| 125731 | Charizard EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
-| 125734 | Dragonite EX Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
-| 125733 | Gengar EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
-| 125732 | Kangaskhan EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 126570 | BREAK Evolution Box [Arcanine] | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125731 | Charizard EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125734 | Dragonite EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125733 | Gengar EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 125732 | Kangaskhan EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
 | 222989 | Kanto Power Collection [Dragonite EX/Pidgeot EX] | Collection | 10 | Description | 10 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
 | 222988 | Kanto Power Collection [Mewtwo EX/Slowbro EX] | Collection | 10 | Description | 10 Evolutions | Exact | — | 2016 Q4 (set) | Yes |
-| 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY | Exact | — | 2016 Q4 (set) | No |
+| 125563 | Mega Beedrill EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY | Exact | — | 2016 Q4 (set) | Yes |
 | 125738 | Mega Garchomp EX Premium Collection | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | No |
 | 125737 | Mega Salamence EX Premium Collection | Collection | 8 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | No |
 | 125735 | Mewtwo EX Box | Collection | 4 | Bulbapedia | 4 XY | Exact | — | 2016 Q4 (set) | Yes |
-| 127179 | Mythical Collection [Magearna] | Collection | 5 | Bulbapedia | 5 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
-| 127180 | Mythical Collection [Volcanion] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q4 (set) | Yes |
+| 127179 | Mythical Collection [Magearna] | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
+| 127180 | Mythical Collection [Volcanion] | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2016 Q4 (set) | Yes |
 | 125736 | Snorlax GX Box | Collection | Unknown | Unknown | — | Unknown | — | 2016 Q4 (set) | Yes |
 | 229351 | XY - Evolutions Pin Collection [Mega Blastoise] | Collection | 2 | Description | 2 Evolutions | Exact | — | 2016 Q4 (set) | No |
 | 229352 | XY - Evolutions Pin Collection [Mega Venusaur] | Collection | 2 | Description | 2 Evolutions | Exact | — | 2016 Q4 (set) | No |

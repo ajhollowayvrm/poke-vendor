@@ -125,7 +125,7 @@ TCGplayer group `2534`: 16 products.
 | 199310 | Cosmic Eclipse Build & Battle Box | Build & Battle | 4 | Description | 4 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
 | 199309 | Cosmic Eclipse Build & Battle Display | Case or display | — | — | — | — | 10 build & battle boxes | 2019 Q4 (set) | No |
 | 656706 | Cosmic Eclipse Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2019 Q4 (set) | No |
-| 199772 | Pikachu GX & Eevee GX Special Collection | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199772 | Pikachu GX & Eevee GX Special Collection | Collection | 4 | Research | — | Unknown | — | 2019 Q4 | Yes |
 | 199308 | Cosmic Eclipse Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Cosmic Eclipse | Exact | — | 2019 Q4 | Yes |
 <!-- product-catalog:end -->
 

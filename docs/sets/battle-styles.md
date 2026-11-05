@@ -118,12 +118,12 @@ TCGplayer group `2765`: 30 products.
 | 235284 | Battle Styles Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q1 (set) | Yes |
 | 680964 | Battle Styles Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2021 Q1 (set) | Yes |
 | 233359 | Galarian Rapidash V Box | Collection | 4 | Description | 2 Chilling Reign, 1 Rebel Clash, 1 Vivid Voltage | Exact | — | 2021 Q2 | Yes |
-| 231296 | Rapid Strike Urshifu V Box | Collection | 4 | Description | 2 Battle Styles, 1 Crimson Invasion, 1 Darkness Ablaze | Exact | — | 2021 Q1 | Yes |
-| 231297 | Single Strike Urshifu V Box | Collection | 4 | Description | — | Unknown | — | 2021 Q1 | Yes |
+| 231296 | Rapid Strike Urshifu V Box | Collection | 4 | Research | 2 Battle Styles, 1 Crimson Invasion, 1 Darkness Ablaze | Exact | — | 2021 Q1 | Yes |
+| 231297 | Single Strike Urshifu V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2021 Q1 | Yes |
 | 229285 | Battle Styles Elite Trainer Box [Rapid Strike Urshifu] (Blue) | Elite Trainer Box | 8 | Description | 8 Battle Styles | Exact | — | 2021 Q1 | Yes |
 | 244414 | Battle Styles Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Battle Styles | Exact | — | 2021 Q1 (set) | Yes |
 | 229284 | Battle Styles Elite Trainer Box [Single Strike Urshifu] (Red) | Elite Trainer Box | 8 | Description | 8 Battle Styles | Exact | — | 2021 Q1 | Yes |
-| 231293 | Spring 2021 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | 2021 Q1 | Yes |
+| 231293 | Spring 2021 Collector's Chest Tin | Tin | 5 | Research | 5 unknown set | Partial | — | 2021 Q1 | Yes |
 | 236378 | V Strikers Tin [Empoleon V] | Tin | 5 | Research | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield, 1 unknown set | Partial | — | 2021 Q1 (set) | Yes |
 | 238637 | V Strikers Tin [Empoleon V] (International Version) | Tin | 4 | Description | 2 Battle Styles, 1 Darkness Ablaze, 1 Sword & Shield | Exact | — | 2021 Q1 (set) | No |
 | 257189 | V Strikers Tin [Set of 2] | Tin | 8 | Bulbapedia | 4 Battle Styles, 2 Darkness Ablaze, 2 Sword & Shield | Exact | — | 2021 Q1 (set) | Yes |

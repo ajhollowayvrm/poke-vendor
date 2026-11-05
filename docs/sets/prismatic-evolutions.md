@@ -274,7 +274,7 @@ TCGplayer group `23821`: 43 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 609716 | Prismatic Evolutions 2-Pack Blister [Eevee] | Blister | 2 | Description | 2 Prismatic Evolutions | Exact | — | 2025 Q1 | Yes |
 | 600518 | Prismatic Evolutions Booster Bundle | Booster bundle | 6 | Description | 6 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
-| 678555 | Prismatic Evolutions Booster Bundle + Surprise Box Bundle (Sam's Club) | Booster bundle | 6 | Description | 4 Prismatic Evolutions | Partial | — | 2025 Q1 (set) | Yes |
+| 678555 | Prismatic Evolutions Booster Bundle + Surprise Box Bundle (Sam's Club) | Booster bundle | 10 | Research | 10 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 593294 | Prismatic Evolutions Booster Pack | Booster pack | 1 | Kind default | 1 Prismatic Evolutions | Product set | — | 2025 Q1 | Yes |
 | 617823 | Prismatic Evolutions Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Prismatic Evolutions | Product set | — | 2025 Q1 (set) | Yes |
 | 617807 | Prismatic Evolutions Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Prismatic Evolutions | Product set | — | 2025 Q1 (set) | No |
@@ -294,8 +294,8 @@ TCGplayer group `23821`: 43 products.
 | 638058 | Prismatic Evolutions Super-Premium Collection Case | Case or display | — | — | — | — | 4 collections | 2025 Q1 (set) | Yes |
 | 598470 | Prismatic Evolutions Surprise Box Case | Case or display | — | — | — | — | Unknown | 2025 Q1 | Yes |
 | 598489 | Prismatic Evolutions Tech Sticker Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2025 Q1 (set) | Yes |
-| 606881 | Prismatic Evolutions Accessory Pouch Special Collection | Collection | 5 | Description | 4 Prismatic Evolutions | Partial | — | 2025 Q1 (set) | Yes |
-| 593356 | Prismatic Evolutions Binder Collection | Collection | 5 | Description | 4 Prismatic Evolutions | Partial | — | 2025 Q1 (set) | Yes |
+| 606881 | Prismatic Evolutions Accessory Pouch Special Collection | Collection | 4 | Research | 4 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
+| 593356 | Prismatic Evolutions Binder Collection | Collection | 4 | Research | 4 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 593359 | Prismatic Evolutions Poster Collection | Collection | 3 | Description | 3 Prismatic Evolutions | Exact | — | 2025 Q1 | Yes |
 | 650799 | Prismatic Evolutions Premium Figure Collection | Collection | 11 | Description | 11 Prismatic Evolutions | Exact | — | 2025 Q3 | Yes |
 | 622770 | Prismatic Evolutions Super-Premium Collection | Collection | 15 | Description | 15 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
@@ -306,7 +306,7 @@ TCGplayer group `23821`: 43 products.
 | 593450 | Prismatic Evolutions Tech Sticker Collection [Sylveon] | Collection | 3 | Description | 3 Prismatic Evolutions | Exact | — | 2025 Q1 | Yes |
 | 593355 | Prismatic Evolutions Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 670607 | Prismatic Evolutions Elite Trainer Box (Dollar General Exclusive) | Elite Trainer Box | 9 | Description | 9 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
-| 593324 | Prismatic Evolutions Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Prismatic Evolutions | Partial | — | 2025 Q1 (set) | Yes |
+| 593324 | Prismatic Evolutions Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 593458 | Prismatic Evolutions Mini Tin [Espeon] | Tin | 2 | Description | 2 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 593457 | Prismatic Evolutions Mini Tin [Flareon] | Tin | 2 | Description | 2 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |
 | 593461 | Prismatic Evolutions Mini Tin [Glaceon] | Tin | 2 | Description | 2 Prismatic Evolutions | Exact | — | 2025 Q1 (set) | Yes |

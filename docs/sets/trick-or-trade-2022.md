@@ -115,9 +115,9 @@ TCGplayer group `3179`: 3 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 659627 | Trick or Trade BOOster Bundle (120 ct) | Booster bundle | 120 | Description | 120 Trick or Trade 2022 | Product set | — | 2022 Q3 (set) | Yes |
-| 280302 | Trick or Trade BOOster Bundle (40 ct) | Booster bundle | 40 | Description | 40 Trick or Trade 2022 | Product set | — | 2022 Q3 (set) | Yes |
-| 280301 | Trick or Trade BOOster Bundle - Mini Booster Pack | Booster pack | 1 | Kind default | 1 Trick or Trade 2022 | Product set | — | 2022 Q3 (set) | Yes |
+| 659627 | Trick or Trade BOOster Bundle (120 ct) | Booster bundle | 120 | Research | 120 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 (set) | Yes |
+| 280302 | Trick or Trade BOOster Bundle (40 ct) | Booster bundle | 40 | Research | 40 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 (set) | Yes |
+| 280301 | Trick or Trade BOOster Bundle - Mini Booster Pack | Booster pack | 1 | Research | 1 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

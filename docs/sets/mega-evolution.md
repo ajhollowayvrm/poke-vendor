@@ -137,13 +137,13 @@ TCGplayer group `24380`: 34 products.
 | 644357 | Mega Evolution 3 Pack Blister [Psyduck] | Blister | 3 | Description | 3 Mega Evolution | Exact | — | 2025 Q3 | Yes |
 | 644361 | Mega Evolution Premium Checklane Blister [Meowscarada] | Blister | 1 | Description | 1 Mega Evolution | Exact | — | 2025 Q3 | Yes |
 | 644360 | Mega Evolution Premium Checklane Blister [Tyranitar] | Blister | 1 | Description | 1 Mega Evolution | Exact | — | 2025 Q3 | Yes |
-| 644359 | Mega Evolution Single Pack Blister [Drifblim | Blister | 1 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 644358 | Mega Evolution Single Pack Blister [Drifloon] | Blister | 1 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 657490 | Mega Evolution Single Pack Blister [Lycanroc] | Blister | 1 | Description | — | Unknown | — | 2025 Q3 (set) | Yes |
-| 657489 | Mega Evolution Single Pack Blister [Wailord] | Blister | 1 | Description | — | Unknown | — | 2025 Q3 (set) | Yes |
+| 644359 | Mega Evolution Single Pack Blister [Drifblim | Blister | 1 | Research | 1 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 644358 | Mega Evolution Single Pack Blister [Drifloon] | Blister | 1 | Research | 1 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 657490 | Mega Evolution Single Pack Blister [Lycanroc] | Blister | 1 | Research | 1 Mega Evolution | Exact | — | 2025 Q3 (set) | Yes |
+| 657489 | Mega Evolution Single Pack Blister [Wailord] | Blister | 1 | Research | 1 Mega Evolution | Exact | — | 2025 Q3 (set) | Yes |
 | 644298 | Mega Evolution Booster Box | Booster box | 36 | Description | 36 Mega Evolution | Product set | — | 2025 Q3 | Yes |
 | 644300 | Mega Evolution Enhanced Booster Box | Booster box | 36 | Description | 36 Mega Evolution | Product set | — | 2025 Q3 | Yes |
-| 644351 | Mega Evolution Half Booster Box | Booster box | 18 | Description | 18 Mega Evolution | Product set | — | 2025 Q3 | Yes |
+| 644351 | Mega Evolution Half Booster Box | Booster box | 18 | Description | 18 Mega Evolution | Product set | — | 2025 Q3 (set) | Yes |
 | 644362 | Mega Evolution Booster Bundle | Booster bundle | 6 | Description | 6 Mega Evolution | Exact | — | 2025 Q3 | Yes |
 | 644352 | Mega Evolution Booster Pack | Booster pack | 1 | Kind default | 1 Mega Evolution | Product set | — | 2025 Q3 | Yes |
 | 657875 | Mega Evolution Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Mega Evolution | Product set | — | 2025 Q3 (set) | Yes |
@@ -160,13 +160,13 @@ TCGplayer group `24380`: 34 products.
 | 649392 | Mega Heroes Mini Tin Display | Case or display | — | — | — | — | Unknown number of mini tins | 2025 Q3 | Yes |
 | 644279 | Mega Evolution Elite Trainer Box [Mega Gardevoir] | Elite Trainer Box | 9 | Description | 9 Mega Evolution | Exact | — | 2025 Q3 | Yes |
 | 648394 | Mega Evolution Elite Trainer Box [Mega Lucario] | Elite Trainer Box | 9 | Description | 9 Mega Evolution | Exact | — | 2025 Q3 | Yes |
-| 648415 | Mega Evolution Pokemon Center Elite Trainer Box (Exclusive) [Mega Gardevoir] | Elite Trainer Box | 11 | Description | 9 Mega Evolution | Partial | — | 2025 Q3 | Yes |
-| 644282 | Mega Evolution Pokemon Center Elite Trainer Box (Exclusive) [Mega Lucario] | Elite Trainer Box | 11 | Description | 9 Mega Evolution | Partial | — | 2025 Q3 | Yes |
-| 649394 | Mega Heroes Mini Tin [Mega Gardevoir] | Tin | 2 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649395 | Mega Heroes Mini Tin [Mega Kangaskhan] | Tin | 2 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649397 | Mega Heroes Mini Tin [Mega Latias] | Tin | 2 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649400 | Mega Heroes Mini Tin [Mega Lucario] | Tin | 2 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649401 | Mega Heroes Mini Tin [Mega Venusaur] | Tin | 2 | Description | — | Unknown | — | 2025 Q3 | Yes |
+| 648415 | Mega Evolution Pokemon Center Elite Trainer Box (Exclusive) [Mega Gardevoir] | Elite Trainer Box | 11 | Research | 11 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 644282 | Mega Evolution Pokemon Center Elite Trainer Box (Exclusive) [Mega Lucario] | Elite Trainer Box | 11 | Research | 11 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 649394 | Mega Heroes Mini Tin [Mega Gardevoir] | Tin | 2 | Research | 2 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 649395 | Mega Heroes Mini Tin [Mega Kangaskhan] | Tin | 2 | Research | 2 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 649397 | Mega Heroes Mini Tin [Mega Latias] | Tin | 2 | Research | 2 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 649400 | Mega Heroes Mini Tin [Mega Lucario] | Tin | 2 | Research | 2 Mega Evolution | Exact | — | 2025 Q3 | Yes |
+| 649401 | Mega Heroes Mini Tin [Mega Venusaur] | Tin | 2 | Research | 2 Mega Evolution | Exact | — | 2025 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

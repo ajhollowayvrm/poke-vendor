@@ -100,13 +100,13 @@ TCGplayer group `1534`: 17 products.
 | 697502 | Roaring Skies Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
 | 276594 | Roaring Skies Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Roaring Skies | Product set | — | 2015 Q2 (set) | Yes |
 | 99151 | Mega Absol EX Premium Collection | Collection | 6 | Bulbapedia | 2 Phantom Forces, 2 Primal Clash, 2 Roaring Skies | Exact | — | 2015 Q2 (set) | Yes |
-| 100502 | Mega Latios Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q2 (set) | Yes |
+| 100502 | Mega Latios Collection | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
 | 100500 | Mega Rayquaza Collection | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | No |
-| 100499 | Rayquaza EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q2 (set) | No |
+| 100499 | Rayquaza EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
 | 98028 | XY Roaring Skies Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Roaring Skies | Exact | — | 2015 Q2 (set) | Yes |
-| 100497 | Hoenn Power Tin [Blaziken] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | No |
-| 100496 | Hoenn Power Tin [Sceptile] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
-| 100498 | Hoenn Power Tin [Swampert] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
+| 100497 | Hoenn Power Tin [Blaziken] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | No |
+| 100496 | Hoenn Power Tin [Sceptile] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
+| 100498 | Hoenn Power Tin [Swampert] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

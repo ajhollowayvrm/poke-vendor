@@ -134,7 +134,7 @@ TCGplayer group `1376`: 2 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 98518 | EX Dragon Booster Box | Booster box | 36 | Kind default | 36 EX Dragon | Product set | — | 2003 Q4 (set) | No |
-| 98519 | EX Dragon Booster Pack | Booster pack | 1 | Kind default | 1 EX Dragon | Product set | — | 2003 Q4 (set) | No |
+| 98519 | EX Dragon Booster Pack | Booster pack | 1 | Kind default | 1 EX Dragon | Product set | — | 2003 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -131,7 +131,7 @@ TCGplayer group `1393`: 3 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 488315 | Ruby & Sapphire Single Pack Blister | Blister | 1 | Description | 1 EX Ruby & Sapphire | Exact | — | 2003 Q2 (set) | No |
 | 98559 | Ruby and Sapphire Booster Box | Booster box | 36 | Kind default | 36 EX Ruby & Sapphire | Product set | — | 2003 Q2 (set) | No |
-| 98558 | Ruby and Sapphire Booster Pack | Booster pack | 1 | Kind default | 1 EX Ruby & Sapphire | Product set | — | 2003 Q2 (set) | No |
+| 98558 | Ruby and Sapphire Booster Pack | Booster pack | 1 | Research | 1 EX Ruby & Sapphire | Exact | — | 2003 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

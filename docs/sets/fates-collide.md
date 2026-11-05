@@ -101,7 +101,7 @@ TCGplayer group `1780`: 23 products.
 | 118338 | Fates Collide Single Pack Blister [Gastly] | Blister | 1 | Description | 1 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
 | 118337 | Fates Collide Single Pack Blister [Pansear] | Blister | 1 | Name | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
 | 118339 | Fates Collide Three Pack Blister [Froakie] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
-| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
+| 118340 | Fates Collide Three Pack Blister [Vivillon] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
 | 118332 | Fates Collide Three Pack Pin Blisters [Mega Alakazam] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
 | 118333 | Fates Collide Three Pack Pin Blisters [Zygarde] | Blister | 3 | Name | 3 Fates Collide | Exact | — | 2016 Q2 (set) | No |
 | 117478 | XY Fates Collide Booster Box | Booster box | 36 | Kind default | 36 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
@@ -112,15 +112,15 @@ TCGplayer group `1780`: 23 products.
 | 504700 | XY - Fates Collide Sleeved Booster Pack [Zygarde] | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
 | 168114 | XY Fates Collide Booster Pack | Booster pack | 1 | Kind default | 1 Fates Collide | Product set | — | 2016 Q2 (set) | Yes |
 | 656708 | Fates Collide Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2016 Q2 (set) | No |
-| 118336 | Ash-Greninja EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
+| 118336 | Ash-Greninja EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
 | 121392 | BREAK Evolution Box [Ho-oh and Lugia] | Collection | 5 | Bulbapedia | — | Unknown | — | 2016 Q2 (set) | No |
-| 118335 | Mega Mawile EX Premium Collection | Collection | 6 | Bulbapedia | 6 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
-| 121391 | Zygarde Collection Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 118335 | Mega Mawile EX Premium Collection | Collection | 6 | Research | 6 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
+| 121391 | Zygarde Collection Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | Yes |
 | 118331 | Fates Collide Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
 | 118334 | Fates Collide Prerelease Kit | Other | 4 | Description | 4 Fates Collide | Exact | — | 2016 Q2 (set) | Yes |
-| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
-| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
-| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 121394 | Shiny Kalos Tin [Xerneas EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 121395 | Shiny Kalos Tin [Yveltal EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
+| 121396 | Shiny Kalos Tin [Zygarde EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

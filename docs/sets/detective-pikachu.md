@@ -97,9 +97,9 @@ TCGplayer group `2409`: 14 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 264258 | Detective Pikachu Two Pack Blister | Blister | 2 | Name | 1 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
-| 187239 | Detective Pikachu Booster Pack | Booster pack | 1 | Kind default | 1 Detective Pikachu | Product set | — | 2019 Q1 (set) | Yes |
-| 189810 | Detective Pikachu Special Promo Booster Pack | Booster pack | 1 | Kind default | 1 Detective Pikachu | Product set | — | 2019 Q1 (set) | Yes |
+| 264258 | Detective Pikachu Two Pack Blister | Blister | 2 | Research | 1 Detective Pikachu, 1 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
+| 187239 | Detective Pikachu Booster Pack | Booster pack | 1 | Research | 1 Detective Pikachu | Exact | — | 2019 Q1 (set) | Yes |
+| 189810 | Detective Pikachu Special Promo Booster Pack | Booster pack | 1 | Research | 1 Detective Pikachu | Exact | — | 2019 Q1 (set) | Yes |
 | 185245 | Detective Pikachu Case File | Case or display | — | — | — | — | Unknown | 2019 Q2 | Yes |
 | 197563 | Detective Pikachu On the Case Figure Collection | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
 | 190325 | Detective Pikachu Special Case File - 3 Pack Booster Blister | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
@@ -107,10 +107,10 @@ TCGplayer group `2409`: 14 products.
 | 237678 | Detective Pikachu: Charizard GX Special Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
 | 185243 | Detective Pikachu: Greninja GX Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
 | 190324 | Detective Pikachu: Mewtwo GX Case File | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | Yes |
-| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 6 | Description | 4 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | No |
-| 185244 | Detective Pikachu: Collector Chest | Collection | 9 | Description | 7 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 | Yes |
-| 502477 | Detective Pikachu Tin [Charizard] | Tin | 6 | Description | 4 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
-| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 6 | Description | 4 Detective Pikachu | Partial | — | 2019 Q1 (set) | Yes |
+| 264420 | Detective Pikachu Cafe Figure Collection | Collection | 6 | Research | 4 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | No |
+| 185244 | Detective Pikachu: Collector Chest | Collection | 9 | Research | 7 Detective Pikachu, 2 Sun & Moon Series (set unknown) | Partial | — | 2019 Q2 | Yes |
+| 502477 | Detective Pikachu Tin [Charizard] | Tin | 4 | Research | 4 Detective Pikachu | Exact | — | 2019 Q1 (set) | Yes |
+| 502478 | Detective Pikachu Tin [Mewtwo] | Tin | 4 | Research | 4 Detective Pikachu | Exact | — | 2019 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

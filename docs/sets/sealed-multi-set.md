@@ -19,7 +19,7 @@ TCGplayer group `1938`: 1 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 148226 | Premium Trainer's XY Collection | Collection | 2 | Description | 2 XY Series (set unknown) | Partial | — | — | Yes |
+| 148226 | Premium Trainer's XY Collection | Collection | 2 | Research | 2 XY Series (set unknown) | Partial | — | — | Yes |
 
 ## First Partner Collection 2026
 
@@ -29,13 +29,13 @@ TCGplayer group `24584`: 9 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 694977 | First Partner Collection 2026 Series 1 Booster Pack | Booster pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 701484 | First Partner Collection 2026 Series 2 Booster Pack | Booster pack | 1 | Kind default | — | Unknown | — | — | Yes |
-| 701485 | First Partner Collection 2026 Series 3 Booster Pack | Booster pack | 2 | Description | 2 unknown set | Partial | — | 2026 Q3 | Yes |
+| 701485 | First Partner Collection 2026 Series 3 Booster Pack | Booster pack | 1 | Research | 1 unknown set | Partial | — | 2026 Q3 | Yes |
 | 673439 | First Partner Illustration Collection Case (Series 1) | Case or display | — | — | — | — | Unknown number of collections | 2026 Q1 | Yes |
 | 688716 | First Partner Illustration Collection Case (Series 2) | Case or display | — | — | — | — | Unknown number of collections | — | Yes |
 | 695402 | First Partner Illustration Collection Case (Series 3) | Case or display | — | — | — | — | Unknown number of collections | 2026 Q3 | Yes |
-| 673436 | First Partner Illustration Collection (Series 1) | Collection | 3 | Description | 1 Mega Evolution, 1 Phantasmal Flames | Partial | — | 2026 Q1 | Yes |
-| 688712 | First Partner Illustration Collection (Series 2) | Collection | 3 | Description | 1 Chaos Rising, 1 Perfect Order | Partial | — | 2026 Q2 | Yes |
-| 695400 | First Partner Illustration Collection (Series 3) | Collection | 3 | Description | 1 Chaos Rising, 1 Pitch Black | Partial | — | 2026 Q3 | Yes |
+| 673436 | First Partner Illustration Collection (Series 1) | Collection | 2 | Research | 1 Mega Evolution, 1 Phantasmal Flames | Exact | — | 2026 Q1 | Yes |
+| 688712 | First Partner Illustration Collection (Series 2) | Collection | 2 | Research | 1 Chaos Rising, 1 Perfect Order | Exact | — | 2026 Q2 | Yes |
+| 695400 | First Partner Illustration Collection (Series 3) | Collection | 2 | Research | 1 Chaos Rising, 1 Pitch Black | Exact | — | 2026 Q3 | Yes |
 
 ## First Partner Pack
 
@@ -44,14 +44,14 @@ TCGplayer group `2776`: 9 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 261803 | First Partner Packs [Set of 8] + Binder | Collection | 16 | Bulbapedia | — | Unknown | — | — | Yes |
-| 231300 | First Partner Pack (Alola) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q2 | Yes |
-| 231299 | First Partner Pack (Galar) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q1 | Yes |
-| 231304 | First Partner Pack (Hoenn) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q3 | Yes |
-| 231305 | First Partner Pack (Johto) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q3 | Yes |
-| 231301 | First Partner Pack (Kalos) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q2 | Yes |
-| 231306 | First Partner Pack (Kanto) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q4 | Yes |
-| 231303 | First Partner Pack (Sinnoh) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q3 | Yes |
-| 231302 | First Partner Pack (Unova) | Other | 2 | Bulbapedia | — | Unknown | — | 2021 Q2 | Yes |
+| 231300 | First Partner Pack (Alola) | Other | 2 | Research | — | Unknown | — | 2021 Q2 | Yes |
+| 231299 | First Partner Pack (Galar) | Other | 2 | Research | — | Unknown | — | 2021 Q1 | Yes |
+| 231304 | First Partner Pack (Hoenn) | Other | 2 | Research | — | Unknown | — | 2021 Q3 | Yes |
+| 231305 | First Partner Pack (Johto) | Other | 2 | Research | — | Unknown | — | 2021 Q3 | Yes |
+| 231301 | First Partner Pack (Kalos) | Other | 2 | Research | — | Unknown | — | 2021 Q2 | Yes |
+| 231306 | First Partner Pack (Kanto) | Other | 2 | Research | — | Unknown | — | 2021 Q4 | Yes |
+| 231303 | First Partner Pack (Sinnoh) | Other | 2 | Research | — | Unknown | — | 2021 Q3 | Yes |
+| 231302 | First Partner Pack (Unova) | Other | 2 | Research | — | Unknown | — | 2021 Q2 | Yes |
 
 ## Kids WB Promos
 
@@ -79,7 +79,7 @@ TCGplayer group `24163`: 1 products.
 
 ## Miscellaneous Cards & Products
 
-TCGplayer group `2374`: 559 products.
+TCGplayer group `2374`: 562 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
@@ -87,19 +87,20 @@ TCGplayer group `2374`: 559 products.
 | 634329 | 2 Pack Blister [Tornadus, Thundurus & Landorus] | Blister | 3 | Description | — | Unknown | — | — | Yes |
 | 482320 | 2-Pack Blister Pack [Meganium, Typhlosion & Feraligatr] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 683264 | 2-Pack Blister Pack [Oddish, Gloom, & Vileplume] | Blister | 2 | Description | 1 Mega Evolution, 1 Phantasmal Flames | Exact | — | — | Yes |
-| 477178 | 2-Pack Blister Pack [Raikou, Entei, & Suicune] | Blister | 2 | Description | — | Unknown | — | — | No |
-| 656995 | 2-Pack Blister Pack [Team Rocket's Articuno, Zapdos & Tyranitar] | Blister | 2 | Description | — | Unknown | — | — | Yes |
+| 477178 | 2-Pack Blister Pack [Raikou, Entei, & Suicune] | Blister | 2 | Description | — | Unknown | — | — | Yes |
+| 656995 | 2-Pack Blister Pack [Team Rocket's Articuno, Zapdos & Tyranitar] | Blister | 2 | Research | 2 Scarlet & Violet Series (set unknown) | Partial | — | — | Yes |
 | 671274 | 2-Pack Blister [Raikou] (1-tab) | Blister | 2 | Description | 1 Mega Evolution, 1 Phantasmal Flames | Exact | — | — | Yes |
 | 671271 | 2-Pack Blister [Raikou] (3-tab) | Blister | 2 | Description | 1 Mega Evolution, 1 Phantasmal Flames | Exact | — | — | Yes |
-| 714504 | 2-Pack Blister [Zarude] (1-Tab) | Blister | 2 | Description | 1 Chaos Rising, 1 Pitch Black | Exact | — | — | No |
+| 714504 | 2-Pack Blister [Zarude] (1-Tab) | Blister | 2 | Description | 1 Chaos Rising, 1 Pitch Black | Exact | — | — | Yes |
 | 706250 | 2-Pack Blister [Zarude] (3-Tab) | Blister | 2 | Description | 1 Chaos Rising, 1 Pitch Black | Exact | — | — | Yes |
-| 668362 | Alola Trio Pin Blister | Blister | 2 | Description | — | Unknown | — | — | No |
+| 668362 | Alola Trio Pin Blister | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 237105 | Checklane 2 Mini-Pack Blister [Dragonite] | Blister | Unknown | Unknown | — | Unknown | — | — | Yes |
 | 237106 | Checklane 2 Mini-Pack Blister [Machamp] | Blister | Unknown | Unknown | — | Unknown | — | — | No |
+| 721885 | Checklane 2-Pack Blister [Archaludon] (1-tab) | Blister | 2 | Description | — | Unknown | — | — | No |
 | 654113 | Checklane 2-Pack Blister [Archaludon] (3-tab) | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 598499 | Checklane 2-Pack Blister [Pawmot] (1-tab) | Blister | 2 | Description | 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 653625 | Checklane 2-Pack Blister [Pawmot] (3-tab) | Blister | 2 | Description | 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
-| 650144 | Checklane 2-Pack Pin Blister [Arceus] | Blister | 2 | Description | — | Unknown | — | — | Yes |
+| 650144 | Checklane 2-Pack Pin Blister [Arceus] | Blister | 2 | Research | 2 Lost Origin | Exact | — | — | Yes |
 | 489632 | Checklane 2-Pack Pin Blister [Celebi] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 650148 | Checklane 2-Pack Pin Blister [Darkrai] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 456111 | Checklane 2-Pack Pin Blister [Latias] | Blister | 2 | Description | — | Unknown | — | — | Yes |
@@ -130,9 +131,9 @@ TCGplayer group `2374`: 559 products.
 | 517119 | Mythical 2-Pack Blister [Celebi] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 517120 | Mythical 2-Pack Blister [Jirachi] | Blister | 2 | Description | — | Unknown | — | — | Yes |
 | 497966 | Pokemon TCG: Back to School Eraser Blister 2023 [Set of 2] | Blister | 4 | Research | — | Unknown | — | 2023 Q3 | Yes |
-| 549453 | Pokemon TCG: Back to School Eraser Blister 2024 [Bellibolt] | Blister | 2 | Description | — | Unknown | — | 2024 Q3 | Yes |
-| 549452 | Pokemon TCG: Back to School Eraser Blister 2024 [Gengar] | Blister | 2 | Description | — | Unknown | — | 2024 Q3 | Yes |
-| 549451 | Pokemon TCG: Back to School Eraser Blister 2024 [Set of 2] | Blister | 4 | Description | — | Unknown | — | 2024 Q3 | Yes |
+| 549453 | Pokemon TCG: Back to School Eraser Blister 2024 [Bellibolt] | Blister | 2 | Research | 1 Temporal Forces, 1 Twilight Masquerade | Exact | — | 2024 Q3 | Yes |
+| 549452 | Pokemon TCG: Back to School Eraser Blister 2024 [Gengar] | Blister | 2 | Research | 1 Temporal Forces, 1 Twilight Masquerade | Exact | — | 2024 Q3 | Yes |
+| 549451 | Pokemon TCG: Back to School Eraser Blister 2024 [Set of 2] | Blister | 4 | Research | 2 Temporal Forces, 2 Twilight Masquerade | Exact | — | 2024 Q3 | Yes |
 | 273609 | Pokemon TCG: Back to School Eraser Blister [Eevee] | Blister | 2 | Description | 1 Astral Radiance, 1 Evolving Skies | Exact | — | 2022 Q3 | No |
 | 497853 | Pokemon TCG: Back to School Eraser Blister [Lechonk] | Blister | 2 | Research | — | Unknown | — | 2023 Q3 | Yes |
 | 273608 | Pokemon TCG: Back to School Eraser Blister [Pikachu] | Blister | 2 | Description | 1 Astral Radiance, 1 Evolving Skies | Exact | — | 2022 Q3 | Yes |
@@ -140,12 +141,12 @@ TCGplayer group `2374`: 559 products.
 | 497856 | Pokemon TCG: Back to School Eraser Blister [Smoliv] | Blister | 2 | Research | — | Unknown | — | 2023 Q3 | Yes |
 | 200568 | Premium Checklane Blister [Gallade] | Blister | 1 | Bulbapedia | 1 Roaring Skies | Exact | — | — | No |
 | 200567 | Premium Checklane Blister [Gardevoir] | Blister | 1 | Bulbapedia | 1 Steam Siege | Exact | — | — | No |
-| 276609 | XY 3 Pack Blister [Giratina] | Blister | 3 | Description | 3 XY Series (set unknown) | Partial | — | — | No |
+| 276609 | XY 3 Pack Blister [Giratina] | Blister | 3 | Research | 1 Ancient Origins, 1 Primal Clash, 1 Roaring Skies | Exact | — | — | No |
 | 636740 | Costco Pokemon Prismatic Evolutions 2-Pack Trainer Box and Booster Bundle | Booster bundle | 15 | Research | 15 Prismatic Evolutions | Exact | — | — | Yes |
 | 650397 | Costco Pokemon Surging Sparks 2-Pack Trainer Box and Booster Bundle | Booster bundle | 15 | Description | 15 Surging Sparks | Exact | — | — | Yes |
 | 232770 | General Mills 25th Anniversary Booster Pack | Booster pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 190359 | General Mills Promo Booster Pack [Kanto] | Booster pack | 1 | Kind default | — | Unknown | — | — | Yes |
-| 190360 | General Mills Promo Booster Pack [Sun & Moon] | Booster pack | 1 | Kind default | — | Unknown | — | — | Yes |
+| 190360 | General Mills Promo Booster Pack [Sun & Moon] | Booster pack | 1 | Research | 1 Sun & Moon | Exact | — | — | Yes |
 | 523954 | Charizard ex Premium Collection Case | Case or display | — | — | — | — | Unknown number of collections | — | Yes |
 | 639446 | Charizard ex Special Collection Case | Case or display | — | — | — | — | 6 collections | — | Yes |
 | 649295 | Charizard ex Super-Premium Collection Case | Case or display | — | — | — | — | 4 collections | — | Yes |
@@ -210,18 +211,18 @@ TCGplayer group `2374`: 559 products.
 | 625051 | 2 Booster Packs & Latios Collector's Pin | Collection | 2 | Description | — | Unknown | — | — | Yes |
 | 680666 | Aegislash ex Box (EU Exclusive) | Collection | 4 | Description | 2 Twilight Masquerade, 1 Scarlet & Violet, 1 Temporal Forces | Exact | — | — | No |
 | 264259 | Alolan Raichu Box | Collection | 3 | Description | — | Unknown | — | — | Yes |
-| 205384 | Alolan Sandslash GX Box | Collection | 4 | Description | 4 Sun & Moon Series (set unknown) | Partial | — | 2020 Q1 | Yes |
+| 205384 | Alolan Sandslash GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2020 Q1 | Yes |
 | 497177 | Annihilape ex Box | Collection | 4 | Description | 2 Paldea Evolved, 1 Lost Origin, 1 Scarlet & Violet | Exact | — | 2023 Q3 | Yes |
 | 656955 | Archaludon ex Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
 | 539305 | Armarouge ex Premium Collection | Collection | 6 | Description | 2 Obsidian Flames, 2 Paradox Rift, 2 Temporal Forces | Exact | — | 2024 Q2 | Yes |
-| 549454 | Back-to-School 2024 Collector Chest | Collection | 6 | Description | — | Unknown | — | 2024 Q3 | Yes |
+| 549454 | Back-to-School 2024 Collector Chest | Collection | 6 | Research | 2 Temporal Forces, 2 Twilight Masquerade, 1 Obsidian Flames, 1 Paradox Rift | Exact | — | 2024 Q3 | Yes |
 | 206306 | Black Kyurem Box | Collection | 4 | Description | 1 Boundaries Crossed, 1 Dragons Exalted, 1 Emerging Powers, 1 Plasma Storm | Exact | — | — | No |
 | 662745 | Black Kyurem ex Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
 | 231295 | Blastoise VMAX Battle Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
-| 650229 | Blaziken ex & Volcanion ex Premium Collection | Collection | 10 | Description | — | Unknown | — | 2025 Q3 | Yes |
+| 650229 | Blaziken ex & Volcanion ex Premium Collection | Collection | 10 | Research | 10 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | Yes |
 | 662758 | Blaziken ex Special Collection | Collection | 6 | Description | — | Unknown | — | 2025 Q4 | No |
 | 575897 | Bloodmoon Ursaluna ex Box | Collection | 4 | Description | 2 Surging Sparks, 1 Scarlet & Violet, 1 Stellar Crown | Exact | — | 2024 Q4 | Yes |
-| 262968 | Boltund V Box | Collection | 4 | Description | — | Unknown | — | 2022 Q2 | Yes |
+| 262968 | Boltund V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q2 | Yes |
 | 516576 | Charizard ex Premium Collection | Collection | 6 | Description | 2 Obsidian Flames, 2 Paldea Evolved, 2 Scarlet & Violet | Exact | — | — | Yes |
 | 616305 | Charizard ex Special Collection | Collection | 5 | Description | — | Unknown | — | — | Yes |
 | 560625 | Charizard ex Super-Premium Collection | Collection | 10 | Description | 2 Obsidian Flames, 2 Paradox Rift, 2 Stellar Crown, 2 Temporal Forces, 2 Twilight Masquerade | Exact | — | 2024 Q4 | Yes |
@@ -230,51 +231,51 @@ TCGplayer group `2374`: 559 products.
 | 532385 | Combined Powers Premium Collection | Collection | 11 | Description | 4 Obsidian Flames, 4 Paradox Rift, 3 Scarlet & Violet | Exact | — | 2024 Q1 | Yes |
 | 484372 | Cyclizar ex Box | Collection | 4 | Bulbapedia | 2 Scarlet & Violet, 1 Lost Origin, 1 Silver Tempest | Exact | — | 2023 Q2 | Yes |
 | 625952 | Cynthia's Garchomp ex Premium Collection | Collection | 6 | Description | 3 Paradox Rift, 2 Destined Rivals, 1 Journey Together | Exact | — | 2025 Q2 | Yes |
-| 477286 | Cyrus Premium Tournament Collection Box | Collection | 7 | Description | 7 Sword & Shield Series (set unknown) | Partial | — | 2023 Q1 | Yes |
-| 477288 | Cyrus/Klara Premium Tournament Collection Box [Set of 2] | Collection | 14 | Description | — | Unknown | — | 2023 Q1 | Yes |
+| 477286 | Cyrus Premium Tournament Collection Box | Collection | 7 | Research | 7 Sword & Shield Series (set unknown) | Partial | — | 2023 Q1 | Yes |
+| 477288 | Cyrus/Klara Premium Tournament Collection Box [Set of 2] | Collection | 14 | Research | 14 Sword & Shield Series (set unknown) | Partial | — | 2023 Q1 | Yes |
 | 558746 | Dark Powers ex Special Collection | Collection | 5 | Description | 2 Twilight Masquerade, 1 Paldea Evolved, 1 Paradox Rift, 1 Temporal Forces | Exact | — | 2024 Q3 | Yes |
-| 286618 | Darkrai VSTAR Premium Collection | Collection | 8 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 286618 | Darkrai VSTAR Premium Collection | Collection | 8 | Research | 8 unknown set | Partial | — | 2022 Q4 | Yes |
 | 450103 | Darkrai VSTAR/Shaymin VSTAR Premium Collection [Set of 2] | Collection | 12 | Description | — | Unknown | — | 2022 Q4 | No |
 | 604493 | Decidueye ex Box | Collection | 4 | Description | 2 Twilight Masquerade, 1 Scarlet & Violet, 1 Temporal Forces | Exact | — | — | Yes |
-| 710570 | Deck Crafter's Collection - Meowth ex | Collection | 1 | Description | 1 Pitch Black | Exact | — | 2026 Q4 | No |
-| 282002 | Deoxys VMAX & VSTAR Battle Box | Collection | 4 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282004 | Deoxys/Zeraora VMAX & VSTAR Battle Box [Set of 2] | Collection | 8 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 710570 | Deck Crafter's Collection - Meowth ex | Collection | 1 | Description | 1 Pitch Black | Exact | — | 2026 Q4 | Yes |
+| 282002 | Deoxys VMAX & VSTAR Battle Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282004 | Deoxys/Zeraora VMAX & VSTAR Battle Box [Set of 2] | Collection | 8 | Research | 8 unknown set | Partial | — | 2022 Q4 | Yes |
 | 206350 | Double Album Box | Collection | 5 | Description | — | Unknown | — | — | No |
-| 249713 | Eevee Evolution VMAX Premium Collection [Set of 3] | Collection | 27 | Bulbapedia | — | Unknown | — | 2021 Q4 | Yes |
-| 286470 | Eevee Evolutions Premium Collection | Collection | 9 | Description | 9 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 249713 | Eevee Evolution VMAX Premium Collection [Set of 3] | Collection | 18 | Research | 18 unknown set | Partial | — | 2021 Q4 | Yes |
+| 286470 | Eevee Evolutions Premium Collection | Collection | 9 | Research | 9 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 520353 | Evolving Powers Premium Collection (Target Exclusive) | Collection | 7 | Description | 3 Obsidian Flames, 2 Astral Radiance, 2 Paldea Evolved | Exact | — | — | Yes |
 | 516647 | Fall 2023 Collector Chest | Collection | 6 | Description | 2 Obsidian Flames, 2 Paldea Evolved, 2 Paradox Rift | Exact | — | — | Yes |
-| 575706 | Fall 2024 Collector Chest | Collection | 6 | Description | 2 Surging Sparks, 2 unknown set, 1 Stellar Crown, 1 Twilight Masquerade | Partial | — | 2024 Q4 | Yes |
+| 575706 | Fall 2024 Collector Chest | Collection | 6 | Research | 3 Stellar Crown, 2 Surging Sparks, 1 Twilight Masquerade | Exact | — | 2024 Q4 | Yes |
 | 654593 | Fall 2025 Collector Chest | Collection | 6 | Description | — | Unknown | — | — | Yes |
 | 249705 | Flareon VMAX Premium Collection | Collection | 6 | Description | — | Unknown | — | — | Yes |
 | 701528 | Flareon VMAX Premium Collection (EU Exclusive) | Collection | 5 | Description | — | Unknown | — | — | No |
-| 199780 | Galar Collection [Grookey] - with Zacian V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199780 | Galar Collection [Grookey] - with Zacian V | Collection | 4 | Research | 2 Cosmic Eclipse, 1 Evolutions, 1 Unbroken Bonds | Exact | — | 2019 Q4 | Yes |
 | 199778 | Galar Collection [Grookey] - with Zamazenta V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | No |
-| 199782 | Galar Collection [Scorbunny] - with Zacian V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199782 | Galar Collection [Scorbunny] - with Zacian V | Collection | 4 | Research | 2 Cosmic Eclipse, 1 Evolutions, 1 Unbroken Bonds | Exact | — | 2019 Q4 | Yes |
 | 199784 | Galar Collection [Scorbunny] - with Zamazenta V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | No |
 | 199786 | Galar Collection [Sobble] - with Zacian V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | No |
-| 199785 | Galar Collection [Sobble] - with Zamazenta V | Collection | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199785 | Galar Collection [Sobble] - with Zamazenta V | Collection | 4 | Research | 2 Cosmic Eclipse, 1 Evolutions, 1 Unbroken Bonds | Exact | — | 2019 Q4 | Yes |
 | 546458 | Grafaiai ex Box | Collection | 4 | Description | 2 Temporal Forces, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
-| 594896 | Grand Adventure Collection | Collection | 4 | Description | 4 Scarlet & Violet Series (set unknown) | Partial | — | — | Yes |
+| 594896 | Grand Adventure Collection | Collection | 4 | Research | 4 Scarlet & Violet Series (set unknown) | Partial | — | — | Yes |
 | 656950 | Greninja EX & Kingdra EX Special Collection Box | Collection | 8 | Description | — | Unknown | — | — | Yes |
 | 594491 | Greninja ex Ultra-Premium Collection | Collection | 16 | Description | 4 Paldea Evolved, 4 Stellar Crown, 4 Twilight Masquerade, 2 Paradox Rift, 2 Temporal Forces | Exact | — | — | Yes |
 | 526914 | Gyarados ex Premium Collection | Collection | 6 | Description | 2 Obsidian Flames, 2 Paldea Evolved, 1 Lost Origin, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 529698 | Heavy Hitters Premium Collection (Fall 2023) | Collection | 14 | Research | 4 Lost Origin, 4 Silver Tempest, 3 Chilling Reign, 2 Evolving Skies, 1 Vivid Voltage | Exact | — | — | Yes |
 | 616303 | Hop's Zacian ex Box | Collection | 4 | Description | 2 Journey Together, 1 Obsidian Flames, 1 Surging Sparks | Exact | — | 2025 Q1 | Yes |
 | 561521 | Houndstone ex Box | Collection | 4 | Description | 2 Stellar Crown, 2 Twilight Masquerade | Exact | — | 2024 Q4 | Yes |
-| 653199 | Hydreigon ex & Dragapult ex Premium Collection | Collection | 10 | Description | — | Unknown | — | 2025 Q4 | Yes |
+| 653199 | Hydreigon ex & Dragapult ex Premium Collection | Collection | 10 | Research | 10 unknown set | Partial | — | 2025 Q4 | Yes |
 | 664092 | Incineroar ex and Torterra ex Special Collection | Collection | 8 | Description | — | Unknown | — | — | Yes |
-| 277568 | Infernape V Box | Collection | 4 | Description | — | Unknown | — | 2022 Q3 | Yes |
+| 277568 | Infernape V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q3 | Yes |
 | 545403 | Iono Premium Tournament Collection Box | Collection | 6 | Description | 2 Temporal Forces, 1 Lost Origin, 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 616304 | Iono’s Bellibolt ex Premium Collection | Collection | 6 | Description | 2 Journey Together, 1 Obsidian Flames, 1 Paradox Rift, 1 Surging Sparks, 1 Twilight Masquerade | Exact | — | 2025 Q2 | Yes |
 | 516578 | Iron Valiant ex Box | Collection | 4 | Description | 2 Paradox Rift, 1 Obsidian Flames, 1 Paldea Evolved | Exact | — | 2023 Q4 | Yes |
-| 226133 | Jirachi GX Collection | Collection | 10 | Description | 10 unknown set | Partial | — | 2020 Q4 | Yes |
+| 226133 | Jirachi GX Collection | Collection | 10 | Research | 3 Crimson Invasion, 3 Sun & Moon, 1 BREAKpoint, 1 Evolutions, 1 Fates Collide, 1 Steam Siege | Exact | — | 2020 Q4 | Yes |
 | 583776 | Jirachi V Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
 | 249693 | Jolteon VMAX Premium Collection | Collection | 6 | Description | — | Unknown | — | — | Yes |
 | 701529 | Jolteon VMAX Premium Collection (EU Exclusive) | Collection | 5 | Description | — | Unknown | — | — | No |
 | 206308 | Keldeo Box | Collection | 3 | Description | 2 Dragons Exalted, 1 Noble Victories | Exact | — | — | No |
-| 477284 | Klara Premium Tournament Collection Box | Collection | 7 | Description | 7 Sword & Shield Series (set unknown) | Partial | — | 2023 Q1 | Yes |
-| 270478 | Kleavor VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | 2022 Q2 | Yes |
+| 477284 | Klara Premium Tournament Collection Box | Collection | 7 | Research | 7 Sword & Shield Series (set unknown) | Partial | — | 2023 Q1 | Yes |
+| 270478 | Kleavor VSTAR Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2022 Q2 | Yes |
 | 637464 | Kleavor VSTAR Premium Collection (International) | Collection | 5 | Description | — | Unknown | — | — | Yes |
 | 532560 | Kleavor VSTAR Special Collection | Collection | 4 | Description | 2 Fusion Strike, 2 Lost Origin | Exact | — | — | Yes |
 | 628493 | Knock Out Collection [Alakazam] | Collection | 2 | Description | 1 Obsidian Flames, 1 Scarlet & Violet | Exact | — | — | Yes |
@@ -290,7 +291,7 @@ TCGplayer group `2374`: 559 products.
 | 670783 | Knock Out Collection [Suicune] | Collection | 2 | Research | 1 Surging Sparks, 1 Twilight Masquerade | Exact | — | — | Yes |
 | 264416 | Knock Out Collection [Toxtricity, Duraludon, Sandaconda] | Collection | 2 | Research | 1 Chilling Reign, 1 Fusion Strike | Exact | — | — | Yes |
 | 186984 | Knock Out Collection [Tyranitar, Shiftry, and Vivillon] | Collection | 2 | Research | 2 unknown set | Partial | — | — | Yes |
-| 286477 | Kyurem V Box | Collection | 4 | Description | — | Unknown | — | 2022 Q4 | No |
+| 286477 | Kyurem V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q4 | Yes |
 | 657884 | Latias ex Special Collection | Collection | 6 | Description | — | Unknown | — | — | No |
 | 206316 | Legendary Dragons of Unova Collection | Collection | 4 | Description | 4 Black & White Series (set unknown) | Partial | — | — | No |
 | 594495 | Legendary Warriors Premium Collection | Collection | 14 | Description | 14 Sword & Shield | Exact | — | — | Yes |
@@ -299,11 +300,11 @@ TCGplayer group `2374`: 559 products.
 | 626605 | Lillie Premium Tournament Collection Box | Collection | 6 | Description | 2 Journey Together, 1 Obsidian Flames, 1 Paldea Evolved, 1 Surging Sparks, 1 Twilight Masquerade | Exact | — | — | Yes |
 | 262637 | Lucario VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | — | Yes |
 | 497728 | Lucario VSTAR Special Collection | Collection | 4 | Description | 2 Fusion Strike, 2 Lost Origin | Exact | — | — | Yes |
-| 655739 | Lugia ex & Latias ex Premium Collection | Collection | 10 | Description | — | Unknown | — | 2025 Q4 | Yes |
+| 655739 | Lugia ex & Latias ex Premium Collection | Collection | 10 | Research | 10 unknown set | Partial | — | 2025 Q4 | Yes |
 | 665038 | Lugia ex Special Collection | Collection | 6 | Description | — | Unknown | — | 2025 Q4 | No |
 | 680671 | Lycanroc ex Box (EU Exclusive) | Collection | 4 | Description | 2 Twilight Masquerade, 1 Scarlet & Violet, 1 Temporal Forces | Exact | — | — | No |
 | 531572 | Mabosstiff ex Box | Collection | 4 | Description | 2 Paradox Rift, 1 Obsidian Flames, 1 Scarlet & Violet | Exact | — | 2024 Q1 | Yes |
-| 241093 | Marnie Premium Tournament Collection Box | Collection | 7 | Description | 7 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 | Yes |
+| 241093 | Marnie Premium Tournament Collection Box | Collection | 7 | Research | 7 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 | Yes |
 | 236549 | Marshadow Box (International Version) | Collection | 3 | Description | — | Unknown | — | — | Yes |
 | 629647 | Masks of Ogerpon Premium Collection | Collection | 10 | Description | — | Unknown | — | — | Yes |
 | 606605 | Meddling Sparks Premium Collection | Collection | 12 | Description | 5 Scarlet & Violet, 3 Obsidian Flames, 1 Paldea Evolved, 1 Paradox Rift | Partial | — | — | Yes |
@@ -312,34 +313,34 @@ TCGplayer group `2374`: 559 products.
 | 654211 | Mega Kangaskhan ex Box | Collection | 4 | Description | 2 Journey Together, 2 Mega Evolution | Exact | — | 2025 Q4 | Yes |
 | 654188 | Mega Latias ex Box | Collection | 4 | Description | 2 Destined Rivals, 2 Mega Evolution | Exact | — | 2025 Q4 | Yes |
 | 656487 | Mega Lucario ex Premium Figure Collection | Collection | 5 | Description | 2 Mega Evolution, 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | 2025 Q4 | Yes |
-| 654212 | Mega Venusaur ex Premium Collection | Collection | 8 | Description | 3 Destined Rivals, 3 Journey Together | Partial | — | 2025 Q4 | Yes |
+| 654212 | Mega Venusaur ex Premium Collection | Collection | 8 | Research | 3 Destined Rivals, 3 Journey Together, 2 Mega Evolution | Exact | — | 2025 Q4 | Yes |
 | 682939 | Mega Zygarde ex Premium Collection | Collection | 8 | Description | 8 Mega Evolution | Exact | — | 2026 Q2 | Yes |
 | 662750 | Melmetal ex Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
-| 205464 | Meowth VMAX Special Collection | Collection | 5 | Bulbapedia | — | Unknown | — | 2020 Q1 | Yes |
+| 205464 | Meowth VMAX Special Collection | Collection | 5 | Research | 5 unknown set | Partial | — | 2020 Q1 | Yes |
 | 230427 | Meowth VMAX Special Collection (International Version) | Collection | 4 | Description | — | Unknown | — | — | Yes |
-| 286476 | Mew V Box | Collection | 4 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 286476 | Mew V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q4 | Yes |
 | 655747 | Mimikyu ex & Alcremie ex Premium Collection | Collection | 10 | Description | — | Unknown | — | — | Yes |
 | 475802 | Mimikyu ex Box | Collection | 4 | Description | 2 Silver Tempest, 1 Brilliant Stars, 1 Fusion Strike | Exact | — | 2023 Q1 | Yes |
-| 262646 | Morpeko V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2022 Q2 | Yes |
-| 248205 | Mythical Squishy Premium Collection | Collection | 8 | Description | 8 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
+| 262646 | Morpeko V-UNION Special Collection | Collection | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | 2022 Q2 | Yes |
+| 248205 | Mythical Squishy Premium Collection | Collection | 8 | Research | 8 Sword & Shield Series (set unknown) | Partial | — | 2021 Q4 | Yes |
 | 576482 | Ogerpon ex Premium Collection | Collection | 6 | Description | 2 Stellar Crown, 2 Surging Sparks, 1 Paradox Rift, 1 Twilight Masquerade | Exact | — | 2024 Q4 | Yes |
 | 527801 | Oinkologne ex Box | Collection | 4 | Description | 2 Obsidian Flames, 1 Astral Radiance, 1 Paldea Evolved | Exact | — | — | Yes |
 | 547129 | Palafin ex Box | Collection | 4 | Description | 2 Twilight Masquerade, 1 Obsidian Flames, 1 Temporal Forces | Exact | — | 2024 Q2 | Yes |
 | 532025 | Paldea Adventure Chest | Collection | 6 | Description | 2 Obsidian Flames, 2 Paradox Rift, 1 Paldea Evolved, 1 Scarlet & Violet | Exact | — | — | Yes |
-| 451119 | Paldea Collection [Fuecoco/Koraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
-| 477170 | Paldea Collection [Fuecoco/Miraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
-| 477171 | Paldea Collection [Quaxly/Koraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
-| 451120 | Paldea Collection [Quaxly/Miraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
-| 477173 | Paldea Collection [Set of 3] (Koraidon ex) | Collection | 12 | Description | 6 Brilliant Stars, 6 Silver Tempest | Exact | — | 2023 Q1 | No |
-| 451121 | Paldea Collection [Set of 3] (Miraidon ex) | Collection | 12 | Description | 6 Brilliant Stars, 6 Silver Tempest | Exact | — | 2023 Q1 | No |
-| 477174 | Paldea Collection [Set of 6] | Collection | 24 | Description | 12 Brilliant Stars, 12 Silver Tempest | Exact | — | 2023 Q1 | No |
-| 477172 | Paldea Collection [Sprigatito/Koraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
-| 451118 | Paldea Collection [Sprigatito/Miraidon ex] | Collection | 4 | Description | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 451119 | Paldea Collection [Fuecoco/Koraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 477170 | Paldea Collection [Fuecoco/Miraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 477171 | Paldea Collection [Quaxly/Koraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 451120 | Paldea Collection [Quaxly/Miraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 477173 | Paldea Collection [Set of 3] (Koraidon ex) | Collection | 12 | Research | 6 Brilliant Stars, 6 Silver Tempest | Exact | — | 2023 Q1 | No |
+| 451121 | Paldea Collection [Set of 3] (Miraidon ex) | Collection | 12 | Research | 6 Brilliant Stars, 6 Silver Tempest | Exact | — | 2023 Q1 | No |
+| 477174 | Paldea Collection [Set of 6] | Collection | 24 | Research | 12 Brilliant Stars, 12 Silver Tempest | Exact | — | 2023 Q1 | No |
+| 477172 | Paldea Collection [Sprigatito/Koraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
+| 451118 | Paldea Collection [Sprigatito/Miraidon ex] | Collection | 4 | Research | 2 Brilliant Stars, 2 Silver Tempest | Exact | — | 2023 Q1 | Yes |
 | 575185 | Paradox Fury Premium Collection | Collection | 7 | Description | 2 Twilight Masquerade, 1 Obsidian Flames, 1 Paldea Evolved, 1 Paradox Rift, 1 Scarlet & Violet, 1 Temporal Forces | Exact | — | 2024 Q3 | Yes |
 | 621096 | Paradox Powers ex Special Collection | Collection | 5 | Description | 2 Astral Radiance, 2 Obsidian Flames, 1 Scarlet & Violet | Exact | — | — | No |
 | 583521 | Paradox Wisdom Premium Collection | Collection | 7 | Description | 2 Twilight Masquerade, 1 Obsidian Flames, 1 Paldea Evolved, 1 Paradox Rift, 1 Scarlet & Violet, 1 Temporal Forces | Exact | — | 2024 Q4 | Yes |
 | 179376 | Pikachu & Eevee Poke Ball Collection | Collection | 5 | Description | — | Unknown | — | — | Yes |
-| 253396 | Pikachu & Zekrom GX Premium Collection | Collection | 10 | Bulbapedia | 10 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 253396 | Pikachu & Zekrom GX Premium Collection | Collection | 10 | Research | 10 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 260709 | Pikachu V Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
 | 668590 | Pokemon Day 2026 Collection | Collection | 3 | Description | 2 Phantasmal Flames, 1 Mega Evolution | Exact | — | — | Yes |
 | 181695 | Pokemon TCG: Basic Energy Box | Collection | Unknown | Unknown | — | Unknown | — | — | Yes |
@@ -349,27 +350,27 @@ TCGplayer group `2374`: 559 products.
 | 451099 | Pokemon TCG: Tempest Gift Box | Collection | Unknown | Unknown | — | Unknown | — | — | No |
 | 210200 | Pokemon TCG: Thunderstorm Gift Box | Collection | 3 | Description | 1 Fossil, 1 Gym Heroes, 1 Team Rocket | Exact | — | — | No |
 | 648365 | Prismatic Evolutions Lucario ex & Tyranitar ex Premium Collection (Sam's Club) | Collection | 14 | Description | 14 Prismatic Evolutions | Exact | — | — | Yes |
-| 268713 | Professor Juniper Premium Tournament Collection Box | Collection | 7 | Description | 7 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 268713 | Professor Juniper Premium Tournament Collection Box | Collection | 7 | Research | 7 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 670267 | Reshiram & Archaludon ex Box [Set of 2] | Collection | 8 | Research | 8 unknown set | Partial | — | — | Yes |
-| 248208 | Reshiram & Charizard GX Premium Collection | Collection | 10 | Description | 10 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 248208 | Reshiram & Charizard GX Premium Collection | Collection | 10 | Research | 10 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 666512 | Reshiram ex Box | Collection | 4 | Description | — | Unknown | — | — | Yes |
 | 516577 | Roaring Moon ex Box | Collection | 4 | Description | 2 Paradox Rift, 1 Obsidian Flames, 1 Paldea Evolved | Exact | — | 2023 Q4 | Yes |
-| 653899 | Salamence ex & Reshiram ex Premium Collection | Collection | 10 | Description | — | Unknown | — | 2025 Q4 | Yes |
-| 286619 | Shaymin VSTAR Premium Collection | Collection | 8 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 226128 | Small But Mighty Premium Collection | Collection | 10 | Description | 2 Burning Shadows, 2 Darkness Ablaze, 2 Sun & Moon, 1 Crimson Invasion, 1 Rebel Clash, 1 Steam Siege, 1 Sword & Shield | Exact | — | 2020 Q4 | Yes |
+| 653899 | Salamence ex & Reshiram ex Premium Collection | Collection | 10 | Research | 10 unknown set | Partial | — | 2025 Q4 | Yes |
+| 286619 | Shaymin VSTAR Premium Collection | Collection | 8 | Research | 8 unknown set | Partial | — | 2022 Q4 | Yes |
+| 226128 | Small But Mighty Premium Collection | Collection | 10 | Research | 2 Burning Shadows, 2 Darkness Ablaze, 2 Sun & Moon, 1 Crimson Invasion, 1 Rebel Clash, 1 Steam Siege, 1 Sword & Shield | Exact | — | 2020 Q4 | Yes |
 | 653192 | Snorlax & Lapras VMAX Collection | Collection | 8 | Description | 1 Rebel Clash, 1 Steam Siege, 1 Sun & Moon, 1 Sword & Shield | Partial | — | — | Yes |
 | 662770 | Snorlax ex & Blissey ex Special Collection | Collection | 8 | Description | — | Unknown | — | — | Yes |
 | 265252 | Spring 2022 Collector Chest | Collection | 5 | Description | 2 Evolving Skies, 2 Fusion Strike, 1 Brilliant Stars | Exact | — | — | Yes |
 | 226136 | Sword & Shield Ultra-Premium Collection - Zacian & Zamazenta | Collection | 16 | Description | 4 Darkness Ablaze, 4 Rebel Clash, 4 Sword & Shield, 4 Vivid Voltage | Exact | — | 2020 Q4 | Yes |
-| 200172 | TAG TEAM Generations Premium Collection | Collection | 7 | Description | — | Unknown | — | 2019 Q4 | Yes |
-| 209532 | TAG TEAM Powers Collection [Espeon & Deoxys GX] | Collection | 8 | Bulbapedia | — | Unknown | — | 2020 Q1 | Yes |
-| 209533 | TAG TEAM Powers Collection [Umbreon & Darkrai GX] | Collection | 8 | Bulbapedia | — | Unknown | — | 2020 Q1 | Yes |
+| 200172 | TAG TEAM Generations Premium Collection | Collection | 7 | Research | 7 Sun & Moon Series (set unknown) | Partial | — | 2019 Q4 | Yes |
+| 209532 | TAG TEAM Powers Collection [Espeon & Deoxys GX] | Collection | 8 | Research | 8 unknown set | Partial | — | 2020 Q1 | Yes |
+| 209533 | TAG TEAM Powers Collection [Umbreon & Darkrai GX] | Collection | 8 | Research | 8 unknown set | Partial | — | 2020 Q1 | Yes |
 | 230426 | Tapu Koko Box (International Version) | Collection | 3 | Description | — | Unknown | — | — | Yes |
 | 625695 | Team Rocket's Mewtwo ex Box | Collection | 4 | Description | 2 Destined Rivals, 1 Surging Sparks, 1 Temporal Forces | Exact | — | 2025 Q2 | Yes |
-| 656997 | Team Rocket’s Moltres ex Ultra-Premium Collection | Collection | 18 | Description | — | Unknown | — | — | Yes |
+| 656997 | Team Rocket’s Moltres ex Ultra-Premium Collection | Collection | 18 | Research | 16 Scarlet & Violet Series (set unknown), 2 Destined Rivals | Partial | — | — | Yes |
 | 563857 | Tera Brawlers Premium Collection | Collection | 9 | Description | 2 Paldea Evolved, 2 Paradox Rift, 2 Temporal Forces, 2 Twilight Masquerade, 1 Obsidian Flames | Exact | — | — | Yes |
 | 594539 | Tera Team Premium Collection | Collection | 9 | Description | 2 Paldea Evolved, 2 Paradox Rift, 2 Temporal Forces, 2 Twilight Masquerade, 1 Obsidian Flames | Exact | — | — | Yes |
-| 575198 | Terapagos ex Ultra-Premium Collection | Collection | 18 | Description | 4 Obsidian Flames, 4 Paradox Rift, 4 Stellar Crown, 4 Twilight Masquerade | Partial | — | 2024 Q4 | Yes |
+| 575198 | Terapagos ex Ultra-Premium Collection | Collection | 18 | Research | 4 Obsidian Flames, 4 Paradox Rift, 4 Stellar Crown, 4 Twilight Masquerade, 2 Temporal Forces | Exact | — | 2024 Q4 | Yes |
 | 477255 | Trainer's Legendary Box [Ho-Oh] | Collection | 6 | Description | 2 Guardians Rising, 2 Sun & Moon, 1 Celestial Storm, 1 Fates Collide | Exact | — | — | Yes |
 | 477254 | Trainer's Legendary Box [Lugia] | Collection | 6 | Description | 2 Guardians Rising, 2 Sun & Moon, 1 Celestial Storm, 1 Fates Collide | Exact | — | — | Yes |
 | 596517 | Tsareena Ex Box | Collection | 6 | Description | — | Unknown | — | — | Yes |
@@ -378,38 +379,39 @@ TCGplayer group `2374`: 559 products.
 | 249689 | Vaporeon VMAX Premium Collection | Collection | 6 | Description | — | Unknown | — | — | Yes |
 | 701530 | Vaporeon VMAX Premium Collection (EU Exclusive) | Collection | 5 | Description | — | Unknown | — | — | No |
 | 231294 | Venusaur VMAX Battle Box | Collection | 4 | Description | 2 Battle Styles, 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | — | Yes |
-| 635621 | Venusaur ex & Blastoise ex Premium Collection | Collection | 10 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 280847 | Virizion V Box | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 635621 | Venusaur ex & Blastoise ex Premium Collection | Collection | 10 | Research | 10 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | Yes |
+| 280847 | Virizion V Box | Collection | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 206307 | White Kyurem Box | Collection | 4 | Description | 4 Black & White Series (set unknown) | Partial | — | — | No |
 | 206311 | World of Illusions Box | Collection | 3 | Description | 2 Call of Legends, 1 Undaunted | Exact | — | — | No |
-| 282003 | Zeraora VMAX & VSTAR Battle Box | Collection | 4 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 282003 | Zeraora VMAX & VSTAR Battle Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2022 Q4 | Yes |
 | 575186 | Greninja ex Battle Deck & 2 Booster Bundle | Deck | 2 | Description | — | Unknown | — | 2024 Q3 | Yes |
+| 723301 | Ascended Heroes Elite Trainer Box and Pokeball (Sam's Club) | Elite Trainer Box | 12 | Description | 9 Ascended Heroes | Partial | — | — | Yes |
 | 610741 | Costco Pokemon Evolving Skies Elite Trainer Box and Tin | Elite Trainer Box | 8 | Description | 8 Evolving Skies | Exact | — | — | Yes |
 | 690199 | Fusion Strike Elite Trainer Box & 6 Bonus Cards (Sam's Club) | Elite Trainer Box | 8 | Description | 8 Fusion Strike | Exact | — | — | No |
-| 644852 | Prismatic Evolutions Elite Trainer Box and Pokeball (Sam's Club) | Elite Trainer Box | 12 | Description | 9 Prismatic Evolutions | Partial | — | — | Yes |
+| 644852 | Prismatic Evolutions Elite Trainer Box and Pokeball (Sam's Club) | Elite Trainer Box | 12 | Research | 9 Prismatic Evolutions, 3 Scarlet & Violet Series (set unknown) | Partial | — | — | Yes |
 | 266002 | 10th Movie Commemoration Set | Other | Unknown | Unknown | — | Unknown | — | — | No |
 | 266001 | 11th Movie Commemoration Set | Other | Unknown | Unknown | — | Unknown | — | — | No |
 | 268069 | Boltund V Showcase | Other | 3 | Description | — | Unknown | — | 2022 Q2 | No |
 | 685924 | Costco 6-Pack Poke balls | Other | 18 | Description | 18 unknown set | Partial | — | — | Yes |
 | 650885 | Costco Pokemon Pokemon Holiday Calendar and Great Ball Bundle | Other | 9 | Description | — | Unknown | — | — | Yes |
-| 282250 | Holiday Calendar | Other | 6 | Description | 6 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 | Yes |
-| 505939 | Holiday Calendar 2023 | Other | 5 | Description | — | Unknown | — | 2023 Q3 | Yes |
-| 559089 | Holiday Calendar 2024 | Other | 5 | Description | — | Unknown | — | 2024 Q3 | Yes |
-| 639828 | Holiday Calendar 2025 | Other | 6 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 282645 | Infernape V Showcase | Other | 3 | Description | — | Unknown | — | 2022 Q3 | Yes |
+| 282250 | Holiday Calendar | Other | 6 | Research | 6 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 | Yes |
+| 505939 | Holiday Calendar 2023 | Other | 5 | Research | 2 Fusion Strike, 2 Paldea Evolved, 1 Scarlet & Violet | Exact | — | 2023 Q3 | Yes |
+| 559089 | Holiday Calendar 2024 | Other | 5 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet, 1 Temporal Forces, 1 Twilight Masquerade | Exact | — | 2024 Q3 | Yes |
+| 639828 | Holiday Calendar 2025 | Other | 6 | Research | 6 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | Yes |
+| 282645 | Infernape V Showcase | Other | 3 | Research | 3 unknown set | Partial | — | 2022 Q3 | Yes |
 | 633081 | Mabosstiff ex Showcase | Other | 3 | Description | — | Unknown | — | — | Yes |
 | 498043 | Mimikyu ex Showcase | Other | 3 | Description | — | Unknown | — | — | Yes |
-| 265706 | Pikachu V Showcase | Other | 3 | Description | — | Unknown | — | 2022 Q1 | Yes |
+| 265706 | Pikachu V Showcase | Other | 3 | Research | 3 unknown set | Partial | — | 2022 Q1 | Yes |
 | 273611 | Pokemon TCG: Back to School Bundle | Other | Unknown | Unknown | — | Unknown | — | 2022 Q3 | No |
 | 210197 | Pokemon TCG: Starter Gift Set | Other | Unknown | Unknown | 1 Jungle | Exact | — | — | No |
 | 214360 | Pokemon TCG: Trainer's Toolkit (2020) | Other | 4 | Description | 2 Rebel Clash, 1 Burning Shadows, 1 Sword & Shield | Exact | — | — | Yes |
 | 241109 | Pokemon TCG: Trainer's Toolkit (2021) | Other | 4 | Description | 2 Chilling Reign, 1 Sword & Shield, 1 Vivid Voltage | Exact | — | 2021 Q3 | Yes |
-| 275938 | Pokemon TCG: Trainer's Toolkit (2022) | Other | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 275938 | Pokemon TCG: Trainer's Toolkit (2022) | Other | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 497380 | Pokemon TCG: Trainer's Toolkit (2023) | Other | 4 | Description | 2 Paldea Evolved, 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | 2023 Q2 | Yes |
-| 564274 | Pokemon TCG: Trainer's Toolkit (2024) | Other | 4 | Description | — | Unknown | — | 2024 Q4 | Yes |
+| 564274 | Pokemon TCG: Trainer's Toolkit (2024) | Other | 4 | Research | 4 Scarlet & Violet Series (set unknown) | Partial | — | 2024 Q4 | Yes |
 | 653203 | Pokemon TCG: Trainer's Toolkit (2025) | Other | 4 | Description | 2 Destined Rivals, 2 Mega Evolution | Exact | — | 2025 Q4 | Yes |
 | 624518 | Pokemon TCG: Twin Mini Portfolio & Booster Packs [Mega Mewtwo & Guzzlord] | Other | 2 | Research | 1 BREAKthrough, 1 Crimson Invasion | Exact | — | — | No |
-| 261779 | Spring 2022 Collector Bundle | Other | 7 | Description | — | Unknown | — | 2022 Q2 | Yes |
+| 261779 | Spring 2022 Collector Bundle | Other | 7 | Research | 7 unknown set | Partial | — | 2022 Q2 | Yes |
 | 659947 | Virizion V Showcase | Other | 3 | Description | — | Unknown | — | — | Yes |
 | 530756 | Yu Nagaba x Pokemon - Eevee's Special Promo Pack | Other | Unknown | Unknown | — | Unknown | — | — | Yes |
 | 616291 | Azure Legends Tin [Dialga ex] | Tin | 5 | Description | 2 Surging Sparks, 1 Obsidian Flames, 1 Stellar Crown, 1 Temporal Forces | Exact | — | 2025 Q1 | Yes |
@@ -424,15 +426,16 @@ TCGplayer group `2374`: 559 products.
 | 206404 | BW Sneak-Peek Tin [Snivy] | Tin | 4 | Description | 4 unknown set | Partial | — | — | No |
 | 206403 | BW Sneak-Peek Tin [Tepig] | Tin | 4 | Description | 4 unknown set | Partial | — | — | No |
 | 711498 | Blastoise EX Tin (Retail Exclusive) | Tin | 4 | Description | — | Unknown | — | — | No |
+| 719650 | Costco Ascended Heroes Mini Tins 5-Pack | Tin | 25 | Description | — | Unknown | — | — | Yes |
 | 702637 | Costco Exclusive 4-Tin Bundle: V Heroes Tin [Set of 3] + V Strikers [Empoleon] | Tin | 20 | Research | 15 unknown set, 2 Evolving Skies, 2 Fusion Strike, 1 Chilling Reign | Partial | — | — | No |
 | 701600 | Costco Exclusive 4-Tin Bundle: V Powers Tin [Set of 3] + V Strikers [Tyranitar] | Tin | 20 | Research | 15 unknown set, 2 Evolving Skies, 2 Fusion Strike, 1 Chilling Reign | Partial | — | — | No |
 | 551456 | Costco Galar Pals Mini Tins 5-Pack | Tin | 10 | Research | 5 Brilliant Stars, 5 Evolving Skies | Exact | — | — | Yes |
 | 636312 | Costco Pokemon Collector 3-Pack: Crown Zenith ETB + Paldea Legends Tins | Tin | 19 | Research | 10 Crown Zenith, 5 Silver Tempest, 4 Paldea Evolved | Exact | — | — | Yes |
 | 256408 | Costco Pokemon Collector 3-Pack: Eevee Treasure Chest + 2 Poke Ball Tins | Tin | 11 | Research | 11 unknown set | Partial | — | — | Yes |
 | 587750 | Costco Pokemon Collector 3-Pack: Scarlet & Violet 151 ETB + Paldea Legends Tins | Tin | 18 | Research | 9 151, 5 Silver Tempest, 4 Paldea Evolved | Exact | — | — | Yes |
-| 587747 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Magneton) | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 587746 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Meowth) | Tin | 10 | Description | — | Unknown | — | — | Yes |
-| 594729 | Costco Pokemon Scarlet & Violet Paldean Fates Mini Tin 5-pack | Tin | 10 | Description | — | Unknown | — | — | Yes |
+| 587747 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Magneton) | Tin | 10 | Research | 10 151 | Exact | — | — | Yes |
+| 587746 | Costco Pokemon Scarlet & Violet 151 Mini Tin 5-pack (Meowth) | Tin | 10 | Research | 10 151 | Exact | — | — | Yes |
+| 594729 | Costco Pokemon Scarlet & Violet Paldean Fates Mini Tin 5-pack | Tin | 10 | Research | 10 Paldean Fates | Exact | — | — | Yes |
 | 653892 | Costco Prismatic Evolutions 8-Pack Mini Tins | Tin | 16 | Description | 16 Prismatic Evolutions | Exact | — | — | Yes |
 | 271941 | Divergent Powers Tin [Hisuian Decidueye V] | Tin | 5 | Description | 2 Astral Radiance, 2 Evolving Skies, 1 Brilliant Stars | Exact | — | 2022 Q2 | Yes |
 | 271942 | Divergent Powers Tin [Hisuian Decidueye V] (International Version) | Tin | 5 | Description | 2 Astral Radiance, 2 Evolving Skies, 1 Brilliant Stars | Exact | — | 2022 Q2 | Yes |
@@ -446,17 +449,17 @@ TCGplayer group `2374`: 559 products.
 | 594414 | Dragonite Dragons Tin (Walgreens Exclusive) | Tin | 3 | Bulbapedia (raised) | 1 Burning Shadows, 1 Crimson Invasion, 1 Evolutions | Exact | — | — | Yes |
 | 206390 | EX Series Collector's Tin | Tin | 5 | Bulbapedia | 3 EX Ruby & Sapphire, 2 EX Sandstorm | Exact | — | — | No |
 | 625906 | EX Tin [Keldeo] | Tin | 4 | Bulbapedia | 2 Next Destinies, 1 Emerging Powers, 1 Noble Victories | Exact | — | — | No |
-| 243562 | Eevee Evolutions Tin [Flareon V] | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 243562 | Eevee Evolutions Tin [Flareon V] | Tin | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 546616 | Eevee Evolutions Tin [Flareon V] (Live Code Card) | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | No |
-| 243561 | Eevee Evolutions Tin [Jolteon V] | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 243561 | Eevee Evolutions Tin [Jolteon V] | Tin | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 546618 | Eevee Evolutions Tin [Jolteon V] (Live Code Card) | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | No |
-| 243571 | Eevee Evolutions Tin [Set of 3] | Tin | 12 | Description | 12 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
-| 243559 | Eevee Evolutions Tin [Vaporeon V] | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 243571 | Eevee Evolutions Tin [Set of 3] | Tin | 12 | Research | 12 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
+| 243559 | Eevee Evolutions Tin [Vaporeon V] | Tin | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | — | Yes |
 | 546617 | Eevee Evolutions Tin [Vaporeon V] (Live Code Card) | Tin | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | — | No |
 | 251014 | Eevee Pokemon Treasure Chest Tin | Tin | 5 | Description | — | Unknown | — | — | Yes |
-| 199787 | Elemental Power Tin [Flareon GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
-| 199789 | Elemental Power Tin [Jolteon GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
-| 199788 | Elemental Power Tin [Vaporeon GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q4 | Yes |
+| 199787 | Elemental Power Tin [Flareon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q4 | Yes |
+| 199789 | Elemental Power Tin [Jolteon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q4 | Yes |
+| 199788 | Elemental Power Tin [Vaporeon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q4 | Yes |
 | 200142 | Fall 2019 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | — | Yes |
 | 263031 | Fall 2020 Collector's Chest Tin + Great Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | Unknown | — | — | No |
 | 263033 | Fall 2020 Collector's Chest Tin + Level Ball 2-Pack (Retail Exclusive) | Tin | 8 | Description | — | Unknown | — | — | Yes |
@@ -467,25 +470,25 @@ TCGplayer group `2374`: 559 products.
 | 220289 | Galar Challengers Tin [Polteageist V] | Tin | 4 | Description | — | Unknown | — | — | Yes |
 | 220292 | Galar Challengers Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | — | No |
 | 220291 | Galar Challengers Tin [Toxtricity V] | Tin | 4 | Description | — | Unknown | — | — | Yes |
-| 207986 | Galar Pal Mini Tin [Galarian Ponyta] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | 2020 Q2 | Yes |
+| 207986 | Galar Pal Mini Tin [Galarian Ponyta] | Tin | 2 | Research | 1 Evolutions, 1 Sword & Shield | Exact | — | 2020 Q2 | Yes |
 | 207987 | Galar Pal Mini Tin [Grookey & Wooloo] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
 | 207988 | Galar Pal Mini Tin [Scorbunny & Pikachu] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
 | 207992 | Galar Pal Mini Tin [Set of 5] | Tin | 10 | Description | 5 Sword & Shield, 5 unknown set | Partial | — | — | Yes |
 | 207989 | Galar Pal Mini Tin [Sobble & Rookidee] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
 | 207990 | Galar Pal Mini Tin [Yamper & Morpeko] | Tin | 2 | Description | 1 Sword & Shield, 1 unknown set | Partial | — | — | Yes |
 | 218854 | Galar Power Mini Tin [Dragapult] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | — | Yes |
-| 218857 | Galar Power Mini Tin [Galarian Obstagoon] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
-| 218856 | Galar Power Mini Tin [Galarian Rapidash] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
-| 218855 | Galar Power Mini Tin [Galarian Sirfetch'd] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 218857 | Galar Power Mini Tin [Galarian Obstagoon] | Tin | 2 | Research | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 218856 | Galar Power Mini Tin [Galarian Rapidash] | Tin | 2 | Research | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 218855 | Galar Power Mini Tin [Galarian Sirfetch'd] | Tin | 2 | Research | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
 | 449727 | Galar Power Mini Tin [Set of 5] | Tin | 10 | Description | 5 Darkness Ablaze, 5 Sun & Moon | Exact | — | — | Yes |
-| 218858 | Galar Power Mini Tin [Toxtricity] | Tin | 2 | Description | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
-| 281982 | Hidden Potential Tin [Gallade V] | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 218858 | Galar Power Mini Tin [Toxtricity] | Tin | 2 | Research | 1 Darkness Ablaze, 1 Sun & Moon | Exact | — | 2020 Q4 | Yes |
+| 281982 | Hidden Potential Tin [Gallade V] | Tin | 5 | Research | 5 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 281989 | Hidden Potential Tin [Gallade V] (International Version) | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | No |
-| 281984 | Hidden Potential Tin [Giratina V] | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 281984 | Hidden Potential Tin [Giratina V] | Tin | 5 | Research | 5 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 281990 | Hidden Potential Tin [Giratina V] (International Version) | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | No |
-| 281981 | Hidden Potential Tin [Rotom V] | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 281981 | Hidden Potential Tin [Rotom V] | Tin | 5 | Research | 5 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 281988 | Hidden Potential Tin [Rotom V] (International Version) | Tin | 5 | Description | — | Unknown | — | 2022 Q4 | No |
-| 281993 | Hidden Potential Tin [Set of 3] | Tin | 15 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 281993 | Hidden Potential Tin [Set of 3] | Tin | 15 | Research | 15 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 281994 | Hidden Potential Tin [Set of 3] (International Version) | Tin | 15 | Description | — | Unknown | — | 2022 Q4 | No |
 | 185261 | Kanto Friends Mini Tin [Bulbasaur] | Tin | 2 | Description | 1 Burning Shadows, 1 Fates Collide | Exact | — | — | Yes |
 | 185264 | Kanto Friends Mini Tin [Charmander] | Tin | 2 | Description | 1 Burning Shadows, 1 Fates Collide | Exact | — | — | Yes |
@@ -508,10 +511,10 @@ TCGplayer group `2374`: 559 products.
 | 685580 | Lumiose City Mini Tin [Set of 5] | Tin | 10 | Description | 5 Chaos Rising, 5 Perfect Order | Exact | — | 2026 Q2 | Yes |
 | 671250 | Mega Charizard Tin (Mega Charizard X) | Tin | 4 | Description | 2 Phantasmal Flames, 1 Journey Together, 1 Mega Evolution | Exact | — | 2026 Q1 | Yes |
 | 671249 | Mega Charizard Tin (Mega Charizard Y) | Tin | 4 | Description | 2 Phantasmal Flames, 1 Journey Together, 1 Mega Evolution | Exact | — | 2026 Q1 | Yes |
-| 702506 | Mega Forces Tin [Mega Darkrai ex] | Tin | 4 | Description | — | Unknown | — | 2026 Q3 | Yes |
-| 702505 | Mega Forces Tin [Mega Dragonite ex] | Tin | 4 | Description | — | Unknown | — | 2026 Q3 | Yes |
-| 702507 | Mega Forces Tin [Mega Zeraora ex] | Tin | 4 | Description | — | Unknown | — | 2026 Q3 | Yes |
-| 702508 | Mega Forces Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2026 Q3 | Yes |
+| 702506 | Mega Forces Tin [Mega Darkrai ex] | Tin | 4 | Research | 2 Chaos Rising, 2 Pitch Black | Exact | — | 2026 Q3 | Yes |
+| 702505 | Mega Forces Tin [Mega Dragonite ex] | Tin | 4 | Research | 2 Chaos Rising, 2 Pitch Black | Exact | — | 2026 Q3 | Yes |
+| 702507 | Mega Forces Tin [Mega Zeraora ex] | Tin | 4 | Research | 2 Chaos Rising, 2 Pitch Black | Exact | — | 2026 Q3 | Yes |
+| 702508 | Mega Forces Tin [Set of 3] | Tin | 12 | Research | 6 Chaos Rising, 6 Pitch Black | Exact | — | 2026 Q3 | Yes |
 | 686438 | Mega Moonlit Tin [Mega Clefable ex] | Tin | 4 | Description | 2 Chaos Rising, 2 Perfect Order | Exact | — | 2026 Q2 | Yes |
 | 686437 | Mega Moonlit Tin [Mega Gengar ex] | Tin | 4 | Description | 2 Chaos Rising, 2 Perfect Order | Exact | — | 2026 Q2 | Yes |
 | 247819 | Mighty Mysterious Tin [Darkrai] | Tin | 3 | Description | 1 Brilliant Stars, 1 Evolving Skies, 1 Fusion Strike | Exact | — | — | Yes |
@@ -559,9 +562,9 @@ TCGplayer group `2374`: 559 products.
 | 198519 | Pokemon - Poke Ball Tin - Great Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
 | 587366 | Pokemon - Poke Ball Tin - Great Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 688966 | Pokemon - Poke Ball Tin - Great Ball (Q4 2025) | Tin | 3 | Description | 1 Destined Rivals, 1 Journey Together, 1 Surging Sparks | Exact | — | — | Yes |
-| 231292 | Pokemon - Poke Ball Tin - Level Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2021 Q1 | Yes |
-| 271585 | Pokemon - Poke Ball Tin - Love Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2022 Q2 | Yes |
-| 516987 | Pokemon - Poke Ball Tin - Lure Ball | Tin | 3 | Description | 3 unknown set | Partial | — | 2023 Q3 | Yes |
+| 231292 | Pokemon - Poke Ball Tin - Level Ball | Tin | 3 | Research | 3 unknown set | Partial | — | 2021 Q1 | Yes |
+| 271585 | Pokemon - Poke Ball Tin - Love Ball | Tin | 3 | Research | 1 Chilling Reign, 1 Evolving Skies, 1 Fusion Strike | Exact | — | 2022 Q2 | Yes |
+| 516987 | Pokemon - Poke Ball Tin - Lure Ball | Tin | 3 | Research | 1 Fusion Strike, 1 Lost Origin, 1 Silver Tempest | Exact | — | 2023 Q3 | Yes |
 | 198520 | Pokemon - Poke Ball Tin - Luxury Ball | Tin | 3 | Research | — | Unknown | — | — | Yes |
 | 686298 | Pokemon - Poke Ball Tin - Moon Ball | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 587369 | Pokemon - Poke Ball Tin - Moon Ball (Q4 2024) | Tin | 3 | Research | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
@@ -582,10 +585,10 @@ TCGplayer group `2374`: 559 products.
 | 260867 | Pokemon Stacking Tin: Electric | Tin | 3 | Description | — | Unknown | — | — | Yes |
 | 260866 | Pokemon Stacking Tin: Grass | Tin | 3 | Description | — | Unknown | — | — | Yes |
 | 541171 | Pokemon Stacking Tin: Metal | Tin | 3 | Description | — | Unknown | — | — | Yes |
-| 616296 | Pokemon Stacking Tin: Ogerpon | Tin | 3 | Description | — | Unknown | — | 2025 Q1 | Yes |
-| 616295 | Pokemon Stacking Tin: Paradox Pokemon | Tin | 3 | Description | — | Unknown | — | 2025 Q1 | Yes |
+| 616296 | Pokemon Stacking Tin: Ogerpon | Tin | 3 | Research | 1 Stellar Crown, 1 Surging Sparks, 1 Temporal Forces | Exact | — | 2025 Q1 | Yes |
+| 616295 | Pokemon Stacking Tin: Paradox Pokemon | Tin | 3 | Research | 1 Stellar Crown, 1 Surging Sparks, 1 Temporal Forces | Exact | — | 2025 Q1 | Yes |
 | 541168 | Pokemon Stacking Tin: Psychic | Tin | 3 | Description | — | Unknown | — | — | Yes |
-| 616294 | Pokemon Stacking Tin: Treasures of Ruin | Tin | 3 | Description | — | Unknown | — | 2025 Q1 | Yes |
+| 616294 | Pokemon Stacking Tin: Treasures of Ruin | Tin | 3 | Research | 1 Stellar Crown, 1 Surging Sparks, 1 Temporal Forces | Exact | — | 2025 Q1 | Yes |
 | 260865 | Pokemon Stacking Tin: Water | Tin | 3 | Description | — | Unknown | — | — | Yes |
 | 260869 | Pokemon Stacking Tins [Set of 3] | Tin | 9 | Description | — | Unknown | — | — | Yes |
 | 541205 | Pokemon Stacking Tins [Set of 3] (Psychic, Metal, and Dragon) | Tin | 9 | Description | — | Unknown | — | — | Yes |
@@ -605,21 +608,21 @@ TCGplayer group `2374`: 559 products.
 | 229748 | Strong Bonds Tin [Blissey] | Tin | 3 | Description | 1 Burning Shadows, 1 Crimson Invasion, 1 Sun & Moon | Exact | — | — | Yes |
 | 229747 | Strong Bonds Tin [Gardevoir] | Tin | 3 | Description | 1 Burning Shadows, 1 Crimson Invasion, 1 Sun & Moon | Exact | — | — | Yes |
 | 497870 | Summer 2023 Collector's Chest Tin | Tin | 6 | Description | 2 Paldea Evolved, 2 Scarlet & Violet, 2 Silver Tempest | Exact | — | 2023 Q3 | Yes |
-| 653216 | Team Rocket Tin [Set of 3] | Tin | 15 | Description | — | Unknown | — | — | Yes |
-| 649193 | Team Rocket Tin [Team Rocket's Mewtwo ex] | Tin | 5 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649200 | Team Rocket Tin [Team Rocket's Mewtwo ex] (International Version) | Tin | 4 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649194 | Team Rocket Tin [Team Rocket's Nidoking ex] | Tin | 5 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649199 | Team Rocket Tin [Team Rocket's Nidoking ex] (International Version) | Tin | 4 | Description | — | Unknown | — | 2025 Q3 | No |
-| 649195 | Team Rocket Tin [Team Rocket's Persian ex] | Tin | 5 | Description | — | Unknown | — | 2025 Q3 | Yes |
-| 649197 | Team Rocket Tin [Team Rocket's Persian ex] (International Version) | Tin | 4 | Description | — | Unknown | — | 2025 Q3 | Yes |
+| 653216 | Team Rocket Tin [Set of 3] | Tin | 15 | Research | 9 Destined Rivals, 6 Journey Together | Exact | — | — | Yes |
+| 649193 | Team Rocket Tin [Team Rocket's Mewtwo ex] | Tin | 5 | Research | 3 Destined Rivals, 2 Journey Together | Exact | — | 2025 Q3 | Yes |
+| 649200 | Team Rocket Tin [Team Rocket's Mewtwo ex] (International Version) | Tin | 4 | Research | 4 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | Yes |
+| 649194 | Team Rocket Tin [Team Rocket's Nidoking ex] | Tin | 5 | Research | 3 Destined Rivals, 2 Journey Together | Exact | — | 2025 Q3 | Yes |
+| 649199 | Team Rocket Tin [Team Rocket's Nidoking ex] (International Version) | Tin | 4 | Research | 4 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | No |
+| 649195 | Team Rocket Tin [Team Rocket's Persian ex] | Tin | 5 | Research | 3 Destined Rivals, 2 Journey Together | Exact | — | 2025 Q3 | Yes |
+| 649197 | Team Rocket Tin [Team Rocket's Persian ex] (International Version) | Tin | 4 | Research | 4 Scarlet & Violet Series (set unknown) | Partial | — | 2025 Q3 | Yes |
 | 591146 | Triple Whammy Tin [Darkrai] | Tin | 3 | Description | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 591147 | Triple Whammy Tin [Slaking] | Tin | 3 | Description | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 591145 | Triple Whammy Tin [Tyranitar] | Tin | 3 | Description | 1 Obsidian Flames, 1 Paradox Rift, 1 Scarlet & Violet | Exact | — | — | Yes |
 | 648588 | Triple Whammy Tins [Set of 3] | Tin | 9 | Description | 3 Obsidian Flames, 3 Paradox Rift, 3 Scarlet & Violet | Exact | — | — | Yes |
-| 230400 | V Forces Tin [Galarian Slowbro V] | Tin | 4 | Description | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
-| 230401 | V Forces Tin [Lucario V] | Tin | 4 | Description | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
-| 230402 | V Forces Tin [Mew V] | Tin | 4 | Description | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
-| 230403 | V Forces Tin [Set of 3] | Tin | 12 | Description | 6 Vivid Voltage, 3 BREAKpoint, 3 Sword & Shield | Exact | — | 2021 Q1 | No |
+| 230400 | V Forces Tin [Galarian Slowbro V] | Tin | 4 | Research | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
+| 230401 | V Forces Tin [Lucario V] | Tin | 4 | Research | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
+| 230402 | V Forces Tin [Mew V] | Tin | 4 | Research | 2 Vivid Voltage, 1 BREAKpoint, 1 Sword & Shield | Exact | — | 2021 Q1 | Yes |
+| 230403 | V Forces Tin [Set of 3] | Tin | 12 | Research | 6 Vivid Voltage, 3 BREAKpoint, 3 Sword & Shield | Exact | — | 2021 Q1 | Yes |
 | 262969 | V Heroes Tin [Espeon V] | Tin | 5 | Description | 2 Brilliant Stars, 1 Evolving Skies, 1 Fusion Strike, 1 unknown set | Partial | — | — | Yes |
 | 270153 | V Heroes Tin [Espeon V] (International Version) | Tin | 4 | Description | 2 Brilliant Stars, 1 Fusion Strike, 1 Vivid Voltage | Exact | — | — | Yes |
 | 262972 | V Heroes Tin [Set of 3] | Tin | 15 | Description | 6 Brilliant Stars, 3 Evolving Skies, 3 Fusion Strike, 3 unknown set | Partial | — | — | Yes |
@@ -628,13 +631,13 @@ TCGplayer group `2374`: 559 products.
 | 270151 | V Heroes Tin [Sylveon V] (International Version) | Tin | 4 | Description | 2 Brilliant Stars, 1 Fusion Strike, 1 Vivid Voltage | Exact | — | — | Yes |
 | 262971 | V Heroes Tin [Umbreon V] | Tin | 5 | Description | 2 Brilliant Stars, 1 Evolving Skies, 1 Fusion Strike, 1 unknown set | Partial | — | — | Yes |
 | 270152 | V Heroes Tin [Umbreon V] (International Version) | Tin | 4 | Description | 2 Brilliant Stars, 1 Fusion Strike, 1 Vivid Voltage | Exact | — | — | Yes |
-| 220310 | V Powers Tin [Eevee V] | Tin | 5 | Description | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
+| 220310 | V Powers Tin [Eevee V] | Tin | 5 | Research | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
 | 256831 | V Powers Tin [Eevee V] (International Version) | Tin | 4 | Description | 2 Darkness Ablaze, 1 Sun & Moon, 1 Sword & Shield | Exact | — | — | Yes |
-| 220311 | V Powers Tin [Eternatus V] | Tin | 5 | Description | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
+| 220311 | V Powers Tin [Eternatus V] | Tin | 5 | Research | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
 | 256832 | V Powers Tin [Eternatus V] (International Version) | Tin | 4 | Description | 2 Darkness Ablaze, 1 Sun & Moon, 1 Sword & Shield | Exact | — | — | Yes |
-| 220308 | V Powers Tin [Pikachu V] | Tin | 5 | Description | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
+| 220308 | V Powers Tin [Pikachu V] | Tin | 5 | Research | 2 Darkness Ablaze, 1 Fates Collide, 1 Rebel Clash, 1 Sun & Moon | Exact | — | 2020 Q3 | Yes |
 | 256830 | V Powers Tin [Pikachu V] (International Version) | Tin | 4 | Description | 2 Darkness Ablaze, 1 Sun & Moon, 1 Sword & Shield | Exact | — | — | Yes |
-| 221761 | V Powers Tin [Set of 3] | Tin | 15 | Description | 6 Darkness Ablaze, 3 Fates Collide, 3 Rebel Clash, 3 Sun & Moon | Exact | — | 2020 Q3 | Yes |
+| 221761 | V Powers Tin [Set of 3] | Tin | 15 | Research | 6 Darkness Ablaze, 3 Fates Collide, 3 Rebel Clash, 3 Sun & Moon | Exact | — | 2020 Q3 | Yes |
 | 256833 | V Powers Tin [Set of 3] (International Version) | Tin | 12 | Description | 6 Darkness Ablaze, 3 Sun & Moon, 3 Sword & Shield | Exact | — | — | Yes |
 | 554181 | Vibrant Paldea Mini Tin [Arboliva] | Tin | 2 | Description | 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | 2024 Q2 | Yes |
 | 554183 | Vibrant Paldea Mini Tin [Ceruledge] | Tin | 2 | Description | 1 Scarlet & Violet, 1 Silver Tempest | Exact | — | 2024 Q2 | Yes |
@@ -662,7 +665,7 @@ TCGplayer group `22880`: 9 products.
 | 670914 | Play! Pokemon Prize Pack Series Eight | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 577596 | Play! Pokemon Prize Pack Series Five | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 551628 | Play! Pokemon Prize Pack Series Four | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
-| 704373 | Play! Pokemon Prize Pack Series Nine | Prize pack | 1 | Kind default | — | Unknown | — | — | No |
+| 704373 | Play! Pokemon Prize Pack Series Nine | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 482138 | Play! Pokemon Prize Pack Series One | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 649191 | Play! Pokemon Prize Pack Series Seven | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
 | 639713 | Play! Pokemon Prize Pack Series Six | Prize pack | 1 | Kind default | — | Unknown | — | — | Yes |
@@ -685,7 +688,7 @@ TCGplayer group `23266`: 4 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 564134 | Trick or Trade BOOster Bundle 2023 (120 ct) | Booster bundle | 120 | Description | — | Unknown | — | — | Yes |
 | 505942 | Trick or Trade BOOster Bundle 2023 (50 ct) | Booster bundle | 50 | Description | — | Unknown | — | — | Yes |
-| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster pack | 1 | Kind default | — | Unknown | — | 2023 Q3 | Yes |
+| 505945 | Trick or Trade BOOster Bundle 2023 - Mini Booster Pack | Booster pack | 1 | Research | 1 unknown set | Partial | — | 2023 Q3 | Yes |
 | 505943 | Trick or Trade BOOster Bundle 2023 Case | Case or display | — | — | — | — | 12 booster bundles | 2023 Q3 | Yes |
 
 ## Trick or Trade BOOster Bundle 2024

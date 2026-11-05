@@ -125,14 +125,14 @@ TCGplayer group `2377`: 22 products.
 | 276584 | Team Up Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Team Up | Product set | — | 2019 Q1 (set) | Yes |
 | 595411 | TAG TEAM Tin Case | Case or display | — | — | — | — | 3 tins | 2019 Q1 (set) | Yes |
 | 547128 | Team Up Prerelease Kit Display | Case or display | — | — | — | — | Unknown | 2019 Q1 (set) | No |
-| 185246 | Melmetal GX Box | Collection | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
-| 181693 | Towering Splash GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2019 Q1 | Yes |
+| 185246 | Melmetal GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
+| 181693 | Towering Splash GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 | Yes |
 | 181704 | Team Up Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Team Up | Exact | — | 2019 Q1 | Yes |
 | 183975 | Team Up Prerelease Kit | Other | 4 | Description | 4 Team Up | Exact | — | 2019 Q1 | Yes |
-| 185256 | TAG TEAM Tin [Celebi & Venusaur GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
-| 185257 | TAG TEAM Tin [Eevee & Snorlax GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
-| 185258 | TAG TEAM Tin [Pikachu & Zekrom GX] | Tin | 4 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
-| 185259 | TAG TEAM Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2019 Q1 (set) | Yes |
+| 185256 | TAG TEAM Tin [Celebi & Venusaur GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
+| 185257 | TAG TEAM Tin [Eevee & Snorlax GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
+| 185258 | TAG TEAM Tin [Pikachu & Zekrom GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
+| 185259 | TAG TEAM Tin [Set of 3] | Tin | 12 | Research | 12 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -108,10 +108,10 @@ TCGplayer group `2585`: 38 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 206030 | Sword & Shield 3 Pack Blister [Galarian Ponyta] | Blister | 3 | Description | 3 Sword & Shield | Exact | — | 2020 Q1 (set) | Yes |
 | 206029 | Sword & Shield 3 Pack Blister [Morpeko] | Blister | 3 | Description | 3 Sword & Shield | Exact | — | 2020 Q1 (set) | Yes |
-| 206032 | Sword & Shield Single Blister Pack [Gossifleur] | Blister | 1 | Name | — | Unknown | — | 2020 Q1 | Yes |
+| 206032 | Sword & Shield Single Blister Pack [Gossifleur] | Blister | 1 | Research | 1 Sword & Shield | Exact | — | 2020 Q1 | Yes |
 | 665630 | Sword & Shield Single Blister Pack [Type:Null & Silvally] | Blister | 1 | Name | — | Unknown | — | 2020 Q1 (set) | No |
 | 668504 | Sword & Shield Single Blister Pack [Wimpod & Golisopod] | Blister | 1 | Name | — | Unknown | — | 2020 Q1 (set) | No |
-| 206031 | Sword & Shield Single Blister Pack [Wooloo] | Blister | 1 | Name | — | Unknown | — | 2020 Q1 | Yes |
+| 206031 | Sword & Shield Single Blister Pack [Wooloo] | Blister | 1 | Research | 1 Sword & Shield | Exact | — | 2020 Q1 | Yes |
 | 206027 | Sword & Shield Booster Box | Booster box | 36 | Description | 36 Sword & Shield | Product set | — | 2020 Q1 | Yes |
 | 206028 | Sword & Shield Booster Pack | Booster pack | 1 | Kind default | 1 Sword & Shield | Product set | — | 2020 Q1 | Yes |
 | 487795 | Sword And Shield Base Set Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Sword & Shield | Product set | — | 2020 Q1 (set) | Yes |
@@ -120,30 +120,30 @@ TCGplayer group `2585`: 38 products.
 | 206040 | Sword & Shield Build & Battle Box | Build & Battle | 4 | Description | 4 Sword & Shield | Exact | — | 2020 Q1 | Yes |
 | 530142 | Sword & Shield Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2020 Q1 (set) | Yes |
 | 206033 | Sword & Shield Build & Battle Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q1 (set) | Yes |
-| 220750 | Galar Partners Box [Cinderace V] | Collection | 4 | Description | — | Unknown | — | 2020 Q1 (set) | Yes |
-| 220752 | Galar Partners Box [Inteleon V] | Collection | 4 | Description | — | Unknown | — | 2020 Q1 (set) | Yes |
-| 220751 | Galar Partners Box [Rillaboom V] | Collection | 4 | Description | — | Unknown | — | 2020 Q1 (set) | Yes |
-| 210577 | Morpeko Pin Collection | Collection | 3 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 210576 | Snorlax Pin Collection | Collection | 3 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 206424 | Toxtricity V Box | Collection | 4 | Description | 2 Sword & Shield, 1 Cosmic Eclipse, 1 Evolutions | Exact | — | 2020 Q1 | Yes |
+| 220750 | Galar Partners Box [Cinderace V] | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | Yes |
+| 220752 | Galar Partners Box [Inteleon V] | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | Yes |
+| 220751 | Galar Partners Box [Rillaboom V] | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | Yes |
+| 210577 | Morpeko Pin Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2020 Q2 | Yes |
+| 210576 | Snorlax Pin Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2020 Q2 | Yes |
+| 206424 | Toxtricity V Box | Collection | 4 | Research | 2 Sword & Shield, 1 Cosmic Eclipse, 1 Evolutions | Exact | — | 2020 Q1 | Yes |
 | 244411 | Sword & Shield Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Sword & Shield | Product set | — | 2020 Q1 (set) | Yes |
 | 206038 | Sword & Shield Elite Trainer Box [Zacian] | Elite Trainer Box | 8 | Description | 8 Sword & Shield | Product set | — | 2020 Q1 (set) | Yes |
 | 206039 | Sword & Shield Elite Trainer Box [Zamazenta] | Elite Trainer Box | 8 | Description | 8 Sword & Shield | Product set | — | 2020 Q1 (set) | Yes |
-| 282886 | Galar Partners International Tin [Cinderace V] | Tin | 4 | Description | — | Unknown | — | 2020 Q1 (set) | No |
-| 282885 | Galar Partners International Tin [Inteleon V] | Tin | 4 | Description | — | Unknown | — | 2020 Q1 (set) | No |
-| 282887 | Galar Partners International Tin [Rillaboom V] | Tin | 4 | Description | — | Unknown | — | 2020 Q1 (set) | Yes |
+| 282886 | Galar Partners International Tin [Cinderace V] | Tin | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | No |
+| 282885 | Galar Partners International Tin [Inteleon V] | Tin | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | No |
+| 282887 | Galar Partners International Tin [Rillaboom V] | Tin | 4 | Research | 4 unknown set | Partial | — | 2020 Q1 (set) | Yes |
 | 283071 | Galar Partners International Tin [Set of 3] | Tin | 15 | Bulbapedia | — | Unknown | — | 2020 Q1 (set) | No |
-| 206420 | Galar Partners Tin [Cinderace V] | Tin | 5 | Description | — | Unknown | — | 2020 Q1 | Yes |
-| 206417 | Galar Partners Tin [Inteleon V] | Tin | 5 | Description | — | Unknown | — | 2020 Q1 | Yes |
-| 206422 | Galar Partners Tin [Rillaboom V] | Tin | 5 | Description | — | Unknown | — | 2020 Q1 | Yes |
-| 206423 | Galar Partners Tin [Set of 3] | Tin | 15 | Description | — | Unknown | — | 2020 Q1 | Yes |
-| 287503 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Cinderace V] (Retail Exclusive) | Tin | 18 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
-| 287502 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Inteleon V] (Retail Exclusive) | Tin | 18 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
-| 287500 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Rillaboom V] (Retail Exclusive) | Tin | 18 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
-| 287504 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Cinderace V] (Retail Exclusive) | Tin | 18 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
-| 287505 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Inteleon V] (Retail Exclusive) | Tin | 18 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
-| 287507 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Rillaboom V] (Retail Exclusive) | Tin | 20 | Description | 8 Fusion Strike, 6 Chilling Reign, 4 Evolving Skies | Partial | — | 2020 Q1 (set) | Yes |
-| 209531 | Spring 2020 Collector's Chest Tin | Tin | 5 | Description | 2 Sword & Shield, 1 Burning Shadows, 1 Cosmic Eclipse, 1 Evolutions | Exact | — | 2020 Q1 (set) | Yes |
+| 206420 | Galar Partners Tin [Cinderace V] | Tin | 5 | Research | 5 unknown set | Partial | — | 2020 Q1 | Yes |
+| 206417 | Galar Partners Tin [Inteleon V] | Tin | 5 | Research | 5 unknown set | Partial | — | 2020 Q1 | Yes |
+| 206422 | Galar Partners Tin [Rillaboom V] | Tin | 5 | Research | 5 unknown set | Partial | — | 2020 Q1 | Yes |
+| 206423 | Galar Partners Tin [Set of 3] | Tin | 15 | Research | 15 unknown set | Partial | — | 2020 Q1 | Yes |
+| 287503 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Cinderace V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 287502 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Inteleon V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 287500 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zacian V/Rillaboom V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 287504 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Cinderace V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 287505 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Inteleon V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 287507 | Legends of Galar Tin + Galar Partners Tin 2-pack [Zamazenta V/Rillaboom V] (Retail Exclusive) | Tin | 9 | Research | 4 Fusion Strike, 3 Chilling Reign, 2 Evolving Skies | Exact | — | 2020 Q1 (set) | Yes |
+| 209531 | Spring 2020 Collector's Chest Tin | Tin | 5 | Research | 2 Sword & Shield, 1 Burning Shadows, 1 Cosmic Eclipse, 1 Evolutions | Exact | — | 2020 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

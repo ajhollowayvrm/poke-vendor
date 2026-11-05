@@ -133,7 +133,7 @@ TCGplayer group `1395`: 2 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 98567 | Crystal Guardians Booster Box | Booster box | 36 | Kind default | 36 EX Crystal Guardians | Product set | — | 2006 Q3 (set) | No |
-| 98566 | Crystal Guardians Booster Pack | Booster pack | 1 | Kind default | 1 EX Crystal Guardians | Product set | — | 2006 Q3 (set) | No |
+| 98566 | Crystal Guardians Booster Pack | Booster pack | 1 | Kind default | 1 EX Crystal Guardians | Product set | — | 2006 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

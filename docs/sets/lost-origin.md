@@ -168,20 +168,20 @@ TCGplayer group `3118`, `3172`: 43 products.
 | 496131 | Lost Origin Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2022 Q3 (set) | Yes |
 | 282407 | Pokemon Stacking Tins: Fighting-Fire-Darkness Display | Case or display | — | — | — | — | Unknown number of tins | 2022 Q4 | No |
 | 454377 | Sword & Shield Ultra-Premium Collection: Charizard Case | Case or display | — | — | — | — | Unknown number of collections | 2022 Q3 (set) | Yes |
-| 283325 | Arceus VSTAR Premium Collection | Collection | 10 | Description | — | Unknown | — | 2022 Q3 | Yes |
-| 285674 | Arceus VSTAR Ultra-Premium Collection | Collection | 15 | Description | 15 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
-| 282402 | Hisuian Zoroark VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 637417 | Hisuian Zoroark VSTAR Premium Collection (International Version) | Collection | 5 | Description | — | Unknown | — | 2022 Q3 (set) | Yes |
-| 282000 | Origin Forme Dialga VSTAR Premium Collection | Collection | 6 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282005 | Origin Forme Dialga/Palkia VSTAR Premium Collection [Set of 2] | Collection | 12 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282001 | Origin Forme Palkia VSTAR Premium Collection | Collection | 6 | Description | 6 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
-| 282401 | Sword & Shield Ultra-Premium Collection: Charizard | Collection | 16 | Description | 16 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 283325 | Arceus VSTAR Premium Collection | Collection | 10 | Research | 10 Sword & Shield Series (set unknown) | Partial | — | 2022 Q3 | Yes |
+| 285674 | Arceus VSTAR Ultra-Premium Collection | Collection | 15 | Research | 15 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 282402 | Hisuian Zoroark VSTAR Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2022 Q4 | Yes |
+| 637417 | Hisuian Zoroark VSTAR Premium Collection (International Version) | Collection | 5 | Research | 5 unknown set | Partial | — | 2022 Q3 (set) | Yes |
+| 282000 | Origin Forme Dialga VSTAR Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282005 | Origin Forme Dialga/Palkia VSTAR Premium Collection [Set of 2] | Collection | 12 | Research | 6 Sword & Shield Series (set unknown), 6 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282001 | Origin Forme Palkia VSTAR Premium Collection | Collection | 6 | Research | 6 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
+| 282401 | Sword & Shield Ultra-Premium Collection: Charizard | Collection | 16 | Research | 16 Sword & Shield Series (set unknown) | Partial | — | 2022 Q4 | Yes |
 | 277335 | Lost Origin Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Lost Origin | Exact | — | 2022 Q3 | Yes |
-| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Description | 8 Lost Origin | Partial | — | 2022 Q3 (set) | Yes |
-| 282405 | Pokemon Stacking Tin: Darkness | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282403 | Pokemon Stacking Tin: Fighting | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282404 | Pokemon Stacking Tin: Fire | Tin | 3 | Description | — | Unknown | — | 2022 Q4 | Yes |
-| 282406 | Pokemon Stacking Tins: Fighting-Fire-Darkness [Set of 3] | Tin | 9 | Description | — | Unknown | — | 2022 Q4 | Yes |
+| 277336 | Lost Origin Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 10 | Research | 10 Lost Origin | Exact | — | 2022 Q3 (set) | Yes |
+| 282405 | Pokemon Stacking Tin: Darkness | Tin | 3 | Research | 2 Lost Origin, 1 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282403 | Pokemon Stacking Tin: Fighting | Tin | 3 | Research | 2 Lost Origin, 1 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282404 | Pokemon Stacking Tin: Fire | Tin | 3 | Research | 2 Lost Origin, 1 unknown set | Partial | — | 2022 Q4 | Yes |
+| 282406 | Pokemon Stacking Tins: Fighting-Fire-Darkness [Set of 3] | Tin | 9 | Research | 6 Lost Origin, 3 unknown set | Partial | — | 2022 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

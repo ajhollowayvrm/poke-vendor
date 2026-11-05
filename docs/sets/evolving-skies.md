@@ -144,16 +144,16 @@ TCGplayer group `2848`: 33 products.
 | 243722 | Evolving Skies Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2021 Q3 | Yes |
 | 628319 | Evolving Skies Pokemon Center Elite Trainer Box Case [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2021 Q3 (set) | No |
 | 650863 | Evolving Skies 3 Pack Hanger Box | Collection | 3 | Description | 3 Evolving Skies | Exact | — | 2021 Q3 (set) | Yes |
-| 245878 | Greninja V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
-| 245877 | Mewtwo V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
-| 245880 | V-UNION Special Collection [Set of 3] | Collection | 12 | Description | 12 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
-| 245879 | Zacian V-UNION Special Collection | Collection | 4 | Description | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245878 | Greninja V-UNION Special Collection | Collection | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245877 | Mewtwo V-UNION Special Collection | Collection | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245880 | V-UNION Special Collection [Set of 3] | Collection | 12 | Research | 12 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
+| 245879 | Zacian V-UNION Special Collection | Collection | 4 | Research | 4 Sword & Shield Series (set unknown) | Partial | — | 2021 Q3 (set) | Yes |
 | 242434 | Evolving Skies Elite Trainer Box [Flareon/Jolteon/Umbreon/Leafeon] | Elite Trainer Box | 8 | Description | 8 Evolving Skies | Exact | — | 2021 Q3 | Yes |
 | 242443 | Evolving Skies Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] | Elite Trainer Box | 8 | Description | 8 Evolving Skies | Exact | — | 2021 Q3 | Yes |
 | 243721 | Evolving Skies Elite Trainer Box [Set of 2] | Elite Trainer Box | 16 | Description | 16 Evolving Skies | Exact | — | 2021 Q3 | Yes |
-| 245352 | Evolving Skies Pokemon Center Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Elite Trainer Box | 10 | Description | 8 Evolving Skies | Partial | — | 2021 Q3 (set) | Yes |
-| 245376 | Evolving Skies Pokemon Center Elite Trainer Box [Jolteon/Flareon/Umbreon/Leafeon] (Exclusive) | Elite Trainer Box | 10 | Description | 8 Evolving Skies | Partial | — | 2021 Q3 | Yes |
-| 245855 | Evolving Skies Pokemon Center Elite Trainer Box [Set of 2] (Exclusive) | Elite Trainer Box | 20 | Description | 16 Evolving Skies | Partial | — | 2021 Q3 | Yes |
+| 245352 | Evolving Skies Pokemon Center Elite Trainer Box [Glaceon/Vaporeon/Sylveon/Espeon] (Exclusive) | Elite Trainer Box | 10 | Research | 10 Evolving Skies | Exact | — | 2021 Q3 (set) | Yes |
+| 245376 | Evolving Skies Pokemon Center Elite Trainer Box [Jolteon/Flareon/Umbreon/Leafeon] (Exclusive) | Elite Trainer Box | 10 | Research | 10 Evolving Skies | Exact | — | 2021 Q3 | Yes |
+| 245855 | Evolving Skies Pokemon Center Elite Trainer Box [Set of 2] (Exclusive) | Elite Trainer Box | 20 | Research | 20 Evolving Skies | Exact | — | 2021 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

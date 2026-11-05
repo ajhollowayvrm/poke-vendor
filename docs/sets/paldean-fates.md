@@ -180,15 +180,15 @@ TCGplayer group `23353`: 37 products.
 | 654599 | Paldean Fates Tech Sticker Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2024 Q1 (set) | Yes |
 | 688258 | Paldean Fates Tin Case | Case or display | — | — | — | — | 6 tins | 2024 Q1 (set) | No |
 | 665113 | Paldean Fates Great Tusk ex & Iron Treads ex Premium Collection | Collection | 11 | Description | 11 Paldean Fates | Exact | — | 2024 Q1 (set) | Yes |
-| 528079 | Paldean Fates Premium Collection [Meowscarada ex] | Collection | 8 | Description | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
-| 528082 | Paldean Fates Premium Collection [Quaquaval ex] | Collection | 8 | Description | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
-| 528324 | Paldean Fates Premium Collection [Set of 3] | Collection | 24 | Description | 24 Paldean Fates | Exact | — | 2024 Q1 | Yes |
-| 528080 | Paldean Fates Premium Collection [Skeledirge ex] | Collection | 8 | Description | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
+| 528079 | Paldean Fates Premium Collection [Meowscarada ex] | Collection | 8 | Research | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
+| 528082 | Paldean Fates Premium Collection [Quaquaval ex] | Collection | 8 | Research | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
+| 528324 | Paldean Fates Premium Collection [Set of 3] | Collection | 24 | Research | 24 Paldean Fates | Exact | — | 2024 Q1 | Yes |
+| 528080 | Paldean Fates Premium Collection [Skeledirge ex] | Collection | 8 | Research | 8 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528043 | Paldean Fates Tech Sticker Collection [Fidough] | Collection | 3 | Description | 3 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528045 | Paldean Fates Tech Sticker Collection [Greavard] | Collection | 3 | Description | 3 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528044 | Paldean Fates Tech Sticker Collection [Maschiff] | Collection | 3 | Description | 3 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528040 | Paldean Fates Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Paldean Fates | Exact | — | 2024 Q1 (set) | Yes |
-| 528039 | Paldean Fates Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Paldean Fates | Partial | — | 2024 Q1 (set) | Yes |
+| 528039 | Paldean Fates Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Paldean Fates | Exact | — | 2024 Q1 (set) | Yes |
 | 528229 | Paldean Fates Tech Sticker Collections [Set of 3] | Other | 9 | Description | 9 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528063 | Paldean Fates International Tin [Charizard ex] | Tin | 4 | Description | 4 Paldean Fates | Exact | — | 2024 Q1 | Yes |
 | 528060 | Paldean Fates International Tin [Great Tusk ex] | Tin | 4 | Description | 4 Paldean Fates | Exact | — | 2024 Q1 | Yes |

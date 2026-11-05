@@ -114,13 +114,13 @@ TCGplayer group `2209`: 17 products.
 | 267041 | Forbidden Light Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Forbidden Light | Product set | — | 2018 Q2 (set) | Yes |
 | 164300 | Forbidden Light Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Forbidden Light | Product set | — | 2018 Q2 (set) | Yes |
 | 591049 | Forbidden Light Prerelease Kit Display | Case or display | — | — | — | — | Unknown | 2018 Q2 (set) | No |
-| 246414 | Dawn Wings Necrozma Box | Collection | 3 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
-| 164314 | Dawn Wings Necrozma Premium Collection | Collection | 5 | Description | — | Unknown | — | 2018 Q2 | Yes |
-| 246415 | Dusk Mane Necrozma Box | Collection | 3 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
-| 164315 | Dusk Mane Necrozma Premium Collection | Collection | 5 | Description | — | Unknown | — | 2018 Q2 (set) | Yes |
-| 169414 | Forces of Nature GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2018 Q3 | Yes |
+| 246414 | Dawn Wings Necrozma Box | Collection | 3 | Research | 3 Sun & Moon Series (set unknown) | Partial | — | 2018 Q2 (set) | Yes |
+| 164314 | Dawn Wings Necrozma Premium Collection | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2018 Q2 | Yes |
+| 246415 | Dusk Mane Necrozma Box | Collection | 3 | Research | 3 Sun & Moon Series (set unknown) | Partial | — | 2018 Q2 (set) | Yes |
+| 164315 | Dusk Mane Necrozma Premium Collection | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2018 Q2 (set) | Yes |
+| 169414 | Forces of Nature GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 | Yes |
 | 164303 | Forbidden Light Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Forbidden Light | Exact | — | 2018 Q2 | Yes |
-| 166413 | Forbidden Light Prerelease Kit | Other | 4 | Description | — | Unknown | — | 2018 Q2 | Yes |
+| 166413 | Forbidden Light Prerelease Kit | Other | 4 | Research | 4 Forbidden Light | Exact | — | 2018 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

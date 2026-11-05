@@ -176,7 +176,7 @@ TCGplayer group `24541`: 40 products.
 | 706959 | Ascended Heroes Focused Fighters Premium Collection (Sam's Club) | Collection | 14 | Description | 14 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 672734 | Ascended Heroes Mega Emboar ex Box | Collection | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 672735 | Ascended Heroes Mega Feraligatr ex Box | Collection | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
-| 672733 | Ascended Heroes Mega Meganium ex Box | Collection | 4 | Description | — | Unknown | — | 2026 Q1 (set) | Yes |
+| 672733 | Ascended Heroes Mega Meganium ex Box | Collection | 4 | Research | 4 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 692541 | Costco Ascended Heroes Mega ex Box Bundle | Collection | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 709095 | Mega Evolution: Ascended Heroes Collection - Erika (1-Tab) | Collection | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 666906 | Mega Evolution: Ascended Heroes Collection - Erika (3-Tab) | Collection | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
@@ -188,13 +188,13 @@ TCGplayer group `24541`: 40 products.
 | 668537 | Premium Poster Collection: Mega Gardevoir | Collection | 10 | Description | 10 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668536 | Premium Poster Collection: Mega Lucario | Collection | 10 | Description | 10 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668496 | Ascended Heroes Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
-| 668497 | Ascended Heroes Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Ascended Heroes | Partial | — | 2026 Q1 (set) | Yes |
+| 668497 | Ascended Heroes Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Ascended Heroes | Exact | — | 2026 Q1 (set) | Yes |
 | 668535 | Ascended Heroes Mini Tin [Clefairy & Chikorita] | Tin | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668531 | Ascended Heroes Mini Tin [Pikachu & Tepig] | Tin | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668532 | Ascended Heroes Mini Tin [Riolu & Darumaka] | Tin | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668534 | Ascended Heroes Mini Tin [Togepi & Totodile] | Tin | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 668533 | Ascended Heroes Mini Tin [Zorua & Cramorant] | Tin | 2 | Description | 2 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
-| 668530 | Ascended Heroes Mini Tins 5-Pack | Tin | 10 | Description | — | Unknown | — | 2026 Q1 | Yes |
+| 668530 | Ascended Heroes Mini Tins 5-Pack | Tin | 10 | Research | 10 Ascended Heroes | Exact | — | 2026 Q1 | Yes |
 | 702496 | Ascended Heroes Tin [Mega Emboar ex] | Tin | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q3 | Yes |
 | 702497 | Ascended Heroes Tin [Mega Feraligatr ex] | Tin | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q3 | Yes |
 | 702498 | Ascended Heroes Tin [Mega Meganium ex] | Tin | 4 | Description | 4 Ascended Heroes | Exact | — | 2026 Q3 | Yes |

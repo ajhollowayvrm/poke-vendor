@@ -117,8 +117,8 @@ TCGplayer group `1728`, `1729`: 18 products.
 | 123740 | Mythical Pokemon Collection Box [Keldeo] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 118796 | Mythical Pokemon Collection Box [Manaphy] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 126568 | Mythical Pokemon Collection Box [Meloetta] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
-| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
-| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | 2 | Bulbapedia | — | Unknown | — | 2016 Q1 (set) | Yes |
+| 113774 | Mythical Pokemon Collection Box [Mew] | Collection | 2 | Research | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
+| 120114 | Mythical Pokemon Collection Box [Shaymin] | Collection | 2 | Research | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 123433 | Mythical Pokemon Collection Box [Victini] | Collection | 2 | Bulbapedia | 2 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 118795 | Red & Blue Collection [Blastoise EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |
 | 115598 | Red & Blue Collection [Charizard EX] | Collection | 4 | Bulbapedia | 4 Generations | Exact | — | 2016 Q1 (set) | Yes |

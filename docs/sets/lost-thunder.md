@@ -116,12 +116,12 @@ TCGplayer group `2328`: 18 products.
 | 684508 | Lost Thunder Fun Pack | Booster pack | 1 | Kind default | 1 Lost Thunder | Product set | — | 2018 Q4 (set) | No |
 | 276583 | Lost Thunder Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Lost Thunder | Product set | — | 2018 Q4 (set) | Yes |
 | 179423 | Lost Thunder Build & Battle Box | Build & Battle | 4 | Description | 4 Lost Thunder | Exact | — | 2018 Q4 (set) | Yes |
-| 180518 | Fall 2018 Collector Chest | Collection | 5 | Description | — | Unknown | — | 2018 Q4 (set) | Yes |
-| 181708 | Flareon GX Special Collection | Collection | 5 | Description | — | Unknown | — | 2019 Q1 | No |
-| 177864 | Island Guardians GX Premium Collection | Collection | 8 | Description | — | Unknown | — | 2018 Q4 | Yes |
-| 181707 | Island Guardians GX Premium Pin Collection | Collection | 8 | Description | — | Unknown | — | 2018 Q4 (set) | Yes |
-| 181709 | Jolteon GX Special Collection | Collection | 5 | Description | — | Unknown | — | 2019 Q1 | Yes |
-| 181710 | Vaporeon GX Special Collection | Collection | 5 | Description | — | Unknown | — | 2019 Q1 | Yes |
+| 180518 | Fall 2018 Collector Chest | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2018 Q4 (set) | Yes |
+| 181708 | Flareon GX Special Collection | Collection | 5 | Description | — | Unknown | — | 2019 Q1 | Yes |
+| 177864 | Island Guardians GX Premium Collection | Collection | 8 | Research | 8 Sun & Moon Series (set unknown) | Partial | — | 2018 Q4 | Yes |
+| 181707 | Island Guardians GX Premium Pin Collection | Collection | 8 | Research | 8 Sun & Moon Series (set unknown) | Partial | — | 2018 Q4 (set) | Yes |
+| 181709 | Jolteon GX Special Collection | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 | Yes |
+| 181710 | Vaporeon GX Special Collection | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2019 Q1 | Yes |
 | 175511 | Lost Thunder Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Lost Thunder | Exact | — | 2018 Q4 | Yes |
 | 229391 | Lost Thunder Launch Kit | Other | 36 | Description | 36 Lost Thunder | Exact | — | 2018 Q4 (set) | No |
 <!-- product-catalog:end -->

@@ -177,7 +177,7 @@ TCGplayer group `23473`: 24 products.
 | 549491 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | Unknown | 2024 Q2 (set) | Yes |
 | 593672 | Twilight Masquerade Sleeved Booster Pack Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2024 Q2 (set) | Yes |
 | 543845 | Twilight Masquerade Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Twilight Masquerade | Exact | — | 2024 Q2 | Yes |
-| 543844 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Twilight Masquerade | Partial | — | 2024 Q2 | Yes |
+| 543844 | Twilight Masquerade Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Twilight Masquerade | Exact | — | 2024 Q2 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

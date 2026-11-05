@@ -92,20 +92,20 @@ TCGplayer group `1576`: 15 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 100493 | Ancient Origins 3 Pack Blister [Malamar] | Blister | 3 | Description | 1 Ancient Origins, 1 Roaring Skies | Partial | — | 2015 Q3 (set) | Yes |
+| 100493 | Ancient Origins 3 Pack Blister [Malamar] | Blister | 3 | Research | 3 Ancient Origins | Exact | — | 2015 Q3 (set) | Yes |
 | 100494 | Ancient Origins 3 Pack Blister [Salamence] | Blister | 3 | Description | 1 Ancient Origins, 1 Roaring Skies | Partial | — | 2015 Q3 (set) | No |
 | 104381 | Ancient Origins Collector Pin 3 Pack Blister [Mega Tyranitar Pin] | Blister | 3 | Description | 3 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
 | 104380 | Ancient Origins Collector Pin 3 Pack Blister [Shiny Mega Rayquaza Pin] | Blister | 3 | Description | 3 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
 | 106214 | Ancient Origins Single Pack Blister [Blissey] | Blister | 1 | Description | 1 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
 | 106215 | Ancient Origins Single Pack Blister [Fearow] | Blister | 1 | Description | 1 Ancient Origins | Exact | — | 2015 Q3 (set) | No |
-| 100489 | XY Ancient Origins Booster Box | Booster box | 36 | Kind default | 36 Ancient Origins | Product set | — | 2015 Q3 (set) | No |
+| 100489 | XY Ancient Origins Booster Box | Booster box | 36 | Kind default | 36 Ancient Origins | Product set | — | 2015 Q3 (set) | Yes |
 | 276595 | Ancient Origins Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Ancient Origins | Product set | — | 2015 Q3 (set) | Yes |
 | 100490 | XY Ancient Origins Booster Pack | Booster pack | 1 | Kind default | 1 Ancient Origins | Product set | — | 2015 Q3 | Yes |
-| 103462 | Shiny Rayquaza EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q3 (set) | No |
+| 103462 | Shiny Rayquaza EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | No |
 | 104379 | Tyrantrum EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q3 (set) | No |
 | 100495 | Ancient Origins Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Ancient Origins | Product set | — | 2015 Q3 (set) | Yes |
-| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
-| 106211 | Powers Beyond Tin [Latios EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
+| 106213 | Powers Beyond Tin [Hoopa EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
+| 106211 | Powers Beyond Tin [Latios EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | Yes |
 | 106212 | Powers Beyond Tin [Rayquaza EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q3 (set) | No |
 <!-- product-catalog:end -->
 

@@ -113,13 +113,13 @@ TCGplayer group `1815`: 19 products.
 | 268448 | XY Steam Siege Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Steam Siege | Product set | — | 2016 Q3 (set) | Yes |
 | 696115 | Steam Siege Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2016 Q3 (set) | No |
 | 656718 | Steam Siege Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2016 Q3 (set) | No |
-| 693146 | Hoopa EX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2016 Q3 (set) | Yes |
-| 177529 | Mega Gyarados Collection Box | Collection | 4 | Description | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 693146 | Hoopa EX Challenge Box | Collection | 2 | Research | 2 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 177529 | Mega Gyarados Collection Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
 | 120697 | Steam Siege Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
 | 121393 | Steam Siege Prerelease Kit | Other | 4 | Description | 4 Steam Siege | Exact | — | 2016 Q3 (set) | Yes |
-| 123440 | Battle Heart Tin [Magearna EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
-| 123441 | Battle Heart Tin [Pikachu EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
-| 123442 | Battle Heart Tin [Volcanion EX] | Tin | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 123440 | Battle Heart Tin [Magearna EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 123441 | Battle Heart Tin [Pikachu EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
+| 123442 | Battle Heart Tin [Volcanion EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2016 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

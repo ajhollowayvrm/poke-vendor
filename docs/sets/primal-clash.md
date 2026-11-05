@@ -105,9 +105,9 @@ TCGplayer group `1509`: 16 products.
 | 546608 | XY - Primal Clash Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Primal Clash | Product set | — | 2015 Q1 (set) | Yes |
 | 97751 | XY Primal Clash Booster Pack | Booster pack | 1 | Kind default | 1 Primal Clash | Product set | — | 2015 Q1 (set) | Yes |
 | 656978 | Primal Clash Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2015 Q1 (set) | No |
-| 97820 | Flygon EX Box | Collection | 4 | Bulbapedia | 4 XY Series (set unknown) | Partial | — | 2015 Q1 (set) | Yes |
+| 97820 | Flygon EX Box | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q1 (set) | Yes |
 | 97755 | Primal Groudon Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q1 (set) | No |
-| 97754 | Primal Kyogre Collection | Collection | 4 | Bulbapedia | — | Unknown | — | 2015 Q1 (set) | Yes |
+| 97754 | Primal Kyogre Collection | Collection | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2015 Q1 (set) | Yes |
 | 97762 | Elite Trainer Box [Groudon] | Elite Trainer Box | 8 | Research | 8 Primal Clash | Exact | — | 2015 Q1 (set) | No |
 | 97763 | Elite Trainer Box [Kyogre] | Elite Trainer Box | 8 | Research | 8 Primal Clash | Exact | — | 2015 Q1 (set) | No |
 | 97757 | Legend of Hoenn Tin [Groudon EX] | Tin | 4 | Bulbapedia | 4 XY | Exact | — | 2015 Q1 (set) | No |

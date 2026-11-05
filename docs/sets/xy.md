@@ -105,30 +105,30 @@ TCGplayer group `1387`: 26 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 97712 | Collector's Pin Three Pack Blisters (Chespin) | Blister | 3 | Description | 1 Black & White | Partial | — | 2014 Q1 (set) | No |
 | 645312 | Collector's Pin Three Pack Blisters (Fennekin) | Blister | 3 | Description | 1 Black & White | Partial | — | 2014 Q1 (set) | No |
-| 645311 | Collector's Pin Three Pack Blisters (Froakie) | Blister | 3 | Description | 1 Black & White | Partial | — | 2014 Q1 (set) | Yes |
+| 645311 | Collector's Pin Three Pack Blisters (Froakie) | Blister | 3 | Research | 1 Plasma Blast, 1 Plasma Freeze, 1 Plasma Storm | Exact | — | 2014 Q1 (set) | Yes |
 | 97734 | XY 3 Pack Blister [Gallade] | Blister | 3 | Description | — | Unknown | — | 2014 Q1 (set) | No |
 | 97722 | XY Collector Pin 3 Pack Blisters [Xerneas] | Blister | 3 | Description | 3 XY | Exact | — | 2014 Q1 (set) | No |
 | 97723 | XY Collector Pin 3 Pack Blisters [Yveltal] | Blister | 3 | Description | 3 XY | Exact | — | 2014 Q1 (set) | No |
 | 97743 | XY Single Pack Blister [Dragonite] | Blister | 1 | Description | — | Unknown | — | 2014 Q1 (set) | No |
 | 97736 | XY Single Pack Blister [Salamence] | Blister | 1 | Description | — | Unknown | — | 2014 Q1 (set) | No |
 | 97735 | XY Three Pack Blister [Gyarados] | Blister | 3 | Description | 3 XY Series (set unknown) | Partial | — | 2014 Q1 (set) | No |
-| 97733 | XY Two Pack Blister [Dragon Trio] | Blister | 2 | Description | — | Unknown | — | 2014 Q1 (set) | No |
+| 97733 | XY Two Pack Blister [Dragon Trio] | Blister | 2 | Research | — | Unknown | — | 2014 Q1 (set) | No |
 | 97732 | XY Two Pack Blister [Kanto Trio] | Blister | 2 | Description | — | Unknown | — | 2014 Q1 (set) | No |
 | 91601 | XY Booster Box | Booster box | 36 | Kind default | 36 XY | Product set | — | 2014 Q1 (set) | Yes |
 | 562107 | XY Base Set Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 XY | Product set | — | 2014 Q1 (set) | Yes |
 | 91602 | XY Booster Pack | Booster pack | 1 | Kind default | 1 XY | Product set | — | 2014 Q1 (set) | Yes |
-| 276589 | XY Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 XY | Product set | — | 2014 Q1 (set) | No |
+| 276589 | XY Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 XY | Product set | — | 2014 Q1 (set) | Yes |
 | 97729 | Garchomp EX Box | Collection | 4 | Description | 3 XY, 1 Black & White | Exact | — | 2014 Q1 (set) | Yes |
-| 97713 | Kalos Starter Figure Box [Chespin Box] | Collection | 3 | Description | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
-| 97714 | Kalos Starter Figure Box [Fennekin Box] | Collection | 3 | Description | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
-| 97715 | Kalos Starter Figure Box [Froakie Box] | Collection | 3 | Description | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
+| 97713 | Kalos Starter Figure Box [Chespin Box] | Collection | 3 | Research | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
+| 97714 | Kalos Starter Figure Box [Fennekin Box] | Collection | 3 | Research | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
+| 97715 | Kalos Starter Figure Box [Froakie Box] | Collection | 3 | Research | 3 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
 | 91598 | Sylveon Collection | Collection | 4 | Description | 4 Black & White Series (set unknown) | Partial | — | 2014 Q1 (set) | No |
 | 97724 | Xerneas Figure Collection | Collection | 4 | Description | 3 XY, 1 Legendary Treasures | Exact | — | 2014 Q1 (set) | No |
 | 97725 | Yveltal Figure Collection | Collection | 4 | Description | 3 XY, 1 Legendary Treasures | Exact | — | 2014 Q1 (set) | No |
 | 97747 | XY Elite Trainer Box [Xerneas] | Elite Trainer Box | 8 | Bulbapedia | 8 XY | Exact | — | 2014 Q1 (set) | No |
 | 97748 | XY Elite Trainer Box [Yveltal] | Elite Trainer Box | 8 | Bulbapedia | 8 XY | Exact | — | 2014 Q1 (set) | No |
-| 97726 | Legend of Kalos Tin [Xerneas EX] | Tin | 4 | Description | — | Unknown | — | 2014 Q1 (set) | Yes |
-| 97727 | Legend of Kalos Tin [Yveltal EX] | Tin | 4 | Description | — | Unknown | — | 2014 Q1 (set) | Yes |
+| 97726 | Legend of Kalos Tin [Xerneas EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
+| 97727 | Legend of Kalos Tin [Yveltal EX] | Tin | 4 | Research | 4 XY Series (set unknown) | Partial | — | 2014 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

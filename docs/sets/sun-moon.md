@@ -116,8 +116,8 @@ TCGplayer group `1863`: 29 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 126054 | Sun & Moon Base Set 3 Pack Blister [Litten] | Blister | 3 | Description | 3 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 126052 | Sun & Moon Base Set 3 Pack Blister [Togedemaru] | Blister | 3 | Description | 3 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
-| 231690 | Sun & Moon Single Blister Pack [Pikipek] | Blister | 1 | Name | — | Unknown | — | 2017 Q1 (set) | No |
-| 231689 | Sun & Moon Single Blister Pack [Rockruff] | Blister | 1 | Name | — | Unknown | — | 2017 Q1 (set) | No |
+| 231690 | Sun & Moon Single Blister Pack [Pikipek] | Blister | 1 | Research | 1 Sun & Moon | Exact | — | 2017 Q1 (set) | No |
+| 231689 | Sun & Moon Single Blister Pack [Rockruff] | Blister | 1 | Research | 1 Sun & Moon | Exact | — | 2017 Q1 (set) | No |
 | 126048 | Sun & Moon Booster Box | Booster box | 36 | Kind default | 36 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
 | 129385 | Sun & Moon Booster Pack | Booster pack | 1 | Kind default | 1 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
 | 267036 | Sun & Moon Booster Pack Art Bundle [Set of 5] | Booster pack | 5 | Name | 5 Sun & Moon | Product set | — | 2017 Q1 (set) | Yes |
@@ -125,24 +125,24 @@ TCGplayer group `1863`: 29 products.
 | 243052 | Sun & Moon Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2017 Q1 (set) | Yes |
 | 230425 | Decidueye GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 209655 | Incineroar GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
-| 131867 | Kingdra EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
-| 148381 | Legacy Evolution Pin Collection | Collection | 5 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
-| 131865 | Lycanroc GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
-| 129896 | Mega Camerupt EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | No |
-| 129897 | Mega Sharpedo EX Premium Collection | Collection | 6 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | No |
-| 129895 | Mimikyu Pin Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 131867 | Kingdra EX Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2017 Q1 (set) | Yes |
+| 148381 | Legacy Evolution Pin Collection | Collection | 5 | Research | 5 unknown set | Partial | — | 2017 Q1 (set) | Yes |
+| 131865 | Lycanroc GX Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2017 Q1 (set) | Yes |
+| 129896 | Mega Camerupt EX Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2017 Q1 (set) | No |
+| 129897 | Mega Sharpedo EX Premium Collection | Collection | 6 | Research | 6 unknown set | Partial | — | 2017 Q1 (set) | No |
+| 129895 | Mimikyu Pin Collection | Collection | 3 | Research | 3 unknown set | Partial | — | 2017 Q1 (set) | Yes |
 | 656924 | Primarina GX Challenge Box | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
-| 131870 | Scizor EX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 131870 | Scizor EX Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2017 Q1 (set) | Yes |
 | 244314 | Sun & Moon GX Challenge Box [Decidueye] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 244313 | Sun & Moon GX Challenge Box [Incineroar] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 656996 | Sun & Moon GX Challenge Box [Primarina] | Collection | 2 | Description | 2 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
-| 455776 | Zygarde Complete Forme Pin Collection | Collection | 3 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 455776 | Zygarde Complete Forme Pin Collection | Collection | 3 | Research | 3 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 126091 | Sun & Moon Elite Trainer Box [Lunala] | Elite Trainer Box | 8 | Bulbapedia | 8 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 126089 | Sun & Moon Elite Trainer Box [Solgaleo] | Elite Trainer Box | 8 | Bulbapedia | 8 Sun & Moon | Exact | — | 2017 Q1 (set) | Yes |
 | 206409 | Sun & Moon Prerelease Kit | Other | 4 | Description | 4 Sun & Moon | Exact | — | 2017 Q1 (set) | No |
-| 129310 | Legends of Alola Tin [Lunala GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
-| 129309 | Legends of Alola Tin [Solgaleo GX] | Tin | 4 | Bulbapedia | — | Unknown | — | 2017 Q1 (set) | Yes |
-| 267958 | Spring 2017 Collector's Chest Tin | Tin | 5 | Description | — | Unknown | — | 2017 Q1 (set) | Yes |
+| 129310 | Legends of Alola Tin [Lunala GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q1 (set) | Yes |
+| 129309 | Legends of Alola Tin [Solgaleo GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q1 (set) | Yes |
+| 267958 | Spring 2017 Collector's Chest Tin | Tin | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2017 Q1 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

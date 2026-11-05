@@ -98,7 +98,7 @@ TCGplayer group `1396`: 4 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 193334 | Neo Genesis Booster Box [1st Edition] | Booster box | 36 | Description | 36 Neo Genesis | Product set | — | 2000 Q4 (set) | No |
-| 193335 | Neo Genesis Booster Box [Unlimited Edition] | Booster box | 36 | Description | 36 Neo Genesis | Product set | — | 2000 Q4 (set) | No |
+| 193335 | Neo Genesis Booster Box [Unlimited Edition] | Booster box | 36 | Description | 36 Neo Genesis | Product set | — | 2000 Q4 (set) | Yes |
 | 138141 | Neo Genesis Booster Pack [1st Edition] | Booster pack | 1 | Kind default | 1 Neo Genesis | Product set | — | 2000 Q4 (set) | Yes |
 | 138142 | Neo Genesis Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | 1 Neo Genesis | Product set | — | 2000 Q4 (set) | Yes |
 <!-- product-catalog:end -->

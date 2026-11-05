@@ -111,19 +111,19 @@ TCGplayer group `1957`: 24 products.
 | 550677 | Burning Shadows Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
 | 276579 | Burning Shadows Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Burning Shadows | Product set | — | 2017 Q3 (set) | Yes |
 | 475436 | Burning Shadows Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2017 Q3 (set) | No |
-| 218320 | Alolan Ninetales GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 155504 | Alolan Raichu Figure Collection | Collection | 4 | Description | — | Unknown | — | 2018 Q1 | Yes |
-| 148154 | Charizard GX Premium Collection | Collection | 6 | Description | — | Unknown | — | 2017 Q3 (set) | No |
-| 153454 | Kommo-o GX Box | Collection | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 218321 | Lycanroc GX Challenge Box | Collection | 2 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 133775 | Tapu Lele Pin Collection | Collection | 3 | Bulbapedia | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 148417 | Team Skull Pin Collection | Collection | 5 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 141243 | Tsareena GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 218320 | Alolan Ninetales GX Challenge Box | Collection | 2 | Research | 2 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
+| 155504 | Alolan Raichu Figure Collection | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q1 | Yes |
+| 148154 | Charizard GX Premium Collection | Collection | 6 | Research | 6 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | No |
+| 153454 | Kommo-o GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
+| 218321 | Lycanroc GX Challenge Box | Collection | 2 | Research | 2 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
+| 133775 | Tapu Lele Pin Collection | Collection | 3 | Research | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148417 | Team Skull Pin Collection | Collection | 5 | Research | 5 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
+| 141243 | Tsareena GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
 | 133776 | Burning Shadows Elite Trainer Box | Elite Trainer Box | 8 | Bulbapedia | 8 Burning Shadows | Exact | — | 2017 Q3 | Yes |
 | 139888 | Burning Shadows Prerelease Kit | Other | 4 | Description | 4 Burning Shadows | Exact | — | 2017 Q3 (set) | Yes |
-| 148418 | Mysterious Powers Tin [Ho-Oh GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 148420 | Mysterious Powers Tin [Marshadow GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
-| 148419 | Mysterious Powers Tin [Necrozma GX] | Tin | 4 | Description | — | Unknown | — | 2017 Q3 (set) | Yes |
+| 148418 | Mysterious Powers Tin [Ho-Oh GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
+| 148420 | Mysterious Powers Tin [Marshadow GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
+| 148419 | Mysterious Powers Tin [Necrozma GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2017 Q3 (set) | Yes |
 | 148421 | Mysterious Powers Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2017 Q3 (set) | No |
 <!-- product-catalog:end -->
 

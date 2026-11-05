@@ -99,9 +99,9 @@ TCGplayer group `2675`: 25 products.
 
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
-| 216857 | Darkness Ablaze 3 Pack Blister [Eevee] | Blister | 3 | Description | 2 Darkness Ablaze, 1 unknown set | Partial | — | 2020 Q3 | Yes |
-| 216858 | Darkness Ablaze 3 Pack Blister [Flareon] | Blister | 3 | Description | 2 Darkness Ablaze, 1 unknown set | Partial | — | 2020 Q3 | Yes |
-| 216863 | Darkness Ablaze Premium Checklane Blister | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 216857 | Darkness Ablaze 3 Pack Blister [Eevee] | Blister | 3 | Research | 3 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 216858 | Darkness Ablaze 3 Pack Blister [Flareon] | Blister | 3 | Research | 3 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
+| 216863 | Darkness Ablaze Premium Checklane Blister | Blister | 2 | Research | 1 Darkness Ablaze, 1 Sword & Shield Series (set unknown) | Partial | — | 2020 Q3 | Yes |
 | 220108 | Darkness Ablaze Premium Checklane Blister [Dragapult] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
 | 220109 | Darkness Ablaze Premium Checklane Blister [Grimmsnarl] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
 | 216859 | Darkness Ablaze Single Pack Blister [Hatenna] | Blister | 1 | Description | 1 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
@@ -118,11 +118,11 @@ TCGplayer group `2675`: 25 products.
 | 256971 | Darkness Ablaze Booster Box Case | Case or display | — | — | — | — | Unknown number of booster boxes | 2020 Q3 (set) | Yes |
 | 216862 | Darkness Ablaze Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q3 (set) | Yes |
 | 266951 | Darkness Ablaze Elite Trainer Box Case | Case or display | — | — | — | — | 10 elite trainer boxes | 2020 Q3 (set) | Yes |
-| 220277 | Eternatus VMAX Premium Collection | Collection | 6 | Description | 2 Darkness Ablaze, 1 Burning Shadows, 1 Evolutions, 1 Rebel Clash, 1 Sword & Shield | Exact | — | 2020 Q3 | Yes |
+| 220277 | Eternatus VMAX Premium Collection | Collection | 6 | Research | 2 Darkness Ablaze, 1 Burning Shadows, 1 Evolutions, 1 Rebel Clash, 1 Sword & Shield | Exact | — | 2020 Q3 | Yes |
 | 712959 | Eternatus VMAX Premium Collection [International] | Collection | 6 | Description | 2 Darkness Ablaze, 1 Burning Shadows, 1 Evolutions, 1 Rebel Clash, 1 Sword & Shield | Exact | — | 2020 Q3 (set) | No |
-| 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Description | — | Unknown | — | 2020 Q3 | Yes |
-| 218839 | True Steel Premium Collection [Zacian] | Collection | 6 | Description | — | Unknown | — | 2020 Q3 | Yes |
-| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 6 | Description | — | Unknown | — | 2020 Q3 | No |
+| 220272 | Galarian Sirfetch'd V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q3 | Yes |
+| 218839 | True Steel Premium Collection [Zacian] | Collection | 6 | Research | 6 unknown set | Partial | — | 2020 Q3 | Yes |
+| 218840 | True Steel Premium Collection [Zamazenta] | Collection | 6 | Research | 6 unknown set | Partial | — | 2020 Q3 | No |
 | 216856 | Darkness Ablaze Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Darkness Ablaze | Exact | — | 2020 Q3 | Yes |
 <!-- product-catalog:end -->
 

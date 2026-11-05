@@ -164,8 +164,8 @@ TCGplayer group `24688`: 23 products.
 | 692950 | Pitch Black Pokemon Center Elite Trainer Box Case (Exclusive) | Case or display | — | — | — | — | 4 elite trainer boxes | 2026 Q3 | Yes |
 | 692956 | Pitch Black Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2026 Q3 | Yes |
 | 692947 | Pitch Black Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Pitch Black | Exact | — | 2026 Q3 | Yes |
-| 692949 | Pitch Black Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Pitch Black | Partial | — | 2026 Q3 | Yes |
-| 692940 | Pitch Black Half Booster Boxes | Other | 18 | Description | — | Unknown | — | 2026 Q3 | Yes |
+| 692949 | Pitch Black Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Pitch Black | Exact | — | 2026 Q3 | Yes |
+| 692940 | Pitch Black Half Booster Boxes | Other | 18 | Research | 18 Pitch Black | Exact | — | 2026 Q3 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

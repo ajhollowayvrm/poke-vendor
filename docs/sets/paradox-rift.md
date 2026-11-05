@@ -166,7 +166,7 @@ TCGplayer group `23286`: 31 products.
 | 517210 | Paradox Rift Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Paradox Rift | Product set | — | 2023 Q4 (set) | Yes |
 | 526674 | Paradox Rift Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Paradox Rift | Product set | — | 2023 Q4 (set) | Yes |
 | 514068 | Paradox Rift Build & Battle Box | Build & Battle | 4 | Description | 4 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
-| 514070 | Paradox Rift Build & Battle Stadium | Build & Battle | 11 | Set file | 3 Paradox Rift | Partial | — | 2023 Q4 (set) | Yes |
+| 514070 | Paradox Rift Build & Battle Stadium | Build & Battle | 11 | Research | 11 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
 | 512828 | Paradox Rift Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2023 Q4 (set) | Yes |
 | 514069 | Paradox Rift Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2023 Q4 (set) | Yes |
 | 514071 | Paradox Rift Build & Battle Stadium Case | Case or display | — | — | — | — | 2 build & battle boxes | 2023 Q4 (set) | Yes |
@@ -175,9 +175,9 @@ TCGplayer group `23286`: 31 products.
 | 641808 | Paradox Rift Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2023 Q4 (set) | Yes |
 | 512813 | Paradox Rift Elite Trainer Box [Iron Valiant] | Elite Trainer Box | 9 | Description | 9 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
 | 512815 | Paradox Rift Elite Trainer Box [Roaring Moon] | Elite Trainer Box | 9 | Description | 9 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
-| 512801 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Iron Valiant] | Elite Trainer Box | 11 | Description | 9 Paradox Rift | Partial | — | 2023 Q4 (set) | Yes |
-| 512809 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Roaring Moon] | Elite Trainer Box | 11 | Description | 9 Paradox Rift | Partial | — | 2023 Q4 (set) | Yes |
-| 524394 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Set of 2] | Elite Trainer Box | 22 | Description | 18 Paradox Rift | Partial | — | 2023 Q4 (set) | Yes |
+| 512801 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Iron Valiant] | Elite Trainer Box | 11 | Research | 11 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
+| 512809 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Roaring Moon] | Elite Trainer Box | 11 | Research | 11 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
+| 524394 | Paradox Rift Pokemon Center Elite Trainer Box (Exclusive) [Set of 2] | Elite Trainer Box | 22 | Research | 22 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
 | 512834 | Paradox Rift Elite Trainer Boxes [Set of 2] | Other | 18 | Description | 18 Paradox Rift | Exact | — | 2023 Q4 (set) | Yes |
 <!-- product-catalog:end -->
 

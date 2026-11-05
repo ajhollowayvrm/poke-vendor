@@ -198,7 +198,7 @@ TCGplayer group `17688`, `17689`: 45 products.
 | 454452 | Pikachu VMAX Special Collection | Collection | 5 | Description | 5 Crown Zenith | Exact | — | 2023 Q1 | Yes |
 | 563307 | Sea & Sky Premium Collection | Collection | 14 | Description | 14 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
 | 453470 | Crown Zenith Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Crown Zenith | Exact | — | 2023 Q1 (set) | Yes |
-| 454246 | Crown Zenith Pokemon Center Elite Trainer Box Plus | Elite Trainer Box | 12 | Description | 10 Crown Zenith | Partial | — | 2023 Q1 | Yes |
+| 454246 | Crown Zenith Pokemon Center Elite Trainer Box Plus | Elite Trainer Box | 12 | Research | 12 Crown Zenith | Exact | — | 2023 Q1 | Yes |
 | 453491 | Crown Zenith Mini Tin [Bede & Hatenna] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
 | 453490 | Crown Zenith Mini Tin [Hop & Wooloo] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |
 | 453489 | Crown Zenith Mini Tin [Leon & Charizard] | Tin | 2 | Description | 2 Crown Zenith | Exact | — | 2023 Q1 | Yes |

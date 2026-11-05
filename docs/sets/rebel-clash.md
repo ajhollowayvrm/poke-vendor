@@ -104,7 +104,7 @@ TCGplayer group `2626`: 26 products.
 | 276575 | Rebel Clash Premium Checklane Blister [Gengar] | Blister | 1 | Description | 1 Rebel Clash | Exact | — | 2020 Q2 (set) | Yes |
 | 210564 | Rebel Clash Single Pack Blister [Mantine] | Blister | 1 | Description | 1 Rebel Clash | Exact | — | 2020 Q2 | Yes |
 | 210565 | Rebel Clash Single Pack Blister [Noctowl] | Blister | 1 | Description | 1 Rebel Clash | Exact | — | 2020 Q2 | Yes |
-| 668520 | Sword & Shield Single Blister Pack [Galarian Meowth & Galarian Perrserker] | Blister | 1 | Name | — | Unknown | — | 2020 Q2 (set) | No |
+| 668520 | Sword & Shield Single Blister Pack [Galarian Meowth & Galarian Perrserker] | Blister | 1 | Research | 1 unknown set | Partial | — | 2020 Q2 (set) | No |
 | 668516 | Sword & Shield Single Blister Pack [Yamper & Boltund] | Blister | 1 | Name | — | Unknown | — | 2020 Q2 (set) | No |
 | 210561 | Rebel Clash Booster Box | Booster box | 36 | Description | 36 Rebel Clash | Product set | — | 2020 Q2 (set) | Yes |
 | 210562 | Rebel Clash Booster Pack | Booster pack | 1 | Kind default | 1 Rebel Clash | Product set | — | 2020 Q2 | Yes |
@@ -114,16 +114,16 @@ TCGplayer group `2626`: 26 products.
 | 212821 | Rebel Clash Build & Battle Box | Build & Battle | 4 | Description | 4 Rebel Clash | Exact | — | 2020 Q2 | Yes |
 | 240182 | Rebel Clash Booster Box Case | Case or display | — | — | — | — | 6 booster boxes | 2020 Q2 (set) | No |
 | 212820 | Rebel Clash Build & Battle Display | Case or display | — | — | — | — | 10 build & battle boxes | 2020 Q2 (set) | Yes |
-| 214227 | Copperajah V Box | Collection | 4 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 210563 | Polteageist V Box | Collection | 4 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 210566 | Sword & Shield Figure Collection | Collection | 4 | Description | — | Unknown | — | 2020 Q2 | Yes |
+| 214227 | Copperajah V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q2 | Yes |
+| 210563 | Polteageist V Box | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q2 | Yes |
+| 210566 | Sword & Shield Figure Collection | Collection | 4 | Research | 4 unknown set | Partial | — | 2020 Q2 | Yes |
 | 210572 | Rebel Clash Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Rebel Clash | Exact | — | 2020 Q2 | Yes |
-| 214232 | Legends of Galar Tin [Set of 2] | Tin | 10 | Description | — | Unknown | — | 2020 Q2 (set) | Yes |
+| 214232 | Legends of Galar Tin [Set of 2] | Tin | 10 | Research | 10 unknown set | Partial | — | 2020 Q2 (set) | Yes |
 | 279259 | Legends of Galar Tin [Set of 2] (International Version) | Tin | 8 | Description | — | Unknown | — | 2020 Q2 (set) | No |
-| 214230 | Legends of Galar Tin [Zacian V] | Tin | 5 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 279257 | Legends of Galar Tin [Zacian V] (International Version) | Tin | 4 | Description | — | Unknown | — | 2020 Q2 (set) | No |
-| 214231 | Legends of Galar Tin [Zamazenta V] | Tin | 5 | Description | — | Unknown | — | 2020 Q2 | Yes |
-| 279258 | Legends of Galar Tin [Zamazenta V] (International Version) | Tin | 4 | Description | — | Unknown | — | 2020 Q2 (set) | No |
+| 214230 | Legends of Galar Tin [Zacian V] | Tin | 5 | Research | 5 unknown set | Partial | — | 2020 Q2 | Yes |
+| 279257 | Legends of Galar Tin [Zacian V] (International Version) | Tin | 4 | Research | 4 unknown set | Partial | — | 2020 Q2 (set) | No |
+| 214231 | Legends of Galar Tin [Zamazenta V] | Tin | 5 | Research | 5 unknown set | Partial | — | 2020 Q2 | Yes |
+| 279258 | Legends of Galar Tin [Zamazenta V] (International Version) | Tin | 4 | Research | 4 unknown set | Partial | — | 2020 Q2 (set) | No |
 <!-- product-catalog:end -->
 
 ## Card list

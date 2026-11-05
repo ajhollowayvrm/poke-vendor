@@ -85,7 +85,7 @@ TCGplayer group `1434`: 3 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 282509 | Neo Discovery 2-Pack Blister [Unlimited Edition] | Blister | 2 | Description | 2 Neo Discovery | Exact | — | 2001 Q2 (set) | No |
-| 138144 | Neo Discovery Booster Pack [1st Edition] | Booster pack | 1 | Kind default | 1 Neo Discovery | Product set | — | 2001 Q2 (set) | No |
+| 138144 | Neo Discovery Booster Pack [1st Edition] | Booster pack | 1 | Kind default | 1 Neo Discovery | Product set | — | 2001 Q2 (set) | Yes |
 | 138143 | Neo Discovery Booster Pack [Unlimited Edition] | Booster pack | 1 | Kind default | 1 Neo Discovery | Product set | — | 2001 Q2 (set) | Yes |
 <!-- product-catalog:end -->
 

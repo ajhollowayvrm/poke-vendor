@@ -95,10 +95,10 @@ TCGplayer group `1464`: 19 products.
 | 91595 | Flashfire Booster Pack | Booster pack | 1 | Kind default | 1 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
 | 524332 | Flashfire Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
 | 276590 | Flashfire Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Flashfire | Product set | — | 2014 Q2 (set) | Yes |
-| 91612 | Charizard Ex Box | Collection | 4 | Description | — | Unknown | — | 2014 Q2 (set) | No |
+| 91612 | Charizard Ex Box | Collection | 4 | Research | 2 Flashfire, 2 XY Series (set unknown) | Partial | — | 2014 Q2 (set) | No |
 | 97742 | Krookodile EX Box | Collection | 4 | Description | 2 Flashfire, 2 XY | Exact | — | 2014 Q2 (set) | No |
 | 97741 | Pyroar Box | Collection | 3 | Description | 3 XY | Exact | — | 2014 Q2 (set) | Yes |
-| 249164 | XY Flashfire Collector Chest | Collection | 5 | Description | — | Unknown | — | 2014 Q2 (set) | No |
+| 249164 | XY Flashfire Collector Chest | Collection | 5 | Research | 5 XY Series (set unknown) | Partial | — | 2014 Q2 (set) | No |
 | 91605 | Kalos Power Tin [Chesnaught EX] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |
 | 91606 | Kalos Power Tin [Delphox Tin] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |
 | 91607 | Kalos Power Tin [Greninja] | Tin | 4 | Bulbapedia | 1 Flashfire, 1 Plasma Blast, 1 Plasma Freeze, 1 XY | Exact | — | 2014 Q2 (set) | No |

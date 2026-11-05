@@ -1000,6 +1000,14 @@
   "release": "2025-07-17"
  },
  {
+  "slug": "30th-celebration",
+  "name": "30th Celebration",
+  "era": "mega-evolution",
+  "series": "Mega Evolution",
+  "prints": 188,
+  "release": "2026-09-16"
+ },
+ {
   "slug": "ascended-heroes",
   "name": "Ascended Heroes",
   "era": "mega-evolution",
@@ -1014,6 +1022,14 @@
   "series": "Mega Evolution",
   "prints": 198,
   "release": "2026-05-22"
+ },
+ {
+  "slug": "delta-reign",
+  "name": "Delta Reign",
+  "era": "mega-evolution",
+  "series": "Mega Evolution",
+  "prints": 228,
+  "release": "2026-11-06"
  },
  {
   "slug": "mega-evolution",

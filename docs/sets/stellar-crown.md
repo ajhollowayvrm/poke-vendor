@@ -188,7 +188,7 @@ TCGplayer group `23537`: 24 products.
 | 559102 | Stellar Crown Elite Trainer Box Case | Case or display | — | — | — | — | Unknown number of elite trainer boxes | 2024 Q3 (set) | Yes |
 | 557363 | Stellar Crown Pokemon Center Elite Trainer Box (Exclusive) Case | Case or display | — | — | — | — | Unknown | 2024 Q3 (set) | Yes |
 | 557350 | Stellar Crown Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Stellar Crown | Exact | — | 2024 Q3 (set) | Yes |
-| 557340 | Stellar Crown Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Stellar Crown | Partial | — | 2024 Q3 (set) | Yes |
+| 557340 | Stellar Crown Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Stellar Crown | Exact | — | 2024 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

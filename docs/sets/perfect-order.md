@@ -133,16 +133,16 @@ TCGplayer group `24587`: 24 products.
 | TCGplayer ID | Product | Kind | Packs | Packs from | Pack mix | Mix confidence | Holds | Release | PPT price |
 |---|---|---|---|---|---|---|---|---|---|
 | 672393 | Perfect Order 3 Pack Blister [Chikorita] | Blister | 3 | Description | 3 Perfect Order | Product set | — | 2026 Q1 | Yes |
-| 672407 | Perfect Order Premium Checklane Blister [Cinderace Line] | Blister | 1 | Description | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
-| 672409 | Perfect Order Premium Checklane Blister [Clawitzer Line] | Blister | 1 | Description | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
-| 672406 | Perfect Order Premium Checklane Blister [Meganium Line] | Blister | 1 | Description | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
-| 672408 | Perfect Order Premium Checklane Blister [Steelix Line] | Blister | 1 | Description | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
+| 672407 | Perfect Order Premium Checklane Blister [Cinderace Line] | Blister | 1 | Research | 1 Perfect Order | Exact | — | 2026 Q1 | Yes |
+| 672409 | Perfect Order Premium Checklane Blister [Clawitzer Line] | Blister | 1 | Research | 1 Perfect Order | Exact | — | 2026 Q1 | Yes |
+| 672406 | Perfect Order Premium Checklane Blister [Meganium Line] | Blister | 1 | Research | 1 Perfect Order | Exact | — | 2026 Q1 | Yes |
+| 672408 | Perfect Order Premium Checklane Blister [Steelix Line] | Blister | 1 | Research | 1 Perfect Order | Exact | — | 2026 Q1 | Yes |
 | 672410 | Perfect Order Single Pack Blister [Makuhita] | Blister | 1 | Description | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
 | 672394 | Perfect Order Booster Box | Booster box | 36 | Description | 36 Perfect Order | Product set | — | 2026 Q1 | Yes |
 | 672396 | Perfect Order Booster Bundle | Booster bundle | 6 | Description | 6 Perfect Order | Exact | — | 2026 Q1 | Yes |
 | 672398 | Perfect Order Booster Pack | Booster pack | 1 | Kind default | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
 | 672399 | Perfect Order Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Perfect Order | Product set | — | 2026 Q1 | Yes |
-| 715707 | Perfect Order Fun Pack | Booster pack | 1 | Kind default | 1 Perfect Order | Product set | — | 2026 Q1 (set) | No |
+| 715707 | Perfect Order Fun Pack | Booster pack | 1 | Kind default | 1 Perfect Order | Product set | — | 2026 Q1 (set) | Yes |
 | 672412 | Perfect Order Sleeved Booster Pack | Booster pack | 1 | Kind default | 1 Perfect Order | Product set | — | 2026 Q1 | Yes |
 | 672413 | Perfect Order Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Perfect Order | Product set | — | 2026 Q1 | Yes |
 | 672400 | Perfect Order Build & Battle Box | Build & Battle | 4 | Description | 4 Perfect Order | Exact | — | 2026 Q2 | Yes |
@@ -154,7 +154,7 @@ TCGplayer group `24587`: 24 products.
 | 672405 | Perfect Order Pokemon Center Elite Trainer Box Case | Case or display | — | — | — | — | 4 elite trainer boxes | 2026 Q1 | No |
 | 672411 | Perfect Order Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2026 Q1 | Yes |
 | 672401 | Perfect Order Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Perfect Order | Exact | — | 2026 Q1 | Yes |
-| 672404 | Perfect Order Pokemon Center Elite Trainer Box | Elite Trainer Box | 11 | Description | 9 Perfect Order | Partial | — | 2026 Q1 | Yes |
+| 672404 | Perfect Order Pokemon Center Elite Trainer Box | Elite Trainer Box | 11 | Research | 11 Perfect Order | Exact | — | 2026 Q1 | Yes |
 | 672403 | Perfect Order Half Booster Boxes | Other | 18 | Description | — | Unknown | — | 2026 Q1 | No |
 <!-- product-catalog:end -->
 

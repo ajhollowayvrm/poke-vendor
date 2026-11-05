@@ -130,10 +130,10 @@ TCGplayer group `3064`: 34 products.
 | 270713 | Pokemon GO Special Collection - Team Instinct | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
 | 270714 | Pokemon GO Special Collection - Team Mystic | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
 | 270715 | Pokemon GO Special Collection - Team Valor | Collection | 6 | Description | 6 Pokémon GO | Exact | — | 2022 Q3 | Yes |
-| 271502 | Pokemon GO Special Collection [Set of 3] | Collection | 18 | Bulbapedia | 18 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
+| 271502 | Pokemon GO Special Collection [Set of 3] | Collection | 18 | Research | 18 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
 | 270712 | Pokemon GO V Battle Deck Bundle [Mewtwo V/Melmetal V] | Deck | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 (set) | Yes |
 | 270708 | Pokemon GO Elite Trainer Box | Elite Trainer Box | 10 | Description | 10 Pokémon GO | Exact | — | 2022 Q3 | Yes |
-| 270709 | Pokemon GO Pokemon Center Elite Trainer Box Plus (Exclusive) | Elite Trainer Box | 12 | Description | 10 Pokémon GO | Partial | — | 2022 Q3 | Yes |
+| 270709 | Pokemon GO Pokemon Center Elite Trainer Box Plus (Exclusive) | Elite Trainer Box | 12 | Research | 12 Pokémon GO | Exact | — | 2022 Q3 | Yes |
 | 270729 | Pokemon GO Mini Tin [Blissey] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
 | 270731 | Pokemon GO Mini Tin [Eevee] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |
 | 270728 | Pokemon GO Mini Tin [Magikarp] | Tin | 2 | Description | 2 Pokémon GO | Exact | — | 2022 Q3 | Yes |

@@ -123,9 +123,9 @@ TCGplayer group `24448`: 25 products.
 |---|---|---|---|---|---|---|---|---|---|
 | 654154 | Phantasmal Flames 3 Pack Blister [Sneasel] | Blister | 3 | Description | 3 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
 | 654156 | Phantasmal Flames 3 Pack Blister [Weavile] | Blister | 3 | Description | 3 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
-| 668931 | Phantasmal Flames Premium Checklane Blister [Arven's Greedent] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 668931 | Phantasmal Flames Premium Checklane Blister [Arven's Greedent] | Blister | 1 | Research | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
 | 654147 | Phantasmal Flames Premium Checklane Blister [Blaziken] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
-| 672588 | Phantasmal Flames Premium Checklane Blister [Ethan's Magcargo] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
+| 672588 | Phantasmal Flames Premium Checklane Blister [Ethan's Magcargo] | Blister | 1 | Research | 1 Phantasmal Flames | Exact | — | 2025 Q4 (set) | Yes |
 | 654146 | Phantasmal Flames Premium Checklane Blister [Hydrapple] | Blister | 1 | Description | 1 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
 | 654151 | Phantasmal Flames Single Pack Blister [Cottonee] | Blister | 1 | Description | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
 | 654150 | Phantasmal Flames Single Pack Blister [Whimsicott] | Blister | 1 | Description | 1 Phantasmal Flames | Product set | — | 2025 Q4 | Yes |
@@ -145,7 +145,7 @@ TCGplayer group `24448`: 25 products.
 | 655282 | Phantasmal Flames Sleeved Booster Case | Case or display | — | — | — | — | Unknown number of sleeved boosters | 2025 Q4 | Yes |
 | 688345 | Phantasmal Flames Sleeved Booster Case (48 ct) | Case or display | — | — | — | — | 48 units | 2025 Q4 (set) | No |
 | 654136 | Phantasmal Flames Elite Trainer Box | Elite Trainer Box | 9 | Description | 9 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
-| 654135 | Phantasmal Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Description | 9 Phantasmal Flames | Partial | — | 2025 Q4 | Yes |
+| 654135 | Phantasmal Flames Pokemon Center Elite Trainer Box (Exclusive) | Elite Trainer Box | 11 | Research | 11 Phantasmal Flames | Exact | — | 2025 Q4 | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

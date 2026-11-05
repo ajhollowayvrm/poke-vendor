@@ -117,14 +117,14 @@ TCGplayer group `2278`: 18 products.
 | 276582 | Celestial Storm Sleeved Booster Pack Art Bundle [Set of 4] | Booster pack | 4 | Name | 4 Celestial Storm | Product set | — | 2018 Q3 (set) | Yes |
 | 170280 | Celestial Storm Build & Battle Box | Build & Battle | 4 | Description | 4 Celestial Storm | Exact | — | 2018 Q3 (set) | Yes |
 | 451149 | Celestial Storm Build & Battle Box Display | Case or display | — | — | — | — | 10 build & battle boxes | 2018 Q3 (set) | No |
-| 175559 | Lunala GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q4 | Yes |
+| 175559 | Lunala GX Box | Collection | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q4 | Yes |
 | 175558 | Solgaleo GX Box | Collection | 4 | Description | — | Unknown | — | 2018 Q4 | No |
 | 175561 | Solgaleo GX Box & Lunala GX Box | Collection | 4 | Bulbapedia | — | Unknown | — | 2018 Q4 | No |
 | 170277 | Celestial Storm Elite Trainer Box | Elite Trainer Box | 8 | Description | 8 Celestial Storm | Exact | — | 2018 Q3 | Yes |
-| 175555 | Evolution Celebration Tin [Glaceon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
-| 175556 | Evolution Celebration Tin [Leafeon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
-| 175562 | Evolution Celebration Tin [Set of 3] | Tin | 12 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
-| 175557 | Evolution Celebration Tin [Sylveon GX] | Tin | 4 | Description | — | Unknown | — | 2018 Q3 (set) | Yes |
+| 175555 | Evolution Celebration Tin [Glaceon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 (set) | Yes |
+| 175556 | Evolution Celebration Tin [Leafeon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 (set) | Yes |
+| 175562 | Evolution Celebration Tin [Set of 3] | Tin | 12 | Research | 12 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 (set) | Yes |
+| 175557 | Evolution Celebration Tin [Sylveon GX] | Tin | 4 | Research | 4 Sun & Moon Series (set unknown) | Partial | — | 2018 Q3 (set) | Yes |
 <!-- product-catalog:end -->
 
 ## Card list

@@ -130,7 +130,7 @@ TCGplayer group `1386`: 5 products.
 | 477180 | Dark Explorers 3 Pack Blister [Krookodile] | Blister | 3 | Description | 3 Dark Explorers | Exact | — | 2012 Q2 (set) | No |
 | 477179 | Dark Explorers 3 Pack Blister [Luxray] | Blister | 3 | Description | 3 Dark Explorers | Exact | — | 2012 Q2 (set) | No |
 | 98520 | Dark Explorers Booster Box | Booster box | 36 | Kind default | 36 Dark Explorers | Product set | — | 2012 Q2 (set) | No |
-| 98521 | Dark Explorers Booster Pack | Booster pack | 1 | Kind default | 1 Dark Explorers | Product set | — | 2012 Q2 (set) | No |
+| 98521 | Dark Explorers Booster Pack | Booster pack | 1 | Kind default | 1 Dark Explorers | Product set | — | 2012 Q2 (set) | Yes |
 | 647766 | Dark Explorers Sampling Pack | Other | Unknown | Unknown | — | Unknown | — | 2012 Q2 (set) | No |
 <!-- product-catalog:end -->
 

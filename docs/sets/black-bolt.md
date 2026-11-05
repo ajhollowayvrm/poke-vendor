@@ -215,7 +215,7 @@ TCGplayer group `24325`: 27 products.
 | 630447 | Unova Mini Tin Display Case | Case or display | — | — | — | — | 32 mini tins | 2025 Q3 (set) | Yes |
 | 630613 | Unova Poster Collection Case | Case or display | — | — | — | — | Unknown number of collections | 2025 Q3 | Yes |
 | 649220 | Unova Victini Illustration Collection Case | Case or display | — | — | — | — | Unknown number of tins | 2025 Q3 (set) | Yes |
-| 685926 | Black Bolt Binder & Unova Poster Collection (Sam's Club) | Collection | 9 | Description | 2 Black Bolt, 2 White Flare | Partial | — | 2025 Q3 (set) | Yes |
+| 685926 | Black Bolt Binder & Unova Poster Collection (Sam's Club) | Collection | 9 | Research | 7 Black Bolt, 2 White Flare | Exact | — | 2025 Q3 (set) | Yes |
 | 630430 | Black Bolt Binder Collection | Collection | 5 | Bulbapedia | 5 Black Bolt | Exact | — | 2025 Q3 | Yes |
 | 630614 | Black Bolt Tech Sticker Collection | Collection | 3 | Description | 3 Black Bolt | Exact | — | 2025 Q3 | Yes |
 | 668632 | Unova Heavy Hitters Premium Collection | Collection | 12 | Description | 12 Scarlet & Violet | Exact | — | 2025 Q3 (set) | Yes |

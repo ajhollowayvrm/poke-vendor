@@ -26,6 +26,7 @@
 		0EAD72506FECFE0B97BAFCC7 /* dragon-frontiers.json in Resources */ = {isa = PBXBuildFile; fileRef = FB443286D950ABAD944C7A64 /* dragon-frontiers.json */; };
 		0F46ACEE22C0AAA0B36F7E53 /* lost-thunder.json in Resources */ = {isa = PBXBuildFile; fileRef = 4654062AD9C27065757208C9 /* lost-thunder.json */; };
 		1051F2429A3F6B076CCF41FF /* stormfront.json in Resources */ = {isa = PBXBuildFile; fileRef = 56EE5582CFBBA45162D5DFFC /* stormfront.json */; };
+		1069E7B522DF4AB884A86E26 /* delta-reign.json in Resources */ = {isa = PBXBuildFile; fileRef = 6969144BAF6AC96AFF2A0101 /* delta-reign.json */; };
 		10FF285F3BF4A21924331909 /* Upgrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3946D786540E6C06E3BB91E4 /* Upgrades.swift */; };
 		11FAB08F8FB8CBC9E40A5676 /* platinum.json in Resources */ = {isa = PBXBuildFile; fileRef = BC815F3A92A7F2CFF7E7BF36 /* platinum.json */; };
 		147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F38B7B3DE47AF76DF106787 /* stellar-crown.json */; };
@@ -122,6 +123,7 @@
 		7ACC1B39815CB76022632456 /* Shows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C938A56BB535142EA1BE4B /* Shows.swift */; };
 		7C5A3938AD7C39E9F648D624 /* hidden-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = A7B821E5FBD06698D7A362DE /* hidden-fates.json */; };
 		7C714401A1C5DB31FFCD79E6 /* LocalStores.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFA05E48B4793E422BDD8455 /* LocalStores.swift */; };
+		7CA2BCD151CA3F4A7C7F6510 /* 30th-celebration.json in Resources */ = {isa = PBXBuildFile; fileRef = F7D9595E67FF077A0C497893 /* 30th-celebration.json */; };
 		7D71A92431332B26D0BA9ED7 /* WalletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F97256E10C06386BD90E19 /* WalletView.swift */; };
 		7DFD60F0D41615FE1621698C /* StoreConsignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9814967BDC613C1BD5438238 /* StoreConsignment.swift */; };
 		7EB1F87B4A134567025E8987 /* ShowVendorStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF3AC3DB36D178D2AA44CF4 /* ShowVendorStage.swift */; };
@@ -369,6 +371,7 @@
 		689EB4A1DA309507FAA552BA /* Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2022.json"; sourceTree = "<group>"; };
 		693B97517632F808C60DEBC0 /* CardStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStoreView.swift; sourceTree = "<group>"; };
+		6969144BAF6AC96AFF2A0101 /* delta-reign.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "delta-reign.json"; sourceTree = "<group>"; };
 		69B3B59FEFA22014368E0146 /* unleashed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = unleashed.json; sourceTree = "<group>"; };
 		6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "forbidden-light.json"; sourceTree = "<group>"; };
 		6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge.json"; sourceTree = "<group>"; };
@@ -499,6 +502,7 @@
 		F608F1C0EB11E6D8282E4752 /* 151.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 151.json; sourceTree = "<group>"; };
 		F704E86B4D99E71629CF9403 /* great-encounters.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "great-encounters.json"; sourceTree = "<group>"; };
 		F78F3275EFDE7F3E896A5E91 /* black-bolt.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-bolt.json"; sourceTree = "<group>"; };
+		F7D9595E67FF077A0C497893 /* 30th-celebration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "30th-celebration.json"; sourceTree = "<group>"; };
 		F885E2CD1858D928F56B9E78 /* OfferLotViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferLotViews.swift; sourceTree = "<group>"; };
 		F93E91BC33F28004C994B1EE /* Debt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debt.swift; sourceTree = "<group>"; };
 		F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mysterious-treasures.json"; sourceTree = "<group>"; };
@@ -577,6 +581,7 @@
 		7A7341C8A80847AE81A54F71 /* Sets */ = {
 			isa = PBXGroup;
 			children = (
+				F7D9595E67FF077A0C497893 /* 30th-celebration.json */,
 				F608F1C0EB11E6D8282E4752 /* 151.json */,
 				7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */,
 				BD567FF6A1AB5571EA47AA26 /* aquapolis.json */,
@@ -605,6 +610,7 @@
 				51D032B98E3876431FC5F38E /* crystal-guardians.json */,
 				262D18A3BB73313344D87826 /* dark-explorers.json */,
 				A0DE4A3A88218162B90C004E /* darkness-ablaze.json */,
+				6969144BAF6AC96AFF2A0101 /* delta-reign.json */,
 				3A569E4A6BF6ADE917EC538F /* delta-species.json */,
 				42F6EF496DC38B97131F0BBF /* deoxys.json */,
 				292D3A115C43F52F2750F722 /* destined-rivals.json */,
@@ -946,6 +952,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */,
+				7CA2BCD151CA3F4A7C7F6510 /* 30th-celebration.json in Resources */,
 				3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */,
 				C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */,
 				A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */,
@@ -975,6 +982,7 @@
 				9E264DB7991475D250875154 /* crystal-guardians.json in Resources */,
 				AFED4EABA2FB778C699E07F1 /* dark-explorers.json in Resources */,
 				F09B202F10B17C0F80F2A3B5 /* darkness-ablaze.json in Resources */,
+				1069E7B522DF4AB884A86E26 /* delta-reign.json in Resources */,
 				BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */,
 				B3E96DBC625CE0339D0C6A71 /* deoxys.json in Resources */,
 				B61765C7106375126BC3C120 /* destined-rivals.json in Resources */,
