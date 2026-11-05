@@ -531,6 +531,19 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Costs | $30 insured shipping. 3% of the reserve when the reserve is not met |
 | Fake slab | −15 reputation, refused for 180 days |
 
+## Vending machines
+
+| Value | Number |
+|---|---|
+| Machine | $2,850. At most 5 |
+| Capacity | 40 sealed items |
+| Hosts | Gas station 2.6 sales a day, 15% share. Laundromat 1.6, 10%. Mall 4.0, 20%, Known tier. Your store 2.0, 0% |
+| Default price | Market × 1.25. Choices: × 1, 1.15, 1.25, 1.4 |
+| Jam | 1.5% a day |
+| Break-in | Gas station 0.6%, laundromat 0.8%, mall 0.15%, your store 0.1% a day. Takes the cash box and 30% to 60% of the stock. Repair $150 to $400 |
+| Neglect | An outside host ends the contract after 7 days empty or jammed |
+| Parts | Card reader $300 (+30% sales, 60% by card, 3% fee). Camera $250 (break-ins −60%). Remote stock data $150 |
+
 ## The moving market
 
 | Value | Number |

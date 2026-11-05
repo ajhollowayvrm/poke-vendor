@@ -102,6 +102,4 @@ struct AuctionConsignSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
     }
-
-    private func percent(_ x: Double) -> String { "\(Int((x * 100).rounded()))%" }
 }

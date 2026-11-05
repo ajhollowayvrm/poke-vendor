@@ -70,6 +70,8 @@ struct AuctionConsignment: Codable, Hashable {
     let sellerFee: Double
     /// The market price on the consign day, for the status box.
     let estimate: Double
+    /// True after the house's authenticity check. Optional, so a consignment from before this field still loads.
+    var checked: Bool?
 }
 
 /// Money that an auction house owes the player.
@@ -147,9 +149,9 @@ extension GameStore {
         return nil
     }
 
-    /// The mean hammer price of a slab at a house, before the season and the bid spread.
+    /// The mean hammer price of a slab at a house, with today's season, before the bid spread.
     func expectedHammer(_ house: AuctionHouse, market: Double) -> Double {
-        market * house.bidderStrength / (1 + house.buyerPremium)
+        market * house.bidderStrength * PriceCycle.seasonDemand(sealed: false) / (1 + house.buyerPremium)
     }
 
     /// Sends a slab to an auction house. `ignoreGate` is for the soak test only.
@@ -158,7 +160,7 @@ extension GameStore {
         guard let i = data.slabs.firstIndex(where: { $0.id == id }) else { return false }
         let card = data.slabs[i]
         if !ignoreGate, auctionBlock(house, card: card) != nil { return false }
-        guard card.grade != nil, card.status == nil else { return false }
+        guard card.grade != nil, card.status == nil, data.cash >= Balance.auctionShipping else { return false }
         let market = card.realMarket
         let consignment = AuctionConsignment(house: house, consignDay: data.day, auctionDay: nextAuctionDay(house, after: data.day),
                                              reserve: reserveShare.map { ShowSession.round(market * $0) },
@@ -175,12 +177,17 @@ extension GameStore {
         let day = data.day
         let name = "\(card.print.name) \(card.grade?.label ?? "")"
         // The house checks every slab when it arrives. A fake goes back, and the house refuses the player for a time.
-        if day == a.consignDay + Balance.auctionIntakeDays, card.fake != nil {
+        if day >= a.consignDay + Balance.auctionIntakeDays, a.checked != true, card.fake != nil {
             card.fakeKnown = true
             card.status = .arriving(daysLeft: Balance.auctionReturnDays, from: a.house.rawValue)
             data.auctionBans[a.house.rawValue] = day + Balance.auctionBanDays
             addReputation(Balance.auctionFakeReputation)
             return ("\(a.house.rawValue) found that your \(name) is a fake. It sends the slab back and refuses your consignments for \(Balance.auctionBanDays) days.", false)
+        }
+        if day >= a.consignDay + Balance.auctionIntakeDays, a.checked != true {
+            var checked = a
+            checked.checked = true
+            card.status = .atAuctionHouse(checked)
         }
         guard day >= a.auctionDay else { return (nil, false) }
         let market = card.realMarket
@@ -196,7 +203,8 @@ extension GameStore {
         let net = (hammer * (1 - a.sellerFee) * 100).rounded() / 100
         data.auctionPayouts.append(AuctionPayout(day: day + Balance.auctionPayoutDays, amount: net, name: name, house: a.house))
         addReceipt(name: name, venue: a.house.rawValue, price: hammer, net: net, paid: card.paid)
-        noteDemand(card.print.name, channel: .ebayAuction)
+        // The sale uses up some buyers of the card. It does not touch the demand of any channel of the player.
+        data.demand.items[card.print.name, default: 0] += 1
         addReputation(Balance.onlineSaleReputation)
         return ("Your \(name) sold at \(a.house.rawValue) for \(money(hammer)). After the \(Int((a.sellerFee * 100).rounded()))% seller fee, \(money(net)) comes on day \(day + Balance.auctionPayoutDays + 1).", true)
     }

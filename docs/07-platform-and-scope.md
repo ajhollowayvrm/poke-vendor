@@ -65,6 +65,9 @@ Every system in this folder is built. The list:
 - **Auction houses**: Goldin, Heritage, and Fanatics Collect take slabs of
   $1,000 or more, with a reputation gate, a reserve, and a payout after
   the auction.
+- **Vending machines**: machines at a gas station, a laundromat, a mall,
+  or the player's store, with visits, a cash box, jams, break-ins, and
+  parts.
 - **The moving market and demand**: price waves, seasons, market news, sealed
   appreciation, and a demand limit on each channel and item.
 - **Goals and growth**: goal ladders, "You made it", growing costs, and

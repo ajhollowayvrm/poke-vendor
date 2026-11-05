@@ -285,8 +285,8 @@ auction.
 - **Seller fee discounts**: −2% for each reputation tier above the house's
   tier, −3% for a slab of $10,000 or more, and −5% for a slab of $50,000 or
   more. The fee never goes below 0%. The fee is fixed on the consign day.
-- **Timeline**: the player pays $30 for insured shipping. The house checks
-  the slab 5 days later. The auction is on the house's first catalog day that
+- **Timeline**: the player pays $30 for insured shipping. The player must
+  have the $30. The house checks the slab 5 days later. The auction is on the house's first catalog day that
   is at least 14 days after the consign day. The house pays 14 days after the
   auction.
 - **The hammer**: the top bidder pays up to a total of the market × the
@@ -301,8 +301,13 @@ auction.
   slab back, the player learns that it is a fake, the player loses 15
   reputation, and the house refuses the player for 180 days.
 - **A sale**: the sale receipt shows the hammer and the net. A clean sale
-  gives reputation like an online sale. Theft and damage at home do not touch a
-  slab at a house.
+  gives reputation like an online sale. The sale uses up some buyers of that
+  card, but it does not touch the demand of the player's own channels. Theft
+  and damage at home do not touch a slab at a house.
+- **Money on the way**: a payout that is not paid yet counts in net worth. The
+  shipping and the reserve fee are business costs for income tax.
+- **The sheet's estimate** uses today's season, so a reserve near the market
+  is a real risk in the summer slump.
 - **Where the player sees it**: the slab's status box (the house, the
   auction day, the estimate, the fee, and the reserve), the "At auction"
   filter in Inventory, and the Calendar (each auction and each payout).

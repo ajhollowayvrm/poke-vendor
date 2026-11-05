@@ -441,6 +441,13 @@ struct HubView: View {
                         detail: store.activeMarketEvents.first?.title ?? "\(change >= 0 ? "Up" : "Down") \(abs(change))% over the last 4 weeks")
             }
             .buttonStyle(.plain)
+            Button { nav.path.append(.vending) } label: {
+                let placed = store.machines.filter { $0.host != nil }
+                ChevronRow(icon: "cabinet", title: "Vending machines",
+                        detail: store.machines.isEmpty ? "Sell sealed product at a host, day and night"
+                            : "\(placed.count) placed · \(placed.reduce(0) { $0 + $1.stock.count }) items in stock")
+            }
+            .buttonStyle(.plain)
             Button { nav.path.append(.goals) } label: {
                 ChevronRow(icon: "flag.checkered", title: "Goals",
                         detail: store.closestGoal.map { "Next: \($0.title)" } ?? "You reached every goal.")

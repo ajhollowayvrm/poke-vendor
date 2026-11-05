@@ -120,6 +120,8 @@ struct GameData: Codable {
     /// Auction houses: the payouts that come later, and the houses that refuse the player until a day (docs/15).
     var auctionPayouts: [AuctionPayout] = []
     var auctionBans: [String: Int] = [:]
+    /// Vending machines (docs/31-vending-machines.md).
+    var machines: [VendingMachine] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -203,6 +205,7 @@ extension GameData {
         dealStories = v(.dealStories, dealStories)
         auctionPayouts = v(.auctionPayouts, auctionPayouts)
         auctionBans = v(.auctionBans, auctionBans)
+        machines = v(.machines, machines)
     }
 }
 
@@ -350,6 +353,7 @@ final class GameStore {
             + data.slabs.reduce(0) { $0 + $1.market }
             + data.bulk.reduce(0) { $0 + $1.value }
             + lotsMarketValue
+            + data.machines.reduce(0) { total, m in total + m.stock.reduce(0) { $0 + market(of: $1.item) } }
     }
 
     var paid: Double {
@@ -1039,6 +1043,7 @@ final class GameStore {
         lines += offersEndDay()
         lines += lotsEndDay()
         lines += auctionHouseEndDay()
+        lines += vendingEndDay()
         let boostDay = data.day
         data.priceBoosts = data.priceBoosts.filter { $0.value >= boostDay }
         syncMarket()

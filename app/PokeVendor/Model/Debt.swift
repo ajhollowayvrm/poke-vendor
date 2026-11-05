@@ -218,9 +218,14 @@ extension GameStore {
 
     var pawnedValue: Double { data.debt.pawns.reduce(0) { $0 + $1.market } }
 
+    /// Money that is the player's but not cash yet: auction payouts that are due, and the cash in vending machines.
+    var owedToPlayer: Double {
+        data.auctionPayouts.reduce(0) { $0 + $1.amount } + data.machines.reduce(0) { $0 + $1.cashBox }
+    }
+
     /// Cash and stock, less every debt and the tax that the player owes.
     var netWorth: Double {
-        cash + marketValue + pawnedValue - totalDebt - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
+        cash + marketValue + pawnedValue + owedToPlayer - totalDebt - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
     }
 
     /// The installment payments of every open loan, for 4 weeks.

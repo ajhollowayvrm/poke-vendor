@@ -67,7 +67,7 @@ struct StatusBox: View {
             case .atAuctionHouse(let a):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("At \(a.house.rawValue) · auction on day \(a.auctionDay + 1)").font(.subheadline)
-                    Text("Estimate \(money(a.estimate)) · seller fee \(Int((a.sellerFee * 100).rounded()))%\(a.reserve.map { " · reserve \(money($0))" } ?? " · no reserve")")
+                    Text("Estimate \(money(a.estimate)) · seller fee \(percent(a.sellerFee))\(a.reserve.map { " · reserve \(money($0))" } ?? " · no reserve")")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                     Text("The slab cannot come back before its auction.").font(.caption).foregroundStyle(Theme.muted)

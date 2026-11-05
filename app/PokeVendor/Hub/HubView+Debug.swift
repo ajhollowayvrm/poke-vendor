@@ -238,8 +238,37 @@ extension HubView {
         var fakeAuctionID: UUID?
         var auctionDays: [UUID: Int] = [:]
         var auctionFails: [String] = []
-        var auctionSold = 0, auctionBack = 0
+        var auctionSold = 0, auctionBack = 0, auctionPaid = 0
+        // Vending machines (docs/31-vending-machines.md): buy two machines on day 1, place them, stock them, and visit
+        // every 7 days. Every item that leaves a machine must be a sale, a break-in, or a trip back to Inventory.
+        var vendFails: [String] = []
+        var vendStocked = 0, vendCollected = 0.0
+        func vendItemsNow() -> Int { store.machines.reduce(0) { $0 + $1.stock.count } }
         for _ in 0..<days {
+            if store.day == 1 {
+                store.addTestCash(Balance.vendMachineCost * 2 + 1_000)
+                store.buyMachine()
+                store.buyMachine()
+                for _ in 0..<12 { store.addTestPack() }
+                if store.machines.count != 2 { vendFails.append("bought \(store.machines.count) machines") }
+                for (k, m) in store.machines.enumerated() {
+                    if !store.placeMachine(m.id, at: k == 0 ? .gasStation : .laundromat) { vendFails.append("could not place a machine") }
+                }
+                if let id = store.machines.last?.id { store.buyAddOn(.telemetry, for: id) }
+            }
+            if store.day >= 1, store.day % 7 == 1 {
+                for m in store.machines where m.host != nil {
+                    let before = store.cash
+                    if !store.atMachine(m.id) { _ = store.visitMachine(m.id) }
+                    if store.atMachine(m.id) {
+                        vendCollected += store.cash - before
+                        let items = Set(store.vendableSealed.filter { $0.packs <= 3 }.prefix(6).map(\.id))
+                        vendStocked += store.stockMachine(m.id, items: items)
+                    }
+                    if store.machine(m.id)?.jammed == true, store.atMachine(m.id) { vendFails.append("a visit left a jam") }
+                }
+                if store.machines.contains(where: { $0.stock.count > Balance.vendCapacity }) { vendFails.append("a machine is over capacity") }
+            }
             if store.day == 2 {
                 let dear = Balance.modernSets.flatMap { slug in SetLibrary.set(slug).prints.map { (slug, $0) } }
                     .filter { ($0.1.gradedPrice("psa10") ?? 0) >= 1_500 }
@@ -400,7 +429,9 @@ extension HubView {
             // A late night every 8 days: the hours past 11 PM come out of sleep.
             if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
             let due = store.data.dealStories.filter { $0.day <= store.day + 1 }.count
+            let payoutsBefore = store.data.auctionPayouts.count
             store.endDay()
+            auctionPaid += max(0, payoutsBefore - store.data.auctionPayouts.count)
             dealStoriesOut += due
             if store.data.dealStories.contains(where: { $0.day < store.day }) { dealFails.append("a story stayed in the queue past its day") }
         }
@@ -437,12 +468,16 @@ extension HubView {
                 continue
             }
         }
-        let paid = store.data.ledger.filter { $0.category == .sale && $0.label.hasSuffix("payout") }.count
+        let paid = auctionPaid
         if store.day > (auctionDays.values.max() ?? 0) + Balance.auctionPayoutDays, paid != auctionSold {
             auctionFails.append("\(auctionSold) sold but \(paid) payouts")
         }
         if store.data.auctionPayouts.contains(where: { $0.day < store.day }) { auctionFails.append("a payout is past due") }
         print("SOAK AUCTION: \(auctionIDs.count) consigned, \(auctionSold) sold, \(auctionBack) back, \(paid) paid, \(auctionFails.count) fails \(auctionFails.prefix(3))")
+        let vendSold = store.machines.reduce(0) { $0 + Int($1.lifetimeGross > 0 ? 1 : 0) }
+        if store.machines.contains(where: { $0.cashBox < 0 }) { vendFails.append("a cash box is negative") }
+        if vendStocked > 0, store.machines.allSatisfy({ $0.lifetimeGross == 0 }) { vendFails.append("no machine sold anything") }
+        print("SOAK VENDING: \(store.machines.count) machines, \(vendStocked) stocked, \(vendItemsNow()) in stock, \(money(store.machines.reduce(0) { $0 + $1.lifetimeGross })) gross, \(money(vendCollected)) collected, \(vendSold) machines sold, \(vendFails.count) fails \(vendFails.prefix(3))")
         // Bulk unlist: every item with a listing that can come down comes down, and its Facebook offers end.
         var unlistFails: [String] = []
         let listedIDs = Set((store.data.raw + store.data.slabs).filter { $0.status?.isRemovableListing == true }.map(\.id)
