@@ -1225,7 +1225,7 @@ final class GameStore {
         if listing.channel == .tcgplayer {
             let lowest = card.grade == nil ? Self.tcgLowest(for: card.print, wear: card.listedWear(in: listing)) : Self.tcgLowest(for: card.print)
             let chance = listing.price <= lowest ? 0.30 : 0.30 * exp(-(listing.price / lowest - 1) * 35)
-            let demand = channelDemand(listing.channel) * itemDemand(card.print.name)
+            let demand = channelDemand(listing.channel) * itemDemand(card.print.name) * PriceCycle.seasonDemand(sealed: false)
             return Double.random(in: 0..<1) < chance * reachSaleFactor * demand ? listing.price : nil
         }
         // The buyer prices the card by the condition in the listing.
@@ -1237,7 +1237,7 @@ final class GameStore {
     var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
 
     func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String) -> Double? {
-        let demand = channelDemand(listing.channel) * itemDemand(name)
+        let demand = channelDemand(listing.channel) * itemDemand(name) * PriceCycle.seasonDemand(sealed: sealed)
         let reach = reachSaleFactor * demand
         let market = rawMarket * itemPriceFactor(name)
         switch listing.channel {

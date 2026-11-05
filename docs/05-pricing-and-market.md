@@ -136,4 +136,35 @@ during the run.
 - At most 2 announced changes wait at a time. A reprint wave plans its own end,
   and that end does not count.
 
+### Seasons
+
+**Status: built** (`Model/Seasons.swift`).
+
+Each run starts on a random week of the year. The run's market seed sets the
+week, so the same run always has the same calendar, and a save from before
+seasons gets a week too. The week of the year moves demand and the price of
+sealed product.
+
+- **Holiday season** (mid October to the end of December): holiday buyers want
+  sealed product. Sealed product sells up to 15% more often, and its price rises
+  up to 5%. Singles sell up to 5% less often, because buyers spend on sealed
+  gifts.
+- **After the holidays** (January to mid March): sealed prices fall up to 10%.
+  This is the best time to buy sealed product.
+- **Summer slump** (mid June to early September): everything sells up to 5%
+  less often.
+- **Singles keep their price.** A season changes only how often a single sells.
+- **The player's store** gets the mean of the sealed and the singles demand as
+  more or fewer customers.
+- Card shows keep their own crowds. A season does not change them.
+- Each season is a smooth bump over its weeks, so no factor jumps from one day
+  to the next.
+- **Where the player sees it**: the Season box on the Market screen (the
+  month, the season, and the four factors), the month on each week of the
+  Calendar, and a line in the End Day report when a season starts or ends.
+
+Confidence: the research found only vendor guides for the holiday rush and
+the January to March buying window, and no price series. The sizes are design
+values, not measured data.
+
 With moving prices, the player can hold stock and choose when to sell.

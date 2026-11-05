@@ -128,7 +128,8 @@ enum PriceCycle {
     }
 
     /// The factor for sealed product. It follows the market, gains value with age (faster out of print), moves with
-    /// each print change of its set, and moves with set news and character news.
+    /// each print change of its set, moves with the season (Model/Seasons.swift), and moves with set news and
+    /// character news.
     static func sealedFactor(id: String, slug: String, slugs: Set<String>, name: String, day: Int? = nil) -> Double {
         let d = day ?? today
         let r = unit(id, salt: 4)
@@ -138,6 +139,7 @@ enum PriceCycle {
             * pow(1 + growth(Balance.sealedGrowthInPrint), days.inPrint / 364)
             * pow(1 + growth(Balance.sealedGrowthOutOfPrint), days.outOfPrint / 364)
             * printJumps(slug, day: d)
+            * seasonSealedPrice(day: d)
         for event in events {
             switch event.kind {
             case .sealedHype where event.subject == slug: factor *= event.factor(day: d)
@@ -210,6 +212,7 @@ extension GameStore {
             lines.append("The card market is \(change >= 0 ? "up" : "down") \(Int((abs(change) * 100).rounded()))% over the last 4 weeks.")
         }
         syncMarket()
+        if let season = seasonEndDayLine() { lines.append(season) }
         return lines
     }
 

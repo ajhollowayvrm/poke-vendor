@@ -371,6 +371,23 @@ extension HubView {
         print("SOAK LEASE: end day \(store.cardStore?.lease.map { $0.endDay + 1 } ?? 0), overhead paid \(money(overheadPaid)), castle \(store.shop(.castle).points), top deck \(store.shop(.topDeck).points), distributor \(money(store.distributorSpent))")
         let debt = store.data.debt
         print("SOAK DEBT: score \(store.creditScore), owed \(money(store.totalDebt)), loans \(debt.loans.count), line \(money(debt.line?.payoff ?? 0)), pawns \(debt.pawns.count), collections \(debt.collections.count), interest paid \(money(debt.interestPaid))")
+        // Seasons: every factor stays inside its limits over a full year, and the start week never changes.
+        var seasonFails: [String] = []
+        let startWeek = PriceCycle.startWeek
+        for d in 0..<366 {
+            let w = PriceCycle.weekOfYear(day: d)
+            if w < 0 || w >= Balance.weeksPerYear { seasonFails.append("week \(w) on day \(d)") }
+            for f in [PriceCycle.seasonDemand(sealed: true, day: d), PriceCycle.seasonDemand(sealed: false, day: d),
+                      PriceCycle.seasonSealedPrice(day: d), PriceCycle.seasonTraffic(day: d)] where f < 0.85 || f > 1.16 {
+                seasonFails.append("factor \(f) on day \(d)")
+            }
+            if d > 0, abs(PriceCycle.seasonSealedPrice(day: d) - PriceCycle.seasonSealedPrice(day: d - 1)) > 0.01 {
+                seasonFails.append("sealed price jumps on day \(d)")
+            }
+        }
+        if PriceCycle.startWeek != startWeek { seasonFails.append("the start week changed") }
+        let holidayDays = (0..<366).filter { PriceCycle.seasonName(day: $0) == "Holiday season" }.count
+        print("SOAK SEASONS: start week \(startWeek), today \(PriceCycle.monthName()) (\(PriceCycle.seasonName() ?? "no season")), holiday days in a year \(holidayDays), \(seasonFails.count) fails \(seasonFails.prefix(3))")
         print("SOAK MARKET: index \(PriceCycle.index()), events \(store.data.marketEvents.count), goals \(store.data.goalsReached.count), storage \(money(store.storageCost))")
         // The records prune when a table opens. Right after a table, none may be older than 21 days.
         if let last = store.data.tableDays.values.flatMap({ $0 }).max(),

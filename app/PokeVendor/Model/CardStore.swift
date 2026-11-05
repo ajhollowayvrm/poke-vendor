@@ -390,6 +390,7 @@ extension GameStore {
         mean *= 1 + Balance.storeReputationStep * Double(reputationTier)
         if hasAccount { mean *= 1 + Balance.storeFollowerStep * Double(followerTier) }
         if s.has(.sign) { mean *= Balance.signTrafficBonus }
+        mean *= PriceCycle.seasonTraffic(day: day)
         if day >= s.openDay, day < s.openDay + Balance.grandOpeningDays { mean *= Balance.grandOpeningBonus }
         let event = eventTraffic(day: day)
         mean += event.tournament + event.league + event.glow

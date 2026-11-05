@@ -36,6 +36,17 @@ struct MarketView: View {
                     Text("Prices move in slow waves. Sealed product gains value with age. A card under $1 stays flat.")
                         .font(.caption).foregroundStyle(Theme.muted)
                 }
+                DetailBox(title: "Season") {
+                    HStack(spacing: 0) {
+                        StatCell(label: PriceCycle.monthName(), value: PriceCycle.seasonName() ?? "No season")
+                        StatCell(label: "Sealed price", value: marketPercent(PriceCycle.seasonSealedPrice() - 1))
+                    }
+                    HStack(spacing: 0) {
+                        StatCell(label: "Sealed sales", value: marketPercent(PriceCycle.seasonDemand(sealed: true) - 1))
+                        StatCell(label: "Singles sales", value: marketPercent(PriceCycle.seasonDemand(sealed: false) - 1))
+                    }
+                    Text(PriceCycle.seasonText()).font(.caption).foregroundStyle(Theme.muted)
+                }
                 DetailBox(title: "News") {
                     if store.activeMarketEvents.isEmpty {
                         Text("No market news now.").font(.subheadline).foregroundStyle(Theme.muted)

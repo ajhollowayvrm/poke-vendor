@@ -62,7 +62,7 @@ Every system in this folder is built. The list:
 - **Theft and insurance**: theft at a card show, a stolen bag from the
   car, water damage at home, three upgrades that lower the risk, and
   collection insurance in the Wallet.
-- **The moving market and demand**: price waves, market news, sealed
+- **The moving market and demand**: price waves, seasons, market news, sealed
   appreciation, and a demand limit on each channel and item.
 - **Goals and growth**: goal ladders, "You made it", growing costs, and
   large purchases.

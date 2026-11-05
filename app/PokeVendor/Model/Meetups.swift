@@ -78,7 +78,8 @@ extension GameStore {
         for c in data.raw + data.slabs { if let l = listed(c.id, c.status) { candidates.append((c.id, c.print.name, l.price, false)) } }
         for s in data.sealed { if let l = listed(s.id, s.status) { candidates.append((s.id, s.name, l.price, true)) } }
         for (id, name, price, sealed) in candidates where !data.fbOffers.contains(where: { $0.itemID == id }) {
-            guard Double.random(in: 0..<1) < Balance.fbOfferChancePerDay * reachSaleFactor * channelDemand(.facebook) * itemDemand(name) else { continue }
+            guard Double.random(in: 0..<1) < Balance.fbOfferChancePerDay * reachSaleFactor * channelDemand(.facebook) * itemDemand(name)
+                    * PriceCycle.seasonDemand(sealed: sealed) else { continue }
             let later = Double.random(in: 0..<1) < Balance.fbLaterDayChance
             let offer = FBOffer(itemID: id, itemName: name, buyer: Self.buyers.randomElement() ?? "Jordan",
                                 offer: ShowSession.round(max(0.5, price * Double.random(in: Balance.fbOfferShare))), listPrice: price,

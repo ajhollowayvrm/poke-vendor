@@ -36,6 +36,11 @@ can still do free actions until they tap End Day.
 The game counts time in game days, not real calendar days. Each tap on
 End Day moves the game forward by 1 day.
 
+A run starts on a random week of the year. The game uses the week of the
+year only for seasons and for the month on the Calendar (see
+[05-pricing-and-market.md](05-pricing-and-market.md#seasons)). Rent and the
+other costs stay on cycles of 28 days.
+
 Every wait that is measured in days moves forward by 1 day on End Day:
 
 - Grading turnaround (see [10-grading.md](10-grading.md#turnaround)).

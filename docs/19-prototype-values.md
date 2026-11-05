@@ -530,6 +530,18 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Factor limits | 0.4 to 3 times the real price |
 | Market news | 6% each day, at most 3 at once. Hype +25% to +70%, 14 to 35 days. Reprint −15% to −35%, 30 to 70 days. Sealed hype +20% to +50%, 21 to 45 days |
 
+## Seasons
+
+| Value | Number |
+|---|---|
+| Start week | Random, from the market seed |
+| Holiday season | Center week 47.5 (late November), ±5.5 weeks. Sealed sale chance +15%, singles sale chance −5% at the center |
+| Holiday sealed price | Center week 48, ±5 weeks. +5% at the center |
+| After the holidays | Center week 5 (early February), ±6 weeks. Sealed price −10% at the center |
+| Summer slump | Center week 30 (late July), ±6 weeks. Every sale chance −5% at the center |
+| Store customers | The mean of the sealed and the singles sale chance factors |
+| Shape | A raised cosine: the full size at the center, 0 at the edges |
+
 ## The demand limit
 
 | Value | Number |

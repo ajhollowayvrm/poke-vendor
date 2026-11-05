@@ -194,6 +194,7 @@
 		BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B1FFEB95C34CF4A3CF1A74 /* AppNav.swift */; };
 		C13E4D86A349AC573D8646EC /* phantom-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = 754F7D2C37FC137EEECF52E0 /* phantom-forces.json */; };
 		C1CC43A88E2E3D16D54DD9D1 /* SoundFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05325B42F9797DF7460D557 /* SoundFX.swift */; };
+		C24F01B2269CEB657A5CFC81 /* Seasons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E806A5D2CAC20EF3493CB08 /* Seasons.swift */; };
 		C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */; };
 		C2A3C99456CF04BAA77DB975 /* ancient-origins.json in Resources */ = {isa = PBXBuildFile; fileRef = 7FF6E2CD1F4B368D29E4A58A /* ancient-origins.json */; };
 		C31C63C7733ED165D21528FD /* Job.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BDDA1B76A85BD73D8A9400 /* Job.swift */; };
@@ -422,6 +423,7 @@
 		9B2447127F65338C5A35C8B0 /* champions-path.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "champions-path.json"; sourceTree = "<group>"; };
 		9C25C4A7C5553E5A77DE8ACA /* Meetups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meetups.swift; sourceTree = "<group>"; };
 		9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "detective-pikachu.json"; sourceTree = "<group>"; };
+		9E806A5D2CAC20EF3493CB08 /* Seasons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Seasons.swift; sourceTree = "<group>"; };
 		9F1814D1AECBB8B1DC0276EA /* ResealedBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResealedBanner.swift; sourceTree = "<group>"; };
 		9FDCA4CCA1E7FF1F70509EF9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A0DE4A3A88218162B90C004E /* darkness-ablaze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "darkness-ablaze.json"; sourceTree = "<group>"; };
@@ -766,6 +768,7 @@
 				3DDA3B83589268718F6EE970 /* RipSettings.swift */,
 				DCC08691AB0384D342F8CF4F /* SaleProblems.swift */,
 				5BC5E06D2611E27D5195B7E9 /* Sales.swift */,
+				9E806A5D2CAC20EF3493CB08 /* Seasons.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
@@ -1165,6 +1168,7 @@
 				0CFAD014F3343BA39A16ABE0 /* SaleProblems.swift in Sources */,
 				290A84E7043308C76B2FD6A9 /* SaleReceiptView.swift in Sources */,
 				76C05A5741135E258BF8809F /* Sales.swift in Sources */,
+				C24F01B2269CEB657A5CFC81 /* Seasons.swift in Sources */,
 				470F79925CFB90DC77F29629 /* SellGradeSheets.swift in Sources */,
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
 				1F4DF34D41F7780E560BF034 /* SetSections.swift in Sources */,
