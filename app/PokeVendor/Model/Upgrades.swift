@@ -25,6 +25,8 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case cardReader
     /// Less theft at a show table and from the car (docs/24-theft-and-insurance.md).
     case lockedCase
+    /// A lit showcase for cards of $1,000 or more. It opens the Showcase section (docs/08-ui-direction.md, The showcase).
+    case showcaseCase
     /// More carry space for a table: raw cards, slabs, and sealed (docs/29-packing-and-crowds.md).
     case vendorBinder, slabCase, foldingCart
     /// Less water damage to raw cards in storage, or none with the fire safe (docs/24).
@@ -48,6 +50,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .contactBook: "Contact book"
         case .bigContactBook: "Big contact book"
         case .cardReader: "Card reader"
+        case .showcaseCase: "Showcase case"
         case .lockedCase: "Locked display case"
         case .vendorBinder: "Vendor binder"
         case .slabCase: "Slab case"
@@ -75,6 +78,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .contactBook: "Room for \(Balance.contactBookSizes[1]) contacts instead of \(Balance.contactBookSizes[0])."
         case .bigContactBook: "Room for \(Balance.contactBookSizes[2]) contacts."
         case .cardReader: "Take card payments at shows, meets, and your store counter. Buyers with no cash stop walking away. A card sale costs \(Balance.readerFeeRate.formatted(.percent.precision(.fractionLength(1)))) plus \(money(Balance.readerFeeFixed))."
+        case .showcaseCase: "A lit case for \(Balance.showcaseSlots) cards of \(money(Balance.showcaseMinValue)) or more. Bring it to a table: more people come, whales come more often, and some ask to buy a showcase card at a premium."
         case .lockedCase: "Cuts the chance of theft at a show table, and from your car, by \(Int((1 - Balance.lockedCaseFactor) * 100))%."
         case .vendorBinder: "Carry \(Balance.binderSpace[1]) raw cards to a table instead of \(Balance.binderSpace[0])."
         case .slabCase: "Carry \(Balance.slabBoxSpace[1]) slabs to a table instead of \(Balance.slabBoxSpace[0])."
@@ -105,6 +109,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .bigContactBook: "books.vertical"
         case .cardReader: "creditcard"
         case .lockedCase: "lock.rectangle"
+        case .showcaseCase: "sparkles.rectangle.stack"
         case .vendorBinder: "book.closed"
         case .slabCase: "square.stack.3d.up"
         case .foldingCart: "cart"
@@ -130,7 +135,7 @@ extension Balance {
         .evReadout: 120, .betterCar: 900, .dropDiscord: 60, .restockBot: 150, .authTool: 350,
         .cornerLoupe: 60, .edgeLight: 90, .surfaceLamp: 140, .studioLights: 250, .cameraKit: 600,
         .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600, .cardReader: Balance.cardReaderCost,
-        .lockedCase: 220, .vendorBinder: 40, .slabCase: 90, .foldingCart: 120, .dehumidifier: 120, .fireSafe: 400,
+        .lockedCase: 220, .showcaseCase: Balance.showcaseCost, .vendorBinder: 40, .slabCase: 90, .foldingCart: 120, .dehumidifier: 120, .fireSafe: 400,
         .warehouse: 90_000, .ownHome: 350_000,
     ]
     /// Contact book room: no upgrade, the contact book, and the big contact book.

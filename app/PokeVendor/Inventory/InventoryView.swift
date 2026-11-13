@@ -10,7 +10,7 @@ enum InventoryTab: String, CaseIterable, Hashable {
 /// The three parts of Inventory. The PC and the master sets hold items that are out of the regular tabs
 /// (docs/08-ui-direction.md, The PC and Master sets).
 enum InventorySection: String, CaseIterable, Hashable {
-    case stock = "Inventory", pc = "PC", masterSets = "Master sets"
+    case stock = "Inventory", pc = "PC", masterSets = "Master sets", showcase = "Showcase"
 }
 
 extension OwnedCard {
@@ -110,6 +110,8 @@ struct InventoryView: View {
                     PCSection(selecting: selecting, selection: $selection)
                 case .masterSets:
                     MasterSetsSection()
+                case .showcase:
+                    ShowcaseSection()
                 }
             }
             .padding(.horizontal, 16)
@@ -121,7 +123,7 @@ struct InventoryView: View {
                 switch section {
                 case .stock: actionBar
                 case .pc: pcActionBar
-                case .masterSets: EmptyView()
+                case .masterSets, .showcase: EmptyView()
                 }
             }
         }
@@ -129,7 +131,7 @@ struct InventoryView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                if section != .masterSets {
+                if section == .stock || section == .pc {
                     Button(selecting ? "Done" : "Select") {
                         selecting.toggle()
                         selection = []
@@ -588,7 +590,7 @@ struct PortfolioHeader: View {
                          color: store.net >= 0 ? Theme.green : Theme.orange)
             }
             HStack {
-                Text("COLLECTION VALUE (PC AND MASTER SETS)")
+                Text("COLLECTION VALUE (PC, MASTER SETS, SHOWCASE)")
                     .font(.system(size: 10, weight: .semibold))
                     .kerning(0.8)
                     .foregroundStyle(Theme.muted)

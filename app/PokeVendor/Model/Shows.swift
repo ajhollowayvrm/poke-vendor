@@ -189,10 +189,11 @@ extension GameStore {
 
     // MARK: - Deals
 
-    /// Items the player can bring to a table: not in a master set, and not listed, shipping, or at a grader.
-    /// PC items can come, and every deal on them carries the PC premium (docs/20-card-shows.md, PC items).
+    /// Items the player can bring to a table: not in a master set or the showcase, and not listed, shipping, or at a
+    /// grader. PC items can come, and every deal on them carries the PC premium (docs/20-card-shows.md, PC items).
+    /// The showcase comes as one case, not as table stock (docs/20-card-shows.md, The showcase).
     var showStock: (cards: [OwnedCard], sealed: [SealedItem]) {
-        ((data.raw + data.slabs).filter { $0.status == nil && !$0.inMasterSet }, data.sealed.filter { $0.status == nil })
+        ((data.raw + data.slabs).filter { $0.status == nil && !$0.inMasterSet && !$0.inShowcase }, data.sealed.filter { $0.status == nil })
     }
 
     /// `venue` is the name of the place: a show, a meet, or a sale.
@@ -498,6 +499,8 @@ struct ShowItem: Identifiable, Hashable {
     var packs = 0
     /// In the player's PC. Every deal on it carries the PC premium.
     var pc = false
+    /// A showcase card that a buyer asked about. It counts as a PC item, with the PC price.
+    var showcase = false
     /// What the item counts for in a deal with a person: market, or market and the PC premium for a PC item.
     var dealMarket: Double { pc ? market * Balance.pcPremium : market }
 
@@ -716,6 +719,10 @@ final class ShowSession {
     let startMinute: Double
     let closeMinute: Double
     var markup = 1.10
+    /// The player brings the showcase to the table (docs/08-ui-direction.md, The showcase).
+    var showcaseBrought = true
+    /// The showcase paid its followers and reputation for this visit.
+    var showcasePaid = false
     /// The load. Only the packing methods change it, so it always fits the bins (docs/29-packing-and-crowds.md).
     private(set) var bring: Set<UUID> = []
     /// True after the first trip to the floor from the setup. The load left the car, so it can only get smaller.
@@ -972,7 +979,7 @@ final class ShowSession {
                 bring = fitted
                 table = table.filter { fitted.contains($0.id) }
             }
-            minute = min(closeMinute, minute + setupMinutes(table))
+            minute = min(closeMinute, minute + setupMinutes(table) + (showcaseOut ? Balance.showcaseSetupMinutes : 0))
             // With no time left, no buyer sees the table: no stale record, and no theft roll.
             if minute < closeMinute { store.recordTable(table) } else { theftRolled = true }
         }
@@ -982,6 +989,11 @@ final class ShowSession {
         // A promo post and a good table spot bring more people (docs/20, docs/04).
         if show?.promoted == true { mean *= Balance.showPromoVisitorBonus }
         if show?.goodSpot == true { mean *= Balance.goodSpotBonus }
+        // The showcase draws a crowd, and people post about it.
+        if showcaseOut {
+            mean *= 1 + store.showcaseDraw
+            if minute < closeMinute { payShowcase() }
+        }
         let count = minute < closeMinute ? max(0, Int((mean + Double.random(in: -2...2)).rounded())) : 0
         arrivals = (0..<count).map { _ in Double.random(in: minute..<closeMinute) }.sorted()
         opened = true
@@ -1019,12 +1031,16 @@ final class ShowSession {
         // A regular comes first, so a regular buyer can look for fresh stock (docs/29-packing-and-crowds.md).
         let regularID: String? = Double.random(in: 0..<1) < venue.regularShare ? regulars.popLast() : nil
         var v: Visitor?
-        if table.isEmpty || roll < sellers { v = makeSeller() }
-        // The trade share is a share of the people who do not come to sell, so a high seller share leaves room for buyers.
-        // The store counter keeps its old flat trade share (docs/29-packing-and-crowds.md).
-        else if roll < sellers + (venue.kind == .store ? Balance.storeTradeShare : (1 - sellers) * venue.crowd.tradeShare),
-                let trader = makeTrader() { v = trader }
-        else { v = makeBuyer(regular: regularID) }
+        // With the showcase out, a whale comes more often. Some whales ask about a showcase card.
+        if showcaseOut, Double.random(in: 0..<1) < store.showcaseWhaleChance { v = makeWhale() }
+        if v == nil {
+            if table.isEmpty || roll < sellers { v = makeSeller() }
+            // The trade share is a share of the people who do not come to sell, so a high seller share leaves room for
+            // buyers. The store counter keeps its old flat trade share (docs/29-packing-and-crowds.md).
+            else if roll < sellers + (venue.kind == .store ? Balance.storeTradeShare : (1 - sellers) * venue.crowd.tradeShare),
+                    let trader = makeTrader() { v = trader }
+            else { v = makeBuyer(regular: regularID) }
+        }
         guard var visitor = v else { return nil }
         if let id = regularID {
             personalize(&visitor, id)
@@ -1294,7 +1310,7 @@ final class ShowSession {
     }
 
     /// `fresh`: an item that was on a table before weighs less, 1 / (1 + the times).
-    private func pick(_ items: [ShowItem], fresh: Bool = false) -> ShowItem? {
+    func pick(_ items: [ShowItem], fresh: Bool = false) -> ShowItem? {
         let weights = items.map { sqrt(max($0.market, 0.5)) / (fresh ? Double(1 + store.tableShowings($0.id)) : 1) }
         let total = weights.reduce(0, +)
         guard total > 0 else { return items.first }
@@ -2128,7 +2144,7 @@ final class ShowSession {
     }
     #endif
 
-    private static let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia",
+    static let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia",
                                 "Jordan", "Kai", "Mia", "Ben", "Rosa", "Luis", "Hannah", "Theo", "Gabe", "Wes", "Tina",
                                 "Omar", "Lena", "Victor", "Ruth", "Andre", "Ellie", "Frank"]
 }

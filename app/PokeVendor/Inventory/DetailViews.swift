@@ -137,6 +137,7 @@ struct CardDetailView: View {
                         }
                         Tags(pc: card.pc, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
                         if card.inMasterSet { Tag(text: "MASTER SET", color: Theme.green) }
+                        if card.inShowcase { Tag(text: "SHOWCASE", color: Theme.green) }
                     }
                     DetailBox(title: "Prices") {
                         HStack(alignment: .firstTextBaseline) {
@@ -184,7 +185,8 @@ struct CardDetailView: View {
                     }
                     if card.setAside {
                         Text(card.pc ? "This card is in your PC. Move it back to Inventory to sell, grade, or list it."
-                                     : "This card is in its master set. Take it out to sell, grade, or list it.")
+                             : card.inShowcase ? "This card is in your showcase. Take it out to sell, grade, or list it."
+                             : "This card is in its master set. Take it out to sell, grade, or list it.")
                             .font(.caption)
                             .foregroundStyle(Theme.muted)
                     }
@@ -200,13 +202,23 @@ struct CardDetailView: View {
                                 .buttonStyle(.bordered)
                                 .disabled(!free || card.setAside)
                         }
-                        if !card.inMasterSet {
+                        if !card.inMasterSet && !card.inShowcase {
                             Button(card.pc ? "Back to Inventory" : "Add to PC") { store.setPC([card.id], !card.pc) }
                                 .primaryButton()
                                 .disabled(!free && !card.pc)
                         }
                     }
                     .controlSize(.large)
+                    if card.inShowcase {
+                        Button("Take out of the showcase") { store.removeFromShowcase(card.id) }
+                            .buttonStyle(.bordered)
+                    } else if card.market >= Balance.showcaseMinValue, store.hasUpgrade(.showcaseCase) {
+                        let block = store.showcaseBlock(card)
+                        Button("Add to showcase") { store.addToShowcase(card.id) }
+                            .buttonStyle(.bordered)
+                            .disabled(block != nil)
+                        if let block, free, !card.isKnownFake { Text(block).font(.caption).foregroundStyle(Theme.muted) }
+                    }
                     if card.inMasterSet {
                         Button("Take out of the master set") { store.removeFromMasterSet(card.id) }
                             .buttonStyle(.bordered)

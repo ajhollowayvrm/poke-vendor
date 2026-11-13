@@ -315,7 +315,7 @@ struct VisitorCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 4) {
                             Text(item.name).font(.subheadline.weight(.semibold))
-                            if item.pc { Tag(text: "PC", color: Theme.green) }
+                            if item.pc { Tag(text: item.showcase ? "SHOWCASE" : "PC", color: Theme.green) }
                         }
                         Text(item.detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         if let c = item.condition {

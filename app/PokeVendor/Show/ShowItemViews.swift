@@ -10,7 +10,7 @@ struct ItemLine: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Text(item.name).font(.subheadline).lineLimit(1)
-                    if item.pc { Tag(text: "PC", color: Theme.green) }
+                    if item.pc { Tag(text: item.showcase ? "SHOWCASE" : "PC", color: Theme.green) }
                 }
                 if let c = item.condition {
                     RawLooks(condition: c)

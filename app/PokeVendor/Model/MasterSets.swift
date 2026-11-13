@@ -62,8 +62,8 @@ extension GameStore {
         return nil
     }
 
-    /// Puts each card into the empty slot of its print. A card that leaves the PC for a master set is no longer in
-    /// the PC. Returns the number of cards that went in.
+    /// Puts each card into the empty slot of its print. A card that goes into a master set leaves the PC or the
+    /// showcase. Returns the number of cards that went in.
     @discardableResult
     func addToMasterSet(_ ids: Set<UUID>) -> Int {
         var added = 0
@@ -73,9 +73,11 @@ extension GameStore {
             if let i = data.raw.firstIndex(where: { $0.id == id }) {
                 data.raw[i].masterSet = true
                 data.raw[i].pc = false
+                data.raw[i].showcase = nil
             } else if let i = data.slabs.firstIndex(where: { $0.id == id }) {
                 data.slabs[i].masterSet = true
                 data.slabs[i].pc = false
+                data.slabs[i].showcase = nil
             }
             added += 1
             slugs.insert(card.setSlug)

@@ -228,6 +228,34 @@ PC item.
 - A PC item that the player gets in a trade or buys keeps the price as
   its cost. It goes to the regular Inventory, not to the PC.
 
+### The showcase
+
+With the showcase case upgrade and at least one card in the showcase,
+the setup screen has "Bring the showcase" (see
+[08-ui-direction.md](08-ui-direction.md#the-showcase)). It is on by
+default. It works at a table with the table rules: a show or a meet. It
+does not use the bins.
+
+- **Setup** takes 10 more minutes.
+- **More people.** Visitors go up by 5% times the square root of the
+  showcase value in thousands, at most 25%. A $10,000 showcase draws
+  about 16% more people.
+- **More whales.** A visitor is a whale 3% of the time, plus 1.5% times
+  the same root, at most 12%. A whale has no budget cap.
+  - 65% of whales want one of the dearest third of the table items.
+    Their top price is 100% to 115% of market (of the PC price for a PC
+    item).
+  - 35% ask about a showcase card. The card is not on the table, but
+    they open at the PC price (130% of market), and their top price is
+    130% to 160% of market. The player cannot sell under the PC price.
+    A sale removes the card from the showcase.
+- **Followers and reputation.** Each visit with the showcase out pays
+  once when the table opens: reputation +1 (+2 for a showcase of $10,000
+  or more), and followers of 1.5 times the square root of the showcase
+  value, at most 400, with a social account.
+- The showcase stays in the player's hands, so a table theft does not
+  take a showcase card.
+
 ### Stashes
 
 A trader shows the cards in the offer, and a seller shows one item. The

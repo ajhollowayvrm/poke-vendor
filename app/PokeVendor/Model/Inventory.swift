@@ -439,18 +439,21 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var shelfFactor: Double?
     /// In a master set binder (docs/08-ui-direction.md, Master sets). Optional, so old saves still load.
     var masterSet: Bool?
+    /// In the showcase (docs/08-ui-direction.md, The showcase). Optional, so old saves still load.
+    var showcase: Bool?
 
     /// The save key of `pc` stays "keep", so old saves still load.
     enum CodingKeys: String, CodingKey {
         case id, print, setSlug, acquired, paid, ripID, pc = "keep", condition, grade, status, acquiredDay, fake, fakeKnown
-        case verified, onlineListing, shelfFactor, masterSet
+        case verified, onlineListing, shelfFactor, masterSet, showcase
     }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }
     var inMasterSet: Bool { masterSet == true }
-    /// In the PC or in a master set: out of the regular Inventory, and not for sale.
-    var setAside: Bool { pc || inMasterSet }
+    var inShowcase: Bool { showcase == true }
+    /// In the PC, a master set, or the showcase: out of the regular Inventory, and not for sale.
+    var setAside: Bool { pc || inMasterSet || inShowcase }
     /// The print's place in its master set: one copy of each number and variant.
     var masterKey: String { MasterSet.key(print) }
 

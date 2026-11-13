@@ -28,6 +28,18 @@ struct SetupStage: View {
                         .pickerStyle(.segmented)
                     }
                     PaymentPolicyPicker()
+                    if session.venue.tableRules, store.hasUpgrade(.showcaseCase), !store.showcaseCards.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Toggle(isOn: Bindable(session).showcaseBrought) {
+                                Text("Bring the showcase · \(store.showcaseCards.count) card\(store.showcaseCards.count == 1 ? "" : "s") · \(money(store.showcaseValue))")
+                                    .font(.subheadline)
+                            }
+                            .tint(Theme.cyan)
+                            Text("\(Int((store.showcaseDraw * 100).rounded()))% more people, whales \(Int((store.showcaseWhaleChance * 100).rounded()))% of visitors, and \(Int(Balance.showcaseSetupMinutes)) more minutes to set up. Showcase cards are not on the table, but a whale can ask to buy one at the PC price or more.")
+                                .font(.caption)
+                                .foregroundStyle(Theme.muted)
+                        }
+                    }
                     }
                     if session.venue.tableRules { crowdBox }
                     if items.isEmpty {

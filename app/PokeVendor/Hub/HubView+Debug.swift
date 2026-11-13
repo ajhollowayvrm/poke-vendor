@@ -19,6 +19,16 @@ extension HubView {
         // PC and master sets (docs/08-ui-direction.md): one test card goes to the PC and one to its master set. Then the
         // smallest set completes, pays once, and does not pay again after a card leaves and comes back.
         var pcFails: [String] = []
+        // The showcase (docs/08-ui-direction.md): a PSA 10 of the dearest Prismatic card goes in. A cheap card must not.
+        var showcaseVisits = 0, showcaseAsks = 0, showcaseSold = 0, showcaseAdded = 0
+        store.data.upgrades.append(Upgrade.showcaseCase.rawValue)
+        func stockShowcase() {
+            guard store.showcaseCards.isEmpty,
+                  let print = SetLibrary.set("prismatic-evolutions").prints.max(by: { ($0.market ?? 0) < ($1.market ?? 0) }) else { return }
+            let id = store.addTestSlab(print, grade: SlabGrade(company: .psa, grade: 10))
+            store.addToShowcase(id)
+            if store.card(id)?.inShowcase == true { showcaseAdded += 1 }
+        }
         var pcPacked = 0, pcSold = 0, pcChecked = 0, stashAsks = 0, stashShown = 0, stashBuys = 0, stashPCSeen = 0
         let testCards = Array(store.data.raw.suffix(6))
         if testCards.count >= 3 {
@@ -30,6 +40,12 @@ extension HubView {
             if stock.contains(testCards[2].id) { pcFails.append("a master set card can go to a show") }
             if store.unprofitableRaw.contains(where: { $0.id == testCards[1].id }) { pcFails.append("a PC card can go to bulk") }
         }
+        stockShowcase()
+        if store.showcaseCards.isEmpty { pcFails.append("a PSA 10 of the dearest Prismatic card did not go into the showcase") }
+        if let cheap = store.data.raw.first(where: { $0.market < Balance.showcaseMinValue && !$0.setAside }), store.showcaseBlock(cheap) == nil {
+            pcFails.append("a card under \(money(Balance.showcaseMinValue)) can go into the showcase")
+        }
+        if store.showStock.cards.contains(where: \.inShowcase) { pcFails.append("a showcase card is in the show stock") }
         if let slug = SetLibrary.index.map(\.slug).filter({ !MasterSet.slots($0).isEmpty }).min(by: { MasterSet.slots($0).count < MasterSet.slots($1).count }) {
             let before = Set(store.data.raw.map(\.id))
             for print in MasterSet.slots(slug) { store.addTestCard(print, slug: slug) }
@@ -106,6 +122,9 @@ extension HubView {
             store.data.raw.first { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.market >= Balance.tradeMinItem && !session.bring.contains($0.id) }
         }
         func play(_ session: ShowSession) {
+            stockShowcase()
+            let showcaseBefore = store.showcaseCards
+            let followersBefore = store.social.followers
             // Every item that leaves the stock in this visit must come from the load that left the car.
             let before = stockIDs()
             var load: Set<UUID> = []
@@ -137,12 +156,20 @@ extension HubView {
                 load = session.bring
             }
             let pcLoad = session.loadItems.filter { $0.pc && session.bring.contains($0.id) }
+            if session.showcaseOut {
+                showcaseVisits += 1
+                if session.opened, !session.showcasePaid, session.minute < session.closeMinute { pcFails.append("the showcase paid nothing at \(session.venue.name)") }
+                if session.table.contains(where: \.showcase) || session.table.contains(where: { id in showcaseBefore.contains { $0.id == id.id } }) {
+                    pcFails.append("a showcase card is on the table")
+                }
+            }
             var boothTested = false
             var steps = 0
             // A player with a table walks the floor once, past a few vendors, and comes back.
             var floorVisits = 0
             while session.phase != .summary, steps < 80 {
                 steps += 1
+                if let first = session.current, first.item?.showcase == true { showcaseAsks += 1 }
                 if let first = session.current {
                     // Stashes (docs/20-card-shows.md): ask every other trader or seller to show more.
                     if session.canAskStash(first), dealSeen % 2 == 1 {
@@ -302,6 +329,13 @@ extension HubView {
             }
             // A PC item that sold must have sold at its PC price or more.
             let owned = ownedIDs()
+            for card in showcaseBefore where !owned.contains(card.id) {
+                if let sale = session.sold.first(where: { $0.0 == card.print.name }) {
+                    showcaseSold += 1
+                    if sale.1 < ShowSession.round(card.market * Balance.pcPremium) - 0.01 { pcFails.append("a showcase card sold under its PC price at \(money(sale.1))") }
+                }
+            }
+            if session.showcasePaid, store.hasAccount, store.social.followers <= followersBefore { pcFails.append("the showcase paid no followers") }
             for item in pcLoad where !owned.contains(item.id) {
                 if let sale = session.sold.first(where: { $0.0 == item.name }) {
                     pcSold += 1
@@ -600,6 +634,7 @@ extension HubView {
         print("SOAK DEALS: \(dealSeen) visitors, \(dealFairMoves) fair moves, \(dealPolite) polite, \(dealFinals) finals, \(dealBundles) bundles, \(dealBinder) binder picks, \(dealInstead) trades instead (\(dealTheftAfter) then a theft), rep +\(dealRepTotal) (\(dealRepSeen) moves checked), \(dealStoriesOut) stories, \(store.data.dealStories.count) queued, \(dealFails.count) fails")
         for line in dealFails.prefix(10) { print("SOAK DEALS FAIL:", line) }
         print("SOAK PC: \(pcChecked) PC prices checked, \(pcPacked) packed, \(pcSold) sold, \(store.data.completedMasterSets.count) master sets complete, \(stashAsks) stash asks, \(stashShown) shown, \(stashPCSeen) PC items seen, \(stashBuys) stash buys, \(pcFails.count) fails")
+        print("SOAK SHOWCASE: \(showcaseAdded) added, \(showcaseVisits) visits out, \(showcaseAsks) whales asked, \(showcaseSold) sold, draw \(Int(store.showcaseDraw * 100))%, whales \(Int(store.showcaseWhaleChance * 100))%")
         for line in pcFails.prefix(10) { print("SOAK PC FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()

@@ -171,6 +171,7 @@
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
 		A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5188F9BDD662DDFD44100F /* AuctionViews.swift */; };
 		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
+		A99DF683CF20253B0DBA555B /* Showcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8AC9BA20E99FD7B453835C /* Showcase.swift */; };
 		ACF5B660614980C8BD8B47D3 /* firered-leafgreen.json in Resources */ = {isa = PBXBuildFile; fileRef = 38930186931A1B4CDBBF0541 /* firered-leafgreen.json */; };
 		AD9AD35F481816554B112EE4 /* RipView+Special.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A7717FDB86F90E3D73A2C6 /* RipView+Special.swift */; };
 		ADDD53369B7CDB8821600F1A /* set-index.json in Resources */ = {isa = PBXBuildFile; fileRef = 383520ADD17820B56C2198FB /* set-index.json */; };
@@ -368,6 +369,7 @@
 		5B48285729B6638BC44FA869 /* skyridge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = skyridge.json; sourceTree = "<group>"; };
 		5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStream.swift; sourceTree = "<group>"; };
 		5BC5E06D2611E27D5195B7E9 /* Sales.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sales.swift; sourceTree = "<group>"; };
+		5D8AC9BA20E99FD7B453835C /* Showcase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Showcase.swift; sourceTree = "<group>"; };
 		5E5AB88AEE87E1970C61F07F /* TaxBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxBox.swift; sourceTree = "<group>"; };
 		5F38B7B3DE47AF76DF106787 /* stellar-crown.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stellar-crown.json"; sourceTree = "<group>"; };
 		5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fates-collide.json"; sourceTree = "<group>"; };
@@ -795,6 +797,7 @@
 				9E806A5D2CAC20EF3493CB08 /* Seasons.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */,
+				5D8AC9BA20E99FD7B453835C /* Showcase.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 				2D3E9F9E012F05AC4B3E9A5B /* Stashes.swift */,
@@ -1216,6 +1219,7 @@
 				52BE2F985E530697282DA300 /* ShowTableStage.swift in Sources */,
 				7EB1F87B4A134567025E8987 /* ShowVendorStage.swift in Sources */,
 				F7384A7B2C2A94AAFECAFAE1 /* ShowVendorTradeSheet.swift in Sources */,
+				A99DF683CF20253B0DBA555B /* Showcase.swift in Sources */,
 				7ACC1B39815CB76022632456 /* Shows.swift in Sources */,
 				2E0650596BCA2527E709DADE /* SlabViews.swift in Sources */,
 				484DB0AF7BC480439CDBAACC /* Social.swift in Sources */,

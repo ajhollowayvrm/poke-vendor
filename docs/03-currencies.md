@@ -30,8 +30,8 @@ The raw worth of cards you personally hold, separate from cash. A player can
 sit on a vault of rare cards and never sell them, and that is still "making
 it."
 
-Collection value counts only the items in the player's PC and in the
-player's master sets (see
+Collection value counts only the items in the player's PC, master
+sets, and showcase (see
 [08-ui-direction.md](08-ui-direction.md#the-pc)). Stock for sale is
 future cash, so it does not count. This rule keeps collection value
 separate from the trading business.

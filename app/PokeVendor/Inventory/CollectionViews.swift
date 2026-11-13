@@ -172,3 +172,79 @@ struct MasterSetDetailView: View {
     }
 
 }
+
+/// The showcase: the player's biggest cards, $1,000 or more each, in a lit case (docs/08-ui-direction.md, The showcase).
+struct ShowcaseSection: View {
+    @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
+
+    var body: some View {
+        if !store.hasUpgrade(.showcaseCase) {
+            VStack(spacing: 10) {
+                EmptyTab(text: "The showcase holds your biggest cards: \(money(Balance.showcaseMinValue)) or more each. "
+                             + "Bring it to a table for more visitors, more whales, and followers. Buy the showcase case "
+                             + "(\(money(Balance.showcaseCost))) in Upgrades.")
+                Button("Open Upgrades") { nav.path.append(.upgrades) }
+                    .buttonStyle(.bordered)
+                    .padding(.bottom, 16)
+            }
+            .background(Theme.surface)
+            .framed()
+        } else {
+            let cards = store.showcaseCards
+            let candidates = (store.data.slabs + store.data.raw)
+                .filter { !$0.inShowcase && $0.status == nil && !$0.isKnownFake && $0.market >= Balance.showcaseMinValue }
+                .sorted { $0.market > $1.market }
+            VStack(spacing: 14) {
+                HStack(spacing: 0) {
+                    StatCell(label: "Showcase value", value: money(store.showcaseValue))
+                    StatCell(label: "Cards", value: "\(cards.count) of \(Balance.showcaseSlots)")
+                }
+                .padding(12)
+                .background(Theme.surface)
+                .framed()
+                if cards.isEmpty {
+                    EmptyTab(text: "The case is empty. Add a card of \(money(Balance.showcaseMinValue)) or more.")
+                        .background(Theme.surface)
+                        .framed()
+                } else {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 16) {
+                        ForEach(cards) { card in
+                            Button { nav.path.append(.card(card.id)) } label: {
+                                VStack(spacing: 6) {
+                                    CardOrSlab(image: card.print.image, name: card.print.name, grade: card.grade,
+                                               subgrades: card.slabSubgrades, certID: card.id)
+                                        .aspectRatio(card.grade == nil ? 63.0 / 88.0 : SlabView.ratio, contentMode: .fit)
+                                        .shadow(color: Theme.cyan.opacity(0.35), radius: 10)
+                                    Text(card.print.name).font(.subheadline.weight(.medium)).lineLimit(1)
+                                    Text(card.grade?.label ?? card.condition.wear.short)
+                                        .font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+                                    Text(money(card.market)).font(.subheadline.monospaced().weight(.semibold))
+                                }
+                                .padding(10)
+                                .frame(maxWidth: .infinity)
+                                .background(Theme.surface, in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                if !candidates.isEmpty, cards.count < Balance.showcaseSlots {
+                    TitledGroup(title: "Cards that can go in", count: candidates.count, list: "showcase") {
+                        ForEach(candidates) { card in
+                            HStack(spacing: 10) {
+                                CardRow(card: card)
+                                Button("Add") { store.addToShowcase(card.id) }
+                                    .buttonStyle(.bordered)
+                            }
+                            .padding(12)
+                            .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+                        }
+                    }
+                    .background(Theme.surface)
+                    .framed()
+                }
+            }
+        }
+    }
+}

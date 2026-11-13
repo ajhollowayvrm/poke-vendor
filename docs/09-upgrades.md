@@ -68,6 +68,14 @@ table at a show or a meet (see
 | Slab case | $90 | 20 slabs instead of 3 |
 | Folding cart | $120 | 30 spaces of sealed instead of 8 |
 
+## The showcase case
+
+The showcase case costs $750. It opens the Showcase section of
+Inventory: a lit case for 6 cards of $1,000 or more. The player can
+bring it to a table for more visitors, more whales, and followers (see
+[08-ui-direction.md](08-ui-direction.md#the-showcase) and
+[20-card-shows.md](20-card-shows.md#the-showcase)).
+
 ## Contacts and selling
 
 | Upgrade | Cost | What it does |

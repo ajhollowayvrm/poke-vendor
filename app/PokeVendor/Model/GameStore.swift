@@ -369,7 +369,7 @@ final class GameStore {
 
     var net: Double { marketValue - paid }
 
-    /// Collection value counts the PC and the master sets (docs/03-currencies.md, Collection value).
+    /// Collection value counts the PC, the master sets, and the showcase (docs/03-currencies.md, Collection value).
     var collectionValue: Double {
         data.sealed.filter(\.pc).reduce(0) { $0 + market(of: $1) }
             + data.raw.filter(\.setAside).reduce(0) { $0 + $1.market }
@@ -400,11 +400,11 @@ final class GameStore {
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) && (!on || data.raw[i].status == nil) {
             data.raw[i].pc = on
-            if on { data.raw[i].masterSet = nil }
+            if on { data.raw[i].masterSet = nil; data.raw[i].showcase = nil }
         }
         for i in data.slabs.indices where ids.contains(data.slabs[i].id) && (!on || data.slabs[i].status == nil) {
             data.slabs[i].pc = on
-            if on { data.slabs[i].masterSet = nil }
+            if on { data.slabs[i].masterSet = nil; data.slabs[i].showcase = nil }
         }
         save()
     }
@@ -454,7 +454,7 @@ final class GameStore {
     /// pick the better copy to grade.
     func stackKey(_ c: OwnedCard) -> String {
         let looks = c.grade == nil ? "|\(c.condition.wear.short)|\(cutKey(c.condition.cut))" : ""
-        return "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.pc)|\(c.inMasterSet)|\(c.status?.tag ?? "")|\(c.paid == nil)" + looks
+        return "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.pc)|\(c.inMasterSet)|\(c.inShowcase)|\(c.status?.tag ?? "")|\(c.paid == nil)" + looks
     }
 
     private func cutKey(_ cut: Cut) -> String {

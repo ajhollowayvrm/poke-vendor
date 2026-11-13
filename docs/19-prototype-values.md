@@ -503,6 +503,9 @@ See [29-packing-and-crowds.md](29-packing-and-crowds.md).
 | Stash ask | Once a person, 3 minutes. Shown: stranger 50%, familiar 65%, regular 80%, trusted 95%, friend 100%. Closet cleaner +30 points |
 | Stash size | Stranger 2–3, familiar 3–4, regular 4–6, trusted 5–8 (+1–2 PC), friend 7–10 (+2–3 PC) |
 | Stash offer | Slider 30% to 130% of market. Two counters, then the stash closes |
+| Showcase | Upgrade $750. 6 cards of $1,000 or more. Setup +10 minutes |
+| Showcase at a table | Visitors +5% × √(value in thousands), at most 25%. Whales 3% + 1.5% × the root, at most 12%. 35% of whales ask about a showcase card: open at 130%, top 130% to 160%. Other whales: dearest third of the table, top 100% to 115% |
+| Showcase visit reward | Reputation +1 (+2 at $10,000 or more). Followers 1.5 × √value, at most 400 |
 | Master set reward | Once a set. Reputation: half the square root of the set value, 3 to 40. Followers: 10 × the root |
 
 See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).

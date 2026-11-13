@@ -239,10 +239,10 @@ here, and the rip-or-hold decision happens here.
     [15-selling.md](15-selling.md#the-local-game-shop)).
 
   The player cannot rip, sell, or grade an item with a status tag.
-- **The PC and the master sets are separate sections.** A picker at the
-  top of Inventory has three sections: Inventory (the tabs), PC, and
-  Master sets. An item in the PC or in a master set is not in the
-  regular tabs. Sell flows, listings, grading, bulk, the store, vending
+- **The PC, the master sets, and the showcase are separate sections.** A
+  picker at the top of Inventory has four sections: Inventory (the
+  tabs), PC, Master sets, and Showcase. An item in one of the last three
+  is not in the regular tabs. Sell flows, listings, grading, bulk, the store, vending
   machines, and the rip queue do not offer it. The portfolio header
   counts these items, because they are still assets. See
   [The PC](#the-pc) and [Master sets](#master-sets).
@@ -388,6 +388,28 @@ each variant, with the reverse holos and the ball patterns.
   "Completed once" tag.
 - Master set cards stay home. They do not go to shows, meets, or
   streams.
+
+### The showcase
+
+The showcase is a lit case for the player's biggest cards. The showcase
+case upgrade ($750) opens it (see
+[09-upgrades.md](09-upgrades.md#the-showcase-case)). Before the
+upgrade, the section explains the showcase and links to Upgrades.
+
+- **The showcase holds 6 cards of $1,000 or more** each, at market. A
+  raw card or a slab can go in. A card with a status, or a known fake,
+  cannot. A card that drops under $1,000 later stays in.
+- **"Add to showcase"** is on the detail screen of a card of $1,000 or
+  more. The section also lists "Cards that can go in", each with an
+  "Add" button. A card that goes in leaves the regular tabs, the PC, or
+  its master set. "Take out of the showcase" moves it back to the
+  regular tabs.
+- **The section** shows the showcase value, the cards used of 6, and
+  the cards in a two-column grid with the grade and the value. A tap
+  opens the card.
+- **At a table**, the player can bring the whole showcase. See
+  [20-card-shows.md](20-card-shows.md#the-showcase). Showcase cards are
+  never table stock, and they stay home from streams.
 
 ### 4. Social media hub — decisions recorded, lo-fi mockup reviewed
 
