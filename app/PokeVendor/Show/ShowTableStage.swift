@@ -13,6 +13,7 @@ struct TableStage: View {
                             .id(visitor.id)
                             .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                                     removal: .move(edge: .leading).combined(with: .opacity)))
+                        StashPanel(session: session, visitor: visitor)
                     } else {
                         Text("No one at your table.").font(.subheadline).foregroundStyle(Theme.muted).padding(.top, 40)
                     }
@@ -124,8 +125,9 @@ struct TradeSlider: View {
                                 Image(systemName: inTrade ? "checkmark.circle.fill" : "circle")
                                     .foregroundStyle(inTrade ? Color(red: 0.7, green: 0.55, blue: 1) : Theme.muted)
                                 Text(card.print.name).font(.caption)
+                                if card.pc { Tag(text: "PC", color: Theme.green) }
                                 Spacer()
-                                Text(money(card.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                Text(money(card.dealMarket)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             }
                             .contentShape(Rectangle())
                         }
@@ -143,7 +145,7 @@ struct TradeSlider: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(cash >= 0 ? Theme.green : Theme.orange)
                 Spacer()
-                Text("for your \(money(visitor.item?.market ?? 0)) item").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Text("for your \(money(visitor.item?.dealMarket ?? 0)) item").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             HStack(spacing: 8) {
                 Button { withAnimation { session.proposeTrade(valuing: percent) } } label: {
@@ -311,7 +313,10 @@ struct VisitorCard: View {
                 HStack(alignment: .top, spacing: 12) {
                     ItemImage(item: item).frame(width: 64, height: 89)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(item.name).font(.subheadline.weight(.semibold))
+                        HStack(spacing: 4) {
+                            Text(item.name).font(.subheadline.weight(.semibold))
+                            if item.pc { Tag(text: "PC", color: Theme.green) }
+                        }
                         Text(item.detail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         if let c = item.condition {
                             HStack(spacing: 6) {

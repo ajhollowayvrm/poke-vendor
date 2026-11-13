@@ -52,7 +52,7 @@ extension GameStore {
     func makeShopEncounter(_ shop: LocalStore, kind forced: ShopEncounter.Kind? = nil) -> ShopEncounter? {
         let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia", "Ben", "Hannah"]
         let who = names.randomElement() ?? "Someone"
-        let mine = (data.raw + data.slabs).filter { $0.status == nil && !$0.keep && !$0.isKnownFake && $0.market >= 10 }
+        let mine = (data.raw + data.slabs).filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.market >= 10 }
         var kinds: [ShopEncounter.Kind] = [.kidWithHit, .seller, .seller, .tip]
         if !mine.isEmpty { kinds += [.buyer, .buyer] }
         if standing(shop).rank >= StandingLevel.regular.rank { kinds.append(.ownerHold) }
@@ -148,7 +148,7 @@ extension GameStore {
 
     /// Sells the player's card for cash, in person.
     func sellToShopBuyer(_ e: ShopEncounter) -> String {
-        guard let id = e.cardID, let card = card(id), card.status == nil, !card.keep else { return "You no longer have the card." }
+        guard let id = e.cardID, let card = card(id), card.status == nil, !card.setAside else { return "You no longer have the card." }
         data.raw.removeAll { $0.id == id }
         data.slabs.removeAll { $0.id == id }
         let name = card.print.name + (card.grade.map { " " + $0.label } ?? "")

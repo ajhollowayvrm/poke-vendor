@@ -16,6 +16,41 @@ extension HubView {
         store.addTestFake(.bootleg)
         store.addTestResealed()
         var log: [String] = []
+        // PC and master sets (docs/08-ui-direction.md): one test card goes to the PC and one to its master set. Then the
+        // smallest set completes, pays once, and does not pay again after a card leaves and comes back.
+        var pcFails: [String] = []
+        var pcPacked = 0, pcSold = 0, pcChecked = 0, stashAsks = 0, stashShown = 0, stashBuys = 0, stashPCSeen = 0
+        let testCards = Array(store.data.raw.suffix(6))
+        if testCards.count >= 3 {
+            store.setPC([testCards[1].id], true)
+            store.addToMasterSet([testCards[2].id])
+            if store.data.raw.first(where: { $0.id == testCards[1].id })?.pc != true { pcFails.append("a card did not go into the PC") }
+            let stock = Set(store.showStock.cards.map(\.id))
+            if !stock.contains(testCards[1].id) { pcFails.append("a PC card cannot go to a show") }
+            if stock.contains(testCards[2].id) { pcFails.append("a master set card can go to a show") }
+            if store.unprofitableRaw.contains(where: { $0.id == testCards[1].id }) { pcFails.append("a PC card can go to bulk") }
+        }
+        if let slug = SetLibrary.index.map(\.slug).filter({ !MasterSet.slots($0).isEmpty }).min(by: { MasterSet.slots($0).count < MasterSet.slots($1).count }) {
+            let before = Set(store.data.raw.map(\.id))
+            for print in MasterSet.slots(slug) { store.addTestCard(print, slug: slug) }
+            let ids = Set(store.data.raw.map(\.id)).subtracting(before)
+            let repBefore = store.data.reputation
+            let added = store.addToMasterSet(ids)
+            if added != MasterSet.slots(slug).count { pcFails.append("\(added) of \(MasterSet.slots(slug).count) cards went into the \(slug) master set") }
+            if !store.isMasterSetCompleted(slug) { pcFails.append("the \(slug) master set did not complete") }
+            if store.data.reputation <= repBefore { pcFails.append("the master set paid no reputation") }
+            if let one = ids.first {
+                let repDone = store.data.reputation
+                store.removeFromMasterSet(one)
+                if store.masterSetProgress(slug).complete { pcFails.append("a set stayed complete after a card left") }
+                store.addToMasterSet([one])
+                if store.data.reputation != repDone { pcFails.append("a master set paid twice") }
+            }
+            if let print = MasterSet.slots(slug).first {
+                store.addTestCard(print, slug: slug)
+                if let dup = store.data.raw.last, store.masterSetBlock(dup) == nil { pcFails.append("a second copy of a print can go into a master set") }
+            }
+        }
         // Packing checks (docs/29-packing-and-crowds.md): each one that breaks prints a SOAK PACK FAIL line.
         var dealSeen = 0, dealBundles = 0, dealFinals = 0, dealBinder = 0, dealInstead = 0, dealFairMoves = 0, dealPolite = 0, dealRepTotal = 0,
             dealStoriesOut = 0, dealTheftAfter = 0, dealRepSeen = 0, dealFails: [String] = []
@@ -29,13 +64,25 @@ extension HubView {
         func pack(_ session: ShowSession) {
             guard session.venue.limitsLoad else { return }
             checkLoad(session, "default load")
+            if packTables + packBags == 0, session.loadItems.contains(where: { $0.pc && session.bring.contains($0.id) }) {
+                pcFails.append("the first default load packed a PC item")
+            }
+            if session.loadItems.contains(where: { store.card($0.id)?.inMasterSet == true }) { pcFails.append("a master set card is in the load list") }
+            for item in session.loadItems where item.pc {
+                pcChecked += 1
+                if abs(session.asking(item) - ShowSession.round(item.market * Balance.pcPremium)) > 0.01 {
+                    pcFails.append("the PC price of \(item.name) is \(money(session.asking(item)))")
+                }
+            }
             // Every other table: clear, pick a few by hand, then fill.
             if (packTables + packBags) % 2 == 1 {
                 session.clearBring()
                 if !session.bring.isEmpty { packFails.append("clear left \(session.bring.count) items") }
                 for item in session.loadItems.reversed().prefix(5) { session.toggleBring(item) }
                 checkLoad(session, "hand pick")
+                let pcBefore = session.loadItems.filter { $0.pc && session.bring.contains($0.id) }.count
                 session.fillBring()
+                if session.loadItems.filter({ $0.pc && session.bring.contains($0.id) }).count > pcBefore { pcFails.append("fill packed a PC item") }
             }
             checkLoad(session, "fill")
             // An item bigger than its bin must not go in.
@@ -44,13 +91,19 @@ extension HubView {
                 if session.bring.contains(item.id) { packFails.append("\(item.name) went in, and it is too big") }
             }
             if session.loadItems.contains(where: { $0.market < 0.5 }) { packFails.append("an item under 50 cents is in the list") }
+            // Pack the PC items by hand, so the soak sells and trades them at the PC price.
+            for item in session.loadItems where item.pc && !session.bring.contains(item.id) {
+                session.toggleBring(item)
+                if session.bring.contains(item.id) { pcPacked += 1 }
+            }
+            if session.tradeStock.contains(where: \.pc) { pcFails.append("a PC item can trade to a vendor") }
         }
         func stockIDs() -> Set<UUID> { let s = store.showStock; return Set(s.cards.map(\.id) + s.sealed.map(\.id)) }
         /// Every item the player owns, the store shelves included.
         func ownedIDs() -> Set<UUID> { Set(store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id)) }
         /// A raw card in hand that is not in the load: the booth and the vendors must turn it down.
         func outsideCard(_ session: ShowSession) -> OwnedCard? {
-            store.data.raw.first { $0.status == nil && !$0.keep && !$0.isKnownFake && $0.market >= Balance.tradeMinItem && !session.bring.contains($0.id) }
+            store.data.raw.first { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.market >= Balance.tradeMinItem && !session.bring.contains($0.id) }
         }
         func play(_ session: ShowSession) {
             // Every item that leaves the stock in this visit must come from the load that left the car.
@@ -83,12 +136,41 @@ extension HubView {
                 }
                 load = session.bring
             }
+            let pcLoad = session.loadItems.filter { $0.pc && session.bring.contains($0.id) }
             var boothTested = false
             var steps = 0
             // A player with a table walks the floor once, past a few vendors, and comes back.
             var floorVisits = 0
             while session.phase != .summary, steps < 80 {
                 steps += 1
+                if let first = session.current {
+                    // Stashes (docs/20-card-shows.md): ask every other trader or seller to show more.
+                    if session.canAskStash(first), dealSeen % 2 == 1 {
+                        stashAsks += 1
+                        session.askToSeeStash()
+                        if let now = session.current, now.id == first.id {
+                            if session.canAskStash(now) { pcFails.append("a person can be asked twice for the stash") }
+                            if now.binder.count > first.binder.count || !now.stash.isEmpty { stashShown += 1 }
+                            for card in now.binder where card.pc {
+                                stashPCSeen += 1
+                                if abs(card.dealMarket - card.market * Balance.pcPremium) > 0.01 { pcFails.append("a trader's PC card has no premium") }
+                            }
+                            for one in now.stash where one.pc {
+                                stashPCSeen += 1
+                                if one.floor < one.market * Balance.pcPremium - 0.01 { pcFails.append("a stash PC item sells under the PC price") }
+                            }
+                            if let one = now.stash.first {
+                                let boughtBefore = session.bought.count
+                                session.offerOnStash([one.id], price: ShowSession.round(one.dealMarket * 0.4))
+                                if session.current?.stashCounter != nil { session.takeStashCounter() }
+                                if session.bought.count > boughtBefore {
+                                    stashBuys += 1
+                                    if session.current?.stash.contains(where: { $0.id == one.id }) == true { pcFails.append("a bought stash item stayed in the stash") }
+                                }
+                            }
+                        }
+                    }
+                }
                 if let v = session.current {
                     // Deal checks (docs/30-haggling-and-deal-reputation.md): each one that breaks prints SOAK DEALS FAIL.
                     dealSeen += 1
@@ -218,6 +300,14 @@ extension HubView {
                     break
                 }
             }
+            // A PC item that sold must have sold at its PC price or more.
+            let owned = ownedIDs()
+            for item in pcLoad where !owned.contains(item.id) {
+                if let sale = session.sold.first(where: { $0.0 == item.name }) {
+                    pcSold += 1
+                    if sale.1 < ShowSession.round(item.market * Balance.pcPremium) - 0.01 { pcFails.append("\(item.name) sold under its PC price at \(money(sale.1))") }
+                }
+            }
             dealPolite += session.politePasses
             dealRepTotal += session.dealRep
             packFound += session.foundNothing
@@ -228,7 +318,7 @@ extension HubView {
                 packGone += gone.count
                 if !gone.isSubset(of: load) { packFails.append("\(gone.subtracting(load).count) items left the stock at \(session.venue.name) from outside the load") }
             }
-            if session.passedBy.count != session.foundNothing + session.stalePassed { packFails.append("the passed list does not match the counts") }
+            if session.passedBy.count != session.foundNothing + session.stalePassed + session.pcPassed { packFails.append("the passed list does not match the counts") }
             store.finishEncounter(session)
             log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded, \(session.foundNothing) found nothing, \(session.stalePassed) stale")
         }
@@ -401,19 +491,19 @@ extension HubView {
             }
             for m in store.meetupsToday { _ = store.doMeetup(m.id) }
             for o in store.pendingFBOffers { store.acceptFBOffer(o.id) }
-            if store.day % 3 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) {
+            if store.day % 3 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.setAside }) {
                 store.list([card.id], channel: [.tcgplayer, .ebay, .facebook].randomElement() ?? .ebay, price: { _ in card.realMarket }, auctionDays: nil, insured: false)
             }
-            if store.day % 4 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) { store.authenticate([card.id]) }
-            if store.day % 7 == 1, let card = store.data.raw.first(where: { $0.status == nil && !$0.keep }) { store.consign([card.id], at: .castle, percent: 110) }
+            if store.day % 4 == 0, let card = store.data.raw.first(where: { $0.status == nil && !$0.setAside }) { store.authenticate([card.id]) }
+            if store.day % 7 == 1, let card = store.data.raw.first(where: { $0.status == nil && !$0.setAside }) { store.consign([card.id], at: .castle, percent: 110) }
             for split in store.openSplits where split.mine == 0 { _ = store.joinSplit(split.id, boxes: 1) }
             if let offer = store.wholesaleOffers.first, store.canAfford(offer.casePrice) { _ = store.buyWholesale(offer, cases: 1) }
             // A store account cannot go over its allocation.
             if store.hasStoreAccount, let offer = store.wholesaleOffers.first {
                 if let msg = store.buyWholesale(offer, cases: 99) { log.append("Wholesale 99 cases: \(msg)") }
             }
-            if store.data.sealed.contains(where: { $0.status == nil && !$0.keep }) {
-                let items = Array(store.data.sealed.filter { $0.status == nil && !$0.keep }.prefix(2))
+            if store.data.sealed.contains(where: { $0.status == nil && !$0.setAside }) {
+                let items = Array(store.data.sealed.filter { $0.status == nil && !$0.setAside }.prefix(2))
                 let model = RipModel(items: items, store: store)
                 model.mode = .sift
                 var guardCount = 0
@@ -509,6 +599,8 @@ extension HubView {
         for line in packFails.prefix(10) { print("SOAK PACK FAIL:", line) }
         print("SOAK DEALS: \(dealSeen) visitors, \(dealFairMoves) fair moves, \(dealPolite) polite, \(dealFinals) finals, \(dealBundles) bundles, \(dealBinder) binder picks, \(dealInstead) trades instead (\(dealTheftAfter) then a theft), rep +\(dealRepTotal) (\(dealRepSeen) moves checked), \(dealStoriesOut) stories, \(store.data.dealStories.count) queued, \(dealFails.count) fails")
         for line in dealFails.prefix(10) { print("SOAK DEALS FAIL:", line) }
+        print("SOAK PC: \(pcChecked) PC prices checked, \(pcPacked) packed, \(pcSold) sold, \(store.data.completedMasterSets.count) master sets complete, \(stashAsks) stash asks, \(stashShown) shown, \(stashPCSeen) PC items seen, \(stashBuys) stash buys, \(pcFails.count) fails")
+        for line in pcFails.prefix(10) { print("SOAK PC FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")

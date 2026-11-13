@@ -28,6 +28,7 @@ Every system in this folder is built. The list:
 - **Inventory and selling**: TCGplayer, eBay, eBay auctions, Facebook
   Marketplace meetups, social posts, Whatnot on a stream, the game shop
   buylist, bulk for credit, consignment, eBay Best Offer, and lots.
+  The PC and master sets are separate Inventory sections.
   Shipped online sales also bring buyer problems: lost packages,
   item-not-received claims, returns, and scam returns.
 - **Grading**: PSA, CGC, and BGS, the centering tools, the reveal tools

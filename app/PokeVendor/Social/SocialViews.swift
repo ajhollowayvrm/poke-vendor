@@ -251,7 +251,7 @@ struct NewPostSheet: View {
     private var subjects: [PostSubject] {
         let cards = (store.data.raw + store.data.slabs).map { c in
             PostSubject(id: c.id, name: c.grade.map { "\(c.print.name) \($0.label)" } ?? c.print.name, value: c.market, isCard: true,
-                        pulled: c.paid == nil, free: c.status == nil && !c.keep, image: c.print.image)
+                        pulled: c.paid == nil, free: c.status == nil && !c.setAside, image: c.print.image)
         }
         let sealed = store.data.sealed.filter { $0.status == nil }.map { s in
             PostSubject(id: s.id, name: s.name, value: store.market(of: s), isCard: false, pulled: false, free: false,

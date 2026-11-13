@@ -225,7 +225,7 @@ struct SellToShopBox: View {
     let shop: LocalStore
 
     var body: some View {
-        let cards = (store.data.raw + store.data.slabs).filter { $0.status == nil && !$0.keep }.sorted { $0.market > $1.market }
+        let cards = (store.data.raw + store.data.slabs).filter { $0.status == nil && !$0.setAside }.sorted { $0.market > $1.market }
         DetailBox(title: "Sell to the shop · buylist \(Int(store.standing(shop).buylistRate * 100))% of market") {
             if cards.isEmpty && store.data.bulk.isEmpty {
                 Text("You have nothing the shop can buy.").font(.subheadline).foregroundStyle(Theme.muted)

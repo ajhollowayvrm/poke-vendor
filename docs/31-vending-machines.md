@@ -42,7 +42,7 @@ marketing-grade.
 ## Stock and prices
 
 - A machine holds up to 40 sealed items. The player stocks it only
-  during a visit, from the sealed items in hand that are not kept and not
+  during a visit, from the sealed items in hand that are not in the PC and not
   known fakes. Stock in a machine is not in Inventory, but it counts in
   the market value.
 - The default price is the market × 1.25, at a retail price. During a

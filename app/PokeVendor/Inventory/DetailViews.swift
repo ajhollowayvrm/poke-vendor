@@ -135,7 +135,8 @@ struct CardDetailView: View {
                         if count > 1 {
                             Text("×\(count) in Inventory").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                         }
-                        Tags(keep: card.keep, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
+                        Tags(pc: card.pc, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
+                        if card.inMasterSet { Tag(text: "MASTER SET", color: Theme.green) }
                     }
                     DetailBox(title: "Prices") {
                         HStack(alignment: .firstTextBaseline) {
@@ -181,36 +182,57 @@ struct CardDetailView: View {
                             .tint(.red)
                             .disabled(!free)
                     }
+                    if card.setAside {
+                        Text(card.pc ? "This card is in your PC. Move it back to Inventory to sell, grade, or list it."
+                                     : "This card is in its master set. Take it out to sell, grade, or list it.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
                     HStack(spacing: 10) {
                         Button("Sell") {
-                            let free = store.mates(of: card).filter { $0.status == nil && !$0.keep }.map(\.id)
+                            let free = store.mates(of: card).filter { $0.status == nil && !$0.setAside }.map(\.id)
                             sell = SellRequest(ids: Set(free.isEmpty ? [card.id] : free), startAll: false)
                         }
                             .buttonStyle(.bordered)
-                            .disabled(!free || card.keep)
+                            .disabled(!free || card.setAside)
                         if card.grade == nil {
                             Button("Grade") { grade = GradeRequest(ids: [card.id]) }
                                 .buttonStyle(.bordered)
-                                .disabled(!free || card.keep)
+                                .disabled(!free || card.setAside)
                         }
-                        Button(card.keep ? "Unkeep" : "Keep") { store.setKeep([card.id], !card.keep) }
-                            .primaryButton()
+                        if !card.inMasterSet {
+                            Button(card.pc ? "Back to Inventory" : "Add to PC") { store.setPC([card.id], !card.pc) }
+                                .primaryButton()
+                                .disabled(!free && !card.pc)
+                        }
                     }
                     .controlSize(.large)
+                    if card.inMasterSet {
+                        Button("Take out of the master set") { store.removeFromMasterSet(card.id) }
+                            .buttonStyle(.bordered)
+                    } else {
+                        let block = store.masterSetBlock(card)
+                        Button("Add to master set") { store.addToMasterSet([card.id]) }
+                            .buttonStyle(.bordered)
+                            .disabled(block != nil)
+                        if let block, free, !card.isKnownFake {
+                            Text(block).font(.caption).foregroundStyle(Theme.muted)
+                        }
+                    }
                     if card.grade == nil {
                         Button("Move to bulk") { store.moveToBulk([card.id]) }
                             .buttonStyle(.bordered)
-                            .disabled(!free || card.keep)
+                            .disabled(!free || card.setAside)
                     } else if card.realMarket >= Balance.auctionMinValue {
                         Button("Consign to an auction house") { auction = AuctionRequest(id: card.id) }
                             .buttonStyle(.bordered)
-                            .disabled(!free || card.keep || card.isKnownFake)
+                            .disabled(!free || card.setAside || card.isKnownFake)
                     }
                     if store.hasAccount {
                         HStack(spacing: 10) {
                             Button("Post: collection flex") { post = request(.collectionFlex, card) }
                             Button("Post: for sale") { post = request(.forSale, card) }
-                                .disabled(!free || card.keep)
+                                .disabled(!free || card.setAside)
                         }
                         .buttonStyle(.bordered)
                     }
@@ -235,7 +257,7 @@ extension CardDetailView {
     func request(_ type: PostType, _ card: OwnedCard) -> NewPostRequest {
         NewPostRequest(type: type, subject: PostSubject(id: card.id, name: card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name,
                                                         value: card.market, isCard: true, pulled: card.paid == nil,
-                                                        free: card.status == nil && !card.keep, image: card.print.image))
+                                                        free: card.status == nil && !card.setAside, image: card.print.image))
     }
 }
 
@@ -419,7 +441,7 @@ struct SealedDetailView: View {
                                 .font(.caption.monospaced())
                                 .foregroundStyle(product.isInPrint ? Theme.muted : Theme.green)
                         }
-                        Tags(keep: item.keep, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
+                        Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
                     }
                     DetailBox(title: "Contents") {
                         let slugs = store.packSlugs(of: item)
@@ -473,10 +495,11 @@ struct SealedDetailView: View {
                     DetailBox(title: "Where it came from") {
                         Text("\(item.source) · day \(item.acquiredDay + 1)").font(.subheadline)
                     }
-                    let free = item.status == nil && !item.keep
+                    let free = item.status == nil && !item.setAside
                     HStack(spacing: 10) {
-                        Button(item.keep ? "Unkeep" : "Keep") { store.setKeep([item.id], !item.keep) }
+                        Button(item.pc ? "Back to Inventory" : "Add to PC") { store.setPC([item.id], !item.pc) }
                             .buttonStyle(.bordered)
+                            .disabled(item.status != nil && !item.pc)
                         Button("Sell") { sell = SellRequest(ids: Set(mates.map(\.id)), startAll: false) }
                             .buttonStyle(.bordered)
                             .disabled(!free)
@@ -501,8 +524,8 @@ struct SealedDetailView: View {
                     .tint(Theme.orange)
                     .controlSize(.large)
                     .disabled(!free)
-                    if item.keep {
-                        Text("Unkeep this item to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
+                    if item.pc {
+                        Text("This item is in your PC. Move it back to Inventory to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
                     }
                 }
                 .padding(16)

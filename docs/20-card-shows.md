@@ -44,8 +44,9 @@ they came.
 
 ### Set up the table
 
-- The player picks the items to bring. Kept items, listed items, items
-  that are shipping, and items at a grader stay home.
+- The player picks the items to bring. Master set cards, listed items,
+  items that are shipping, and items at a grader stay home. PC items
+  come only when the player packs them by hand (see [PC items](#pc-items)).
 - The player sets one price for the table: 90% of market, market,
   110%, or 125%. The default is 110%, which leaves room to haggle.
 - Three bins limit the load, and a big load takes longer to set up.
@@ -94,6 +95,9 @@ comes wants to sell.
 **Traders** want one item of $8 or more. They offer one or two of
 their own cards, often older ones, and sometimes cash. The offer is 80%
 to 102% of the item's market. **Accept** takes the trader's offer.
+The trader shows only the cards in the offer. **Ask to see their
+binder** shows more (see [Stashes](#stashes)). The player taps a binder
+card to add it to the trade or take it out.
 
 To counter, the player sets what the trader's cards are worth to them,
 with a slider from 50% to 120% of market in 5% steps. It starts at 80%.
@@ -167,6 +171,8 @@ The player picks items from the vendor's table (not mystery packs) and
 items from their own stock. The player can offer slabs, raw cards, and
 sealed product that they brought. A deal needs at least one item on each
 side. The vendor does not take a player item with a market under $5.
+A dealer does not pay a PC premium, so a PC item does not trade to a
+vendor.
 
 - The vendor values their own items at the sticker price.
 - The vendor values the player's items at market times the trade rate.
@@ -192,6 +198,71 @@ side. The vendor does not take a player item with a market under $5.
 
 The items that come in carry the sticker price as their cost. The wallet
 ledger shows only the cash.
+
+### PC items
+
+The player's PC items can go to a show or a meet (see
+[08-ui-direction.md](08-ui-direction.md#the-pc)). Every deal on a PC
+item carries the PC premium, and so does every deal on another person's
+PC item.
+
+- **The PC price** is 130% of market. It is fixed. The table markup does
+  not change it.
+- **Buyers.** A collector, a vintage collector, a sealed collector, or a
+  player can pay the premium. Their top price for a PC item is their
+  normal top price times 1.0 to 1.45. A flipper, a kid, or a grading
+  hunter does not pay a premium. A buyer whose top price is under the
+  PC price passes: "Someone asked about the item in your PC." The pass
+  counts as a passed visitor. A buyer who stays opens at the PC price.
+  A PC item is never part of a bundle.
+- **No sale under the PC price.** A counter or a final offer under the
+  PC price does not go out.
+- **Traders.** A trader who wants a PC item builds the offer on the PC
+  price. The cash and the valuation follow the PC price.
+- **Sellers.** A seller at the table counts a PC item at its PC price
+  for a trade instead of cash.
+- **Vendors** do not take PC items in a trade.
+- **Another person's PC.** A trader's PC card counts at 130% of its
+  market in a trade. A seller's PC item has a lowest price of 130% of
+  market, and asks 105% to 120% of that.
+- A PC item that the player gets in a trade or buys keeps the price as
+  its cost. It goes to the regular Inventory, not to the PC.
+
+### Stashes
+
+A trader shows the cards in the offer, and a seller shows one item. The
+player can ask to see more: a trader's binder, or a seller's stash. This
+works at the table, on the floor, and at meets.
+
+- **The ask** is once for each person, and it takes 3 minutes.
+- **Familiarity** decides the result:
+
+  | Standing | Shows it | Items | PC items |
+  | --- | --- | --- | --- |
+  | Stranger | 50% | 2 to 3 | 0 |
+  | Familiar | 65% | 3 to 4 | 0 |
+  | Regular | 80% | 4 to 6 | 0 |
+  | Trusted | 95% | 5 to 8 | 1 to 2 |
+  | Friend | Always | 7 to 10 | 2 to 3 |
+
+  A closet cleaner is 30 points more likely to show it.
+- **A trader's binder.** The new cards go into the binder list of the
+  trade panel. The player taps a card to add it to the trade.
+- **A seller's stash.** Each item has an asking price and a hidden
+  lowest price, from the same ranges as the seller's main item. A
+  contact's price bonus takes a share off both. A stash item can be a
+  fake, as with any seller.
+- **An offer on the stash.** The player picks items and sets a price
+  with a slider, from 30% to 130% of market, in 5% steps. A PC item
+  counts at its PC price. "Pay" pays
+  the asking price, or the seller's counter. At or over the total of
+  the lowest prices, the seller sells. Under it, the seller counters
+  between the lowest and the asking total. After two counters, a third
+  low offer closes the stash. An offer under 60% of market is a
+  lowball, and a contact remembers it.
+- A stash deal is separate from the main deal. The seller stays at the
+  table, and the main deal stays open. A stash buy is scored for deal
+  fairness, as any buy is.
 
 ### Mystery packs
 

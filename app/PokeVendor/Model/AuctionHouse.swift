@@ -137,7 +137,8 @@ extension GameStore {
     func auctionBlock(_ house: AuctionHouse, card: OwnedCard) -> String? {
         if card.grade == nil { return "Only slabs go to auction." }
         if card.status != nil { return "The slab has a status." }
-        if card.keep { return "The slab is kept." }
+        if card.pc { return "The slab is in your PC." }
+        if card.inMasterSet { return "The slab is in a master set." }
         if card.isKnownFake { return "You know the slab is a fake." }
         if card.realMarket < Balance.auctionMinValue { return "The house takes slabs of \(money(Balance.auctionMinValue)) or more." }
         if let until = data.auctionBans[house.rawValue], data.day < until {

@@ -72,14 +72,14 @@ extension GameStore {
         return min(Balance.lotChanceCap, chance * reachSaleFactor * size * channelDemand(lot.channel) * PriceCycle.seasonDemand(sealed: lot.hasSealed))
     }
 
-    /// Takes the items out of Inventory and lists them as one lot. The items must be free: no status, not kept.
+    /// Takes the items out of Inventory and lists them as one lot. The items must be free: no status, not in the PC or a master set.
     @discardableResult
     func listLot(_ ids: Set<UUID>, channel: Listing.Channel, price: Double, insured: Bool) -> Bool {
         guard channel == .ebay || channel == .facebook else { return false }
         let raw = data.raw.filter { ids.contains($0.id) }
         let slabs = data.slabs.filter { ids.contains($0.id) }
         let sealed = data.sealed.filter { ids.contains($0.id) }
-        let free = (raw + slabs).allSatisfy { $0.status == nil && !$0.keep } && sealed.allSatisfy { $0.status == nil && !$0.keep }
+        let free = (raw + slabs).allSatisfy { $0.status == nil && !$0.setAside } && sealed.allSatisfy { $0.status == nil && !$0.setAside }
         guard raw.count + slabs.count + sealed.count >= Balance.lotMinItems, free else { return false }
         data.raw.removeAll { ids.contains($0.id) }
         data.slabs.removeAll { ids.contains($0.id) }

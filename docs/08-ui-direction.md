@@ -39,7 +39,7 @@ state and be the fastest way to get anywhere in the app.
    [06-social-media.md](06-social-media.md#social-media-is-optional))
 3. **Reputation** → Reputation & meets
 4. **Collection** → Inventory / collection (the target shows
-   collection value, which counts only kept items)
+   collection value, which counts only the PC and the master sets)
 5. **Alert banner** (rare surprise event) → Opportunity detail
 6. **Local meet row** → Meet encounter
 7. **Garage sale row** → Garage sale encounter
@@ -239,11 +239,13 @@ here, and the rip-or-hold decision happens here.
     [15-selling.md](15-selling.md#the-local-game-shop)).
 
   The player cannot rip, sell, or grade an item with a status tag.
-- **A Keep flag marks the personal collection.** The player marks an
-  item as Keep. A kept item stays in its tab with a Keep tag. A "Kept"
-  filter shows only the kept items. Sell flows and the rip queue do not
-  offer a kept item. The portfolio header counts kept items, because
-  they are still assets.
+- **The PC and the master sets are separate sections.** A picker at the
+  top of Inventory has three sections: Inventory (the tabs), PC, and
+  Master sets. An item in the PC or in a master set is not in the
+  regular tabs. Sell flows, listings, grading, bulk, the store, vending
+  machines, and the rip queue do not offer it. The portfolio header
+  counts these items, because they are still assets. See
+  [The PC](#the-pc) and [Master sets](#master-sets).
 - **A sealed row shows the sealed market price and the amount paid.**
   It does not show the expected value of opening the product. An
   upgrade adds the expected value to each sealed row (see
@@ -256,9 +258,9 @@ here, and the rip-or-hold decision happens here.
 
   | Tab | Actions |
   | --- | --- |
-  | Sealed | Rip, Keep |
-  | Raw | Sell, Grade, Move to bulk, Keep |
-  | Slabs | Sell, Keep |
+  | Sealed | Rip, PC |
+  | Raw | Sell, Grade, Move to bulk, Master set, PC |
+  | Slabs | Sell, Master set, PC |
   | Bulk | Add to store run |
 
   "Move to bulk" moves raw cards into a bulk group. A pulled card goes
@@ -268,7 +270,7 @@ here, and the rip-or-hold decision happens here.
   The Raw tab has a "Send N to bulk" button. It moves every raw card
   that makes no money on TCGplayer after the fees and the shipping.
   With the current fees, that is a card with a market of about $1.46
-  or less. Kept cards, listed cards, and known fakes stay.
+  or less. Listed cards and known fakes stay.
   "Rip" sends the selection to the rip queue (see
   [18-ripping.md](18-ripping.md#the-rip-queue)). "Grade" puts all the
   selected cards in one grading submission. "Add to store run" puts
@@ -287,7 +289,7 @@ here, and the rip-or-hold decision happens here.
   paid. A pulled card's row shows "pulled" in place of a gain. A
   bought card's row shows its gain.
 - **The Filter menu** sits at the top of the list on the Sealed, Raw,
-  and Slabs tabs. It shows one tag or one status at a time: Kept, No
+  and Slabs tabs. It shows one tag or one status at a time: No
   status, On the way, Arriving, At grader, Authenticating, Listed,
   Consigned, In your store, Fake, Looks off, or Verified. Each entry
   shows its count. The menu shows only the entries that match an item
@@ -300,16 +302,16 @@ here, and the rip-or-hold decision happens here.
   auction cannot come down, and an item with no listing keeps its status.
   Open Facebook Marketplace offers for those items end too. The single
   "Remove listing" button on an item's detail screen works the same way.
-- **Collection value counts only kept items** (see
+- **Collection value counts only the PC and the master sets** (see
   [03-currencies.md](03-currencies.md#collection-value)). Stock for
   sale is future cash, not collection. The hub's Collection target
   shows collection value. The portfolio header shows all of
   Inventory.
 - **Identical items stack into one row** with a count, for example
   "×3". Sealed items stack when they are the same product with the same
-  Keep flag and status. Cards stack when they are the same print (and
-  the same grade for a slab), with the same Keep flag, status, and
-  source (pulled or bought). The row shows the price of each item and
+  PC flag and status. Cards stack when they are the same print (and
+  the same grade for a slab), with the same PC flag, master set flag,
+  status, and source (pulled or bought). The row shows the price of each item and
   the total value. In select mode, a tap selects the whole stack. The
   Sell sheet has a quantity picker for each stack. From select mode,
   it starts at the whole stack. From a detail screen, it starts at 1. The
@@ -321,7 +323,10 @@ here, and the rip-or-hold decision happens here.
   the contents (for example, 9 packs and 1 promo card), the sealed
   market price, the amount paid, and where the item came from. With
   the expected-value upgrade, it also shows the expected value. It has
-  Rip and Keep buttons.
+  Rip and "Add to PC" buttons.
+- **The detail screen for a card** has "Add to PC" and "Add to master
+  set". A card in the PC or in a master set must go back to Inventory
+  before the player can sell, grade, or list it.
 - **The detail screen for a bulk group** shows the rip that made the
   group and the day of that rip. Then it shows the cards grouped by
   rarity, with the counts and the total value.
@@ -337,8 +342,52 @@ Claude Design canvas. It shows the four tabs, select mode on Sealed
 and Raw, the expected-value upgrade, the card detail screen, and the
 detail screen for a card at a grader. The review on 2026-09-13
 approved it. The decisions on collection value, sort order, the sealed
-and bulk detail screens, bulk on a store run, and removing a listing
-came after the review. The mockup does not show them yet.
+and bulk detail screens, bulk on a store run, removing a listing, the
+PC, and master sets came after the review. The mockup does not show them yet.
+
+### The PC
+
+The PC is the player's personal collection. It replaces the old Keep
+flag. A save from an older build moves every kept item into the PC.
+
+- **Add to PC** moves an item with no status out of the regular tabs and
+  into the PC section. "Back to Inventory" moves it back. Select mode on
+  the PC section has "Back to Inventory".
+- **A PC item can go to a show or a meet.** The player packs it by hand.
+  The default load and Fill never pack a PC item. A PC item that stays
+  home is safe from a car break-in.
+- **Every deal on a PC item carries the PC premium.** The PC price is
+  130% of market. It is fixed: the table markup does not change it, and
+  the player cannot sell under it. See
+  [20-card-shows.md](20-card-shows.md#pc-items).
+- A PC card that goes into a master set leaves the PC.
+
+### Master sets
+
+A master set holds one copy of every print in a set: each card number in
+each variant, with the reverse holos and the ball patterns.
+
+- **Add to master set** puts a card into the empty slot of its print. The
+  card leaves the regular tabs, or the PC. A slot holds one card. A raw
+  card and a slab can both fill a slot. A card with a status, or a known
+  fake, cannot go in.
+- **The Master sets section** lists each set that the player started,
+  with the prints filled, the prints in the set, and the value of the
+  cards in the binder. The most complete set comes first.
+- **The binder of a set** shows a slot for each print, in set order. A
+  filled slot shows the card. An empty slot shows the print dimmed. An
+  empty slot shows "Owned" when a free copy is in Inventory or the PC.
+  "Missing prints only" hides the filled slots.
+- **"Take out of the master set"** on the card's detail screen moves it
+  back to the regular tabs.
+- **A completed set pays one time.** The reward is reputation and
+  followers, and it grows with the square root of the set's value: one
+  copy of each print at market. Reputation is half of the root, from 3
+  to 40. Followers are 10 times the root, with a social account. A card
+  that leaves and comes back does not pay again. The set keeps its
+  "Completed once" tag.
+- Master set cards stay home. They do not go to shows, meets, or
+  streams.
 
 ### 4. Social media hub — decisions recorded, lo-fi mockup reviewed
 

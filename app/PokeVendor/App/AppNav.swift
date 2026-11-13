@@ -29,6 +29,7 @@ enum AppRoute: Hashable {
     case goals
     case messages
     case vending
+    case masterSet(String)
 }
 
 struct StoreRunSession: Identifiable {
@@ -96,6 +97,7 @@ extension View {
             case .card(let id): CardDetailView(id: id)
             case .sealed(let id): SealedDetailView(id: id)
             case .bulk(let id): BulkDetailView(id: id)
+            case .masterSet(let slug): MasterSetDetailView(slug: slug)
             case .calendar: CalendarView()
             case .show(let id): ShowDetailView(id: id)
             case .contacts: ContactsView()

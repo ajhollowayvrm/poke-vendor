@@ -365,14 +365,14 @@ final class StreamSession {
 
 @MainActor
 extension GameStore {
-    /// Items the player can bring to a stream: not kept, not listed, and not away.
+    /// Items the player can bring to a stream: not in the PC or a master set, not listed, and not away.
     var streamStock: [StreamItem] {
-        let cards = (data.raw + data.slabs).filter { $0.status == nil && !$0.keep }.map { c in
+        let cards = (data.raw + data.slabs).filter { $0.status == nil && !$0.setAside }.map { c in
             StreamItem(id: c.id, name: c.grade.map { "\(c.print.name) \($0.label)" } ?? c.print.name, market: c.realMarket,
                        image: c.print.image, sealed: false, packs: 0, fake: c.fake, fakeKnown: c.isKnownFake,
                        cardName: c.print.name, grade: c.grade, subgrades: c.slabSubgrades)
         }
-        let sealed = data.sealed.filter { $0.status == nil && !$0.keep }.map { s in
+        let sealed = data.sealed.filter { $0.status == nil && !$0.setAside }.map { s in
             StreamItem(id: s.id, name: s.name, market: realMarket(of: s), image: SetLibrary.product(s.productID, in: s.setSlug)?.image,
                        sealed: true, packs: s.packs, fake: s.fake, fakeKnown: s.isKnownFake)
         }

@@ -499,6 +499,11 @@ See [29-packing-and-crowds.md](29-packing-and-crowds.md).
 | Final offer | Within 10% of market of the limit: met 60%, or 30% by a flipper or a dealer |
 | Trade instead of cash | 110% of market, at most 150% of the goods. A closet cleaner says no half of the time |
 | Trader binder, bundles | 3 to 5 cards. 20% of buyers (not kids) ask for a bundle |
+| PC premium | A PC item changes hands at 130% of market. A collector's top price for a PC item × 1.0 to 1.45 |
+| Stash ask | Once a person, 3 minutes. Shown: stranger 50%, familiar 65%, regular 80%, trusted 95%, friend 100%. Closet cleaner +30 points |
+| Stash size | Stranger 2–3, familiar 3–4, regular 4–6, trusted 5–8 (+1–2 PC), friend 7–10 (+2–3 PC) |
+| Stash offer | Slider 30% to 130% of market. Two counters, then the stash closes |
+| Master set reward | Once a set. Reputation: half the square root of the set value, 3 to 40. Followers: 10 × the root |
 
 See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 

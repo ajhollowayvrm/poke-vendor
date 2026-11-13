@@ -7,6 +7,12 @@ enum InventoryTab: String, CaseIterable, Hashable {
     var label: String { self == .grading ? "Grading" : rawValue }
 }
 
+/// The three parts of Inventory. The PC and the master sets hold items that are out of the regular tabs
+/// (docs/08-ui-direction.md, The PC and Master sets).
+enum InventorySection: String, CaseIterable, Hashable {
+    case stock = "Inventory", pc = "PC", masterSets = "Master sets"
+}
+
 extension OwnedCard {
     /// A raw card at a grader shows in the At Grading tab, not in Raw.
     var isAtGrader: Bool {
@@ -22,7 +28,7 @@ enum SortOrder: String, CaseIterable {
 /// An item that shows tags in Inventory: a card or a sealed product.
 protocol Tagged {
     var id: UUID { get }
-    var keep: Bool { get }
+    var pc: Bool { get }
     var status: ItemStatus? { get }
     var fake: FakeTier? { get }
     var isKnownFake: Bool { get }
@@ -34,7 +40,7 @@ extension SealedItem: Tagged {}
 
 /// The Inventory filter: one tag or one status. Each case matches the tag that the row shows.
 enum InventoryFilter: String, CaseIterable, Hashable {
-    case all = "All", kept = "Kept", free = "No status"
+    case all = "All", free = "No status"
     case onTheWay = "On the way", arriving = "Arriving", atGrader = "At grader", authenticating = "Authenticating"
     case listed = "Listed", consigned = "Consigned", inStore = "In your store", atAuction = "At auction"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
@@ -42,7 +48,6 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     func matches(_ item: some Tagged) -> Bool {
         switch self {
         case .all: return true
-        case .kept: return item.keep
         case .free: return item.status == nil
         case .fake: return item.isKnownFake
         case .verified: return !item.isKnownFake && item.isVerified
@@ -73,6 +78,7 @@ func setOrder(_ num: String) -> Int {
 struct InventoryView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
+    @State private var section: InventorySection = .stock
     @State private var tab: InventoryTab
     @State private var sort: SortOrder = .psa10
     @State private var filter: InventoryFilter = .all
@@ -91,28 +97,48 @@ struct InventoryView: View {
         ScrollView {
             VStack(spacing: 14) {
                 PortfolioHeader()
-                tabPicker
-                controls
-                rows
+                Picker("Section", selection: $section) {
+                    ForEach(InventorySection.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                switch section {
+                case .stock:
+                    tabPicker
+                    controls
+                    rows
+                case .pc:
+                    PCSection(selecting: selecting, selection: $selection)
+                case .masterSets:
+                    MasterSetsSection()
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
         }
         .background(Theme.background.ignoresSafeArea())
         .safeAreaInset(edge: .bottom) {
-            if selecting { actionBar }
+            if selecting {
+                switch section {
+                case .stock: actionBar
+                case .pc: pcActionBar
+                case .masterSets: EmptyView()
+                }
+            }
         }
         .navigationTitle("Inventory")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button(selecting ? "Done" : "Select") {
-                    selecting.toggle()
-                    selection = []
+                if section != .masterSets {
+                    Button(selecting ? "Done" : "Select") {
+                        selecting.toggle()
+                        selection = []
+                    }
                 }
             }
         }
         .onChange(of: tab) { _, _ in selection = [] }
+        .onChange(of: section) { _, _ in finishSelecting() }
         .sheet(item: $sellIDs) { request in
             SellSheet(ids: request.ids, startAll: request.startAll)
         }
@@ -151,7 +177,7 @@ struct InventoryView: View {
                                         titleVisibility: .visible) {
                         Button("Move to bulk") { store.moveToBulk(Set(store.unprofitableRaw.map(\.id))) }
                     } message: {
-                        Text("These cards make no money on TCGplayer after the fees and the shipping. Kept cards stay.")
+                        Text("These cards make no money on TCGplayer after the fees and the shipping.")
                     }
                 }
             }
@@ -170,9 +196,9 @@ struct InventoryView: View {
     /// The filters that match an item in this tab. All and the current filter always show.
     private var filterMenu: some View {
         let items: [any Tagged] = switch tab {
-        case .sealed: store.data.sealed
+        case .sealed: sealedInHand
         case .raw: rawInHand
-        case .slabs: store.data.slabs
+        case .slabs: slabsInHand
         case .bulk, .grading: []
         }
         return Menu {
@@ -218,7 +244,7 @@ struct InventoryView: View {
                     rowButton(stack.ids, route: .card(stack.id)) { CardRow(card: stack.items[0], count: stack.items.count) }
                 }
             case .raw, .slabs:
-                let cards = sortedCards(tab == .raw ? rawInHand : store.data.slabs)
+                let cards = sortedCards(tab == .raw ? rawInHand : slabsInHand)
                 if cards.isEmpty {
                     EmptyTab(text: filter != .all ? "No cards match the filter."
                                  : tab == .slabs ? "Graded cards show here. Select raw cards and tap Grade."
@@ -268,12 +294,11 @@ struct InventoryView: View {
 
     private var actionBar: some View {
         let chosen = selection
-        let blocked = chosen.contains { store.isKept($0) || store.hasStatus($0) }
-        let allKept = !chosen.isEmpty && chosen.allSatisfy { store.isKept($0) }
+        let blocked = chosen.contains { store.hasStatus($0) }
         return VStack(spacing: 8) {
             if tab == .raw { quickListRow(chosen, blocked: blocked) }
             if !listedInTab.isEmpty { unlistRow(chosen) }
-            actionRow(chosen, blocked: blocked, allKept: allKept)
+            actionRow(chosen, blocked: blocked)
         }
         .controlSize(.large)
         .padding(.horizontal, 16)
@@ -282,9 +307,9 @@ struct InventoryView: View {
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
     }
 
-    /// The raw cards that a quick listing can take: not kept, not listed or at a grader, and not a known fake.
+    /// The raw cards that a quick listing can take: in the regular tabs, not listed or at a grader, and not a known fake.
     private var listableRaw: [OwnedCard] {
-        sortedCards(store.data.raw).filter { !$0.keep && $0.status == nil && !$0.isKnownFake }
+        sortedCards(store.data.raw).filter { !$0.setAside && $0.status == nil && !$0.isKnownFake }
     }
 
     /// Select every listable raw card, and list the selection on TCGplayer at the lowest listing for its condition.
@@ -314,9 +339,9 @@ struct InventoryView: View {
     /// The items in this tab with a listing that can come down (not a running eBay auction).
     private var listedInTab: Set<UUID> {
         let ids: [UUID] = switch tab {
-        case .sealed: store.data.sealed.filter { $0.status?.isRemovableListing == true }.map(\.id)
-        case .raw: store.data.raw.filter { $0.status?.isRemovableListing == true }.map(\.id)
-        case .slabs: store.data.slabs.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .sealed: sealedInHand.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .raw: rawInHand.filter { $0.status?.isRemovableListing == true }.map(\.id)
+        case .slabs: slabsInHand.filter { $0.status?.isRemovableListing == true }.map(\.id)
         case .bulk, .grading: []
         }
         return Set(ids)
@@ -343,7 +368,7 @@ struct InventoryView: View {
         }
     }
 
-    private func actionRow(_ chosen: Set<UUID>, blocked: Bool, allKept: Bool) -> some View {
+    private func actionRow(_ chosen: Set<UUID>, blocked: Bool) -> some View {
         HStack(spacing: 8) {
             switch tab {
             case .sealed:
@@ -386,18 +411,46 @@ struct InventoryView: View {
             case .grading:
                 Text("These cards come back as slabs when the grades are done.").font(.caption).foregroundStyle(Theme.muted)
             }
-            if tab != .bulk && tab != .grading {
-                Button(allKept ? "Unkeep" : "Keep") {
-                    store.setKeep(chosen, !allKept)
+            if tab == .raw || tab == .slabs {
+                Button("Master set") {
+                    store.addToMasterSet(chosen)
+                    finishSelecting()
                 }
                 .buttonStyle(.bordered)
-                .disabled(chosen.isEmpty)
+                .disabled(!chosen.contains { id in store.card(id).map { store.masterSetBlock($0) == nil } ?? false })
+            }
+            if tab != .bulk && tab != .grading {
+                Button("PC") {
+                    store.setPC(chosen, true)
+                    finishSelecting()
+                }
+                .buttonStyle(.bordered)
+                .disabled(chosen.isEmpty || blocked)
             }
             Spacer()
             Text("\(chosen.count)")
                 .font(.caption.monospaced())
                 .foregroundStyle(Theme.muted)
         }
+    }
+
+    /// The PC action: move the selection back to the regular Inventory.
+    private var pcActionBar: some View {
+        HStack(spacing: 8) {
+            Button("Back to Inventory") {
+                store.setPC(selection, false)
+                finishSelecting()
+            }
+            .primaryButton()
+            .disabled(selection.isEmpty)
+            Spacer()
+            Text("\(selection.count)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+        }
+        .controlSize(.large)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Theme.surface)
+        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
     }
 
     private func sellButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
@@ -427,21 +480,24 @@ struct InventoryView: View {
 
     private func count(_ t: InventoryTab) -> Int {
         switch t {
-        case .sealed: store.data.sealed.count
+        case .sealed: sealedInHand.count
         case .raw: rawInHand.count
-        case .slabs: store.data.slabs.count
+        case .slabs: slabsInHand.count
         case .bulk: store.data.bulk.count
         case .grading: atGrading.count
         }
     }
 
+    /// The regular tabs leave out the PC and the master sets.
+    private var sealedInHand: [SealedItem] { store.data.sealed.filter { !$0.setAside } }
     /// The raw cards that are not at a grader.
-    private var rawInHand: [OwnedCard] { store.data.raw.filter { !$0.isAtGrader } }
+    private var rawInHand: [OwnedCard] { store.data.raw.filter { !$0.isAtGrader && !$0.setAside } }
+    private var slabsInHand: [OwnedCard] { store.data.slabs.filter { !$0.setAside } }
 
     private var atGrading: [OwnedCard] { store.data.raw.filter(\.isAtGrader) }
 
     private var sortedSealed: [SealedItem] {
-        let items = store.data.sealed.filter { filter.matches($0) }
+        let items = sealedInHand.filter { filter.matches($0) }
         switch sort {
         case .newest, .condition: return items.sorted { $0.acquired > $1.acquired }
         // Sealed product has no PSA 10 price, so it sorts by value.
@@ -532,7 +588,7 @@ struct PortfolioHeader: View {
                          color: store.net >= 0 ? Theme.green : Theme.orange)
             }
             HStack {
-                Text("COLLECTION VALUE (KEPT)")
+                Text("COLLECTION VALUE (PC AND MASTER SETS)")
                     .font(.system(size: 10, weight: .semibold))
                     .kerning(0.8)
                     .foregroundStyle(Theme.muted)
@@ -562,7 +618,7 @@ struct Tag: View {
 }
 
 struct Tags: View {
-    let keep: Bool
+    let pc: Bool
     let status: ItemStatus?
     /// The item's hidden fake tier, and what the player knows (docs/14-counterfeit-risk.md).
     var fake: FakeTier?
@@ -572,7 +628,7 @@ struct Tags: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            if keep { Tag(text: "KEEP") }
+            if pc { Tag(text: "PC", color: Theme.green) }
             if let status { Tag(text: status.tag, color: Theme.orange) }
             if fakeKnown {
                 Tag(text: "FAKE", color: .red)
@@ -603,7 +659,7 @@ struct SealedRow: View {
                 Text(count > 1 ? "\(money(market)) each" : "\(item.packs) pack\(item.packs == 1 ? "" : "s")")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
-                Tags(keep: item.keep, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
+                Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
@@ -653,7 +709,7 @@ struct CardRow: View {
                     RawLooks(condition: card.condition)
                     GradedValueLine(print: card.print)
                 }
-                Tags(keep: card.keep, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
+                Tags(pc: card.pc, status: card.status, fake: card.fake, fakeKnown: card.isKnownFake, verified: card.isVerified, id: card.id)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {

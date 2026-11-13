@@ -122,6 +122,8 @@ struct GameData: Codable {
     var auctionBans: [String: Int] = [:]
     /// Vending machines (docs/31-vending-machines.md).
     var machines: [VendingMachine] = []
+    /// The master sets the player completed, by set slug, and the day of each (docs/08-ui-direction.md, Master sets).
+    var completedMasterSets: [String: Int] = [:]
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -206,6 +208,7 @@ extension GameData {
         auctionPayouts = v(.auctionPayouts, auctionPayouts)
         auctionBans = v(.auctionBans, auctionBans)
         machines = v(.machines, machines)
+        completedMasterSets = v(.completedMasterSets, completedMasterSets)
     }
 }
 
@@ -366,17 +369,17 @@ final class GameStore {
 
     var net: Double { marketValue - paid }
 
-    /// Collection value counts only kept items (docs/03-currencies.md, Collection value).
+    /// Collection value counts the PC and the master sets (docs/03-currencies.md, Collection value).
     var collectionValue: Double {
-        data.sealed.filter(\.keep).reduce(0) { $0 + market(of: $1) }
-            + data.raw.filter(\.keep).reduce(0) { $0 + $1.market }
-            + data.slabs.filter(\.keep).reduce(0) { $0 + $1.market }
+        data.sealed.filter(\.pc).reduce(0) { $0 + market(of: $1) }
+            + data.raw.filter(\.setAside).reduce(0) { $0 + $1.market }
+            + data.slabs.filter(\.setAside).reduce(0) { $0 + $1.market }
     }
 
-    func isKept(_ id: UUID) -> Bool {
-        data.sealed.contains { $0.id == id && $0.keep }
-            || data.raw.contains { $0.id == id && $0.keep }
-            || data.slabs.contains { $0.id == id && $0.keep }
+    func isPC(_ id: UUID) -> Bool {
+        data.sealed.contains { $0.id == id && $0.pc }
+            || data.raw.contains { $0.id == id && $0.pc }
+            || data.slabs.contains { $0.id == id && $0.pc }
     }
 
     func hasStatus(_ id: UUID) -> Bool {
@@ -389,10 +392,20 @@ final class GameStore {
         data.raw.first { $0.id == id } ?? data.slabs.first { $0.id == id }
     }
 
-    func setKeep(_ ids: Set<UUID>, _ keep: Bool) {
-        for i in data.sealed.indices where ids.contains(data.sealed[i].id) { data.sealed[i].keep = keep }
-        for i in data.raw.indices where ids.contains(data.raw[i].id) { data.raw[i].keep = keep }
-        for i in data.slabs.indices where ids.contains(data.slabs[i].id) { data.slabs[i].keep = keep }
+    /// Moves items into the PC, or back to the regular Inventory. Only an item with no status moves into the PC.
+    /// A card that moves into the PC leaves its master set (docs/08-ui-direction.md, The PC).
+    func setPC(_ ids: Set<UUID>, _ on: Bool) {
+        for i in data.sealed.indices where ids.contains(data.sealed[i].id) && (!on || data.sealed[i].status == nil) {
+            data.sealed[i].pc = on
+        }
+        for i in data.raw.indices where ids.contains(data.raw[i].id) && (!on || data.raw[i].status == nil) {
+            data.raw[i].pc = on
+            if on { data.raw[i].masterSet = nil }
+        }
+        for i in data.slabs.indices where ids.contains(data.slabs[i].id) && (!on || data.slabs[i].status == nil) {
+            data.slabs[i].pc = on
+            if on { data.slabs[i].masterSet = nil }
+        }
         save()
     }
 
@@ -404,13 +417,13 @@ final class GameStore {
         return price - costs.fees - costs.shipping
     }
 
-    /// The raw cards that make no money on TCGplayer: free, not kept, and not known fakes.
+    /// The raw cards that make no money on TCGplayer: free, not in the PC or a master set, and not known fakes.
     var unprofitableRaw: [OwnedCard] {
-        data.raw.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && Self.tcgNet(price: $0.market) <= 0 }
+        data.raw.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && Self.tcgNet(price: $0.market) <= 0 }
     }
 
     func moveToBulk(_ ids: Set<UUID>) {
-        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.keep && !$0.isKnownFake }
+        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil && !$0.setAside && !$0.isKnownFake }
         guard !cards.isEmpty else { return }
         for card in cards {
             data.openedPaid += card.paid ?? 0
@@ -434,14 +447,14 @@ final class GameStore {
 
     /// Identical items stack into one Inventory row.
     func stackKey(_ s: SealedItem) -> String {
-        "\(s.productID ?? s.name)|\(s.setSlug)|\(s.keep)|\(s.status?.tag ?? "")"
+        "\(s.productID ?? s.name)|\(s.setSlug)|\(s.pc)|\(s.status?.tag ?? "")"
     }
 
     /// Raw copies stack only when they look the same: the same wear and the same cut reading. The player can then
     /// pick the better copy to grade.
     func stackKey(_ c: OwnedCard) -> String {
         let looks = c.grade == nil ? "|\(c.condition.wear.short)|\(cutKey(c.condition.cut))" : ""
-        return "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.keep)|\(c.status?.tag ?? "")|\(c.paid == nil)" + looks
+        return "\(c.setSlug)|\(c.print.num)|\(c.print.variant)|\(c.grade?.label ?? "")|\(c.pc)|\(c.inMasterSet)|\(c.status?.tag ?? "")|\(c.paid == nil)" + looks
     }
 
     private func cutKey(_ cut: Cut) -> String {
@@ -799,7 +812,7 @@ final class GameStore {
     /// Returns false when the shop refused the card.
     @discardableResult
     func sellToShop(_ id: UUID, at store: LocalStore) -> Bool {
-        guard let card = card(id), card.status == nil, !card.keep else { return false }
+        guard let card = card(id), card.status == nil, !card.setAside else { return false }
         if let fake = card.fake, Double.random(in: 0..<1) < Balance.shopDetectChance[fake.rawValue] {
             var state = shop(store)
             state.points = max(0, state.points - Balance.shopFakeStandingCost)

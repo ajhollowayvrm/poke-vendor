@@ -89,7 +89,7 @@ extension GameStore {
         let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia", "Kai", "Mia",
                      "Rosa", "Luis", "Theo", "Wes", "Omar", "Lena", "Andre", "Ellie"]
         let sender = "@" + (names.randomElement() ?? "collector").lowercased() + String(Int.random(in: 10...99))
-        let mine = (data.raw + data.slabs).filter { $0.status == nil && !$0.keep && !$0.isKnownFake && $0.market >= Balance.messageMinCard }
+        let mine = (data.raw + data.slabs).filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.market >= Balance.messageMinCard }
         var kinds: [MessageKind] = [.lookingFor, .offersCard, .offersCard]
         if !mine.isEmpty { kinds += [.wantsYourCard, .wantsYourCard, .wantsYourCard] }
         guard let kind = forced ?? kinds.randomElement() else { return nil }
@@ -159,11 +159,11 @@ extension GameStore {
         return cards.last
     }
 
-    /// For `lookingFor`: the player's card that matches, if any. Raw only, not kept, and free.
+    /// For `lookingFor`: the player's card that matches, if any. Raw only, not in the PC or a master set, and free.
     func matchingCard(_ m: DirectMessage) -> OwnedCard? {
         guard m.kind == .lookingFor, let print = m.print else { return nil }
         return data.raw.filter {
-            $0.print.num == print.num && $0.print.name == print.name && $0.setSlug == m.slug && $0.status == nil && !$0.keep
+            $0.print.num == print.num && $0.print.name == print.name && $0.setSlug == m.slug && $0.status == nil && !$0.setAside
         }.max { $0.market < $1.market }
     }
 
@@ -171,7 +171,7 @@ extension GameStore {
     func cardForMessage(_ m: DirectMessage) -> OwnedCard? {
         switch m.kind {
         case .wantsYourCard:
-            guard let id = m.cardID, let c = card(id), c.status == nil, !c.keep else { return nil }
+            guard let id = m.cardID, let c = card(id), c.status == nil, !c.setAside else { return nil }
             return c
         case .lookingFor: return matchingCard(m)
         case .offersCard: return nil

@@ -22,6 +22,7 @@ struct FloorStage: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Someone stops you").font(.headline).padding(.top, 8)
                             VisitorCard(visitor: approach, asking: nil, tool: store.data.centeringTool)
+                            StashPanel(session: session, visitor: approach)
                         }
                         .padding(16)
                     }

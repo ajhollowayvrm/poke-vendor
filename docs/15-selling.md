@@ -144,8 +144,8 @@ Facebook Marketplace.
   fees and no shipping. It has no meetup in this version.
 - A fake in a lot works as in any sale. The lot sells, and the fake can
   come back later (see [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)).
-- Items with a status (listed, at a grader, in the store) or the Keep
-  tag cannot join a lot.
+- Items with a status (listed, at a grader, in the store), PC items, and
+  master set cards cannot join a lot.
 
 ### Lot limits
 
@@ -270,7 +270,8 @@ waits weeks for the money, and the slab cannot come back before its
 auction.
 
 - **What a house takes**: a slab with a market of $1,000 or more. It must
-  have no status, no Keep flag, and it must not be a known fake. The
+  have no status, it must not be in the PC or a master set, and it must
+  not be a known fake. The
   button "Consign to an auction house" is on the slab's detail screen.
 - **Reputation gate**: Fanatics Collect takes Known sellers (tier 1).
   Goldin and Heritage take Trusted sellers (tier 2).

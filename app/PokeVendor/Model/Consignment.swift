@@ -30,7 +30,7 @@ extension GameStore {
         var count = 0
         // `card` is a copy: the write to `data` happens after, so no two accesses overlap.
         func placed(_ card: OwnedCard) -> OwnedCard? {
-            guard ids.contains(card.id), card.status == nil, !card.keep else { return nil }
+            guard ids.contains(card.id), card.status == nil, !card.setAside else { return nil }
             let price = max(0.5, (card.realMarket * percent / 100 * 100).rounded() / 100)
             let chance = Balance.consignSaleBase * exp(-(percent / 100 - 1) * 4) * PriceCycle.seasonDemand(sealed: false)
             let sellDay: Int? = Double.random(in: 0..<1) < chance ? today + Int.random(in: 2...Balance.consignDays) : nil

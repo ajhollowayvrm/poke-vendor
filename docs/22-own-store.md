@@ -125,7 +125,8 @@ Status box.
 
 - The store holds 40 cards and slabs, and 40 sealed items. Fixtures
   and a bigger space add room. Consigned cards use card slots.
-- Kept items, listed items, and known fakes cannot go into the store.
+- PC items, master set cards, listed items, and known fakes cannot go
+  into the store.
 - An unknown fake can go into the store. If it sells, it is a bad sale
   with no platform refund (see
   [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)).

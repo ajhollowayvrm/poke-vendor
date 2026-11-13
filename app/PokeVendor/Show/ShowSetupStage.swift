@@ -31,7 +31,7 @@ struct SetupStage: View {
                     }
                     if session.venue.tableRules { crowdBox }
                     if items.isEmpty {
-                        Text("You have nothing to \(table ? "sell" : "carry"). Kept items, listed items, and items at a grader stay home.")
+                        Text("You have nothing to \(table ? "sell" : "carry"). Master set cards, listed items, and items at a grader stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
                     }

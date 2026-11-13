@@ -120,13 +120,13 @@ extension GameStore {
         var kinds = OpportunityKind.allCases.filter { reputationTier >= $0.minReputationTier }
         let tomorrowShow = data.shows.first { $0.startDay == data.day + 1 && !$0.booked }
         if tomorrowShow == nil || !data.vendorKit { kinds.removeAll { $0 == .lastMinuteTable } }
-        let bigCard = (data.raw + data.slabs).filter { $0.status == nil && !$0.keep && $0.market >= Balance.privateBuyerMinCard }.randomElement()
+        let bigCard = (data.raw + data.slabs).filter { $0.status == nil && !$0.setAside && $0.market >= Balance.privateBuyerMinCard }.randomElement()
         if bigCard == nil { kinds.removeAll { $0 == .privateBuyer } }
         let vendorContact = data.contacts.filter { $0.kind.isVendor && level($0.id).rank >= StandingLevel.trusted.rank }.randomElement()
         if vendorContact == nil { kinds.removeAll { $0 == .vendorLiquidating } }
         let bulkCards = data.bulk.reduce(0) { $0 + $1.cards.count }
         if bulkCards < Balance.bulkBuyerMinCards { kinds.removeAll { $0 == .bulkBuyer } }
-        let bigSealed = data.sealed.filter { $0.status == nil && !$0.keep && !$0.isKnownFake && market(of: $0) >= 30 }.randomElement()
+        let bigSealed = data.sealed.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && market(of: $0) >= 30 }.randomElement()
         if bigSealed == nil { kinds.removeAll { $0 == .sealedBuyer } }
         guard let kind = forced ?? kinds.randomElement() else { return nil }
         let day = data.day + notice
@@ -247,7 +247,7 @@ extension GameStore {
             save()
             return .done("Your table at \(data.shows[j].name) is booked. No fee.")
         case .privateBuyer:
-            guard let cardID = o.cardID, let card = card(cardID), card.status == nil, !card.keep else {
+            guard let cardID = o.cardID, let card = card(cardID), card.status == nil, !card.setAside else {
                 return .failed("You no longer have the card.")
             }
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }
@@ -284,7 +284,7 @@ extension GameStore {
             // A teacher does not check for fakes. The kids do not know either.
             return .done("Sold \(count) cards for \(money(o.price)).\(fakes > 0 ? " Some fakes went with them." : " The kids will love them.")")
         case .sealedBuyer:
-            guard let id = o.sealedID, let item = data.sealed.first(where: { $0.id == id }), item.status == nil, !item.keep else {
+            guard let id = o.sealedID, let item = data.sealed.first(where: { $0.id == id }), item.status == nil, !item.setAside else {
                 return .failed("You no longer have it.")
             }
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }

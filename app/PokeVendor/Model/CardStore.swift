@@ -328,10 +328,10 @@ extension GameStore {
         ((data.raw + data.slabs).filter { Self.isInStore($0.status) }, data.sealed.filter { Self.isInStore($0.status) })
     }
 
-    /// What the player can put in the store: free, not kept, and not a known fake.
+    /// What the player can put in the store: free, not in the PC or a master set, and not a known fake.
     var stockable: (cards: [OwnedCard], sealed: [SealedItem]) {
         let stock = showStock
-        return (stock.cards.filter { !$0.isKnownFake }, stock.sealed.filter { !$0.isKnownFake })
+        return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc })
     }
 
     var storeCardSlots: Int {

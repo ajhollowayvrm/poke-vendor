@@ -37,7 +37,7 @@ questions that the change raises. It is now the design record
 | 5 | Deal stories | A notable deal can come back days later as a post, good or bad. Some go viral. |
 | 6 | Offer trade instead of cash | A seller at the table can take an item from the table, valued at 110%. |
 | 7 | Final offer | Once for each visitor, the player says "That's my final offer." |
-| 8 | Pick the trader's cards | The trader shows their binder. The player picks the cards. |
+| 8 | Pick the trader's cards | The player asks to see the trader's binder. The player picks the cards. |
 | 9 | Bundles | Some buyers want two items, and ask for a bundle price. |
 
 ## 1. The fair band
@@ -219,7 +219,9 @@ player can use it once for each visitor, with a buyer or a seller.
 - The visitor card shows the tell in the reply line.
 - The deal buttons get **Final offer** (buyers and sellers) and **Offer
   trade** (sellers at a table).
-- The trade panel shows the trader's binder with tap targets.
+- The trade panel shows the trader's binder with tap targets, after the
+  player asks to see it (see
+  [20-card-shows.md](20-card-shows.md#stashes)).
 - The summary shows "passed politely" and the reputation from deals
   today, for example "Reputation +5 from deals (cap 6)".
 - The morning report shows the stories.
@@ -304,5 +306,5 @@ buyer who leaves because they have no cash.
 | Random story | 3% a week. Good +3. Bad −3, from tier 2 |
 | Offer trade | 110% value, at most 150% of the goods. A closet cleaner says no 50% of the time |
 | Final offer | Within 10% of market of the limit. Meets it 60% (30% for a flipper or a dealer) |
-| Trader binder | 3 to 5 cards |
+| Trader binder | 3 to 5 cards, more with familiarity. Shown after the ask |
 | Bundle | 20% of buyers who can want two items |

@@ -456,7 +456,7 @@ struct StreamSetupView: View {
                     }
                 }
                 Section("Bring · \(chosen.count) of \(stock.count)") {
-                    if stock.isEmpty { Text("You have nothing free to bring. Kept and listed items stay home.").foregroundStyle(Theme.muted) }
+                    if stock.isEmpty { Text("You have nothing free to bring. PC items, master set cards, and listed items stay home.").foregroundStyle(Theme.muted) }
                     ForEach(stock) { item in
                         Button {
                             if chosen.contains(item.id) { chosen.remove(item.id) } else { chosen.insert(item.id) }

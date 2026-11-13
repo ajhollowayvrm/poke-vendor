@@ -129,7 +129,7 @@ struct ConsignSheet: View {
     @State private var percent: Double = 110
 
     var body: some View {
-        let cards = (store.data.raw + store.data.slabs).filter { $0.status == nil && !$0.keep && $0.realMarket >= 1 }.sorted { $0.realMarket > $1.realMarket }
+        let cards = (store.data.raw + store.data.slabs).filter { $0.status == nil && !$0.setAside && $0.realMarket >= 1 }.sorted { $0.realMarket > $1.realMarket }
         let cut = store.consignCut(at: shop)
         NavigationStack {
             Form {

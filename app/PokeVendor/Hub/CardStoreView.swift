@@ -456,7 +456,7 @@ struct StockShelvesSheet: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s"). Kept items, listed items, and known fakes stay home.")
+                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s"). PC items, master set cards, listed items, and known fakes stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
                         if pickedCards > cardRoom || pickedSealed > sealedRoom {

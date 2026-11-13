@@ -161,8 +161,9 @@ extension GameStore {
 
     /// One roll when the player travels with stock in hand: a thief takes a bag from the car.
     func rollCarBreakIn(trip: String) {
+        // The PC stays home unless the player packs it for a show.
         let stock = showStock
-        let ids = stock.cards.map(\.id) + stock.sealed.map(\.id)
+        let ids = stock.cards.filter { !$0.pc }.map(\.id) + stock.sealed.filter { !$0.pc }.map(\.id)
         guard !ids.isEmpty else { return }
         let chance = Balance.carBreakInChance * (hasUpgrade(.lockedCase) ? Balance.lockedCaseFactor : 1)
         guard Double.random(in: 0..<1) < chance else { return }

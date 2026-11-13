@@ -8,7 +8,10 @@ struct ItemLine: View {
         HStack(spacing: 10) {
             ItemImage(item: item).frame(width: 34, height: 47)
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.name).font(.subheadline).lineLimit(1)
+                HStack(spacing: 4) {
+                    Text(item.name).font(.subheadline).lineLimit(1)
+                    if item.pc { Tag(text: "PC", color: Theme.green) }
+                }
                 if let c = item.condition {
                     RawLooks(condition: c)
                 } else {

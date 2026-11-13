@@ -209,7 +209,7 @@ struct ShowDetailView: View {
                         Text("On the floor, dealers, shops, and collectors sell singles, slabs, sealed, and mystery packs. Looking over a table takes about 15 minutes, and people who come to your table while you are away leave.")
                             .font(.subheadline)
                         if daysOut > 0 {
-                            Text("Items that are kept, listed, shipping, or at a grader stay home.")
+                            Text("Master set cards, and items that are listed, shipping, or at a grader, stay home. PC items come only when you pack them.")
                                 .font(.caption)
                                 .foregroundStyle(Theme.muted)
                         }

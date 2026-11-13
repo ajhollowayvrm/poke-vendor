@@ -421,7 +421,8 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     /// Nil for a pulled card. The opened product holds the amount paid (docs/08-ui-direction.md, Inventory).
     let paid: Double?
     let ripID: UUID?
-    var keep = false
+    /// In the personal collection (PC). A PC card is not in the regular Inventory tabs (docs/08-ui-direction.md, The PC).
+    var pc = false
     var condition = Condition.packFresh()
     var grade: SlabGrade?
     var status: ItemStatus?
@@ -436,9 +437,22 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var onlineListing: Listing?
     /// The own shelf price of a slab in the store, as a share of market. Nil: the slab uses the singles price.
     var shelfFactor: Double?
+    /// In a master set binder (docs/08-ui-direction.md, Master sets). Optional, so old saves still load.
+    var masterSet: Bool?
+
+    /// The save key of `pc` stays "keep", so old saves still load.
+    enum CodingKeys: String, CodingKey {
+        case id, print, setSlug, acquired, paid, ripID, pc = "keep", condition, grade, status, acquiredDay, fake, fakeKnown
+        case verified, onlineListing, shelfFactor, masterSet
+    }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }
+    var inMasterSet: Bool { masterSet == true }
+    /// In the PC or in a master set: out of the regular Inventory, and not for sale.
+    var setAside: Bool { pc || inMasterSet }
+    /// The print's place in its master set: one copy of each number and variant.
+    var masterKey: String { MasterSet.key(print) }
 
     var rawMarket: Double { print.market ?? 0 }
 
@@ -527,7 +541,8 @@ struct SealedItem: Codable, Identifiable, Hashable {
     let paid: Double
     let acquired: Date
     let source: String
-    var keep = false
+    /// In the personal collection (PC). The save key stays "keep", so old saves still load.
+    var pc = false
     var productID: String?
     var status: ItemStatus?
     /// The product that this loose pack came out of, after the rip broke its seal.
@@ -540,8 +555,15 @@ struct SealedItem: Codable, Identifiable, Hashable {
     /// The online listing of an item in the player's store. Only used while the status is `.inStore` (docs/22).
     var onlineListing: Listing?
 
+    enum CodingKeys: String, CodingKey {
+        case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
+        case fake, fakeKnown, verified, onlineListing
+    }
+
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }
+    /// Sealed product has no master set, so only the PC sets it aside.
+    var setAside: Bool { pc }
 
     var paidPerPack: Double { paid / Double(max(packs, 1)) }
 }
