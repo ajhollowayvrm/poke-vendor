@@ -9,6 +9,8 @@ enum PostType: String, Codable, CaseIterable, Hashable {
     case showPromo = "Show promo"
     /// The record of a live stream in the post list. Streams start from the hub, not from this sheet.
     case stream = "Live stream"
+    /// A short-form video (docs/32-short-form-video.md). Shorts post from the series, not from this sheet.
+    case short = "Short"
 
     var needsItem: Bool { self == .pullReveal || self == .collectionFlex || self == .forSale }
     var needsShow: Bool { self == .showPromo }
@@ -136,7 +138,7 @@ extension GameStore {
         case .forSale: 0.5 + min(1.2, log10(value + 1) * 0.5)
         case .sponsored: 0.8
         case .showPromo: 0.9
-        case .stream: 1.0
+        case .stream, .short: 1.0
         }
     }
 
@@ -242,7 +244,9 @@ extension GameStore {
             }
         }
         let tier = FollowerTier.tier(s.followers)
-        if tier >= 1, s.offers.count < 3, Double.random(in: 0..<1) < 0.12 {
+        // A running series brings sponsors more often (docs/32-short-form-video.md).
+        let sponsorChance = 0.12 * (data.shorts.series.isEmpty ? 1 : Balance.seriesSponsorFactor)
+        if tier >= 1, s.offers.count < 3, Double.random(in: 0..<1) < sponsorChance {
             let posts = Int.random(in: 1...3)
             // Follower tier 3: larger sponsor deals (docs/04).
             let pay = max(25, (Double(s.followers) * 0.015 * Double(posts) * (tier >= 3 ? Balance.bigSponsorFactor : 1)).rounded())

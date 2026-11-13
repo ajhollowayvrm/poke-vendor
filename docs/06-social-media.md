@@ -1,6 +1,6 @@
 # Social Media System
 
-**Status: built.** Quick posts, sponsors, the analytics upgrade, live streams (`Model/LiveStream.swift`, `Stream/StreamView.swift`), scheduled streams, giveaways, Whatnot auctions and Buy Now, tips, the show promo post, and production value from the studio lights and the camera kit. The numbers are in [19-prototype-values.md](19-prototype-values.md).
+**Status: built.** Quick posts, sponsors, the analytics upgrade, live streams (`Model/LiveStream.swift`, `Stream/StreamView.swift`), scheduled streams, giveaways, Whatnot auctions and Buy Now, tips, the show promo post, and production value from the studio lights and the camera kit. Short-form video series are in [32-short-form-video.md](32-short-form-video.md). The numbers are in [19-prototype-values.md](19-prototype-values.md).
 
 One unified social media presence, not split across separate in-game
 platforms. It supports two content types, which map onto the existing

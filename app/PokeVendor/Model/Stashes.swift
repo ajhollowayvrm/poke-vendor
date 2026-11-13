@@ -181,6 +181,7 @@ extension ShowSession {
                          slug: items.first?.item.slug, scored: true)
         score(.buy, price: price, market: market, pushed: pushed, v)
         let bought = Set(items.map(\.id))
+        stashBuys += 1
         v.stash.removeAll { bought.contains($0.id) }
         v.stashCounter = nil
         v.stashCounterFor = []

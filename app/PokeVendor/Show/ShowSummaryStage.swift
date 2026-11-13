@@ -27,6 +27,7 @@ struct SummaryStage: View {
                     list("SOLD", session.sold.map { ($0.name, money($0.price)) })
                     list(session.venue.isShow ? "BOUGHT ON THE FLOOR" : "BOUGHT", session.bought.map { ($0.name, money($0.price)) })
                     list("TRADES", session.trades.map { ($0, "") })
+                    VlogButton(session: session)
                     if session.hasTable {
                         Text("\(session.missed) buyer\(session.missed == 1 ? "" : "s") missed · \(session.walkedAway) walked away")
                             .font(.caption.monospaced())
@@ -69,6 +70,30 @@ struct SummaryStage: View {
                 }
                 .padding(.vertical, 6)
                 .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+            }
+        }
+    }
+}
+
+/// Posts the visit as a show vlog (docs/32-short-form-video.md, Show vlogs).
+struct VlogButton: View {
+    @Environment(GameStore.self) private var store
+    let session: ShowSession
+    @State private var posted: SocialPost?
+
+    var body: some View {
+        if store.hasAccount, session.canVlog {
+            if let posted {
+                Text("Vlog up: \(posted.views.formatted()) views, \(posted.followerChange >= 0 ? "+" : "")\(posted.followerChange) followers")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.cyan)
+            } else if !session.vlogPosted {
+                let block = store.shortBlock(store.series(.vlog), long: true)
+                Button("Post a show vlog") { posted = session.postVlog() }
+                    .buttonStyle(.bordered)
+                    .tint(Theme.cyan)
+                    .disabled(block != nil)
+                if let block { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
             }
         }
     }

@@ -506,6 +506,7 @@ See [29-packing-and-crowds.md](29-packing-and-crowds.md).
 | Showcase | Upgrade $750. 6 cards of $1,000 or more. Setup +10 minutes |
 | Showcase at a table | Visitors +5% × √(value in thousands), at most 25%. Whales 3% + 1.5% × the root, at most 12%. 35% of whales ask about a showcase card: open at 130%, top 130% to 160%. Other whales: dearest third of the table, top 100% to 115% |
 | Showcase visit reward | Reputation +1 (+2 at $10,000 or more). Followers 1.5 × √value, at most 400 |
+| Short-form video | See [32-short-form-video.md](32-short-form-video.md#values). Edit 20 min (long 45). Burnout 0.05. Reach (200 + followers × 0.25) × factors, viral 4%. View pay from 10,000 followers: $0.06 / $0.60 per 1,000 views, every 7 days |
 | Master set reward | Once a set. Reputation: half the square root of the set value, 3 to 40. Followers: 10 × the root |
 
 See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).

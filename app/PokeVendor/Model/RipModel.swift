@@ -193,6 +193,18 @@ final class RipModel {
     /// "Post this pull" shows only when the player has a social media account.
     var canPost: Bool { store?.hasAccount ?? false }
 
+    /// The whole rip as a Rip until I hit episode, at its last pack (docs/32-short-form-video.md).
+    var episode: RipEpisode? {
+        guard !hasNextPack, let store else { return nil }
+        let best = allHits.max { $0.market < $1.market }
+        let hit = best.flatMap { b in
+            store.data.raw.filter { $0.ripID == ripID && $0.print.num == b.print?.num && $0.print.variant == b.print?.variant }
+                .max { $0.market < $1.market }
+        }
+        return RipEpisode(packs: queue.count, spent: ripPaid, bestValue: best?.market ?? 0, bestName: best?.name ?? "no hit",
+                          hitCardID: hit?.id)
+    }
+
     func postPull(_ card: RipCard) -> SocialPost? {
         store?.post(.pullReveal, subject: card.name, value: card.market)
     }

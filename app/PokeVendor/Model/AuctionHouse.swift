@@ -203,7 +203,7 @@ extension GameStore {
         }
         let net = (hammer * (1 - a.sellerFee) * 100).rounded() / 100
         data.auctionPayouts.append(AuctionPayout(day: day + Balance.auctionPayoutDays, amount: net, name: name, house: a.house))
-        addReceipt(name: name, venue: a.house.rawValue, price: hammer, net: net, paid: card.paid)
+        addReceipt(name: name, venue: a.house.rawValue, price: hammer, net: net, paid: card.paid, ids: [card.id])
         // The sale uses up some buyers of the card. It does not touch the demand of any channel of the player.
         data.demand.items[card.print.name, default: 0] += 1
         addReputation(Balance.onlineSaleReputation)

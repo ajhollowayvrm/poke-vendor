@@ -407,7 +407,7 @@ extension GameStore {
                 }
                 // A machine sale is an in-person sale: sales tax, a receipt, the item's demand, and a fake's risk.
                 collectSalesTax(on: vend.price, at: venue)
-                addReceipt(name: vend.item.name, venue: venue, price: vend.price, net: net, paid: vend.item.paid)
+                addReceipt(name: vend.item.name, venue: venue, price: vend.price, net: net, paid: vend.item.paid, ids: [vend.item.id])
                 data.demand.items[vend.item.name, default: 0] += 1
                 if let fake = vend.item.fake {
                     recordBadSale(item: vend.item.name, channel: venue, price: vend.price, fake: fake,

@@ -153,7 +153,7 @@ extension GameStore {
         data.slabs.removeAll { $0.id == id }
         let name = card.print.name + (card.grade.map { " " + $0.label } ?? "")
         addLedger(e.price, .sale, "\(name) · \(e.who) at \(e.shop.rawValue)")
-        addReceipt(name: name, venue: e.shop.rawValue, price: e.price, net: e.price, paid: card.paid)
+        addReceipt(name: name, venue: e.shop.rawValue, price: e.price, net: e.price, paid: card.paid, ids: [card.id])
         recordDeal(nil, what: "Sold \(name)", price: e.price, market: e.market, slug: card.setSlug)
         if let fake = card.fake {
             recordBadSale(item: name, channel: e.shop.rawValue, price: e.price, fake: fake, known: card.isKnownFake, refunds: false)

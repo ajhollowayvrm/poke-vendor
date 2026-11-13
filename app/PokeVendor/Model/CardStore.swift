@@ -614,7 +614,7 @@ extension GameStore {
         }
         addLedger(price, .sale, "\(item.name) · \(storeName)")
         collectSalesTax(on: price, at: storeName)
-        addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid)
+        addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid, ids: [item.id])
         if let fake = item.fake {
             recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false)
         }

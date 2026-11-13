@@ -29,6 +29,10 @@ extension HubView {
             store.addToShowcase(id)
             if store.card(id)?.inShowcase == true { showcaseAdded += 1 }
         }
+        // Short-form video (docs/32-short-form-video.md): a P&L challenge and a Rip until I hit series from day 1.
+        var shortFails: [String] = []
+        var pnlEpisodes = 0, pnlAdded = 0, pnlCredited = 0, ripEpisodes = 0, ripFinales = 0, seriesDeaths = 0
+        var vlogs = 0, reveals = 0, payouts = 0
         var pcPacked = 0, pcSold = 0, pcChecked = 0, stashAsks = 0, stashShown = 0, stashBuys = 0, stashPCSeen = 0
         let testCards = Array(store.data.raw.suffix(6))
         if testCards.count >= 3 {
@@ -353,6 +357,8 @@ extension HubView {
                 if !gone.isSubset(of: load) { packFails.append("\(gone.subtracting(load).count) items left the stock at \(session.venue.name) from outside the load") }
             }
             if session.passedBy.count != session.foundNothing + session.stalePassed + session.pcPassed { packFails.append("the passed list does not match the counts") }
+            if session.canVlog, store.hasAccount, (packTables + packBags) % 2 == 0, session.postVlog() != nil { vlogs += 1 }
+            if session.vlogPosted, store.shorts.vlog?.posted == false { shortFails.append("a vlog posted twice") }
             store.finishEncounter(session)
             log.append("Encounter \(session.venue.name): \(session.sold.count) sold, \(session.bought.count) bought, \(session.trades.count) traded, \(session.foundNothing) found nothing, \(session.stalePassed) stale")
         }
@@ -546,6 +552,62 @@ extension HubView {
                     if model.phase == .done { model.nextPack() } else { _ = model.sift(); model.resume() }
                 }
             }
+            // Shorts: post the P&L each day but every fifth, add bought items, and sell one at a shop to check the cash.
+            if store.day == 0 || (store.series(.pnl) == nil && store.day % 10 == 0) { store.startPnL(start: 500, goal: 5, days: 30) }
+            if store.day == 0 { store.startRipSeries(target: 250) }
+            if store.day == 20 { store.testFollowers(12_000) }
+            if let s = store.series(.pnl) {
+                let cashBefore = s.cash
+                let free = (store.data.raw + store.data.slabs).map(\.id) + store.data.sealed.map(\.id)
+                let picks = Set(free.filter { store.challengeBlock($0) == nil }.prefix(3))
+                let cost = picks.reduce(0.0) { total, id in
+                    total + (store.card(id)?.paid ?? store.data.sealed.first { $0.id == id }?.paid ?? 0)
+                }
+                let added = store.addToChallenge(picks)
+                pnlAdded += added
+                if added == picks.count, let now = store.series(.pnl), abs(now.cash - (cashBefore - cost)) > 0.01 {
+                    shortFails.append("adding \(added) items moved the challenge cash by \(money(cashBefore - now.cash)), not \(money(cost))")
+                }
+                if let c = store.data.raw.first(where: { store.isChallengeItem($0.id) && $0.status == nil && !$0.setAside && !$0.isKnownFake }),
+                   let before = store.series(.pnl)?.cash {
+                    let price = (c.realMarket * store.standing(.castle).buylistRate * 100).rounded() / 100
+                    if store.sellToShop(c.id, at: .castle) {
+                        pnlCredited += 1
+                        if let now = store.series(.pnl), abs(now.cash - before - price) > 0.01 {
+                            shortFails.append("a shop sale of a challenge card added \(money(now.cash - before)), not \(money(price))")
+                        }
+                        if store.isChallengeItem(c.id) { shortFails.append("a sold card stayed in the challenge") }
+                    }
+                }
+                if store.day % 5 != 4, store.postPnLEpisode() != nil {
+                    pnlEpisodes += 1
+                    if let now = store.series(.pnl), now.lastEpisodeDay != store.day { shortFails.append("a P&L episode did not mark the day") }
+                    if store.postPnLEpisode() != nil { shortFails.append("a series posted twice in one day") }
+                }
+            }
+            // Rip until I hit: an episode a day to day 10, the finale on day 10. A new series on day 14 gets no episodes,
+            // so it must die by day 17.
+            if store.day == 14 { store.startRipSeries(target: 1_000) }
+            // A mail-in grading submission on day 4, for a reveal short when it comes back.
+            if store.day == 4, let tier = Balance.gradingTiers[.cgc]?.last {
+                let ids = Set(store.data.raw.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake }.prefix(3).map(\.id))
+                store.submit(ids, to: .cgc, tier: tier)
+            }
+            if store.series(.ripUntil) != nil, store.day < 12 {
+                let rip = RipEpisode(packs: 4, spent: 20, bestValue: store.day >= 10 ? 300 : Double(store.day * 15), bestName: "Test card", hitCardID: nil)
+                if store.postRipEpisode(rip) != nil {
+                    ripEpisodes += 1
+                    if rip.bestValue >= 250 {
+                        ripFinales += 1
+                        if store.series(.ripUntil) != nil { shortFails.append("the rip series stayed after its finale") }
+                    }
+                }
+            }
+            if store.day == 18, store.series(.ripUntil) != nil { shortFails.append("a series with no episodes did not die") }
+            for r in store.openReveals where store.postReveal(r.id) != nil { reveals += 1 }
+            for s in store.shorts.series where s.momentum < 1 - 0.001 || s.momentum > Balance.momentumMax + 0.001 {
+                shortFails.append("\(s.name) has momentum \(s.momentum)")
+            }
             if store.data.day % 6 == 0 { store.post(.hotTake, subject: nil, value: 0) }
             if store.day % 9 == 0 { _ = store.apply(min(Job.ladder.count - 1, (store.data.jobIndex ?? 0) + 1)) }
             if store.day % 11 == 0 { store.bookTimeOff(store.day + 2) }
@@ -554,7 +616,12 @@ extension HubView {
             if store.day % 8 == 3 { store.data.hour = max(store.data.hour, Balance.dayEnd + 2) }
             let due = store.data.dealStories.filter { $0.day <= store.day + 1 }.count
             let payoutsBefore = store.data.auctionPayouts.count
+            let seriesBefore = store.shorts.series.count
+            let pendingBefore = store.shorts.pendingPay
             store.endDay()
+            // End Day removes a series only when it dies. A finale removes it when it posts.
+            if store.shorts.series.count < seriesBefore { seriesDeaths += 1 }
+            if pendingBefore >= 0.01, store.shorts.pendingPay == 0 { payouts += 1 }
             auctionPaid += max(0, payoutsBefore - store.data.auctionPayouts.count)
             dealStoriesOut += due
             if store.data.dealStories.contains(where: { $0.day < store.day }) { dealFails.append("a story stayed in the queue past its day") }
@@ -636,6 +703,10 @@ extension HubView {
         print("SOAK PC: \(pcChecked) PC prices checked, \(pcPacked) packed, \(pcSold) sold, \(store.data.completedMasterSets.count) master sets complete, \(stashAsks) stash asks, \(stashShown) shown, \(stashPCSeen) PC items seen, \(stashBuys) stash buys, \(pcFails.count) fails")
         print("SOAK SHOWCASE: \(showcaseAdded) added, \(showcaseVisits) visits out, \(showcaseAsks) whales asked, \(showcaseSold) sold, draw \(Int(store.showcaseDraw * 100))%, whales \(Int(store.showcaseWhaleChance * 100))%")
         for line in pcFails.prefix(10) { print("SOAK PC FAIL:", line) }
+        if store.day > 25, payouts == 0 { shortFails.append("no view payout after 12,000 followers") }
+        if seriesDeaths == 0 { shortFails.append("no series died") }
+        print("SOAK SHORTS: \(pnlEpisodes) P&L episodes, \(pnlAdded) items added, \(pnlCredited) challenge sales, \(ripEpisodes) rip episodes, \(ripFinales) finales, \(seriesDeaths) deaths, \(vlogs) vlogs, \(reveals) reveals, \(payouts) payouts, \(store.social.posts.filter { $0.type == .short }.count) shorts, \(shortFails.count) fails")
+        for line in shortFails.prefix(10) { print("SOAK SHORTS FAIL:", line) }
         if let over = store.data.gameOver { print("SOAK GAME OVER:", over) }
         store.saveNow()
         print("SOAK OK: day \(store.day + 1), cash \(money(store.cash)), rep \(store.data.reputation), followers \(store.social.followers), items \(store.data.raw.count + store.data.slabs.count + store.data.sealed.count)")

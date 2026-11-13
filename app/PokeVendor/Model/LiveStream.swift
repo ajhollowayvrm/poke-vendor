@@ -137,7 +137,13 @@ final class StreamSession {
         followersStart = store.social.followers
         var luck = exp((Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.5)
         if Double.random(in: 0..<1) < 0.02 { luck *= Double.random(in: 4...10) }
-        target = (Balance.streamBaseViewers + Balance.streamViewersPerFollower * Double(store.social.followers))
+        // A short with many views sends viewers to the next stream (docs/32-short-form-video.md).
+        var boost = 1.0
+        if let until = store.data.shorts.streamBoostUntil, store.data.day <= until {
+            boost = Balance.streamBoost
+            store.data.shorts.streamBoostUntil = nil
+        }
+        target = boost * (Balance.streamBaseViewers + Balance.streamViewersPerFollower * Double(store.social.followers))
             * store.productionQuality * store.postTiming * luck * (scheduled ? Balance.scheduledStreamBonus : 1)
             * (0.4 + store.social.authenticity)
         viewers = max(1, target * 0.3)
@@ -437,7 +443,7 @@ extension GameStore {
     /// A Whatnot sale from a stream. The item leaves at once.
     func sellOnStream(_ item: StreamItem, price: Double) {
         let line = completeSaleNow(name: item.name, channel: .whatnot, price: price, sealed: item.sealed, insured: false,
-                                   paid: paidFor(item.id), slab: data.slabs.contains { $0.id == item.id })
+                                   paid: paidFor(item.id), slab: data.slabs.contains { $0.id == item.id }, ids: [item.id])
         let soldCard = card(item.id)
         let soldSealed = data.sealed.first { $0.id == item.id }
         data.raw.removeAll { $0.id == item.id }

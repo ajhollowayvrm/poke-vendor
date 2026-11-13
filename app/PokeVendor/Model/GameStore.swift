@@ -124,6 +124,8 @@ struct GameData: Codable {
     var machines: [VendingMachine] = []
     /// The master sets the player completed, by set slug, and the day of each (docs/08-ui-direction.md, Master sets).
     var completedMasterSets: [String: Int] = [:]
+    /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
+    var shorts = ShortsState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -209,6 +211,7 @@ extension GameData {
         auctionBans = v(.auctionBans, auctionBans)
         machines = v(.machines, machines)
         completedMasterSets = v(.completedMasterSets, completedMasterSets)
+        shorts = v(.shorts, shorts)
     }
 }
 
@@ -580,18 +583,24 @@ final class GameStore {
     func openProduct(_ sourceID: UUID, ripID: UUID) -> [CardPrint] {
         guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
         let item = data.sealed.remove(at: i)
+        var newIDs: [UUID] = []
         for slug in packSlugs(of: item) {
-            data.sealed.append(loosePack(slug, from: item))
+            let pack = loosePack(slug, from: item)
+            newIDs.append(pack.id)
+            data.sealed.append(pack)
         }
         var extras: [CardPrint] = []
         if let product = SetLibrary.product(item.productID) {
             let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
             for promo in promos {
-                data.raw.append(OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil,
-                                          ripID: ripID, acquiredDay: data.day))
+                let card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID, acquiredDay: data.day)
+                newIDs.append(card.id)
+                data.raw.append(card)
                 extras.append(promo.print)
             }
         }
+        // What comes out of a P&L challenge product stays in the challenge (docs/32-short-form-video.md).
+        inheritChallenge(from: sourceID, newIDs)
         log("Opened \(item.name).")
         save()
         return extras
@@ -605,18 +614,23 @@ final class GameStore {
     func commitPack(from sourceID: UUID, setSlug: String, paidPerPack: Double, ripID: UUID, cards: [RipCard],
                     save saves: Bool = true) -> [CardPrint] {
         var extras: [CardPrint] = []
+        var newIDs: [UUID] = []
         if let i = data.sealed.firstIndex(where: { $0.id == sourceID }) {
             let item = data.sealed.remove(at: i)
             var rest = packSlugs(of: item)
             if let first = rest.firstIndex(of: setSlug) { rest.remove(at: first) } else if !rest.isEmpty { rest.removeFirst() }
             for slug in rest {
-                data.sealed.append(loosePack(slug, from: item))
+                let pack = loosePack(slug, from: item)
+                newIDs.append(pack.id)
+                data.sealed.append(pack)
             }
             if item.brokenFrom == nil, let product = SetLibrary.product(item.productID) {
                 let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
                 for promo in promos {
-                    data.raw.append(OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil,
-                                              ripID: ripID, acquiredDay: data.day))
+                    let card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID,
+                                         acquiredDay: data.day)
+                    newIDs.append(card.id)
+                    data.raw.append(card)
                     extras.append(promo.print)
                 }
             }
@@ -629,17 +643,24 @@ final class GameStore {
         for card in cards {
             guard let print = card.print else { continue }
             if card.isHit {
-                data.raw.append(OwnedCard(print: print, setSlug: setSlug, acquired: .now, paid: nil, ripID: ripID,
-                                          condition: card.condition, acquiredDay: data.day))
+                let owned = OwnedCard(print: print, setSlug: setSlug, acquired: .now, paid: nil, ripID: ripID,
+                                      condition: card.condition, acquiredDay: data.day)
+                newIDs.append(owned.id)
+                data.raw.append(owned)
             } else {
                 bulk.append(print)
             }
         }
         if let i = data.bulk.firstIndex(where: { $0.ripID == ripID && $0.setSlug == setSlug }) {
             data.bulk[i].cards += bulk
+            newIDs.append(data.bulk[i].id)
         } else if !bulk.isEmpty {
-            data.bulk.append(BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day))
+            let group = BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day)
+            newIDs.append(group.id)
+            data.bulk.append(group)
         }
+        // The cards, the bulk, and the loose packs of a P&L challenge product stay in the challenge.
+        inheritChallenge(from: sourceID, newIDs)
         if saves { save() }
         return extras
     }
@@ -827,7 +848,7 @@ final class GameStore {
         data.slabs.removeAll { $0.id == id }
         addLedger(price, .sale, "\(card.print.name)\(card.grade.map { " " + $0.label } ?? "") · \(store.rawValue) buylist")
         addReceipt(name: card.print.name + (card.grade.map { " " + $0.label } ?? ""), venue: "\(store.rawValue) buylist",
-                   price: price, net: price, paid: card.paid)
+                   price: price, net: price, paid: card.paid, ids: [card.id])
         recordDeal(shopContactID(store), what: "Sold them \(card.print.name)", price: price, market: card.realMarket, slug: card.setSlug)
         if let fake = card.fake {
             recordBadSale(item: card.print.name, channel: "\(store.rawValue) buylist", price: price, fake: fake, known: card.isKnownFake,
@@ -1019,6 +1040,7 @@ final class GameStore {
         }
         lines += jobEndDay(endedDay: data.day)
         lines += storeDayEnd()
+        lines += shortsEndDay()
 
         // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).
         data.lateHours = lateHoursSoFar
@@ -1183,9 +1205,11 @@ final class GameStore {
                         continue
                     }
                     let grade = Self.gradeResult(card.condition, company: company)
+                    let before = card.market
                     card.status = nil
                     card.grade = grade
                     card.verified = true
+                    noteGradeReturn(ledgerID: ledgerID, company: company.rawValue, card: card, before: before)
                     slabs.append(card)
                     slabsBack.append(card)
                     lines.append("\(card.print.name) came back from \(company.rawValue): \(grade.label), worth \(money(card.market)).")
@@ -1340,8 +1364,16 @@ final class GameStore {
     func completeSale(name: String, listing: Listing, price: Double, sealed: Bool, paid: Double?, fake: FakeTier? = nil,
                               known: Bool = false, card: OwnedCard? = nil, sealedItem: SealedItem? = nil, lot: Lot? = nil,
                               slab: Bool = false, overstated: Bool = false) -> String {
+        // The items that sold, for a P&L challenge: the card, the sealed item, or every item of a lot.
+        var ids = [card?.id, sealedItem?.id].compactMap { $0 }
+        var markets: [UUID: Double]?
+        if let lot {
+            let items = (lot.raw + lot.slabs).map { ($0.id, $0.market) } + lot.sealed.map { ($0.id, market(of: $0)) }
+            ids += items.map(\.0)
+            markets = Dictionary(items, uniquingKeysWith: { a, _ in a })
+        }
         let line = completeSaleNow(name: name, channel: listing.channel, price: price, sealed: sealed, insured: listing.insured,
-                                   paid: paid, slab: slab, overstated: overstated)
+                                   paid: paid, slab: slab, overstated: overstated, ids: ids, markets: markets)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
                           refunds: listing.channel.refundsFakes)
@@ -1357,11 +1389,12 @@ final class GameStore {
     /// Takes the money for a sale on a channel, less its fees and shipping. Returns the line for the report.
     /// `paid` is what the player paid for the item, for the receipt. Nil for a pulled card.
     func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?,
-                         slab: Bool = false, overstated: Bool = false) -> String {
+                         slab: Bool = false, overstated: Bool = false, ids: [UUID] = [], markets: [UUID: Double]? = nil) -> String {
         let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
-        addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated)
+        addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated, ids: ids,
+                   markets: markets)
         noteDemand(name, channel: channel)
         if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
         notePlatformSale(channel: channel, price: price)

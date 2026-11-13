@@ -45,7 +45,7 @@ extension Balance {
     static let platformReportThreshold = 2000.0
     /// The ledger entries that count for income tax: sales and other income, less the cost of the business.
     static let taxableCategories: Set<LedgerEntry.Category> = [
-        .sale, .tips, .sponsorship, .refund, .sealed, .singles, .grading, .showFees, .authentication, .wholesale,
+        .sale, .tips, .sponsorship, .creatorPayouts, .refund, .sealed, .singles, .grading, .showFees, .authentication, .wholesale,
         .storeRent, .storeOverhead, .wages, .storeEvents, .businessInterest, .businessCosts, .auctionFees,
     ]
 }

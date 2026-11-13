@@ -197,7 +197,7 @@ extension GameStore {
             data.slabs.removeAll { $0.id == card.id }
             let name = card.print.name + (card.grade.map { " " + $0.label } ?? "")
             let line = completeSaleNow(name: name, channel: .social, price: m.price, sealed: false, insured: false, paid: card.paid,
-                                       slab: card.grade != nil)
+                                       slab: card.grade != nil, ids: [card.id])
             if let fake = card.fake {
                 recordBadSale(item: name, channel: "a message", price: m.price, fake: fake, known: card.isKnownFake,
                               refunds: Listing.Channel.social.refundsFakes)

@@ -421,6 +421,14 @@ struct InventoryView: View {
                 .buttonStyle(.bordered)
                 .disabled(!chosen.contains { id in store.card(id).map { store.masterSetBlock($0) == nil } ?? false })
             }
+            if store.series(.pnl) != nil, tab != .bulk && tab != .grading {
+                Button("Challenge") {
+                    store.addToChallenge(chosen)
+                    finishSelecting()
+                }
+                .buttonStyle(.bordered)
+                .disabled(!chosen.contains { store.challengeBlock($0) == nil })
+            }
             if tab != .bulk && tab != .grading {
                 Button("PC") {
                     store.setPC(chosen, true)
@@ -620,6 +628,7 @@ struct Tag: View {
 }
 
 struct Tags: View {
+    @Environment(GameStore.self) private var store
     let pc: Bool
     let status: ItemStatus?
     /// The item's hidden fake tier, and what the player knows (docs/14-counterfeit-risk.md).
@@ -631,6 +640,7 @@ struct Tags: View {
     var body: some View {
         HStack(spacing: 4) {
             if pc { Tag(text: "PC", color: Theme.green) }
+            if let id, store.isChallengeItem(id) { Tag(text: "CHALLENGE", color: Theme.cyan) }
             if let status { Tag(text: status.tag, color: Theme.orange) }
             if fakeKnown {
                 Tag(text: "FAKE", color: .red)

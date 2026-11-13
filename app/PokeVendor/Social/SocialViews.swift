@@ -25,6 +25,7 @@ struct SocialHubView: View {
                     .buttonStyle(.bordered)
                     .tint(.red)
                     .controlSize(.large)
+                    ShortsSection()
                     inbox
                     if !store.saleTips.isEmpty { tips }
                     if !store.social.analytics { analyticsOffer }

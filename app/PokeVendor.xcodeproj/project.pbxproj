@@ -69,6 +69,7 @@
 		3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCAA7018CABF3E161025536 /* CoinFlipView.swift */; };
 		3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */ = {isa = PBXBuildFile; fileRef = 917BD5729F252442572920DA /* white-flare.json */; };
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
+		403146ABA26241C2139E9290 /* Shorts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD99836073CF32159E62094 /* Shorts.swift */; };
 		40AE7B5A28901732EAC66C43 /* StoreExpansion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */; };
 		41754DEBB1E847E8C2ACDD13 /* PaymentViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BAC90EF53AF2640A15B85AF /* PaymentViews.swift */; };
 		4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B1D85597836B370B32E25FC /* GarageSales.swift */; };
@@ -240,6 +241,7 @@
 		E3EB2628FB161B844BE56FE1 /* TableLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A32604F844F3E6458391A9 /* TableLayout.swift */; };
 		E40D9ECDA8E9BF396927398D /* OpportunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */; };
 		E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */ = {isa = PBXBuildFile; fileRef = 5430A1321F8CBDA7347D1045 /* fusion-strike.json */; };
+		E52E815BE6C24DE5EBA27591 /* ShortsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */; };
 		E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */ = {isa = PBXBuildFile; fileRef = 47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */; };
 		E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */ = {isa = PBXBuildFile; fileRef = B2AC5F4521315B8D910BC433 /* holon-phantoms.json */; };
 		E6E2B17CADD62E764AEF5BD3 /* Opportunities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358CC15CDFF4392C2418EBCB /* Opportunities.swift */; };
@@ -333,6 +335,7 @@
 		3C913785BCCC6A46053CC9E7 /* LateGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LateGame.swift; sourceTree = "<group>"; };
 		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
 		3DDA3B83589268718F6EE970 /* RipSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipSettings.swift; sourceTree = "<group>"; };
+		3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViews.swift; sourceTree = "<group>"; };
 		3F83F25627755699228CC982 /* ascended-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ascended-heroes.json"; sourceTree = "<group>"; };
 		40AFA031CD12EA2F8CAF859A /* ultra-prism.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ultra-prism.json"; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
@@ -366,6 +369,7 @@
 		57BDC5003DC71C23C0479421 /* MasterSets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterSets.swift; sourceTree = "<group>"; };
 		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
 		5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreExtras.swift; sourceTree = "<group>"; };
+		5AD99836073CF32159E62094 /* Shorts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shorts.swift; sourceTree = "<group>"; };
 		5B48285729B6638BC44FA869 /* skyridge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = skyridge.json; sourceTree = "<group>"; };
 		5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStream.swift; sourceTree = "<group>"; };
 		5BC5E06D2611E27D5195B7E9 /* Sales.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sales.swift; sourceTree = "<group>"; };
@@ -746,6 +750,7 @@
 		7F6F6FB8D7BA41D01B439268 /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */,
 				820C299F6D8FD690239ED0CC /* SocialViews.swift */,
 			);
 			path = Social;
@@ -797,6 +802,7 @@
 				9E806A5D2CAC20EF3493CB08 /* Seasons.swift */,
 				4473746B05B5FA0E51C41885 /* SetData.swift */,
 				DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */,
+				5AD99836073CF32159E62094 /* Shorts.swift */,
 				5D8AC9BA20E99FD7B453835C /* Showcase.swift */,
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
@@ -1209,6 +1215,8 @@
 				1F4DF34D41F7780E560BF034 /* SetSections.swift in Sources */,
 				A12FA90603696A823D4B70CE /* SettingsView.swift in Sources */,
 				20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */,
+				403146ABA26241C2139E9290 /* Shorts.swift in Sources */,
+				E52E815BE6C24DE5EBA27591 /* ShortsViews.swift in Sources */,
 				0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */,
 				F02229EEA06E9E4ACAC5F2AE /* ShowFloorStage.swift in Sources */,
 				C3659F9450E024207098B552 /* ShowGoodsDetail.swift in Sources */,

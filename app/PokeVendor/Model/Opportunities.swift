@@ -254,7 +254,7 @@ extension GameStore {
             data.raw.removeAll { $0.id == cardID }
             data.slabs.removeAll { $0.id == cardID }
             addLedger(o.price, .sale, "\(card.print.name) · private buyer")
-            addReceipt(name: card.print.name, venue: "A private buyer", price: o.price, net: o.price, paid: card.paid)
+            addReceipt(name: card.print.name, venue: "A private buyer", price: o.price, net: o.price, paid: card.paid, ids: [card.id])
             addReputation(2)
             if let fake = card.fake {
                 recordBadSale(item: card.print.name, channel: "a private buyer", price: o.price, fake: fake, known: card.isKnownFake,
@@ -275,9 +275,11 @@ extension GameStore {
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }
             let count = data.bulk.reduce(0) { $0 + $1.cards.count }
             let fakes = data.bulk.reduce(0) { $0 + ($1.fakes?.count ?? 0) }
+            let groups = Dictionary(data.bulk.map { ($0.id, $0.value) }, uniquingKeysWith: { a, _ in a })
             data.bulk.removeAll()
             addLedger(o.price, .sale, "\(count) bulk cards · a card club")
-            addReceipt(name: "\(count) bulk cards", venue: "A card club", price: o.price, net: o.price, paid: nil)
+            addReceipt(name: "\(count) bulk cards", venue: "A card club", price: o.price, net: o.price, paid: nil,
+                       ids: Array(groups.keys), markets: groups)
             addReputation(2)
             log("Sold \(count) bulk cards to a card club for \(money(o.price)).", cash: o.price)
             save()
@@ -290,7 +292,7 @@ extension GameStore {
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }
             data.sealed.removeAll { $0.id == id }
             addLedger(o.price, .sale, "\(item.name) · a sealed collector")
-            addReceipt(name: item.name, venue: "A sealed collector", price: o.price, net: o.price, paid: item.paid)
+            addReceipt(name: item.name, venue: "A sealed collector", price: o.price, net: o.price, paid: item.paid, ids: [item.id])
             addReputation(2)
             if let fake = item.fake {
                 recordBadSale(item: item.name, channel: "a sealed collector", price: o.price, fake: fake, known: item.isKnownFake,

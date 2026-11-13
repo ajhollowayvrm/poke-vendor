@@ -29,8 +29,11 @@ extension GameStore {
         return data.sealed.first { $0.id == id }?.paid
     }
 
-    func addReceipt(name: String, venue: String, price: Double, net: Double, paid: Double?, overstated: Bool = false) {
+    /// `ids` are the items that sold. A P&L challenge item puts the net into the challenge cash. `markets` splits a lot.
+    func addReceipt(name: String, venue: String, price: Double, net: Double, paid: Double?, overstated: Bool = false,
+                    ids: [UUID] = [], markets: [UUID: Double]? = nil) {
         receipts.append(SaleReceipt(name: name, venue: venue, price: price, net: net, paid: paid, overstatedCondition: overstated))
+        creditChallenge(ids, net: net, markets: markets)
     }
 
     func clearReceipts() { receipts.removeAll() }

@@ -164,7 +164,7 @@ extension GameStore {
         data.slabs.removeAll { $0.id == itemID }
         data.sealed.removeAll { $0.id == itemID }
         let line = completeSaleNow(name: m.name, channel: .facebook, price: m.price, sealed: m.sealed, insured: false, paid: paid,
-                                   overstated: overstated)
+                                   overstated: overstated, ids: [itemID])
         if let fake {
             recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known,
                           refunds: pay.refundsFakes)

@@ -311,6 +311,7 @@ struct SummaryView: View {
                         .buttonStyle(.bordered)
                 }
             }
+            if model.canPost { RipEpisodeButtons(model: model) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

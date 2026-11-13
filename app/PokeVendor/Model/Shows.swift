@@ -199,7 +199,7 @@ extension GameStore {
     /// `venue` is the name of the place: a show, a meet, or a sale.
     func sellAtShow(_ item: ShowItem, price: Double, at venue: String) {
         settleOnlineListing(item.id, name: item.name)
-        addReceipt(name: item.name, venue: venue, price: price, net: price, paid: paidFor(item.id))
+        addReceipt(name: item.name, venue: venue, price: price, net: price, paid: paidFor(item.id), ids: [item.id])
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -332,6 +332,8 @@ extension GameStore {
     /// takes its hours from the moment the player arrived.
     func finishEncounter(_ session: ShowSession) {
         let venue = session.venue
+        // The visit can still be a vlog until the end of the day (docs/32-short-form-video.md).
+        if session.canVlog, !session.vlogPosted { recordVlog(session.vlogInfo) }
         let count = session.sold.count + session.bought.count + session.trades.count
         let deals = "\(count) deal\(count == 1 ? "" : "s"), \(money(session.soldTotal)) in sales, \(money(session.boughtTotal)) spent"
         switch venue.kind {
@@ -723,6 +725,11 @@ final class ShowSession {
     var showcaseBrought = true
     /// The showcase paid its followers and reputation for this visit.
     var showcasePaid = false
+    /// For the vlog: showcase cards sold, and stash buys, in this visit (docs/32-short-form-video.md).
+    var showcaseSales = 0
+    var stashBuys = 0
+    /// The vlog of this visit went up from the summary.
+    var vlogPosted = false
     /// The load. Only the packing methods change it, so it always fits the bins (docs/29-packing-and-crowds.md).
     private(set) var bring: Set<UUID> = []
     /// True after the first trip to the floor from the setup. The load left the car, so it can only get smaller.
@@ -1230,7 +1237,7 @@ final class ShowSession {
 
     /// A trade: one or two of their cards, and sometimes cash, for one of the player's items.
     private func makeTrader() -> Visitor? {
-        guard let item = pick(table.filter { $0.market >= 8 }) else { return nil }
+        guard let item = pick(table.filter { $0.market >= 8 && !store.isChallengeItem($0.id) }) else { return nil }
         let target = item.dealMarket * Double.random(in: 0.8...1.02)
         var cards: [FloorListing] = []
         if let first = tradeCard(max: target * Double.random(in: 0.5...0.95)) { cards.append(first) }
@@ -1397,6 +1404,7 @@ final class ShowSession {
                 let part = i == items.count - 1 ? left : Self.round(v.offer * asks[i] / total)
                 left -= part
                 store.sellAtShow(one, price: part, at: venue.name)
+                if one.showcase { showcaseSales += 1 }
                 sold.append((one.name, part))
                 table.removeAll { $0.id == one.id }
                 if let fake = one.fake {
@@ -1742,8 +1750,8 @@ final class ShowSession {
 
     /// The seller can take an item from the player's table instead of cash, valued at 110% of market.
     func offerTradeForGoods(_ itemID: UUID) {
-        guard var v = current, v.intent == .sell, !v.tradeAsked, let goods = v.goods, let item = table.first(where: { $0.id == itemID })
-        else { return }
+        guard var v = current, v.intent == .sell, !v.tradeAsked, let goods = v.goods, let item = table.first(where: { $0.id == itemID }),
+              !store.isChallengeItem(item.id) else { return }
         v.tradeAsked = true
         // A PC item counts at its PC price.
         let value = item.pc ? item.dealMarket : item.market * Balance.tradeInstead
@@ -2026,7 +2034,8 @@ final class ShowSession {
 
     /// The player's items that the vendor can take: what the player brought. A dealer does not pay a PC premium, so
     /// PC items do not trade to a vendor (docs/20-card-shows.md, PC items).
-    var tradeStock: [ShowItem] { stockItems.filter { bring.contains($0.id) && !$0.pc } }
+    /// A P&L challenge item does not trade either: the challenge counts cash (docs/32-short-form-video.md).
+    var tradeStock: [ShowItem] { stockItems.filter { bring.contains($0.id) && !$0.pc && !store.isChallengeItem($0.id) } }
 
     /// The deal for these items. The vendor's items count at their price. The player's items count at the trade rate.
     /// The difference is cash. When the vendor owes cash, the vendor pays `Balance.vendorTradeCashFactor` of it.
