@@ -1,7 +1,7 @@
 import Foundation
 
-// Master sets (docs/08-ui-direction.md, Master sets). The player adds a card to a master set. The card then leaves
-// the regular Inventory and fills one slot of its set's binder. A master set holds one copy of every print in the
+// Master sets (docs/08-ui-direction.md, Master sets). The player starts a master set from the Master sets tab. Then
+// the player adds a card to it. The card leaves the regular Inventory and fills one slot of its set's binder. A master set holds one copy of every print in the
 // set: each number in each variant, with the reverse holos and the ball patterns.
 
 extension Balance {
@@ -56,6 +56,9 @@ extension GameStore {
     /// Why the card cannot go into its master set, or nil when it can.
     func masterSetBlock(_ card: OwnedCard) -> String? {
         if card.inMasterSet { return "The card is in its master set." }
+        if !isMasterSetStarted(card.setSlug) {
+            return "Start the \(SetLibrary.set(card.setSlug).name) master set in the Master sets tab first."
+        }
         if card.status != nil { return "The card has a status." }
         if card.isKnownFake { return "You know the card is a fake." }
         if masterSetCard(slug: card.setSlug, key: card.masterKey) != nil { return "Your master set already has this print." }
@@ -100,10 +103,48 @@ extension GameStore {
                                  value: cards.reduce(0) { $0 + $1.market })
     }
 
-    /// The sets with a card in the binder, or a completed set. The most complete set comes first.
+    /// The started sets: a set started from the Master sets tab, a set with a card in the binder, or a completed set.
+    /// A save from an older build has no started sets, so its binders and completed sets count as started.
+    var startedMasterSetSlugs: Set<String> {
+        Set(data.startedMasterSets.keys).union(masterSetCards.map(\.setSlug)).union(data.completedMasterSets.keys)
+    }
+
+    func isMasterSetStarted(_ slug: String) -> Bool { startedMasterSetSlugs.contains(slug) }
+
+    /// Starts an empty binder for the set.
+    func startMasterSet(_ slug: String) {
+        guard !isMasterSetStarted(slug) else { return }
+        data.startedMasterSets[slug] = data.day
+        log("You started the \(SetLibrary.set(slug).name) master set.")
+        save()
+    }
+
+    /// For each set, the number of its prints that the player owns: raw cards and slabs, in Inventory, the PC, the
+    /// showcase, or a binder. A known fake does not count.
+    var ownedPrintsBySet: [String: Int] {
+        var keys: [String: Set<String>] = [:]
+        for card in data.raw + data.slabs where !card.isKnownFake {
+            keys[card.setSlug, default: []].insert(card.masterKey)
+        }
+        return keys.mapValues(\.count)
+    }
+
+    /// The free copies that can fill the empty slots of a started set: one copy for each empty slot. A copy in the
+    /// regular Inventory comes before a copy in the PC. A raw card comes before a slab, and then the cheapest copy
+    /// comes first. A card in the showcase stays there.
+    func masterSetSpares(_ slug: String) -> [OwnedCard] {
+        guard isMasterSetStarted(slug) else { return [] }
+        let filled = Set(masterSetCards.filter { $0.setSlug == slug }.map(\.masterKey))
+        let copies = (data.raw + data.slabs)
+            .filter { $0.setSlug == slug && !$0.inShowcase && !filled.contains($0.masterKey) && masterSetBlock($0) == nil }
+            .sorted { ($0.pc ? 1 : 0, $0.grade == nil ? 0 : 1, $0.market) < ($1.pc ? 1 : 0, $1.grade == nil ? 0 : 1, $1.market) }
+        var seen: Set<String> = []
+        return copies.filter { seen.insert($0.masterKey).inserted }
+    }
+
+    /// The started sets. The most complete set comes first.
     var startedMasterSets: [MasterSetProgress] {
-        let slugs = Set(masterSetCards.map(\.setSlug)).union(data.completedMasterSets.keys)
-        return slugs.map(masterSetProgress).sorted {
+        startedMasterSetSlugs.map(masterSetProgress).sorted {
             let a = Double($0.have) / Double(max($0.total, 1)), b = Double($1.have) / Double(max($1.total, 1))
             return a != b ? a > b : $0.slug < $1.slug
         }

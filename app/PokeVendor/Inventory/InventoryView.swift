@@ -141,6 +141,10 @@ struct InventoryView: View {
         }
         .onChange(of: tab) { _, _ in selection = [] }
         #if DEBUG
+        // Screenshot aid: `-mastersets` opens the Master sets section.
+        .onAppear {
+            if ProcessInfo.processInfo.arguments.contains("-mastersets") { section = .masterSets }
+        }
         // Screenshot aid: `-select` opens select mode with the first free stack of the tab selected.
         .onAppear {
             guard ProcessInfo.processInfo.arguments.contains("-select"), !selecting else { return }

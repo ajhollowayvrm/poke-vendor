@@ -37,6 +37,7 @@ extension HubView {
         let testCards = Array(store.data.raw.suffix(6))
         if testCards.count >= 3 {
             store.setPC([testCards[1].id], true)
+            store.startMasterSet(testCards[2].setSlug)
             store.addToMasterSet([testCards[2].id])
             if store.data.raw.first(where: { $0.id == testCards[1].id })?.pc != true { pcFails.append("a card did not go into the PC") }
             let stock = Set(store.showStock.cards.map(\.id))
@@ -55,7 +56,14 @@ extension HubView {
             for print in MasterSet.slots(slug) { store.addTestCard(print, slug: slug) }
             let ids = Set(store.data.raw.map(\.id)).subtracting(before)
             let repBefore = store.data.reputation
-            let added = store.addToMasterSet(ids)
+            if !store.isMasterSetStarted(slug) {
+                if store.addToMasterSet(ids) > 0 { pcFails.append("a card went into a master set that was not started") }
+                if !store.masterSetSpares(slug).isEmpty { pcFails.append("a set that was not started has spares") }
+                store.startMasterSet(slug)
+            }
+            let spares = store.masterSetSpares(slug)
+            if Set(spares.map(\.masterKey)).count != spares.count { pcFails.append("the spares hold two copies of one print") }
+            let added = store.addToMasterSet(Set(spares.map(\.id)))
             if added != MasterSet.slots(slug).count { pcFails.append("\(added) of \(MasterSet.slots(slug).count) cards went into the \(slug) master set") }
             if !store.isMasterSetCompleted(slug) { pcFails.append("the \(slug) master set did not complete") }
             if store.data.reputation <= repBefore { pcFails.append("the master set paid no reputation") }
@@ -737,6 +745,9 @@ extension HubView {
             case "raw": nav.path = [.inventory(.raw)]
             case "card": nav.path = [.inventory(.raw)] + (store.data.raw.first.map { [.card($0.id)] } ?? [])
             case "slab": nav.path = [.inventory(.slabs)] + (store.data.slabs.first { $0.status == nil }.map { [.card($0.id)] } ?? [])
+            case "masterset":
+                let slug = store.startedMasterSets.first { !$0.complete }?.slug ?? store.startedMasterSets.first?.slug
+                nav.path = [.inventory(.sealed)] + (slug.map { [.masterSet($0)] } ?? [])
             case "sealeditem":
                 let item = store.data.sealed.first { $0.status == nil && store.mates(of: $0).count > 1 } ?? store.data.sealed.first
                 nav.path = [.inventory(.sealed)] + (item.map { [.sealed($0.id)] } ?? [])

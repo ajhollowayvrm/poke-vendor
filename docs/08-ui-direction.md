@@ -379,19 +379,35 @@ flag. A save from an older build moves every kept item into the PC.
 A master set holds one copy of every print in a set: each card number in
 each variant, with the reverse holos and the ball patterns.
 
-- **Add to master set** puts a card into the empty slot of its print. The
-  card leaves the regular tabs, or the PC. A slot holds one card. A raw
-  card and a slab can both fill a slot. A card with a status, or a known
-  fake, cannot go in.
+- **The player starts a master set in the Master sets section.** "Start
+  a master set" opens a set picker. Each set in the picker shows how
+  many of its prints the player owns, for example "30 of 226". An owned
+  print is a raw card or a slab in Inventory, the PC, the showcase, or a
+  binder. A known fake does not count. The sets with owned prints come
+  first, with the highest share first. The other sets follow, newest
+  first. A search field finds a set by its name or its series. A tap on
+  a set starts an empty binder and opens it.
+- **The "Master set" action** puts a card into the empty slot of its
+  print. The set must be started first. The card leaves the regular
+  tabs, or the PC. A slot holds one card. A raw card and a slab can both
+  fill a slot. A card with a status, or a known fake, cannot go in.
 - **The Master sets section** lists each set that the player started,
   with the prints filled, the prints in the set, and the value of the
-  cards in the binder. The most complete set comes first.
+  cards in the binder. The most complete set comes first. A save from an
+  older build counts each set with a card in a binder, or a completed
+  set, as started.
 - **The binder of a set** shows a slot for each print, in set order. A
   filled slot shows the card. An empty slot shows the print dimmed. An
   empty slot shows "Owned" when a free copy is in Inventory or the PC.
   "Missing prints only" hides the filled slots.
-- **"Take out of the master set"** on the card's detail screen moves it
-  back to the regular tabs.
+- **"Add all N cards you own"** in the binder puts one free copy into
+  each empty slot. A confirmation shows the count, the market value, the
+  slabs, and the cards that come from the PC. The binder takes a copy
+  from the regular tabs before a copy from the PC. It takes a raw card
+  before a slab, and then the cheapest copy. A card in the showcase
+  stays there.
+- **"Leave set"** on the card's detail screen moves it back to the
+  regular tabs.
 - **A completed set pays one time.** The reward is reputation and
   followers, and it grows with the square root of the set's value: one
   copy of each print at market. Reputation is half of the root, from 3

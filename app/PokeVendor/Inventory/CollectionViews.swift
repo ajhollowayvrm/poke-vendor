@@ -66,30 +66,120 @@ struct PCSection: View {
     }
 }
 
-/// The master sets that the player started, with the progress of each.
+/// The master sets that the player started, with the progress of each. "Start a master set" opens the set picker.
 struct MasterSetsSection: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
+    @State private var picking = false
 
     var body: some View {
         let sets = store.startedMasterSets
-        VStack(spacing: 0) {
-            if sets.isEmpty {
-                EmptyTab(text: "Start a master set: open a card in Inventory and tap Add to master set. "
-                             + "A master set holds one copy of every print in the set, with each variant.")
+        VStack(spacing: 14) {
+            Button { picking = true } label: {
+                Label("Start a master set", systemImage: "plus").frame(maxWidth: .infinity)
             }
-            ForEach(sets) { progress in
-                Button { nav.path.append(.masterSet(progress.slug)) } label: {
-                    MasterSetRow(progress: progress, completed: store.isMasterSetCompleted(progress.slug))
-                        .padding(12)
-                        .contentShape(Rectangle())
+            .primaryButton()
+            .controlSize(.large)
+            VStack(spacing: 0) {
+                if sets.isEmpty {
+                    EmptyTab(text: "A master set holds one copy of every print in a set, with each variant. "
+                                 + "Tap Start a master set and pick a set.")
                 }
-                .buttonStyle(.plain)
-                .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+                ForEach(sets) { progress in
+                    Button { nav.path.append(.masterSet(progress.slug)) } label: {
+                        MasterSetRow(progress: progress, completed: store.isMasterSetCompleted(progress.slug))
+                            .padding(12)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+                }
+            }
+            .background(Theme.surface)
+            .framed()
+        }
+        #if DEBUG
+        // Screenshot aid: `-pickset` opens the set picker.
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-pickset") { picking = true } }
+        #endif
+        .sheet(isPresented: $picking) {
+            StartMasterSetSheet { slug in
+                store.startMasterSet(slug)
+                picking = false
+                nav.path.append(.masterSet(slug))
             }
         }
-        .background(Theme.surface)
-        .framed()
+    }
+}
+
+/// The set picker for a new master set. Each set shows how many of its prints the player owns. The sets with the
+/// most prints owned come first.
+struct StartMasterSetSheet: View {
+    @Environment(GameStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let start: (String) -> Void
+    @State private var search = ""
+
+    var body: some View {
+        let owned = store.ownedPrintsBySet
+        let started = store.startedMasterSetSlugs
+        let sets = SetLibrary.index
+            .filter { !started.contains($0.slug) && $0.prints > 0 }
+            .filter { search.isEmpty || $0.name.localizedCaseInsensitiveContains(search) || $0.series.localizedCaseInsensitiveContains(search) }
+        let withCards = sets.filter { owned[$0.slug, default: 0] > 0 }
+            .sorted { fraction($0, owned) != fraction($1, owned) ? fraction($0, owned) > fraction($1, owned) : ($0.release ?? "") > ($1.release ?? "") }
+        let others = sets.filter { owned[$0.slug, default: 0] == 0 }.sorted { ($0.release ?? "") > ($1.release ?? "") }
+        NavigationStack {
+            List {
+                if !withCards.isEmpty {
+                    Section("You own cards from these sets") {
+                        ForEach(withCards, id: \.slug) { row($0, have: owned[$0.slug, default: 0]) }
+                    }
+                }
+                if !others.isEmpty {
+                    Section("Other sets") {
+                        ForEach(others, id: \.slug) { row($0, have: 0) }
+                    }
+                }
+                if withCards.isEmpty && others.isEmpty {
+                    Text(search.isEmpty ? "You started a master set for every set." : "No set matches \"\(search)\".")
+                        .foregroundStyle(Theme.muted)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(Theme.background.ignoresSafeArea())
+            .searchable(text: $search, prompt: "Set or series")
+            .navigationTitle("Start a master set")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            }
+        }
+    }
+
+    private func fraction(_ set: SetInfo, _ owned: [String: Int]) -> Double {
+        Double(owned[set.slug, default: 0]) / Double(max(set.prints, 1))
+    }
+
+    private func row(_ set: SetInfo, have: Int) -> some View {
+        Button { start(set.slug) } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(set.name).font(.subheadline.weight(.medium)).lineLimit(1)
+                    Spacer()
+                    Text("\(have) of \(set.prints)")
+                        .font(.subheadline.monospaced().weight(.semibold))
+                        .foregroundStyle(have > 0 ? Theme.cyan : Theme.muted)
+                }
+                Text("\(set.series) · \(set.year)").font(.caption).foregroundStyle(Theme.muted)
+                if have > 0 {
+                    ProgressView(value: Double(have), total: Double(max(set.prints, 1))).tint(Theme.cyan)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .listRowBackground(Theme.surface)
     }
 }
 
@@ -120,6 +210,7 @@ struct MasterSetDetailView: View {
     @Environment(AppNav.self) private var nav
     let slug: String
     @State private var missingOnly = false
+    @State private var confirmAddAll = false
 
     var body: some View {
         let progress = store.masterSetProgress(slug)
@@ -127,15 +218,28 @@ struct MasterSetDetailView: View {
         let filled = Dictionary(store.masterSetCards.filter { $0.setSlug == slug }.map { ($0.masterKey, $0) },
                                 uniquingKeysWith: { a, _ in a })
         // A free copy in the regular Inventory or the PC that can fill an empty slot.
-        let spares = Dictionary((store.data.slabs + store.data.raw)
-            .filter { $0.setSlug == slug && !$0.inMasterSet && $0.status == nil && !$0.isKnownFake && filled[$0.masterKey] == nil }
-            .map { ($0.masterKey, $0) }, uniquingKeysWith: { a, _ in a })
+        let spareList = store.masterSetSpares(slug)
+        let spares = Dictionary(spareList.map { ($0.masterKey, $0) }, uniquingKeysWith: { a, _ in a })
         ScrollView {
             VStack(spacing: 14) {
                 MasterSetRow(progress: progress, completed: store.isMasterSetCompleted(slug))
                     .padding(12)
                     .background(Theme.surface)
                     .framed()
+                Button { confirmAddAll = true } label: {
+                    Label(spareList.isEmpty ? "No cards to add" : "Add all \(spareList.count) cards you own",
+                          systemImage: "plus.rectangle.on.rectangle")
+                        .frame(maxWidth: .infinity)
+                }
+                .primaryButton()
+                .controlSize(.large)
+                .disabled(spareList.isEmpty)
+                .confirmationDialog("Add \(spareList.count) cards to the binder?", isPresented: $confirmAddAll,
+                                    titleVisibility: .visible) {
+                    Button("Add \(spareList.count) cards") { store.addToMasterSet(Set(spareList.map(\.id))) }
+                } message: {
+                    Text(addAllMessage(spareList))
+                }
                 Toggle("Missing prints only", isOn: $missingOnly).font(.subheadline)
                 let shown = missingOnly ? slots.filter { filled[MasterSet.key($0)] == nil } : slots
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 8)], spacing: 10) {
@@ -160,7 +264,7 @@ struct MasterSetDetailView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                Text("An empty slot with OWNED: you have a free copy in Inventory. Open it and tap Add to master set.")
+                Text("An empty slot with OWNED: you have a free copy in Inventory or the PC. Tap Add all, or open the card and tap Master set.")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
             }
@@ -171,6 +275,16 @@ struct MasterSetDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
+    /// One copy goes in for each empty slot. The message says where the cards come from and what they are worth.
+    private func addAllMessage(_ cards: [OwnedCard]) -> String {
+        let pc = cards.filter(\.pc).count
+        let slabs = cards.filter { $0.grade != nil }.count
+        var lines = ["One copy of each missing print leaves Inventory. Market value \(money(cards.reduce(0) { $0 + $1.market }))."]
+        if slabs > 0 { lines.append("\(slabs) of the cards \(slabs == 1 ? "is a slab" : "are slabs"). A raw copy goes in first when you have one.") }
+        if pc > 0 { lines.append("\(pc) of the cards \(pc == 1 ? "comes" : "come") from your PC.") }
+        lines.append("Showcase cards stay in the showcase.")
+        return lines.joined(separator: " ")
+    }
 }
 
 /// The showcase: the player's biggest cards, $1,000 or more each, in a lit case (docs/08-ui-direction.md, The showcase).

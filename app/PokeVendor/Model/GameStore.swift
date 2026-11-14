@@ -124,6 +124,8 @@ struct GameData: Codable {
     var machines: [VendingMachine] = []
     /// The master sets the player completed, by set slug, and the day of each (docs/08-ui-direction.md, Master sets).
     var completedMasterSets: [String: Int] = [:]
+    /// The master sets the player started from the Master sets tab, by set slug, and the day of each.
+    var startedMasterSets: [String: Int] = [:]
     /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
     var shorts = ShortsState()
 }
@@ -211,6 +213,7 @@ extension GameData {
         auctionBans = v(.auctionBans, auctionBans)
         machines = v(.machines, machines)
         completedMasterSets = v(.completedMasterSets, completedMasterSets)
+        startedMasterSets = v(.startedMasterSets, startedMasterSets)
         shorts = v(.shorts, shorts)
     }
 }
