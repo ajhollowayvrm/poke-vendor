@@ -120,6 +120,33 @@ The player rips, on film, until a card reaches the target.
   each episode has a 20% chance of a backlash: comments say "this is
   just gambling". It costs authenticity −0.03.
 
+### Record & Rip
+
+The player films a rip on purpose for the running series.
+
+- **The button.** A sealed item has "Record & Rip" when a running series
+  can take a rip of it. The button is in Inventory select mode and on
+  the item's detail screen. It is not there when no series can take the
+  rip.
+- **Which series.** "Rip until I hit" takes any rip. The P&L challenge
+  takes a rip of items that are in the challenge, or that can all join
+  it (the same rules as "Challenge", and the challenge cash must cover
+  all of them). A series with an episode today takes no more.
+- **The rip records for every series that can take it.** Items that can
+  join the P&L challenge join it before the rip, so the pulls and the
+  bulk join too.
+- **A recorded rip** shows "REC" next to the mode control. It allows
+  Normal and Fast only. Sift and Hits only are off, because the viewers
+  want to see each reveal.
+- **The summary of the last pack** says which series the rip was
+  recorded for. It has a post button for each one: "Post episode" (or
+  the finale) for Rip until I hit, and "Post to the challenge" (or the
+  P&L finale) for the P&L challenge. Each post takes its own editing
+  time.
+- **A P&L episode from a rip** shows the day, the value, the P&L, and the
+  best pull. Its quality is the better of the P&L quality and the
+  quality of the best pull.
+
 ### P&L challenge
 
 The player runs a small business inside the business, and posts the
@@ -217,6 +244,8 @@ about $1,200. A normal episode of 20,000 views pays about $1.20.
   finale", and on a finale "Post the finale and give the card away".
 - **The show summary** has "Post a show vlog".
 - **Inventory select mode** has "Challenge" while a P&L challenge runs.
+- **Inventory select mode and the sealed detail screen** have "Record &
+  Rip" when a running series can take the rip.
 - **The analytics upgrade** shows the reach factors of each short,
   momentum included.
 

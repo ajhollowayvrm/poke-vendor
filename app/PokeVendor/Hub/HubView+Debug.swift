@@ -587,6 +587,19 @@ extension HubView {
                         if store.isChallengeItem(c.id) { shortFails.append("a sold card stayed in the challenge") }
                     }
                 }
+                // Record & Rip (docs/32, Record & Rip): an item that can join is recordable, and recording adds it.
+                if store.day % 5 == 4, let now = store.series(.pnl), now.lastEpisodeDay != store.day,
+                   let item = store.data.sealed.first(where: { !store.isChallengeItem($0.id) && store.challengeBlock($0.id) == nil }) {
+                    let formats = store.recordableSeries([item])
+                    if !formats.contains(.pnl) { shortFails.append("a sealed item that can join the challenge cannot be recorded for it") }
+                    store.prepareRecording([item], for: formats)
+                    if !store.isChallengeItem(item.id) { shortFails.append("a recorded rip did not add its item to the challenge") }
+                    let rip = RipEpisode(packs: item.packs, spent: item.paid, bestValue: 50, bestName: "Test card", hitCardID: nil)
+                    if store.postPnLEpisode(rip: rip) != nil {
+                        pnlEpisodes += 1
+                        if store.recordableSeries([item]).contains(.pnl) { shortFails.append("a series with an episode today can be recorded") }
+                    }
+                }
                 if store.day % 5 != 4, store.postPnLEpisode() != nil {
                     pnlEpisodes += 1
                     if let now = store.series(.pnl), now.lastEpisodeDay != store.day { shortFails.append("a P&L episode did not mark the day") }
@@ -812,6 +825,12 @@ extension HubView {
             store.report = nil
             if store.worksToday { store.callInSick() }
             if store.startStoreRun([.castle, .target]) { nav.storeRun = StoreRunSession(stops: [.castle, .target]) }
+        }
+        // Screenshot aid: `-series` runs both daily series, so a sealed item shows Record & Rip.
+        if args.contains("-series") {
+            if !store.hasAccount { store.createAccount("ajrips") }
+            if store.series(.ripUntil) == nil { store.startRipSeries(target: 500) }
+            if store.series(.pnl) == nil { store.startPnL(start: 1_000, goal: 2, days: 30) }
         }
         if args.contains("-social") {
             store.startRun()

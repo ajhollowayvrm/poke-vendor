@@ -258,12 +258,14 @@ here, and the rip-or-hold decision happens here.
 
   | Tab | Actions |
   | --- | --- |
-  | Sealed | Rip, Hits only, Sell, Lot, Challenge, PC |
+  | Sealed | Rip, Hits only, Record & Rip, Sell, Lot, Challenge, PC |
   | Raw | Sell, Lot, Grade, Bulk, Master set, Challenge, PC |
   | Slabs | Sell, Lot, Master set, Challenge, PC |
   | Bulk | Add to store run |
 
-  Challenge shows only while a P&L challenge runs.
+  Challenge shows only while a P&L challenge runs. Record & Rip shows
+  only when a running series can take the rip (see
+  [32-short-form-video.md](32-short-form-video.md#record--rip)).
 - **The actions are a grid of tiles.** Each tile has an icon and a
   one-line label. The tiles are in rows of four, and all tiles are the
   same size. A label never wraps. A disabled tile dims. The detail

@@ -92,6 +92,8 @@ final class RipModel {
     }
     /// The mode for this rip. It starts from Settings, and the player can change it during the rip.
     var mode: RipMode
+    /// Record & Rip: the series that this rip is filmed for. The last pack's summary posts to each one.
+    var recording: [SeriesFormat] = []
     /// A tap in Fast or Sift pauses. The player changes the mode or continues.
     var paused = false
     /// The card that the stop rule stopped on, so the rip does not stop on it twice.

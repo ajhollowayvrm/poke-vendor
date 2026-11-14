@@ -47,6 +47,8 @@ struct RipSession: Identifiable {
     let items: [SealedItem]
     /// Hits only: one swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
     var hitsOnly = false
+    /// Record & Rip: the series that the rip is filmed for (docs/32-short-form-video.md, Record & Rip).
+    var recording: [SeriesFormat] = []
 }
 
 /// A meet, league night, a garage or estate sale, or an opportunity, in the show day screen.
@@ -71,9 +73,9 @@ final class AppNav {
     var encounter: EncounterSession?
     var stream: StreamCover?
 
-    func startRip(_ items: [SealedItem], hitsOnly: Bool = false) {
+    func startRip(_ items: [SealedItem], hitsOnly: Bool = false, recording: [SeriesFormat] = []) {
         guard !items.isEmpty else { return }
-        rip = RipSession(items: items, hitsOnly: hitsOnly)
+        rip = RipSession(items: items, hitsOnly: hitsOnly && recording.isEmpty, recording: recording)
     }
 }
 

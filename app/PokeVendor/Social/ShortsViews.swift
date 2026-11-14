@@ -200,36 +200,69 @@ struct StartSeriesSheet: View {
     }
 }
 
-/// The episode buttons on the last pack's summary of a filmed rip.
+/// The episode buttons on the last pack's summary of a filmed rip. A Record & Rip rip lists the series it was filmed
+/// for, and has a button for each one (docs/32-short-form-video.md, Record & Rip).
 struct RipEpisodeButtons: View {
     @Environment(GameStore.self) private var store
     let model: RipModel
     @State private var posted: SocialPost?
+    @State private var pnlPosted: SocialPost?
 
     var body: some View {
-        if let s = store.series(.ripUntil), let rip = model.episode {
-            let finale = rip.bestValue >= s.target
+        if let rip = model.episode {
             VStack(alignment: .leading, spacing: 6) {
-                if let posted {
-                    Text("Episode up: \(posted.views.formatted()) views, \(posted.followerChange >= 0 ? "+" : "")\(posted.followerChange) followers")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(Theme.cyan)
-                } else if store.canFilmRip(mode: model.mode, hitsOnly: model.hitsOnly) {
-                    let block = store.shortBlock(s, long: finale)
-                    Button(finale ? "Post the finale: \(rip.bestName) \(money(rip.bestValue))" : "Post episode: \(s.name)") {
-                        posted = store.postRipEpisode(rip)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(finale ? Theme.green : Theme.cyan)
-                    .disabled(block != nil)
-                    if finale {
-                        Button("Post the finale and give the card away") { posted = store.postRipEpisode(rip, giveAway: true) }
-                            .buttonStyle(.bordered)
-                            .disabled(block != nil || rip.hitCardID == nil)
-                    }
-                    if let block { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
+                if !model.recording.isEmpty {
+                    Label("Recorded for \(model.recording.map(\.label).joined(separator: " and "))", systemImage: "record.circle")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.red)
                 }
+                ripUntil(rip)
+                pnl(rip)
             }
         }
+    }
+
+    @ViewBuilder private func ripUntil(_ rip: RipEpisode) -> some View {
+        if let posted {
+            result("Episode up", posted)
+        } else if let s = store.series(.ripUntil), store.canFilmRip(mode: model.mode, hitsOnly: model.hitsOnly) {
+            let finale = rip.bestValue >= s.target
+            let block = store.shortBlock(s, long: finale)
+            Button(finale ? "Post the finale: \(rip.bestName) \(money(rip.bestValue))" : "Post episode: \(s.name)") {
+                posted = store.postRipEpisode(rip)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(finale ? Theme.green : Theme.cyan)
+            .disabled(block != nil)
+            if finale {
+                Button("Post the finale and give the card away") { posted = store.postRipEpisode(rip, giveAway: true) }
+                    .buttonStyle(.bordered)
+                    .disabled(block != nil || rip.hitCardID == nil)
+            }
+            if let block { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
+        }
+    }
+
+    /// A rip filmed for the P&L challenge posts today's P&L episode, with the rip in it.
+    @ViewBuilder private func pnl(_ rip: RipEpisode) -> some View {
+        if let pnlPosted {
+            result("P&L episode up", pnlPosted)
+        } else if model.recording.contains(.pnl), let s = store.series(.pnl) {
+            let finale = store.pnlFinaleReady(s)
+            let block = store.shortBlock(s, long: finale)
+            Button(finale ? "Post the P&L finale: \(money(store.challengeValue(s)))" : "Post to the challenge: \(s.name)") {
+                pnlPosted = store.postPnLEpisode(rip: rip)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(finale ? Theme.green : Theme.cyan)
+            .disabled(block != nil)
+            if let block { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
+        }
+    }
+
+    private func result(_ title: String, _ post: SocialPost) -> some View {
+        Text("\(title): \(post.views.formatted()) views, \(post.followerChange >= 0 ? "+" : "")\(post.followerChange) followers")
+            .font(.caption.monospaced())
+            .foregroundStyle(Theme.cyan)
     }
 }

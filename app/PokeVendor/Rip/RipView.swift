@@ -5,10 +5,12 @@ struct RipView: View {
     let onClose: () -> Void
 
     /// `onHits` gets every hit of the rip when the screen closes. A live stream uses it.
+    /// `recording` films the rip for these series. A filmed rip allows Normal and Fast only, as on a live stream.
     init(items: [SealedItem], store: GameStore, allowedModes: [RipMode] = RipMode.allCases, hitsOnly: Bool = false,
-         onHits: (([RipCard]) -> Void)? = nil, onClose: @escaping () -> Void) {
+         recording: [SeriesFormat] = [], onHits: (([RipCard]) -> Void)? = nil, onClose: @escaping () -> Void) {
         let model = RipModel(items: items, store: store, hitsOnly: hitsOnly)
-        model.allowedModes = allowedModes
+        model.recording = recording
+        model.allowedModes = recording.isEmpty ? allowedModes : allowedModes.filter { $0 != .sift }
         _model = State(initialValue: model)
         self.onClose = {
             onHits?(model.allHits)
@@ -444,6 +446,12 @@ struct RipView: View {
     /// but it is off there.
     private var modeControl: some View {
         HStack(spacing: 8) {
+            if !model.recording.isEmpty {
+                // Record & Rip: the camera is on for the whole rip.
+                Label("REC", systemImage: "record.circle.fill")
+                    .font(.caption.weight(.bold).monospaced())
+                    .foregroundStyle(.red)
+            }
             Picker("Mode", selection: Bindable(model).mode) {
                 ForEach(RipMode.allCases, id: \.self) { mode in
                     Text(mode.label).tag(mode)
@@ -459,7 +467,10 @@ struct RipView: View {
                             .contentShape(Rectangle())
                             .frame(width: geo.size.width / 3)
                             .position(x: geo.size.width * 5 / 6, y: geo.size.height / 2)
-                            .onTapGesture { model.note = "Sift is off on a live stream. Viewers want to see the cards." }
+                            .onTapGesture {
+                                model.note = model.recording.isEmpty ? "Sift is off on a live stream. Viewers want to see the cards."
+                                    : "Sift is off on a recorded rip. Viewers want to see the cards."
+                            }
                     }
                 }
             }

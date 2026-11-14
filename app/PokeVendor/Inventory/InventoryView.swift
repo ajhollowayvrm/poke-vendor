@@ -579,6 +579,18 @@ struct ItemActions<Extra: View>: View {
                     run { nav.startRip(sealed(ids), hitsOnly: true) }
                 }
                 .disabled(!free)
+                // Record & Rip films the rip for each running series that can take it (docs/32, Record & Rip).
+                let recordable = store.recordableSeries(sealed(ids))
+                if !recordable.isEmpty {
+                    ActionTile(title: "Record & Rip", icon: "record.circle", tint: .red, filled: true) {
+                        run {
+                            let items = sealed(ids)
+                            store.prepareRecording(items, for: recordable)
+                            nav.startRip(items, recording: recordable)
+                        }
+                    }
+                    .disabled(!free)
+                }
                 if stackIDs.count > ids.count {
                     ActionTile(title: "Rip all \(stackIDs.count)", icon: "scissors", filled: true) {
                         run { nav.startRip(sealed(stackIDs)) }

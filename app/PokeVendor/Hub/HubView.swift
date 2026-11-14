@@ -49,7 +49,7 @@ struct HubView: View {
         .tint(Theme.cyan)
         .saleReceipts(active: store.report == nil && haul == nil && streamSetup == nil)
         .fullScreenCover(item: $nav.rip) { session in
-            RipView(items: session.items, store: store, hitsOnly: session.hitsOnly) { nav.rip = nil }
+            RipView(items: session.items, store: store, hitsOnly: session.hitsOnly, recording: session.recording) { nav.rip = nil }
         }
         .fullScreenCover(item: $nav.showDay) { session in
             ShowDayView(show: session.show, store: store) { nav.showDay = nil }

@@ -335,6 +335,30 @@ extension GameStore {
         return post
     }
 
+    // MARK: Record & Rip
+
+    /// The running series that a recorded rip of these items can post to. Rip until I hit takes any rip. The P&L
+    /// challenge takes a rip of items that are in the challenge or can all join it. A series with an episode today
+    /// takes no more.
+    func recordableSeries(_ items: [SealedItem]) -> [SeriesFormat] {
+        guard hasAccount, !items.isEmpty else { return [] }
+        var formats: [SeriesFormat] = []
+        if let s = series(.ripUntil), s.lastEpisodeDay != data.day { formats.append(.ripUntil) }
+        if let s = series(.pnl), s.lastEpisodeDay != data.day {
+            let joining = items.filter { !s.items.contains($0.id) }
+            if joining.allSatisfy({ challengeBlock($0.id) == nil }), joining.reduce(0, { $0 + $1.paid }) <= s.cash + 0.001 {
+                formats.append(.pnl)
+            }
+        }
+        return formats
+    }
+
+    /// Readies a recorded rip. For the P&L challenge, the items join it first, so the pulls and the bulk join too.
+    func prepareRecording(_ items: [SealedItem], for formats: [SeriesFormat]) {
+        guard formats.contains(.pnl) else { return }
+        addToChallenge(Set(items.map(\.id)).filter { !isChallengeItem($0) })
+    }
+
     // MARK: P&L challenge
 
     /// The value of the challenge: the challenge cash, plus the market of the challenge items in hand.
@@ -410,8 +434,10 @@ extension GameStore {
     /// The P&L finale is ready: the goal reached, or the last day.
     func pnlFinaleReady(_ s: ShortSeries) -> Bool { challengeValue(s) >= s.goal - 0.001 || data.day >= s.lastDay }
 
+    /// Posts today's P&L episode. `rip` is a recorded rip of challenge items: the episode shows the rip, so its
+    /// quality is the better of the P&L story and the best pull.
     @discardableResult
-    func postPnLEpisode(sponsored: Bool = false) -> SocialPost? {
+    func postPnLEpisode(sponsored: Bool = false, rip: RipEpisode? = nil) -> SocialPost? {
         guard let s = series(.pnl), let si = data.shorts.series.firstIndex(where: { $0.id == s.id }) else { return nil }
         let finale = pnlFinaleReady(s)
         guard shortBlock(s, long: finale) == nil else { return nil }
@@ -419,10 +445,12 @@ extension GameStore {
         let change = abs(value - (s.lastValue ?? s.start)) / max(s.start, 1)
         let pnl = value - s.start
         var quality = 0.6 + min(1.6, change * 3) + (pnl > 0 ? 0.2 : 0)
+        if let rip { quality = max(quality, Self.contentQuality(type: .pullReveal, value: rip.bestValue)) }
         let won = value >= s.goal - 0.001
         if finale, won { quality += Balance.pnlWinBonus }
         let day = data.day - s.startDay + 1
-        let subject = "\(s.name), day \(day): \(money(value)) (\(signedMoney(pnl)))\(finale ? won ? ", goal reached" : ", the result" : "")"
+        let ripped = rip.map { ", rip of \($0.packs) pack\($0.packs == 1 ? "" : "s"), best \($0.bestName)" } ?? ""
+        let subject = "\(s.name), day \(day): \(money(value)) (\(signedMoney(pnl)))\(ripped)\(finale ? won ? ", goal reached" : ", the result" : "")"
         data.shorts.series[si].lastValue = value
         let post = postShort(seriesID: s.id, subject: subject, quality: quality, long: finale, finale: finale, sponsored: sponsored)
         if post != nil, finale {
