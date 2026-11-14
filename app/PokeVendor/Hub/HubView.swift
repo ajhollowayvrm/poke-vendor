@@ -543,26 +543,6 @@ struct Tile: View {
     }
 }
 
-struct ActionTile: View {
-    let title: String
-    let icon: String
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: icon).font(.title3)
-                Text(title).font(.caption.weight(.semibold))
-            }
-            .frame(maxWidth: .infinity, minHeight: 64)
-            .background(Theme.surface)
-            .framed()
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(Theme.cyan)
-    }
-}
-
 struct DayReportView: View {
     @Environment(GameStore.self) var store
     @Environment(\.dismiss) private var dismiss

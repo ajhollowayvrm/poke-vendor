@@ -61,3 +61,45 @@ struct LateNightChoice: View {
         }
     }
 }
+
+/// A square action button: an icon over a one-line label. The label never wraps. It shrinks to fit the tile.
+/// A filled tile is the main action of its grid. A disabled tile dims.
+struct ActionTile: View {
+    @Environment(\.isEnabled) private var isEnabled
+    let title: String
+    let icon: String
+    var tint: Color = Theme.cyan
+    var filled = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon).font(.title3)
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+            }
+            .padding(.horizontal, 4)
+            .frame(maxWidth: .infinity, minHeight: 64)
+            .foregroundStyle(filled ? .black : tint)
+            .background(filled ? tint : Theme.surface)
+            .overlay(Rectangle().stroke(filled ? tint : Theme.line))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .opacity(isEnabled ? 1 : 0.35)
+    }
+}
+
+/// Action tiles in rows of four, all the same size.
+struct ActionGrid<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+            content()
+        }
+    }
+}

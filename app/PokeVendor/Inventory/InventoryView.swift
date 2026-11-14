@@ -140,6 +140,20 @@ struct InventoryView: View {
             }
         }
         .onChange(of: tab) { _, _ in selection = [] }
+        #if DEBUG
+        // Screenshot aid: `-select` opens select mode with the first free stack of the tab selected.
+        .onAppear {
+            guard ProcessInfo.processInfo.arguments.contains("-select"), !selecting else { return }
+            selecting = true
+            let first: [UUID] = switch tab {
+            case .sealed: sortedSealed.first { $0.status == nil }.map { store.mates(of: $0).map(\.id) } ?? []
+            case .raw: sortedCards(rawInHand).first { $0.status == nil }.map { store.mates(of: $0).map(\.id) } ?? []
+            case .slabs: sortedCards(slabsInHand).first { $0.status == nil }.map { store.mates(of: $0).map(\.id) } ?? []
+            case .bulk, .grading: []
+            }
+            selection = Set(first)
+        }
+        #endif
         .onChange(of: section) { _, _ in finishSelecting() }
         .sheet(item: $sellIDs) { request in
             SellSheet(ids: request.ids, startAll: request.startAll)
@@ -297,16 +311,34 @@ struct InventoryView: View {
     private var actionBar: some View {
         let chosen = selection
         let blocked = chosen.contains { store.hasStatus($0) }
-        return VStack(spacing: 8) {
+        return VStack(alignment: .leading, spacing: 10) {
             if tab == .raw { quickListRow(chosen, blocked: blocked) }
             if !listedInTab.isEmpty { unlistRow(chosen) }
-            actionRow(chosen, blocked: blocked)
+            switch tab {
+            case .sealed, .raw, .slabs:
+                Text("\(chosen.count) selected")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.muted)
+                ItemActions(kind: tab == .sealed ? .sealed : tab == .raw ? .raw : .slab, ids: chosen,
+                            present: present, done: finishSelecting)
+            case .bulk:
+                Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
+            case .grading:
+                Text("These cards come back as slabs when the grades are done.").font(.caption).foregroundStyle(Theme.muted)
+            }
         }
-        .controlSize(.large)
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(Theme.surface)
+        .background(Theme.background)
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+
+    private func present(_ sheet: ItemSheet) {
+        switch sheet {
+        case .sell(let ids): sellIDs = SellRequest(ids: ids)
+        case .lot(let ids): lotIDs = SellRequest(ids: ids)
+        case .grade(let ids): gradeIDs = GradeRequest(ids: ids)
+        }
     }
 
     /// The raw cards that a quick listing can take: in the regular tabs, not listed or at a grader, and not a known fake.
@@ -319,21 +351,20 @@ struct InventoryView: View {
         let listable = Set(listableRaw.map(\.id))
         let allChosen = !listable.isEmpty && listable == chosen
         return HStack(spacing: 8) {
-            Button(allChosen ? "Clear" : "Select all \(listable.count)") {
+            Button {
                 selection = allChosen ? [] : listable
-            }
+            } label: { wideLabel(allChosen ? "Clear" : "Select all \(listable.count)") }
             .buttonStyle(.bordered)
             .disabled(listable.isEmpty)
-            Button("List \(chosen.count) on TCGplayer") {
+            Button {
                 let cards = store.data.raw.filter { chosen.contains($0.id) }
                 let prices = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, GameStore.tcgLowest(for: $0.print, wear: $0.condition.wear)) })
                 let wears = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0.condition.wear) })
                 store.list(chosen, channel: .tcgplayer, price: { prices[$0] ?? 0.05 }, auctionDays: nil, insured: false,
                            wear: { wears[$0] })
                 finishSelecting()
-            }
+            } label: { wideLabel("List \(chosen.count) on TCGplayer") }
             .primaryButton()
-            .frame(maxWidth: .infinity)
             .disabled(chosen.isEmpty || blocked || chosen.contains { id in store.data.raw.contains { $0.id == id && $0.isKnownFake } })
         }
     }
@@ -355,93 +386,23 @@ struct InventoryView: View {
         let allChosen = listed == chosen
         let removable = chosen.filter { store.canRemoveListing($0) }
         return HStack(spacing: 8) {
-            Button(allChosen ? "Clear" : "Select listed \(listed.count)") {
+            Button {
                 selection = allChosen ? [] : listed
-            }
+            } label: { wideLabel(allChosen ? "Clear" : "Select listed \(listed.count)") }
             .buttonStyle(.bordered)
-            Button("Unlist \(removable.count)") {
+            Button {
                 store.removeListings(removable)
                 finishSelecting()
-            }
+            } label: { wideLabel("Unlist \(removable.count)") }
             .buttonStyle(.bordered)
             .tint(Theme.orange)
-            .frame(maxWidth: .infinity)
             .disabled(removable.isEmpty)
         }
     }
 
-    private func actionRow(_ chosen: Set<UUID>, blocked: Bool) -> some View {
-        HStack(spacing: 8) {
-            switch tab {
-            case .sealed:
-                Button("Rip") {
-                    nav.startRip(store.data.sealed.filter { chosen.contains($0.id) })
-                    finishSelecting()
-                }
-                .primaryButton()
-                .disabled(chosen.isEmpty || blocked)
-                // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
-                Button("Hits only") {
-                    nav.startRip(store.data.sealed.filter { chosen.contains($0.id) }, hitsOnly: true)
-                    finishSelecting()
-                }
-                .primaryButton()
-                .tint(Theme.orange)
-                .disabled(chosen.isEmpty || blocked)
-                sellButton(chosen, disabled: blocked)
-                lotButton(chosen, disabled: blocked)
-            case .raw:
-                sellButton(chosen, disabled: blocked)
-                lotButton(chosen, disabled: blocked)
-                Button("Grade") {
-                    gradeIDs = GradeRequest(ids: chosen)
-                    finishSelecting()
-                }
-                .buttonStyle(.bordered)
-                .disabled(chosen.isEmpty || blocked)
-                Button("Bulk") {
-                    store.moveToBulk(chosen)
-                    finishSelecting()
-                }
-                .buttonStyle(.bordered)
-                .disabled(chosen.isEmpty || blocked)
-            case .slabs:
-                sellButton(chosen, disabled: blocked)
-                lotButton(chosen, disabled: blocked)
-            case .bulk:
-                Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
-            case .grading:
-                Text("These cards come back as slabs when the grades are done.").font(.caption).foregroundStyle(Theme.muted)
-            }
-            if tab == .raw || tab == .slabs {
-                Button("Master set") {
-                    store.addToMasterSet(chosen)
-                    finishSelecting()
-                }
-                .buttonStyle(.bordered)
-                .disabled(!chosen.contains { id in store.card(id).map { store.masterSetBlock($0) == nil } ?? false })
-            }
-            if store.series(.pnl) != nil, tab != .bulk && tab != .grading {
-                Button("Challenge") {
-                    store.addToChallenge(chosen)
-                    finishSelecting()
-                }
-                .buttonStyle(.bordered)
-                .disabled(!chosen.contains { store.challengeBlock($0) == nil })
-            }
-            if tab != .bulk && tab != .grading {
-                Button("PC") {
-                    store.setPC(chosen, true)
-                    finishSelecting()
-                }
-                .buttonStyle(.bordered)
-                .disabled(chosen.isEmpty || blocked)
-            }
-            Spacer()
-            Text("\(chosen.count)")
-                .font(.caption.monospaced())
-                .foregroundStyle(Theme.muted)
-        }
+    /// A button label that fills its half of a row and stays on one line.
+    private func wideLabel(_ title: String) -> some View {
+        Text(title).lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity)
     }
 
     /// The PC action: move the selection back to the regular Inventory.
@@ -461,24 +422,6 @@ struct InventoryView: View {
         .padding(.vertical, 10)
         .background(Theme.surface)
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
-    }
-
-    private func sellButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
-        Button("Sell") {
-            sellIDs = SellRequest(ids: chosen)
-            finishSelecting()
-        }
-        .buttonStyle(.bordered)
-        .disabled(chosen.isEmpty || disabled)
-    }
-
-    private func lotButton(_ chosen: Set<UUID>, disabled: Bool) -> some View {
-        Button("Lot") {
-            lotIDs = SellRequest(ids: chosen)
-            finishSelecting()
-        }
-        .buttonStyle(.bordered)
-        .disabled(chosen.count < Balance.lotMinItems || disabled)
     }
 
     private func finishSelecting() {
@@ -582,6 +525,130 @@ struct SellRequest: Identifiable {
 struct GradeRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
+}
+
+/// A sheet that an item action opens. The screen that shows the actions owns the sheet.
+enum ItemSheet {
+    case sell(Set<UUID>)
+    case lot(Set<UUID>)
+    case grade(Set<UUID>)
+}
+
+/// The actions on Inventory items. Select mode and the detail screens show the same grid, so an item has the same
+/// actions in both places. `extra` adds the tiles that only a detail screen has.
+struct ItemActions<Extra: View>: View {
+    enum Kind { case sealed, raw, slab }
+
+    @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
+    let kind: Kind
+    /// The items that Rip, Hits only, Grade, Bulk, Master set, Challenge, and PC act on.
+    let ids: Set<UUID>
+    /// The stack on a detail screen. Sell and Lot act on it. A sealed stack also gets "Rip all" and "Hits all".
+    /// Select mode leaves it out, and it is then the same as `ids`.
+    let stackIDs: Set<UUID>
+    let present: (ItemSheet) -> Void
+    /// Runs after each action. Select mode ends the selection here.
+    let done: () -> Void
+    let extra: Extra
+
+    init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
+         done: @escaping () -> Void = {}, @ViewBuilder extra: () -> Extra) {
+        self.kind = kind
+        self.ids = ids
+        self.stackIDs = stackIDs ?? ids
+        self.present = present
+        self.done = done
+        self.extra = extra()
+    }
+
+    var body: some View {
+        let all = ids.union(stackIDs)
+        let aside = all.contains { isSetAside($0) }
+        let free = !ids.isEmpty && !all.contains { store.hasStatus($0) } && !aside
+        ActionGrid {
+            if kind == .sealed {
+                ActionTile(title: "Rip", icon: "scissors", filled: true) { run { nav.startRip(sealed(ids)) } }
+                    .disabled(!free)
+                // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
+                ActionTile(title: "Hits only", icon: "sparkles", tint: Theme.orange, filled: true) {
+                    run { nav.startRip(sealed(ids), hitsOnly: true) }
+                }
+                .disabled(!free)
+                if stackIDs.count > ids.count {
+                    ActionTile(title: "Rip all \(stackIDs.count)", icon: "scissors", filled: true) {
+                        run { nav.startRip(sealed(stackIDs)) }
+                    }
+                    .disabled(!free)
+                    ActionTile(title: "Hits all \(stackIDs.count)", icon: "sparkles", tint: Theme.orange, filled: true) {
+                        run { nav.startRip(sealed(stackIDs), hitsOnly: true) }
+                    }
+                    .disabled(!free)
+                }
+            }
+            ActionTile(title: "Sell", icon: "dollarsign.circle", filled: kind != .sealed) { run { present(.sell(stackIDs)) } }
+                .disabled(!free || stackIDs.isEmpty)
+            ActionTile(title: "Lot", icon: "square.stack.3d.up") { run { present(.lot(stackIDs)) } }
+                .disabled(!free || stackIDs.count < Balance.lotMinItems)
+            if kind == .raw {
+                ActionTile(title: "Grade", icon: "checkmark.seal") { run { present(.grade(ids)) } }
+                    .disabled(!free)
+                ActionTile(title: "Bulk", icon: "archivebox") { run { store.moveToBulk(ids) } }
+                    .disabled(!free)
+            }
+            if kind != .sealed { masterSetTile }
+            if store.series(.pnl) != nil {
+                ActionTile(title: "Challenge", icon: "flag.checkered") { run { store.addToChallenge(ids) } }
+                    .disabled(!ids.contains { store.challengeBlock($0) == nil })
+            }
+            pcTile
+            extra
+        }
+    }
+
+    /// "Master set" puts the cards in their master sets. A card in its master set shows "Leave set".
+    @ViewBuilder private var masterSetTile: some View {
+        let cards = ids.compactMap { store.card($0) }
+        if !cards.isEmpty, cards.allSatisfy(\.inMasterSet) {
+            ActionTile(title: "Leave set", icon: "square.grid.3x3") { run { cards.forEach { store.removeFromMasterSet($0.id) } } }
+        } else {
+            ActionTile(title: "Master set", icon: "square.grid.3x3") { run { store.addToMasterSet(ids) } }
+                .disabled(!cards.contains { store.masterSetBlock($0) == nil })
+        }
+    }
+
+    /// "PC" moves the items into the PC. An item in the PC shows "Leave PC". A card in a master set or the showcase
+    /// leaves there first.
+    @ViewBuilder private var pcTile: some View {
+        if !ids.isEmpty, ids.allSatisfy({ store.isPC($0) }) {
+            ActionTile(title: "Leave PC", icon: "arrow.uturn.backward") { run { store.setPC(ids, false) } }
+        } else {
+            let cards = ids.compactMap { store.card($0) }
+            ActionTile(title: "PC", icon: "heart") { run { store.setPC(ids, true) } }
+                .disabled(ids.isEmpty || ids.contains { store.hasStatus($0) }
+                          || cards.contains { $0.inMasterSet || $0.inShowcase })
+        }
+    }
+
+    private func run(_ action: () -> Void) {
+        action()
+        done()
+    }
+
+    private func sealed(_ ids: Set<UUID>) -> [SealedItem] {
+        store.data.sealed.filter { ids.contains($0.id) }
+    }
+
+    private func isSetAside(_ id: UUID) -> Bool {
+        store.card(id)?.setAside ?? store.data.sealed.first { $0.id == id }?.setAside ?? false
+    }
+}
+
+extension ItemActions where Extra == EmptyView {
+    init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
+         done: @escaping () -> Void = {}) {
+        self.init(kind: kind, ids: ids, stackIDs: stackIDs, present: present, done: done) { EmptyView() }
+    }
 }
 
 // MARK: - Rows and header

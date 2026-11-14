@@ -258,10 +258,22 @@ here, and the rip-or-hold decision happens here.
 
   | Tab | Actions |
   | --- | --- |
-  | Sealed | Rip, PC |
-  | Raw | Sell, Grade, Move to bulk, Master set, PC |
-  | Slabs | Sell, Master set, PC |
+  | Sealed | Rip, Hits only, Sell, Lot, Challenge, PC |
+  | Raw | Sell, Lot, Grade, Bulk, Master set, Challenge, PC |
+  | Slabs | Sell, Lot, Master set, Challenge, PC |
   | Bulk | Add to store run |
+
+  Challenge shows only while a P&L challenge runs.
+- **The actions are a grid of tiles.** Each tile has an icon and a
+  one-line label. The tiles are in rows of four, and all tiles are the
+  same size. A label never wraps. A disabled tile dims. The detail
+  screen of an item shows the same grid as select mode, so an item has
+  the same actions in both places. A detail screen adds its own tiles
+  after the shared tiles: "Rip all N" and "Hits all N" for a sealed
+  stack, and Showcase, Auction, and the posts for a card. On a detail
+  screen, Sell and Lot act on the free items of the stack. An item in
+  the PC shows "Leave PC". A card in its master set shows "Leave set".
+  A card in the showcase shows "Leave showcase".
 
   "Move to bulk" moves raw cards into a bulk group. A pulled card goes
   back to the bulk group of its rip. A card with no rip goes to a group

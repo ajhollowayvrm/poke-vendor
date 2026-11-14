@@ -736,6 +736,10 @@ extension HubView {
             case "local": nav.path = [.buyLocal]
             case "raw": nav.path = [.inventory(.raw)]
             case "card": nav.path = [.inventory(.raw)] + (store.data.raw.first.map { [.card($0.id)] } ?? [])
+            case "slab": nav.path = [.inventory(.slabs)] + (store.data.slabs.first { $0.status == nil }.map { [.card($0.id)] } ?? [])
+            case "sealeditem":
+                let item = store.data.sealed.first { $0.status == nil && store.mates(of: $0).count > 1 } ?? store.data.sealed.first
+                nav.path = [.inventory(.sealed)] + (item.map { [.sealed($0.id)] } ?? [])
             case "slabs": nav.path = [.inventory(.slabs)]
             case "activity": nav.path = [.activity]
             case "calendar": nav.path = [.calendar]

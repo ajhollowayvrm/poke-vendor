@@ -98,6 +98,7 @@ struct CardDetailView: View {
     let id: UUID
     @State private var sell: SellRequest?
     @State private var grade: GradeRequest?
+    @State private var lot: SellRequest?
     @State private var post: NewPostRequest?
     @State private var key: String?
     @State private var auction: AuctionRequest?
@@ -184,69 +185,39 @@ struct CardDetailView: View {
                             .disabled(!free)
                     }
                     if card.setAside {
-                        Text(card.pc ? "This card is in your PC. Move it back to Inventory to sell, grade, or list it."
-                             : card.inShowcase ? "This card is in your showcase. Take it out to sell, grade, or list it."
-                             : "This card is in its master set. Take it out to sell, grade, or list it.")
+                        Text(card.pc ? "This card is in your PC. Tap Leave PC to sell, grade, or list it."
+                             : card.inShowcase ? "This card is in your showcase. Tap Leave showcase to sell, grade, or list it."
+                             : "This card is in its master set. Tap Leave set to sell, grade, or list it.")
                             .font(.caption)
                             .foregroundStyle(Theme.muted)
                     }
-                    HStack(spacing: 10) {
-                        Button("Sell") {
-                            let free = store.mates(of: card).filter { $0.status == nil && !$0.setAside }.map(\.id)
-                            sell = SellRequest(ids: Set(free.isEmpty ? [card.id] : free), startAll: false)
+                    let stack = store.mates(of: card).filter { $0.status == nil && !$0.setAside }.map(\.id)
+                    let showcaseOK = card.market >= Balance.showcaseMinValue && store.hasUpgrade(.showcaseCase)
+                    ItemActions(kind: card.grade == nil ? .raw : .slab, ids: [card.id],
+                                stackIDs: Set(stack.isEmpty ? [card.id] : stack), present: present) {
+                        if card.inShowcase {
+                            ActionTile(title: "Leave showcase", icon: "star.square") { store.removeFromShowcase(card.id) }
+                        } else if showcaseOK {
+                            ActionTile(title: "Showcase", icon: "star.square") { store.addToShowcase(card.id) }
+                                .disabled(store.showcaseBlock(card) != nil)
                         }
-                            .buttonStyle(.bordered)
-                            .disabled(!free || card.setAside)
-                        if card.grade == nil {
-                            Button("Grade") { grade = GradeRequest(ids: [card.id]) }
-                                .buttonStyle(.bordered)
+                        if card.grade != nil, card.realMarket >= Balance.auctionMinValue {
+                            ActionTile(title: "Auction", icon: "hammer") { auction = AuctionRequest(id: card.id) }
+                                .disabled(!free || card.setAside || card.isKnownFake)
+                        }
+                        if store.hasAccount {
+                            ActionTile(title: "Flex post", icon: "camera") { post = request(.collectionFlex, card) }
+                            ActionTile(title: "Sale post", icon: "tag") { post = request(.forSale, card) }
                                 .disabled(!free || card.setAside)
                         }
-                        if !card.inMasterSet && !card.inShowcase {
-                            Button(card.pc ? "Back to Inventory" : "Add to PC") { store.setPC([card.id], !card.pc) }
-                                .primaryButton()
-                                .disabled(!free && !card.pc)
+                    }
+                    if free, !card.isKnownFake {
+                        if !card.inMasterSet, let block = store.masterSetBlock(card) {
+                            Text("Master set: \(block)").font(.caption).foregroundStyle(Theme.muted)
                         }
-                    }
-                    .controlSize(.large)
-                    if card.inShowcase {
-                        Button("Take out of the showcase") { store.removeFromShowcase(card.id) }
-                            .buttonStyle(.bordered)
-                    } else if card.market >= Balance.showcaseMinValue, store.hasUpgrade(.showcaseCase) {
-                        let block = store.showcaseBlock(card)
-                        Button("Add to showcase") { store.addToShowcase(card.id) }
-                            .buttonStyle(.bordered)
-                            .disabled(block != nil)
-                        if let block, free, !card.isKnownFake { Text(block).font(.caption).foregroundStyle(Theme.muted) }
-                    }
-                    if card.inMasterSet {
-                        Button("Take out of the master set") { store.removeFromMasterSet(card.id) }
-                            .buttonStyle(.bordered)
-                    } else {
-                        let block = store.masterSetBlock(card)
-                        Button("Add to master set") { store.addToMasterSet([card.id]) }
-                            .buttonStyle(.bordered)
-                            .disabled(block != nil)
-                        if let block, free, !card.isKnownFake {
-                            Text(block).font(.caption).foregroundStyle(Theme.muted)
+                        if !card.inShowcase, showcaseOK, let block = store.showcaseBlock(card) {
+                            Text("Showcase: \(block)").font(.caption).foregroundStyle(Theme.muted)
                         }
-                    }
-                    if card.grade == nil {
-                        Button("Move to bulk") { store.moveToBulk([card.id]) }
-                            .buttonStyle(.bordered)
-                            .disabled(!free || card.setAside)
-                    } else if card.realMarket >= Balance.auctionMinValue {
-                        Button("Consign to an auction house") { auction = AuctionRequest(id: card.id) }
-                            .buttonStyle(.bordered)
-                            .disabled(!free || card.setAside || card.isKnownFake)
-                    }
-                    if store.hasAccount {
-                        HStack(spacing: 10) {
-                            Button("Post: collection flex") { post = request(.collectionFlex, card) }
-                            Button("Post: for sale") { post = request(.forSale, card) }
-                                .disabled(!free || card.setAside)
-                        }
-                        .buttonStyle(.bordered)
                     }
                 }
                 .padding(16)
@@ -257,6 +228,7 @@ struct CardDetailView: View {
             .onAppear { if key == nil { key = store.stackKey(card) } }
             .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
+            .sheet(item: $lot) { LotSheet(ids: $0.ids) }
             .sheet(item: $post) { NewPostSheet(request: $0) }
             .sheet(item: $auction) { AuctionConsignSheet(cardID: $0.id) }
         } else {
@@ -266,6 +238,14 @@ struct CardDetailView: View {
 }
 
 extension CardDetailView {
+    func present(_ sheet: ItemSheet) {
+        switch sheet {
+        case .sell(let ids): sell = SellRequest(ids: ids, startAll: false)
+        case .lot(let ids): lot = SellRequest(ids: ids)
+        case .grade(let ids): grade = GradeRequest(ids: ids)
+        }
+    }
+
     func request(_ type: PostType, _ card: OwnedCard) -> NewPostRequest {
         NewPostRequest(type: type, subject: PostSubject(id: card.id, name: card.grade.map { "\(card.print.name) \($0.label)" } ?? card.print.name,
                                                         value: card.market, isCard: true, pulled: card.paid == nil,
@@ -424,6 +404,7 @@ struct SealedDetailView: View {
     @Environment(AppNav.self) private var nav
     let id: UUID
     @State private var sell: SellRequest?
+    @State private var lot: SellRequest?
     @State private var key: String?
 
     /// The item, or the next item of its stack after this one leaves.
@@ -507,38 +488,10 @@ struct SealedDetailView: View {
                     DetailBox(title: "Where it came from") {
                         Text("\(item.source) · day \(item.acquiredDay + 1)").font(.subheadline)
                     }
-                    let free = item.status == nil && !item.setAside
-                    HStack(spacing: 10) {
-                        Button(item.pc ? "Back to Inventory" : "Add to PC") { store.setPC([item.id], !item.pc) }
-                            .buttonStyle(.bordered)
-                            .disabled(item.status != nil && !item.pc)
-                        Button("Sell") { sell = SellRequest(ids: Set(mates.map(\.id)), startAll: false) }
-                            .buttonStyle(.bordered)
-                            .disabled(!free)
-                        Button("Rip") { nav.startRip([item]) }
-                            .primaryButton()
-                            .disabled(!free)
-                        if mates.count > 1 {
-                            Button("Rip all \(mates.count)") { nav.startRip(mates) }
-                                .primaryButton()
-                                .disabled(!free)
-                        }
-                    }
-                    .controlSize(.large)
-                    // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
-                    Button {
-                        nav.startRip(mates.count > 1 ? mates : [item], hitsOnly: true)
-                    } label: {
-                        Label(mates.count > 1 ? "Hits only · rip all \(mates.count)" : "Hits only", systemImage: "sparkles.rectangle.stack")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .primaryButton()
-                    .tint(Theme.orange)
-                    .controlSize(.large)
-                    .disabled(!free)
                     if item.pc {
-                        Text("This item is in your PC. Move it back to Inventory to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
+                        Text("This item is in your PC. Tap Leave PC to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
                     }
+                    ItemActions(kind: .sealed, ids: [item.id], stackIDs: Set(mates.map(\.id)), present: present)
                 }
                 .padding(16)
             }
@@ -554,8 +507,17 @@ struct SealedDetailView: View {
                 #endif
             }
             .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
+            .sheet(item: $lot) { LotSheet(ids: $0.ids) }
         } else {
             GoneView()
+        }
+    }
+
+    private func present(_ sheet: ItemSheet) {
+        switch sheet {
+        case .sell(let ids): sell = SellRequest(ids: ids, startAll: false)
+        case .lot(let ids): lot = SellRequest(ids: ids)
+        case .grade: break
         }
     }
 }
