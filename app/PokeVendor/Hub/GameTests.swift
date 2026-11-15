@@ -121,6 +121,50 @@ final class GameTests {
         check(abs((up?.fee ?? 0) - (349 - 79.99)) < 0.01, "the upcharge is \(money(up?.fee ?? 0)), not the fee difference")
         check(store.psaUpcharge(tier: "Regular", value: 1_000) == nil, "a card under its level's cap got an upcharge")
         check(store.psaUpcharge(tier: "Premium 10", value: 1_000_000) == nil, "Premium 10 has an upcharge")
+
+        // Value Bulk is for members with 20 cards or more.
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(2) { store.addTestCard(print) }
+        let pair = Set(store.data.raw.suffix(2).map(\.id))
+        if let bulk = Balance.gradingTiers[.psa]?.first(where: { $0.membersOnly }) {
+            store.submit(pair, to: .psa, tier: bulk)
+            check(store.data.raw.filter { pair.contains($0.id) }.allSatisfy { $0.status == nil }, "a non-member sent 2 cards at Value Bulk")
+        }
+
+        // A full upcharge: a card worth more than Regular's cap at any grade comes back, and the bill grows.
+        // The Skyridge Charizard is worth more than $5,000 at every PSA grade, so any grade brings an upcharge.
+        let dear = ["skyridge", "dragon-frontiers", "holon-phantoms"].lazy.compactMap { slug in
+            SetLibrary.set(slug).prints.first { p in (1...10).allSatisfy { (p.gradedPrice("psa\($0)") ?? 0) > 2_000 } }.map { ($0, slug) }
+        }.first
+        guard let (print, slug) = dear, let regular = Balance.gradingTiers[.psa]?.first(where: { $0.name == "Regular" }) else {
+            return check(false, "no card for the upcharge test")
+        }
+        store.addTestCard(print, slug: slug)
+        guard let id = store.data.raw.last?.id else { return }
+        store.submit([id], to: .psa, tier: regular)
+        for i in store.data.raw.indices where store.data.raw[i].id == id {
+            if case .atGrader(let c, let t, _, let order) = store.data.raw[i].status {
+                store.data.raw[i].status = .atGrader(company: c, tier: t, daysLeft: 1, ledgerID: order)
+            }
+        }
+        // Not enough cash for the bill, so PSA holds it and the bill stays to read.
+        store.addTestCash(5 - store.cash)
+        store.report = nil
+        store.endDay()
+        guard let bill = store.gradingBills.first, let slab = store.data.slabs.first(where: { $0.id == id }) else {
+            return check(false, "the upcharge test card did not come back")
+        }
+        let expected = store.psaUpcharge(tier: "Regular", value: slab.market)?.fee ?? 0
+        check(expected > 0 && abs((bill.upcharge ?? 0) - expected) < 0.01, "the bill's upcharge is \(money(bill.upcharge ?? 0)), not \(money(expected))")
+        check(abs(bill.amount - regular.fee - expected) < 0.01, "the bill is \(money(bill.amount)), not the fee and the upcharge")
+        store.addTestCash(bill.amount + 100)
+        let before = store.cash
+        check(store.payGradingBill(bill.id) && abs(before - store.cash - bill.amount) < 0.01, "paying the upcharged bill took the wrong amount")
+
+        // A bill saved before upcharges loads with no upcharge.
+        let old = #"{"id":"\#(UUID().uuidString)","company":"PSA","tier":"Regular","cards":1,"amount":79.99,"dueDay":3,"held":true}"#
+        let loaded = try? JSONDecoder().decode(GradingBill.self, from: Data(old.utf8))
+        check(loaded?.amount == 79.99 && loaded?.upcharge == nil, "a PSA bill from an older save does not load")
     }
 
     // MARK: - Short-form video (docs/32-short-form-video.md)

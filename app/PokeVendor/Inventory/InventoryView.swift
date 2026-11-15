@@ -147,6 +147,11 @@ struct InventoryView: View {
         // Screenshot aid: `-gradesheet` opens the grade sheet with the 3 most valuable free raw cards.
         .onAppear {
             guard ProcessInfo.processInfo.arguments.contains("-gradesheet"), gradeIDs == nil else { return }
+            // `-highcard` adds the Skyridge Charizard first, so the sheet shows an upcharge.
+            if ProcessInfo.processInfo.arguments.contains("-highcard"),
+               let charizard = SetLibrary.set("skyridge").prints.first(where: { $0.num == "146/144" && $0.variant == "Holo" }) {
+                store.addTestCard(charizard, slug: "skyridge")
+            }
             let top = rawInHand.filter { $0.status == nil }.sorted { $0.market > $1.market }.prefix(3)
             if !top.isEmpty { gradeIDs = GradeRequest(ids: Set(top.map(\.id))) }
         }

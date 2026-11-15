@@ -308,6 +308,7 @@ struct GradeSheet: View {
                 }
                 Section("Cards") {
                     ForEach(cards) { card in
+                        VStack(alignment: .leading, spacing: 4) {
                         HStack {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(card.print.name).font(.subheadline)
@@ -333,14 +334,15 @@ struct GradeSheet: View {
                                 if company == .bgs {
                                     Text("Black Label \(card.print.blackLabelPrice.map(money) ?? "—") est.").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                                 }
-                                // A PSA card worth more than the level's cap after grading costs an upcharge.
-                                if company == .psa, let up = store.psaUpcharge(tier: tier.name, value: tenValue(card)) {
-                                    Text("If PSA 10: +\(money(up.fee)) upcharge (\(up.tier.name))").font(.caption.monospaced()).foregroundStyle(Theme.orange)
-                                }
-                                if company == .psa, let nine = card.print.gradedPrice("psa9"), let up = store.psaUpcharge(tier: tier.name, value: nine) {
-                                    Text("If PSA 9: +\(money(up.fee)) upcharge").font(.caption.monospaced()).foregroundStyle(Theme.orange)
-                                }
                             }
+                        }
+                        // A PSA card worth more than the level's cap after grading costs an upcharge. Full width, under the row.
+                        if company == .psa, let up = store.psaUpcharge(tier: tier.name, value: tenValue(card)) {
+                            Text("Upcharge if PSA 10: +\(money(up.fee)), to \(up.tier.name)").font(.caption.monospaced()).foregroundStyle(Theme.orange)
+                        }
+                        if company == .psa, let nine = card.print.gradedPrice("psa9"), let up = store.psaUpcharge(tier: tier.name, value: nine) {
+                            Text("Upcharge if PSA 9: +\(money(up.fee)), to \(up.tier.name)").font(.caption.monospaced()).foregroundStyle(Theme.orange)
+                        }
                         }
                     }
                 }
