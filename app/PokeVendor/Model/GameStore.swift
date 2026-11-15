@@ -1215,8 +1215,10 @@ final class GameStore {
                             return false
                         }
                     }
-                    // PSA holds a finished order until its bill is paid. End Day pays it when the cash covers it.
-                    let returned: ItemStatus? = company.billsOnReturn ? .heldAtGrader(company: company, billID: ledgerID) : nil
+                    // PSA holds a finished order until its bill is paid. End Day pays it when the cash covers it. An order
+                    // from an older build was paid when it went in, so it has no bill and comes straight back.
+                    let billed = data.gradingBills.contains { $0.id == ledgerID }
+                    let returned: ItemStatus? = billed ? .heldAtGrader(company: company, billID: ledgerID) : nil
                     // A grader catches every fake. The fee stays paid (docs/14, Detection).
                     if let fake = card.fake {
                         card.status = returned
