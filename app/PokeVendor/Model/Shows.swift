@@ -1906,8 +1906,11 @@ final class ShowSession {
     }
 
     #if DEBUG
-    /// Tests only: puts this person at the table.
-    func testSeat(_ v: Visitor) { visitor = v }
+    /// Tests only: puts this person at the table, even when the last visitor ended the session.
+    func testSeat(_ v: Visitor) {
+        phase = .table
+        visitor = v
+    }
     #endif
 
     func packUp() {

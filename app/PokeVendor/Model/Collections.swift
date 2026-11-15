@@ -38,6 +38,18 @@ extension Balance {
     /// "unsearched" anyway.
     static let ebaySearchedShare = 0.4
     static let ebaySearchedLie = 0.5
+    /// How much a listing shows, as shares: no photos, some photos, a card list, and full documentation.
+    static let lotDocsShares: [(LotDocs, Double)] = [(.blind, 0.25), (.photos, 0.4), (.cardList, 0.2), (.full, 0.15)]
+    /// The chance that a seller answers "Ask for more photos".
+    static let lotPhotoReply = 0.65
+    /// Saved searches: more listings, and new ones every day.
+    static let ebayLotCountSaved = 6
+    static let ebayLotDaysSaved = 1
+    /// Seller research flags a seller who sells singles from their lots: most liars, and a few honest sellers.
+    static let researchFlagLiar = 0.8
+    static let researchFlagHonest = 0.1
+    /// The worth per card of a lot of each kind before a search, until the game has seen some lots.
+    static let lotRateStart = 1.0
 }
 
 /// The kinds of collection that people bring.
@@ -247,14 +259,35 @@ struct AdviceAsk: Hashable {
     let worth: Double
 }
 
-/// An eBay collection lot. The listing shows a few cards in the photos, a card count, and a claim: searched or not.
-/// The rest shows only when the box arrives.
+/// How much an eBay listing shows.
+enum LotDocs: String, Codable, Hashable {
+    /// A title and a card count.
+    case blind
+    /// A few photos.
+    case photos
+    /// Every good card by name, priced at Near Mint. The conditions are not stated.
+    case cardList
+    /// Front and back photos of every good card.
+    case full
+
+    var label: String {
+        switch self {
+        case .blind: "NO PHOTOS"
+        case .photos: "PHOTOS"
+        case .cardList: "CARD LIST"
+        case .full: "FULLY DOCUMENTED"
+        }
+    }
+}
+
+/// An eBay collection lot. How much the listing shows depends on the seller: nothing, a few photos, a card list, or
+/// every card. The rest shows only when the box arrives.
 struct EbayLot: Codable, Identifiable, Hashable {
     var id = UUID()
     let title: String
     let lot: CollectionLot
     /// The pieces in the photos.
-    let shown: [UUID]
+    var shown: [UUID]
     /// The truth: someone already took the good cards out.
     let searched: Bool
     /// What the listing says.
@@ -262,9 +295,45 @@ struct EbayLot: Codable, Identifiable, Hashable {
     let price: Double
     /// The card count in the title, rounded down to 50.
     let listedCards: Int
+    var docs: LotDocs = .photos
+    /// The player asked the seller for more photos. It works once.
+    var asked = false
+    /// The seller's feedback score and sales count, as eBay shows them.
+    var feedback = 99.5
+    var sales = 200
+    /// Seller research finds singles from the seller's lots for sale. Most "unsearched" liars do it.
+    var sellsSingles = false
 
     var shownPieces: [CollectionPiece] { lot.pieces.filter { shown.contains($0.id) } }
+    /// The good items that the listing shows: every one in a card list or full documentation, else the photos.
+    var visiblePieces: [CollectionPiece] { docs == .cardList || docs == .full ? lot.pieces : shownPieces }
     var total: Double { price + Balance.ebayLotShipping }
+
+    /// What a card list says an item is worth: a single at its Near Mint price, whatever its true condition.
+    static func listedValue(_ piece: CollectionPiece) -> Double {
+        if case .single(let print, _, _) = piece.goods { return print.market ?? piece.market }
+        return piece.market
+    }
+}
+
+/// A save from before the listing levels has none of the new fields. A lot on its way must still load.
+extension EbayLot {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        title = try c.decode(String.self, forKey: .title)
+        lot = try c.decode(CollectionLot.self, forKey: .lot)
+        shown = try c.decode([UUID].self, forKey: .shown)
+        searched = try c.decode(Bool.self, forKey: .searched)
+        claimsUnsearched = try c.decode(Bool.self, forKey: .claimsUnsearched)
+        price = try c.decode(Double.self, forKey: .price)
+        listedCards = try c.decode(Int.self, forKey: .listedCards)
+        docs = try c.decodeIfPresent(LotDocs.self, forKey: .docs) ?? .photos
+        asked = try c.decodeIfPresent(Bool.self, forKey: .asked) ?? false
+        feedback = try c.decodeIfPresent(Double.self, forKey: .feedback) ?? 99.5
+        sales = try c.decodeIfPresent(Int.self, forKey: .sales) ?? 200
+        sellsSingles = try c.decodeIfPresent(Bool.self, forKey: .sellsSingles) ?? false
+    }
 }
 
 /// An eBay lot on its way.
@@ -372,12 +441,17 @@ extension GameStore {
 
     // MARK: eBay collection lots
 
-    /// New listings every few days. The old ones sell to someone else.
+    /// New listings every few days, or every day with saved searches. The old ones sell to someone else.
     func refreshEbayLots() {
-        guard data.ebayLots.isEmpty || data.day - data.ebayLotsDay >= Balance.ebayLotDays else { return }
-        data.ebayLots = (0..<Balance.ebayLotCount).map { _ in makeEbayLot() }
+        let saved = hasUpgrade(.savedSearch)
+        let days = saved ? Balance.ebayLotDaysSaved : Balance.ebayLotDays
+        guard data.ebayLots.isEmpty || data.day - data.ebayLotsDay >= days else { return }
+        data.ebayLots = (0..<(saved ? Balance.ebayLotCountSaved : Balance.ebayLotCount)).map { _ in makeEbayLot() }
         data.ebayLotsDay = data.day
     }
+
+    /// The worth per card of an unsearched lot of this kind, from the lots the game made so far.
+    func lotRate(_ theme: CollectionTheme) -> Double { data.lotRates[theme.rawValue] ?? Balance.lotRateStart }
 
     private func makeEbayLot() -> EbayLot {
         let theme = CollectionTheme.allCases.randomElement() ?? .mixedBox
@@ -386,23 +460,101 @@ extension GameStore {
         for i in lot.pieces.indices { lot.pieces[i].looksOff = false }
         while lot.dealValue > Balance.ebayLotMax, lot.pieces.count > 1 { lot.pieces.removeFirst() }
         let fullMarket = lot.dealValue
+        let count = max(1, lot.pieces.filter { !$0.isSealed }.count + lot.bulkCount)
+        // Learn what a lot of this kind is worth per card, before anyone searches it.
+        let sample = fullMarket / Double(count)
+        data.lotRates[theme.rawValue] = data.lotRates[theme.rawValue].map { $0 * 0.7 + sample * 0.3 } ?? sample
+        let docs = Self.rollDocs()
         let searched = Double.random(in: 0..<1) < Balance.ebaySearchedShare
         if searched {
             // Someone took the good cards out. A few cheap ones stay.
             lot.pieces = Array(lot.pieces.filter { $0.market < 15 }.prefix(3))
         }
-        let lies = searched && Double.random(in: 0..<1) < Balance.ebaySearchedLie
-        let claimsUnsearched = !searched || lies
+        // A card list or full documentation shows the truth, so only a blind or photo listing can lie.
+        let canLie = docs == .blind || docs == .photos
+        let lies = canLie && searched && Double.random(in: 0..<1) < Balance.ebaySearchedLie
+        let listed = max(50, count / 50 * 50)
+        let basis: Double = switch docs {
+        // Nothing to see, so the price comes from the card count and the kind of lot.
+        case .blind: Double(listed) * lotRate(theme) * Double.random(in: 0.45...0.85)
         // An honest listing prices what is in the box. An "unsearched" lie prices what used to be in it.
-        let basis = searched && !lies ? lot.dealValue * Double.random(in: 0.8...1.15) : fullMarket * Double.random(in: 0.55...1.0)
-        let price = max(10, ShowSession.round(basis))
+        case .photos: searched && !lies ? lot.dealValue * Double.random(in: 0.8...1.15) : fullMarket * Double.random(in: 0.55...1.0)
+        // A card list prices every card at Near Mint, so played cards cost too much.
+        case .cardList: (lot.pieces.reduce(0) { $0 + EbayLot.listedValue($1) } + lot.bulkValue * Balance.collectionBulkShare)
+            * Double.random(in: 0.7...0.95)
+        // Full documentation: little risk, and little upside.
+        case .full: lot.dealValue * Double.random(in: 0.85...1.05)
+        }
         // The photos show the best cards. Sometimes the seller did not know which ones those were.
-        let shown: [CollectionPiece] = Double.random(in: 0..<1) < 0.8
-            ? Array(lot.pieces.prefix(Int.random(in: 1...3)))
-            : Array(lot.pieces.shuffled().prefix(2))
-        let count = lot.pieces.filter { !$0.isSealed }.count + lot.bulkCount
-        return EbayLot(title: theme.ebayTitle, lot: lot, shown: shown.map(\.id), searched: searched,
-                       claimsUnsearched: claimsUnsearched, price: price, listedCards: max(50, count / 50 * 50))
+        let shown: [CollectionPiece] = docs != .photos ? []
+            : Double.random(in: 0..<1) < 0.8 ? Array(lot.pieces.prefix(Int.random(in: 1...3))) : Array(lot.pieces.shuffled().prefix(2))
+        var listing = EbayLot(title: theme.ebayTitle, lot: lot, shown: shown.map(\.id), searched: searched,
+                              claimsUnsearched: canLie ? !searched || lies : !searched, price: max(10, ShowSession.round(basis)),
+                              listedCards: listed, docs: docs)
+        listing.feedback = lies ? Double.random(in: 94...99.5) : Double.random(in: 98.5...100)
+        listing.feedback = (listing.feedback * 10).rounded() / 10
+        listing.sales = Int.random(in: 20...3_000)
+        listing.sellsSingles = Double.random(in: 0..<1) < (lies ? Balance.researchFlagLiar : Balance.researchFlagHonest)
+        return listing
+    }
+
+    private static func rollDocs() -> LotDocs {
+        var roll = Double.random(in: 0..<1)
+        for (docs, share) in Balance.lotDocsShares {
+            if roll < share { return docs }
+            roll -= share
+        }
+        return .photos
+    }
+
+    /// The lot appraisal app: a range for what the lot is worth to a dealer, from what the listing shows. It does not
+    /// know whether someone searched the lot.
+    func appraisal(_ listing: EbayLot) -> ClosedRange<Double> {
+        let rate = lotRate(listing.lot.theme) * Double(listing.listedCards)
+        let shown = listing.visiblePieces.reduce(0) { $0 + $1.market }
+        switch listing.docs {
+        case .full:
+            return listing.lot.dealValue...listing.lot.dealValue
+        case .cardList:
+            let listed = listing.lot.pieces.reduce(0) { $0 + EbayLot.listedValue($1) } + listing.lot.bulkValue * Balance.collectionBulkShare
+            return listed * 0.65...listed
+        case .photos:
+            let base = max(shown, rate)
+            return base * 0.6...base * 1.3
+        case .blind:
+            return rate * 0.4...rate * 1.4
+        }
+    }
+
+    /// Asks the seller for more photos. It works once for each listing. Returns the reply.
+    func askForPhotos(_ id: UUID) -> String {
+        guard let i = data.ebayLots.firstIndex(where: { $0.id == id }), !data.ebayLots[i].asked else { return "You asked already." }
+        data.ebayLots[i].asked = true
+        defer { save() }
+        guard Double.random(in: 0..<1) < Balance.lotPhotoReply else { return "The seller did not reply." }
+        var listing = data.ebayLots[i]
+        let hidden = listing.lot.pieces.filter { !listing.shown.contains($0.id) }.shuffled()
+        let reply: String
+        switch listing.docs {
+        case .blind, .photos:
+            if hidden.isEmpty {
+                reply = "The seller wrote back: \"That's all the good stuff. The rest is bulk.\""
+            } else if listing.docs == .photos, Double.random(in: 0..<1) < 0.3 {
+                listing.docs = .cardList
+                reply = "The seller sent a list of every good card."
+            } else {
+                listing.shown += hidden.prefix(2).map(\.id)
+                listing.docs = .photos
+                reply = "The seller sent \(min(2, hidden.count)) more photo\(hidden.count == 1 ? "" : "s")."
+            }
+        case .cardList:
+            listing.docs = .full
+            reply = "The seller sent front and back photos of every card."
+        case .full:
+            reply = "The listing already shows every card."
+        }
+        data.ebayLots[i] = listing
+        return reply
     }
 
     /// Buys an eBay lot. Returns a problem, or nil when it worked.

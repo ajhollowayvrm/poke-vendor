@@ -101,26 +101,65 @@ gap under $5 is a close call, and either answer is right.
 ## eBay collection lots
 
 The eBay storefront has a "Collection lots" section with 4 listings.
-New listings come every 3 days.
+New listings come every 3 days. A tap on a listing opens it.
 
-- **A listing** shows a title, a card count rounded down to 50, a price
-  with $15 shipping, a claim ("Says unsearched" or "Searched"), and 1
-  to 3 cards in the photos. The photos show no flaws: the player looks
-  at each card when the box arrives.
-- **Searched lots.** 40% of lots were already searched: only a few
-  cheap cards stay with the bulk. Half of those say "unsearched"
-  anyway.
-- **The price.** An honest searched lot costs 80% to 115% of its worth.
-  An unsearched lot, and a searched lot that says unsearched, costs 55%
-  to 100% of what the full lot was worth.
-- **The photos** show the best cards 80% of the time. Otherwise they
-  show two random cards, and the best cards are a surprise.
+### What a listing shows
+
+| Level | Share | The listing shows | The price |
+| --- | --- | --- | --- |
+| No photos | 25% | A title and a card count | The card count times the usual worth per card of that kind of lot, at 45% to 85%. It says nothing about the contents. |
+| Photos | 40% | 1 to 3 cards | 55% to 100% of what the full lot was worth, or 80% to 115% of an honest searched lot |
+| Card list | 20% | Every good card by name, at its Near Mint price | 70% to 95% of the list. The conditions are not stated, so played cards cost too much. |
+| Fully documented | 15% | Every good card with its condition and cut | 85% to 105% of its worth. Little risk, and little upside. |
+
+- The card count in the title is rounded down to 50.
+- The photos show no flaws: the player looks at each card when the box
+  arrives. A fake can be in any lot.
+- The photos show the best cards 80% of the time. Otherwise they show
+  two random cards, and the best cards are a surprise.
+- The game learns the usual worth per card of each kind of lot from the
+  lots it makes, before any search.
 - **A lot stays under $2,500.** A seller sells a bigger card on its
   own.
-- **Buying** pays at once. The box arrives in 3 to 5 days. The morning
-  report shows what was in it: the counts, the worth against the price,
-  the best card, and how many items look off. Then everything is in
-  Inventory.
+
+### Searched lots
+
+40% of lots were already searched: only a few cheap cards stay with the
+bulk. A card list or full documentation shows that. In a listing with
+no photos or with photos, half of the searched lots say "unsearched"
+anyway.
+
+### The seller
+
+Each listing shows the seller's feedback and sales count. A seller who
+lies about a searched lot has 94% to 99.5% positive feedback. An honest
+seller has 98.5% to 100%. The ranges overlap, so feedback is a hint, not
+proof.
+
+### Ask for more photos
+
+The player can ask each seller once. The seller replies 65% of the
+time:
+
+| Listing | Reply |
+| --- | --- |
+| No photos | 2 photos. A lot with nothing good says "That's all the good stuff. The rest is bulk." |
+| Photos | 2 more photos, or 30% of the time a card list |
+| Card list | Front and back photos of every card |
+
+### Buying
+
+Buying pays at once. The box arrives in 3 to 5 days. The morning report
+shows what was in it: the counts, the worth against the price, the best
+card, and how many items look off. Then everything is in Inventory.
+
+### Upgrades
+
+| Upgrade | Cost | What it does |
+| --- | --- | --- |
+| Saved eBay searches | $80 | 6 lots instead of 4, and new lots every day |
+| Seller research | $150 | Each lot shows whether the seller also sells singles from their lots. 80% of the sellers who call a searched lot "unsearched" do, and 10% of honest sellers. |
+| Lot appraisal app | $250 | Each lot shows a range for its worth to a dealer, from what the listing shows. Full documentation: the exact worth. A card list: 65% to 100% of the list. Photos: 60% to 130% of the larger of the photos' worth and the usual worth for the count. No photos: 40% to 140% of the usual worth for the count. It cannot tell whether someone searched the lot. |
 
 ## Values
 
@@ -135,7 +174,10 @@ New listings come every 3 days.
 | Lowball | Under 40% of worth |
 | Grading advice | Right +2 reputation, wrong −1, close call $5, buy at 70% of raw |
 | eBay lots | 4 listings, new every 3 days, $15 shipping, 3 to 5 days, at most $2,500 |
-| eBay searched lots | 40%, and half of those say unsearched |
+| eBay listing levels | No photos 25%, photos 40%, card list 20%, fully documented 15% |
+| eBay searched lots | 40%, and half of those with no photos or with photos say unsearched |
+| Ask for more photos | Once per listing, 65% reply |
+| eBay upgrades | Saved searches $80, seller research $150, lot appraisal app $250 |
 
 ## Open topics
 

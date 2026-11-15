@@ -38,6 +38,9 @@ struct UpgradesView: View {
                     upgradeRow(.betterCar)
                     upgradeRow(.dropDiscord)
                     upgradeRow(.restockBot)
+                    upgradeRow(.savedSearch)
+                    upgradeRow(.sellerResearch)
+                    upgradeRow(.lotAppraisal)
                 }
                 DetailBox(title: "Storage and security") {
                     upgradeRow(.lockedCase)

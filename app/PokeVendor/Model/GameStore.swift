@@ -132,6 +132,8 @@ struct GameData: Codable {
     var ebayLots: [EbayLot] = []
     var ebayLotsDay = -99
     var lotOrders: [LotOrder] = []
+    /// The worth per card of an unsearched eBay lot, by kind, learned from the lots the game made.
+    var lotRates: [String: Double] = [:]
     /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
     var shorts = ShortsState()
 }
@@ -224,6 +226,7 @@ extension GameData {
         ebayLots = v(.ebayLots, ebayLots)
         ebayLotsDay = v(.ebayLotsDay, ebayLotsDay)
         lotOrders = v(.lotOrders, lotOrders)
+        lotRates = v(.lotRates, lotRates)
         shorts = v(.shorts, shorts)
     }
 }

@@ -261,71 +261,225 @@ struct AdviceButtons: View {
     }
 }
 
-/// The eBay collection lots: blind boxes with a few photos, and the lots on their way.
+/// The eBay collection lots, and the lots on their way. A tap opens the listing.
 struct EbayLotsSection: View {
     @Environment(GameStore.self) private var store
-    @State private var confirm: EbayLot?
-    @State private var message: String?
+    @State private var openID: UUID?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("COLLECTION LOTS").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
-            if let message { Banner(text: message, color: Theme.cyan) }
-            ForEach(store.data.ebayLots) { listing in row(listing) }
+            ForEach(store.data.ebayLots) { listing in
+                Button { openID = listing.id } label: { EbayLotRow(listing: listing) }
+                    .buttonStyle(.plain)
+            }
             ForEach(store.data.lotOrders) { order in
                 let days = max(0, order.arrivalDay - store.day)
                 Text("On the way: \(order.listing.title) · arrives in \(days) day\(days == 1 ? "" : "s")")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
             }
-            Text("You see only the photos. The rest shows when the box arrives. Some lots were already searched for the good cards, and some sellers say \"unsearched\" anyway. New lots come every \(Balance.ebayLotDays) days.")
+            let every = store.hasUpgrade(.savedSearch) ? "every day" : "every \(Balance.ebayLotDays) days"
+            Text("Listings show nothing, a few photos, a card list, or every card. Some lots were already searched for the good cards, and some sellers say \"unsearched\" anyway. New lots come \(every).")
                 .font(.caption2)
                 .foregroundStyle(Theme.muted)
         }
         .padding(12)
         .background(Theme.surface)
         .framed()
-        .onAppear { store.refreshEbayLots() }
-        .confirmationDialog(confirm?.title ?? "", isPresented: Binding(isPresent: $confirm), titleVisibility: .visible,
-                            presenting: confirm) { listing in
-            Button("Buy · \(money(listing.total))") {
-                if let problem = store.buyEbayLot(listing.id) { message = problem } else { message = "Bought. The box is on its way." }
+        .onAppear {
+            store.refreshEbayLots()
+            #if DEBUG
+            // Screenshot aid: `-openlot full` opens the first lot of that level, or `-openlot` the first lot.
+            let args = ProcessInfo.processInfo.arguments
+            if let i = args.firstIndex(of: "-openlot") {
+                let want = i + 1 < args.count ? LotDocs(rawValue: args[i + 1]) : nil
+                openID = store.data.ebayLots.first { want == nil || $0.docs == want }?.id ?? store.data.ebayLots.first?.id
             }
-        } message: { listing in
-            Text("\(money(listing.price)) and \(money(Balance.ebayLotShipping)) shipping. It arrives in \(Balance.ebayLotShipDays.lowerBound) to \(Balance.ebayLotShipDays.upperBound) days. You cannot return it.")
+            #endif
+        }
+        .sheet(item: Binding(get: { openID.map(LotID.init) }, set: { openID = $0?.id })) { lot in
+            EbayLotSheet(id: lot.id)
         }
     }
 
-    private func row(_ listing: EbayLot) -> some View {
-        Button { confirm = listing } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .top) {
-                    Text("\(listing.title) · \(listing.listedCards)+ cards").font(.subheadline.weight(.semibold)).multilineTextAlignment(.leading)
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(money(listing.price)).font(.subheadline.monospaced().weight(.semibold))
-                        Text("+\(money(Balance.ebayLotShipping)) ship").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
-                    }
+    private struct LotID: Identifiable { let id: UUID }
+}
+
+/// One listing in the list: the title, the price, what it shows, and the upgrade lines.
+struct EbayLotRow: View {
+    @Environment(GameStore.self) private var store
+    let listing: EbayLot
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top) {
+                Text("\(listing.title) · \(listing.listedCards)+ cards").font(.subheadline.weight(.semibold)).multilineTextAlignment(.leading)
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(money(listing.price)).font(.subheadline.monospaced().weight(.semibold))
+                    Text("+\(money(Balance.ebayLotShipping)) ship").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                 }
+            }
+            LotBadges(listing: listing)
+            if !listing.visiblePieces.isEmpty {
+                HStack(spacing: 6) {
+                    ForEach(listing.visiblePieces.prefix(5)) { piece in
+                        GoodsThumb(goods: piece.goods).frame(width: 40, height: 56)
+                    }
+                    if listing.visiblePieces.count > 5 {
+                        Text("+\(listing.visiblePieces.count - 5)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                }
+            }
+            if store.hasUpgrade(.lotAppraisal) {
+                let range = store.appraisal(listing)
+                Text("Appraisal \(range.lowerBound == range.upperBound ? money(range.lowerBound) : "\(money(range.lowerBound)) to \(money(range.upperBound))")")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.cyan)
+            }
+        }
+        .contentShape(Rectangle())
+        .padding(.vertical, 6)
+        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+}
+
+/// What a listing shows, its claim, and the seller research flag.
+struct LotBadges: View {
+    @Environment(GameStore.self) private var store
+    let listing: EbayLot
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Tag(text: listing.docs == .photos ? "\(listing.shown.count) PHOTO\(listing.shown.count == 1 ? "" : "S")" : listing.docs.label,
+                color: listing.docs == .full ? Theme.green : listing.docs == .blind ? Theme.orange : Theme.cyan)
+            if listing.docs == .blind || listing.docs == .photos {
                 Tag(text: listing.claimsUnsearched ? "SAYS UNSEARCHED" : "SEARCHED", color: listing.claimsUnsearched ? Theme.green : Theme.muted)
-                HStack(spacing: 8) {
+            }
+            if store.hasUpgrade(.sellerResearch), listing.sellsSingles {
+                Tag(text: "SELLS SINGLES", color: Theme.orange)
+            }
+        }
+    }
+}
+
+/// One listing in full: everything it shows, the seller, the appraisal, "Ask for more photos", and Buy.
+struct EbayLotSheet: View {
+    @Environment(GameStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let id: UUID
+    @State private var reply: String?
+    @State private var problem: String?
+
+    var body: some View {
+        NavigationStack {
+            if let listing = store.data.ebayLots.first(where: { $0.id == id }) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("\(listing.title) · \(listing.listedCards)+ cards").font(.headline)
+                        LotBadges(listing: listing)
+                        contents(listing)
+                        seller(listing)
+                        if store.hasUpgrade(.lotAppraisal) {
+                            let range = store.appraisal(listing)
+                            DetailBox(title: "Appraisal") {
+                                Text(range.lowerBound == range.upperBound ? "Worth \(money(range.lowerBound)) to a dealer."
+                                     : "Worth \(money(range.lowerBound)) to \(money(range.upperBound)) to a dealer, from what the listing shows.")
+                                    .font(.subheadline)
+                                Text("The app cannot tell whether someone searched the lot.").font(.caption).foregroundStyle(Theme.muted)
+                            }
+                        }
+                        if let reply { Banner(text: reply, color: Theme.cyan) }
+                        if let problem { Banner(text: problem, color: Theme.orange) }
+                        if listing.docs != .full {
+                            Button { reply = store.askForPhotos(id) } label: {
+                                Label(listing.asked ? "You asked for more photos" : "Ask for more photos", systemImage: "envelope")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(Theme.cyan)
+                            .disabled(listing.asked)
+                        }
+                        Button {
+                            if let issue = store.buyEbayLot(id) { problem = issue } else { dismiss() }
+                        } label: {
+                            Text("Buy · \(money(listing.total))").frame(maxWidth: .infinity)
+                        }
+                        .primaryButton()
+                        .disabled(!store.canAfford(listing.total))
+                        Text("\(money(listing.price)) and \(money(Balance.ebayLotShipping)) shipping. It arrives in \(Balance.ebayLotShipDays.lowerBound) to \(Balance.ebayLotShipDays.upperBound) days. You cannot return it.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
+                    .controlSize(.large)
+                    .padding(16)
+                }
+                .background(Theme.background.ignoresSafeArea())
+                .navigationTitle(money(listing.price))
+                .navigationBarTitleDisplayMode(.inline)
+            } else {
+                Text("That lot sold.").foregroundStyle(Theme.muted)
+            }
+        }
+    }
+
+    @ViewBuilder private func contents(_ listing: EbayLot) -> some View {
+        DetailBox(title: "The listing") {
+            switch listing.docs {
+            case .blind:
+                Text(listing.claimsUnsearched ? "No photos. The seller says: \"Never looked through it.\"" : "No photos.")
+                    .font(.subheadline)
+            case .photos:
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 80), spacing: 8)], spacing: 8) {
                     ForEach(listing.shownPieces) { piece in
-                        VStack(spacing: 2) {
-                            GoodsThumb(goods: piece.goods).frame(width: 48, height: 67)
+                        VStack(spacing: 3) {
+                            GoodsThumb(goods: piece.goods).frame(height: 100)
+                            Text(piece.name).font(.caption2).lineLimit(1)
                             Text(money(piece.market)).font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                         }
                     }
-                    Spacer()
                 }
-                Text("In the photos: \(listing.shownPieces.map(\.name).joined(separator: ", "))")
+                Text("The photos show no flaws. You see each card when the box arrives.").font(.caption).foregroundStyle(Theme.muted)
+            case .cardList:
+                ForEach(listing.lot.pieces) { piece in
+                    HStack {
+                        Text(piece.name).font(.subheadline).lineLimit(1)
+                        Spacer()
+                        Text("NM \(money(EbayLot.listedValue(piece)))").font(.caption.monospaced())
+                    }
+                }
+                Text("Bulk: \(listing.lot.bulkCount) cards. The seller does not state the conditions, and prices every card as Near Mint.")
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
-                    .lineLimit(2)
+            case .full:
+                ForEach(listing.lot.pieces) { piece in
+                    HStack(alignment: .top, spacing: 8) {
+                        GoodsThumb(goods: piece.goods).frame(width: 36, height: 50)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(piece.name).font(.subheadline).lineLimit(1)
+                            GoodsDetail(goods: piece.goods, tool: store.data.centeringTool)
+                        }
+                        Spacer()
+                        Text(money(piece.market)).font(.caption.monospaced())
+                    }
+                }
+                Text("Bulk: \(listing.lot.bulkCount) cards. Front and back photos of every card.").font(.caption).foregroundStyle(Theme.muted)
             }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .padding(.vertical, 6)
-        .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+
+    private func seller(_ listing: EbayLot) -> some View {
+        DetailBox(title: "Seller") {
+            Text("\(listing.feedback.formatted(.number.precision(.fractionLength(1))))% positive · \(listing.sales.formatted()) sales")
+                .font(.subheadline.monospaced())
+            if store.hasUpgrade(.sellerResearch) {
+                Text(listing.sellsSingles ? "Seller research: this seller also sells singles from their lots. \"Unsearched\" may not be true."
+                     : "Seller research: nothing found.")
+                    .font(.caption)
+                    .foregroundStyle(listing.sellsSingles ? Theme.orange : Theme.muted)
+            }
+        }
     }
 }

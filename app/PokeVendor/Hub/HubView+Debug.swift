@@ -18,7 +18,13 @@ extension HubView {
             case "loans": nav.path = [.wallet, .loans]
             case "buy": nav.path = [.buy]
             case "amazon": nav.path = [.buy, .store(.amazon)]
-            case "ebay": nav.path = [.buy, .store(.ebay)]
+            case "ebay":
+                // `-lotupgrades` gives the three eBay lot upgrades (docs/33-collections.md).
+                if args.contains("-lotupgrades") {
+                    for u in [Upgrade.savedSearch, .sellerResearch, .lotAppraisal] where !store.hasUpgrade(u) { store.data.upgrades.append(u.rawValue) }
+                    store.data.ebayLotsDay = -99
+                }
+                nav.path = [.buy, .store(.ebay)]
             case "shop": nav.path = [.shop(.castle)]
             case "local": nav.path = [.buyLocal]
             case "raw": nav.path = [.inventory(.raw)]

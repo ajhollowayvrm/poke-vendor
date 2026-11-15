@@ -87,6 +87,16 @@ bring it to a table for more visitors, more whales, and followers (see
 
 See [21-relationships-and-reputation.md](21-relationships-and-reputation.md#the-contact-book).
 
+## eBay collection lots
+
+| Upgrade | Cost | What it does |
+|---|---|---|
+| Saved eBay searches | $80 | 6 collection lots instead of 4, and new lots every day instead of every 3 days. |
+| Seller research | $150 | Each lot shows whether the seller also sells singles from their lots, a sign of a searched lot. |
+| Lot appraisal app | $250 | Each lot shows a range for its worth to a dealer, from what the listing shows. |
+
+See [33-collections.md](33-collections.md#upgrades).
+
 ## Large purchases
 
 Your own warehouse and a home are large purchases for the late game. See

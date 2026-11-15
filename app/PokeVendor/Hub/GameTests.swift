@@ -249,6 +249,28 @@ final class GameTests {
         store.refreshEbayLots()
         check(store.data.ebayLots.count == Balance.ebayLotCount, "\(store.data.ebayLots.count) eBay lots, not \(Balance.ebayLotCount)")
         guard let listing = store.data.ebayLots.first else { return }
+
+        // A listing saved before the listing levels must still load, or a paid lot on its way is lost.
+        if let json = try? JSONEncoder().encode(listing), var dict = (try? JSONSerialization.jsonObject(with: json)) as? [String: Any] {
+            for key in ["docs", "asked", "feedback", "sales", "sellsSingles"] { dict.removeValue(forKey: key) }
+            let old = (try? JSONSerialization.data(withJSONObject: dict)).flatMap { try? JSONDecoder().decode(EbayLot.self, from: $0) }
+            check(old?.docs == .photos, "an eBay listing from an older save does not load")
+        }
+        // "Ask for more photos" works once. A fully documented listing appraises at its exact worth.
+        let shownBefore = listing.shown.count
+        _ = store.askForPhotos(listing.id)
+        let asked = store.data.ebayLots.first { $0.id == listing.id }
+        check(asked?.asked == true && (asked?.shown.count ?? 0) >= shownBefore, "asking for photos did not mark the listing")
+        check(store.askForPhotos(listing.id) == "You asked already.", "a listing took a second photo request")
+        var full = listing
+        full.docs = .full
+        check(store.appraisal(full).lowerBound == full.lot.dealValue, "the appraisal of a fully documented lot is not its worth")
+        // Saved searches: more listings.
+        store.data.upgrades.append(Upgrade.savedSearch.rawValue)
+        store.data.ebayLotsDay = -99
+        store.refreshEbayLots()
+        check(store.data.ebayLots.count == Balance.ebayLotCountSaved, "saved searches show \(store.data.ebayLots.count) lots, not \(Balance.ebayLotCountSaved)")
+        guard let listing = store.data.ebayLots.first else { return }
         let before = store.cash
         check(store.buyEbayLot(listing.id) == nil, "could not buy an eBay lot")
         check(abs(before - store.cash - listing.total) < 0.01, "an eBay lot took \(money(before - store.cash)), not \(money(listing.total))")

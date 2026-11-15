@@ -33,6 +33,8 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case dehumidifier, fireSafe
     /// Large things to buy (docs/16-time-and-day.md, Costs that grow).
     case warehouse, ownHome
+    /// eBay collection lots: more listings, a check on the seller, and an estimate of the worth (docs/33-collections.md).
+    case savedSearch, sellerResearch, lotAppraisal
 
     var name: String {
         switch self {
@@ -59,6 +61,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .fireSafe: "Fire safe"
         case .warehouse: "Your own warehouse"
         case .ownHome: "Buy a home"
+        case .savedSearch: "Saved eBay searches"
+        case .sellerResearch: "Seller research"
+        case .lotAppraisal: "Lot appraisal app"
         }
     }
 
@@ -87,6 +92,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .fireSafe: "A sealed safe for your cards. Water damage to raw cards in storage cannot happen."
         case .warehouse: "Room for any amount of stock. You never pay for a storage unit again."
         case .ownHome: "Rent stops for good, so a missed rent payment can no longer end the run. Upkeep is \(money(Balance.ownHomeUpkeep)) every 4 weeks."
+        case .savedSearch: "eBay shows \(Balance.ebayLotCountSaved) collection lots instead of \(Balance.ebayLotCount), and new lots come every day instead of every \(Balance.ebayLotDays) days."
+        case .sellerResearch: "Each eBay lot shows whether the seller also sells singles from their lots. Most sellers who call a searched lot \"unsearched\" do."
+        case .lotAppraisal: "Each eBay lot shows a range for its worth to a dealer, from what the listing shows. It cannot tell whether someone searched the lot."
         }
     }
 
@@ -117,6 +125,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .fireSafe: "lock.shield"
         case .warehouse: "building.2"
         case .ownHome: "house"
+        case .savedSearch: "magnifyingglass.circle"
+        case .sellerResearch: "person.text.rectangle"
+        case .lotAppraisal: "camera.viewfinder"
         }
     }
 
@@ -136,7 +147,7 @@ extension Balance {
         .cornerLoupe: 60, .edgeLight: 90, .surfaceLamp: 140, .studioLights: 250, .cameraKit: 600,
         .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600, .cardReader: Balance.cardReaderCost,
         .lockedCase: 220, .showcaseCase: Balance.showcaseCost, .vendorBinder: 40, .slabCase: 90, .foldingCart: 120, .dehumidifier: 120, .fireSafe: 400,
-        .warehouse: 90_000, .ownHome: 350_000,
+        .warehouse: 90_000, .ownHome: 350_000, .savedSearch: 80, .sellerResearch: 150, .lotAppraisal: 250,
     ]
     /// Contact book room: no upgrade, the contact book, and the big contact book.
     static let contactBookSizes = [4, 8, 15]
