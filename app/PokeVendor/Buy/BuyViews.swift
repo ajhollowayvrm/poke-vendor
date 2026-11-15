@@ -104,6 +104,8 @@ struct StoreView: View {
                 if let message {
                     Banner(text: message, color: Theme.cyan)
                 }
+                // Blind collection lots (docs/33-collections.md, eBay collection lots).
+                if store_ == .ebay { EbayLotsSection() }
                 if offers.isEmpty {
                     EmptyTab(text: store_ == .pokemonCenter ? "No drop live. Drops come with no notice." : "Nothing for sale today.")
                         .background(Theme.surface)

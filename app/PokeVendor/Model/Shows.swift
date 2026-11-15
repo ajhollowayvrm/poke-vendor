@@ -641,6 +641,14 @@ struct Visitor: Identifiable {
     /// The deal closed on a coin flip. A flip is not scored for fairness. `lostFlip`: the player lost it.
     var flipped = false
     var lostFlip = false
+    /// A whole collection for sale (docs/33-collections.md). Its deal uses the collection panel, not the counter.
+    var collection: CollectionLot?
+    /// What the collection seller would like: cash, store credit, or a trade.
+    var want: CollectionWant = .cash
+    /// The seller's answer to cherry-picking. Nil until the player tries.
+    var cherryOK: Bool?
+    /// A card the person asks about: grade it, or keep it raw (docs/33-collections.md, Grading advice).
+    var advice: AdviceAsk?
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.dealMarket } + tradeCash }
 }
@@ -1041,7 +1049,14 @@ final class ShowSession {
         // With the showcase out, a whale comes more often. Some whales ask about a showcase card.
         if showcaseOut, Double.random(in: 0..<1) < store.showcaseWhaleChance { v = makeWhale() }
         if v == nil {
-            if table.isEmpty || roll < sellers { v = makeSeller() }
+            if table.isEmpty || roll < sellers {
+                // Some sellers bring a whole collection, and some only ask about grading (docs/33-collections.md).
+                let kind = Double.random(in: 0..<1)
+                let collections = venue.kind == .store ? Balance.collectionStoreShare : Balance.collectionShare
+                if kind < collections { v = makeCollectionSeller() }
+                else if kind < collections + Balance.adviceShare { v = makeAdviceSeeker() }
+                if v == nil { v = makeSeller() }
+            }
             // The trade share is a share of the people who do not come to sell, so a high seller share leaves room for
             // buyers. The store counter keeps its old flat trade share (docs/29-packing-and-crowds.md).
             else if roll < sellers + (venue.kind == .store ? Balance.storeTradeShare : (1 - sellers) * venue.crowd.tradeShare),
@@ -1352,7 +1367,7 @@ final class ShowSession {
 
     /// A buyer or a trader looks the item over. If it is a fake and they see it, they walk, and word gets around
     /// (docs/14-counterfeit-risk.md, Consequences). Returns true when they caught it.
-    private func buyerCatchesFake(_ v: Visitor, _ item: ShowItem) -> Bool {
+    func buyerCatchesFake(_ v: Visitor, _ item: ShowItem) -> Bool {
         guard let fake = item.fake, Counterfeit.eyeballCatches(fake) else { return false }
         var caught = v
         caught.line = "Hold on. This isn't real. I'm not buying a fake."
@@ -1474,7 +1489,7 @@ final class ShowSession {
     }
 
     /// A stranger who had a good deal with the player sometimes gives their number.
-    private func maybePromote(_ v: Visitor, points: Int, chance: Double = 0.25) {
+    func maybePromote(_ v: Visitor, points: Int, chance: Double = 0.25) {
         guard v.contactID == nil, Double.random(in: 0..<1) < chance else { return }
         let kind: ContactKind = switch v.intent {
         case .buy: .buyer
@@ -1517,7 +1532,7 @@ final class ShowSession {
     /// Some visitors ask to flip for it. A buyer flips at the player's price, a seller at their own price. They ask
     /// only when the flip is worth it to them on average: the average cost of a flip is 75% of the full price.
     private func maybeProposeFlip(_ v: inout Visitor) {
-        guard canFlip, !v.naive, let full = flipFull(v) else { return }
+        guard canFlip, !v.naive, v.collection == nil, v.advice == nil, let full = flipFull(v) else { return }
         guard Double.random(in: 0..<1) < v.type.flipWillingness * Balance.flipProposeShare else { return }
         let half = flipHalf(full)
         switch v.intent {
@@ -1868,7 +1883,7 @@ final class ShowSession {
         finish(minutes: .random(in: 2...5))
     }
 
-    private func finish(minutes: Double) {
+    func finish(minutes: Double) {
         if phase == .table {
             minute += minutes
             visitor = nil
@@ -1878,6 +1893,22 @@ final class ShowSession {
             spend(minutes)
         }
     }
+
+    /// Records for the summary, for deals that live in other files.
+    func recordBought(_ name: String, _ price: Double) { bought.append((name, price)) }
+    func recordTrade(_ line: String) { trades.append(line) }
+    func recordWalkAway() { walkedAway += 1 }
+
+    /// Takes items off the table and out of the load, after a trade.
+    func removeFromTable(_ ids: Set<UUID>) {
+        table.removeAll { ids.contains($0.id) }
+        bring.subtract(ids)
+    }
+
+    #if DEBUG
+    /// Tests only: puts this person at the table.
+    func testSeat(_ v: Visitor) { visitor = v }
+    #endif
 
     func packUp() {
         visitor = nil
@@ -2140,6 +2171,8 @@ final class ShowSession {
     func debugVisitor(_ kind: String) {
         switch kind {
         case "seller": visitor = makeSeller()
+        case "collection": visitor = makeCollectionSeller() ?? visitor
+        case "advice": visitor = makeAdviceSeeker() ?? visitor
         case "trader": visitor = makeTrader() ?? visitor
         case "naive":
             for _ in 0..<60 {

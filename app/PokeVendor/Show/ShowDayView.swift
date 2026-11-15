@@ -91,7 +91,7 @@ struct ShowDayView: View {
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
             let args = ProcessInfo.processInfo.arguments
             if args.contains("floor") { session.walkFloor() }
-            for kind in ["seller", "trader", "naive"] where args.contains(kind) { session.debugVisitor(kind) }
+            for kind in ["seller", "trader", "naive", "collection", "advice"] where args.contains(kind) { session.debugVisitor(kind) }
             if args.contains("buysealed"), let v = session.vendors.first(where: { $0.kind == .gameShop }),
                let item = v.items.first(where: { if case .sealed(let p) = $0.goods { return p.market < 80 }; return false }) {
                 session.walkFloor()

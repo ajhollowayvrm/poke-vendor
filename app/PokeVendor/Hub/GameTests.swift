@@ -16,14 +16,22 @@ final class GameTests {
 
     func run() {
         let start = Date()
-        collection()
-        shorts()
-        listings()
-        psaBills()
-        seasonsAndSave()
-        days()
+        var times: [String] = []
+        func timed(_ name: String, _ group: () -> Void) {
+            let t = Date()
+            group()
+            times.append("\(name) \(Int(Date().timeIntervalSince(t) * 1000))")
+        }
+        timed("collection", collection)
+        timed("shorts", shorts)
+        timed("listings", listings)
+        timed("psa", psaBills)
+        timed("collections", collections)
+        timed("seasons", seasonsAndSave)
+        timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
+        print("TEST TIMES (ms): " + times.joined(separator: ", "))
         print(fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms")
         // The console is a pipe, so stdout is buffered. Push the report out now.
         fflush(stdout)
@@ -194,6 +202,62 @@ final class GameTests {
         check(store.payGradingBill(bill.id), "the PSA bill did not pay")
         check(abs(before - store.cash - fee) < 0.01, "paying PSA took \(money(before - store.cash)), not \(money(fee))")
         check(store.gradingBills.isEmpty && store.heldCards(bill.id).isEmpty, "paid PSA cards are still held")
+    }
+
+    // MARK: - Collections (docs/33-collections.md)
+
+    /// A whole collection bought at a table, honest grading advice, and an eBay lot from purchase to arrival.
+    private func collections() {
+        fresh()
+        // A plain table with no vendor floor: a show's floor loads many set files, and this test does not need one.
+        let venue = Venue(kind: .meet, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        session.openTable()
+        guard let seller = session.makeCollectionSeller(), let lot = seller.collection else {
+            return check(false, "no collection seller")
+        }
+        session.testSeat(seller)
+        // Now and then a seller brings more than the player can pay. The test pays any of them.
+        store.addTestCash(seller.offer)
+        let cash = store.cash
+        let paidBefore = store.data.openedPaid
+        let ids = Set(store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id))
+        let bulkBefore = store.data.bulk.count
+        session.offerOnCollection(nil, price: seller.offer, credit: false)
+        check(abs(cash - store.cash - seller.offer) < 0.01, "a collection at its price took \(money(cash - store.cash)), not \(money(seller.offer))")
+        let new = store.data.raw.filter { !ids.contains($0.id) }.compactMap(\.paid)
+            + store.data.slabs.filter { !ids.contains($0.id) }.compactMap(\.paid)
+            + store.data.sealed.filter { !ids.contains($0.id) }.map(\.paid)
+        check(new.count == lot.pieces.count, "\(new.count) of \(lot.pieces.count) collection items went into Inventory")
+        check(store.data.bulk.count - bulkBefore == lot.bulk.count, "the collection bulk did not go into bulk groups")
+        let split = new.reduce(0, +) + store.data.openedPaid - paidBefore
+        check(abs(split - seller.offer) < 0.01 * Double(lot.pieces.count + 1), "the collection cost split to \(money(split)), not \(money(seller.offer))")
+
+        // Honest advice on a card that is clearly not worth grading.
+        if let print = prismatic.first(where: { ($0.market ?? 0) > 5 }) {
+            let beat = Condition(cut: Cut(frontLR: 70, frontTB: 65, backLR: 70, backTB: 70), corners: 3, edges: 3, surface: 3)
+            check(GameStore.gradingWorth(print, slug: "prismatic-evolutions", condition: beat) < 0, "a beat-up card is worth grading")
+            var asker = Visitor(type: .collector, name: "Test", intent: .sell, item: nil, limit: 5, offer: 5, patience: 2, line: "")
+            asker.advice = AdviceAsk(print: print, slug: "prismatic-evolutions", condition: beat, worth: -50)
+            session.testSeat(asker)
+            let rep = store.data.reputation
+            session.advise(grade: false)
+            check(store.data.reputation > rep, "honest grading advice paid no reputation")
+        }
+
+        // An eBay lot: the cash goes when the player buys it, and the contents come when it arrives.
+        store.refreshEbayLots()
+        check(store.data.ebayLots.count == Balance.ebayLotCount, "\(store.data.ebayLots.count) eBay lots, not \(Balance.ebayLotCount)")
+        guard let listing = store.data.ebayLots.first else { return }
+        let before = store.cash
+        check(store.buyEbayLot(listing.id) == nil, "could not buy an eBay lot")
+        check(abs(before - store.cash - listing.total) < 0.01, "an eBay lot took \(money(before - store.cash)), not \(money(listing.total))")
+        let held = Set(store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id))
+        if let order = store.data.lotOrders.first { store.data.lotOrders = [LotOrder(listing: order.listing, arrivalDay: store.day)] }
+        _ = store.lotOrdersEndDay()
+        let arrived = (store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id)).filter { !held.contains($0) }
+        check(store.data.lotOrders.isEmpty && arrived.count == listing.lot.pieces.count,
+              "\(arrived.count) of \(listing.lot.pieces.count) eBay lot items arrived")
     }
 
     // MARK: - Seasons and the save (docs/05-pricing-and-market.md)

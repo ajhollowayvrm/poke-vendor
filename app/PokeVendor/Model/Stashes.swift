@@ -33,7 +33,9 @@ struct StashItem: Identifiable {
 @MainActor
 extension ShowSession {
     /// A trader can show their binder. A seller, at the table or on the floor, can show their stash.
-    func canAskStash(_ v: Visitor) -> Bool { !v.stashAsked && (v.intent == .trade || v.intent == .sell) }
+    func canAskStash(_ v: Visitor) -> Bool {
+        !v.stashAsked && v.collection == nil && v.advice == nil && (v.intent == .trade || v.intent == .sell)
+    }
 
     /// Asks to see the binder or the stash. It works once for each person.
     func askToSeeStash() {

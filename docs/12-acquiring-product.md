@@ -209,6 +209,12 @@ possible find at an existing activity. This is also the main source of
 counterfeit/reseal risk on sealed product — see
 [14-counterfeit-risk.md](14-counterfeit-risk.md).
 
+### Collections
+
+People bring whole collections to the player's table and store, and
+eBay sells collection lots blind. See
+[33-collections.md](33-collections.md).
+
 ### Case splits (reputation-gated)
 
 A few trusted people pool money to buy a full case together, then

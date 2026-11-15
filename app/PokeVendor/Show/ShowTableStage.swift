@@ -13,7 +13,11 @@ struct TableStage: View {
                             .id(visitor.id)
                             .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                                     removal: .move(edge: .leading).combined(with: .opacity)))
-                        StashPanel(session: session, visitor: visitor)
+                        if visitor.collection != nil {
+                            CollectionPanel(session: session, visitor: visitor).id(visitor.id)
+                        } else {
+                            StashPanel(session: session, visitor: visitor)
+                        }
                     } else {
                         Text("No one at your table.").font(.subheadline).foregroundStyle(Theme.muted).padding(.top, 40)
                     }
@@ -25,7 +29,18 @@ struct TableStage: View {
                 .animation(.spring(response: 0.4, dampingFraction: 0.85), value: session.visitor?.id)
             }
             if let visitor = session.visitor {
-                DealButtons(session: session, visitor: visitor)
+                if visitor.advice != nil {
+                    AdviceButtons(session: session, visitor: visitor)
+                } else if visitor.collection != nil {
+                    // The collection deal is in the panel above. Here the player can only pass.
+                    Button { withAnimation { session.decline() } } label: { Text("Pass").frame(maxWidth: .infinity) }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 10)
+                } else {
+                    DealButtons(session: session, visitor: visitor)
+                }
             }
             HStack(spacing: 10) {
                 if session.venue.hasFloor {
@@ -343,6 +358,8 @@ struct VisitorCard: View {
                     }
                 }
             }
+            if let lot = visitor.collection { CollectionSummary(lot: lot) }
+            if let ask = visitor.advice { AdviceCardView(ask: ask, raw: visitor.goodsMarket) }
             if let goods = visitor.goods {
                 Text("THEY'RE SELLING").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
                 HStack(alignment: .top, spacing: 12) {
@@ -389,13 +406,15 @@ struct VisitorCard: View {
                         .contentTransition(.numericText())
                 }
             default:
+                if visitor.advice == nil {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(visitor.intent == .sell ? "THEIR PRICE" : "OFFER")
+                    Text(visitor.collection != nil ? "THEIR PRICE FOR ALL" : visitor.intent == .sell ? "THEIR PRICE" : "OFFER")
                         .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
                     Spacer()
                     Text(money(visitor.offer)).font(.system(size: 28, weight: .bold, design: .monospaced))
                         .foregroundStyle(good ? Theme.green : Theme.text)
                         .contentTransition(.numericText())
+                }
                 }
             }
         }
@@ -416,7 +435,7 @@ struct VisitorCard: View {
         switch visitor.intent {
         case .buy: "WANTS TO BUY"
         case .trade: "WANTS TO TRADE"
-        case .sell: "WANTS TO SELL"
+        case .sell: visitor.collection != nil ? "SELLING A COLLECTION" : visitor.advice != nil ? "ASKS ABOUT GRADING" : "WANTS TO SELL"
         }
     }
 

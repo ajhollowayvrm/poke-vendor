@@ -120,6 +120,10 @@ something that the player can pay for. About 1 in 7 brings a big item.
 | Collector | 75% to 95% | 60% to 75% |
 | Dealer moving stock | 85% to 100% | 72% to 85% |
 
+Some sellers bring a whole collection instead of one item, and some
+only ask whether to grade a card. See
+[33-collections.md](33-collections.md).
+
 **Buy** pays the price. **Offer** uses the same slider, from 30% to
 110% of market, and starts one step under the seller's price. At or
 over the lowest price, the seller takes it. Under it, the seller comes down part

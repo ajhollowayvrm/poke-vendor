@@ -128,6 +128,10 @@ struct GameData: Codable {
     var startedMasterSets: [String: Int] = [:]
     /// PSA orders that bill when the grades come back (docs/10-grading.md, Paying PSA).
     var gradingBills: [GradingBill] = []
+    /// eBay collection lots for sale, the day they last changed, and the lots on their way (docs/33-collections.md).
+    var ebayLots: [EbayLot] = []
+    var ebayLotsDay = -99
+    var lotOrders: [LotOrder] = []
     /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
     var shorts = ShortsState()
 }
@@ -217,6 +221,9 @@ extension GameData {
         completedMasterSets = v(.completedMasterSets, completedMasterSets)
         startedMasterSets = v(.startedMasterSets, startedMasterSets)
         gradingBills = v(.gradingBills, gradingBills)
+        ebayLots = v(.ebayLots, ebayLots)
+        ebayLotsDay = v(.ebayLotsDay, ebayLotsDay)
+        lotOrders = v(.lotOrders, lotOrders)
         shorts = v(.shorts, shorts)
     }
 }
@@ -1080,6 +1087,8 @@ final class GameStore {
         lines += advanceSealed()
         lines += advanceCards()
         lines += gradingBillsEndDay()
+        lines += lotOrdersEndDay()
+        refreshEbayLots()
         lines += advanceSocial()
         scheduleShows()
         scheduleSales()
