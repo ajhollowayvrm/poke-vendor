@@ -25,7 +25,16 @@ struct RipView: View {
     @State var flecks: [FleckBurst] = []
     /// The light out of the top of the pack, the moment it opens.
     @State var openFlash = 0.0
-    @State var lastLayout: TableLayout?
+    /// The size of the table, and the measured heights of the top bar and the bottom panel.
+    @State private var tableSize: CGSize = .zero
+    @State private var topBarHeight: CGFloat = 104
+    @State private var panelHeight: CGFloat = 236
+    /// The full grid of graded prices in the card panel. It stays open or closed between rips.
+    @AppStorage("rip.gradesOpen") private var gradesOpen = false
+    /// The layout of the last frame, for the tear flecks.
+    var lastLayout: TableLayout? {
+        tableSize == .zero ? nil : TableLayout(size: tableSize, top: topBarHeight, bottom: panelHeight)
+    }
     /// The demigod or god pack moment, while it shows.
     @State var celebration: SpecialPack?
     @State var cardsRise = false
@@ -55,26 +64,17 @@ struct RipView: View {
 
     var body: some View {
         GeometryReader { geo in
-            let layout = TableLayout(size: geo.size)
+            let layout = TableLayout(size: geo.size, top: topBarHeight, bottom: panelHeight)
             ZStack {
                 TopBar(model: model, onSkip: skipPack, onClose: onClose)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                        withAnimation(.easeInOut(duration: 0.25)) { topBarHeight = height }
+                    }
                     .frame(maxHeight: .infinity, alignment: .top)
 
                 if model.phase == .open || model.phase == .done {
                     pileOutline(layout)
                     pileSlot(layout)
-                }
-
-                if model.phase == .open || model.phase == .done, !peeking, let card = infoCard, card.print != nil,
-                   model.allCards.contains(where: { $0.id == card.id }) {
-                    ConditionColumn(card: card)
-                        .frame(width: layout.infoW)
-                        .position(layout.leftInfo)
-                        .zIndex(330)
-                    CutColumn(card: card, tool: model.centeringTool)
-                        .frame(width: layout.infoW)
-                        .position(layout.rightInfo)
-                        .zIndex(330)
                 }
 
                 if let front = glowCard {
@@ -168,6 +168,9 @@ struct RipView: View {
                         .zIndex(340)
                 } else {
                     bottomPanel
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                            withAnimation(.easeInOut(duration: 0.25)) { panelHeight = height }
+                        }
                         .frame(maxHeight: .infinity, alignment: .bottom)
                         .zIndex(350)
                 }
@@ -232,8 +235,8 @@ struct RipView: View {
         .background(
             GeometryReader { geo in
                 Color.clear
-                    .onAppear { lastLayout = TableLayout(size: geo.size) }
-                    .onChange(of: geo.size) { _, size in lastLayout = TableLayout(size: size) }
+                    .onAppear { tableSize = geo.size }
+                    .onChange(of: geo.size) { _, size in tableSize = size }
             }
         )
         .background(
@@ -384,16 +387,13 @@ struct RipView: View {
 
     private var bottomPanel: some View {
         VStack(spacing: 10) {
-            if model.phase == .sealed, model.mode == .normal {
-                Text(model.willCombine && model.packsLeft > 1
-                     ? "Hits only. One swipe opens all \(model.packsLeft) packs."
-                     : "Tap or swipe across the top of the pack to open it.")
-                    .font(.subheadline)
-                    .foregroundStyle(Theme.muted)
-                    .frame(maxWidth: .infinity, minHeight: 82)
-            } else {
-                CardInfo(card: infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil })
-            }
+            let sealed = model.phase == .sealed && model.mode == .normal
+            CardInfo(card: sealed ? nil : infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil },
+                     tool: model.centeringTool,
+                     hint: !sealed ? "Tap the card to reveal it.\nHold the stack to peek at the cards."
+                         : model.willCombine && model.packsLeft > 1 ? "Hits only. One swipe opens all \(model.packsLeft) packs."
+                         : "Tap or swipe across the top of the pack to open it.",
+                     gradesOpen: $gradesOpen)
             // Hits only has no modes, no Flip, and no pack trick (docs/18, Hits only).
             if model.hitsOnly {
                 Color.clear.frame(height: 1).overlay(alignment: .top) { noteView.offset(y: 8) }
@@ -405,24 +405,34 @@ struct RipView: View {
         .padding(.bottom, 8)
     }
 
-    /// The mode control, Flip, and the pack trick.
+    /// One row: the mode, Flip, the pack trick (or Pause in Fast and Sift), and the stop rule.
     private var rippingControls: some View {
-        VStack(spacing: 10) {
-            modeControl
-            HStack(spacing: 10) {
-                Button { flipStack() } label: {
-                    VStack(spacing: 1) {
-                        Label("Flip", systemImage: "arrow.triangle.2.circlepath")
-                            .font(.subheadline.weight(.semibold))
-                        Text(model.faceUp ? "face up" : "face down")
-                            .font(.caption2.monospaced())
-                            .foregroundStyle(Theme.muted)
-                    }
-                    .frame(width: 120)
+        HStack(spacing: 8) {
+            modeMenu
+            Button { flipStack() } label: {
+                VStack(spacing: 1) {
+                    Image(systemName: "arrow.triangle.2.circlepath").font(.subheadline.weight(.semibold))
+                    Text(model.faceUp ? "face up" : "face down").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .disabled(flipping || model.tuckingID != nil || model.trickDone)
+                .frame(width: 64, height: 38)
+            }
+            .buttonStyle(.bordered)
+            .tint(Theme.cyan)
+            .disabled(flipping || model.tuckingID != nil || model.trickDone)
+            .accessibilityLabel("Flip the stack")
+            if model.mode != .normal {
+                // Fast and Sift run by themselves, so the pack trick gives its place to Pause.
+                Button {
+                    if model.paused { model.resume() } else { model.paused = true; autoTask?.cancel() }
+                } label: {
+                    Label(model.paused ? "Continue" : "Pause", systemImage: model.paused ? "play.fill" : "pause.fill")
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 38)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Theme.cyan)
+                .foregroundStyle(.black)
+            } else {
                 Button(action: moveToBack) {
                     VStack(spacing: 1) {
                         Label("Pack trick", systemImage: "arrow.uturn.down")
@@ -431,62 +441,54 @@ struct RipView: View {
                              : "\(model.trickCount) · \(model.faceUp ? "back → front" : "top → bottom")")
                             .font(.caption2.monospaced())
                     }
-                    .frame(maxWidth: .infinity)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(maxWidth: .infinity, minHeight: 38)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Theme.cyan)
                 .foregroundStyle(model.trickDone || !model.trickNeeded ? Theme.muted : .black)
-                .controlSize(.large)
                 .disabled(model.phase != .open || model.trickCount == 0 || model.trickDone)
             }
-        }
-    }
-
-    /// The rip mode for this rip, and the stop rule (docs/18-ripping.md, Rip modes). Sift shows on a stream,
-    /// but it is off there.
-    private var modeControl: some View {
-        HStack(spacing: 8) {
-            if !model.recording.isEmpty {
-                // Record & Rip: the camera is on for the whole rip.
-                Label("REC", systemImage: "record.circle.fill")
-                    .font(.caption.weight(.bold).monospaced())
-                    .foregroundStyle(.red)
+            Button { stopRuleShown = true } label: {
+                Image(systemName: "line.3.horizontal.decrease.circle").font(.title3).frame(height: 38)
             }
-            Picker("Mode", selection: Bindable(model).mode) {
-                ForEach(RipMode.allCases, id: \.self) { mode in
-                    Text(mode.label).tag(mode)
-                }
-            }
-            .pickerStyle(.segmented)
-            .disabled(false)
-            .overlay {
-                if !model.allowedModes.contains(.sift) {
-                    // Sift is off on a stream. The overlay takes the taps on its third of the control.
-                    GeometryReader { geo in
-                        Color.clear
-                            .contentShape(Rectangle())
-                            .frame(width: geo.size.width / 3)
-                            .position(x: geo.size.width * 5 / 6, y: geo.size.height / 2)
-                            .onTapGesture {
-                                model.note = model.recording.isEmpty ? "Sift is off on a live stream. Viewers want to see the cards."
-                                    : "Sift is off on a recorded rip. Viewers want to see the cards."
-                            }
-                    }
-                }
-            }
-            if model.mode != .normal {
-                Button(model.paused ? "Continue" : "Pause") {
-                    if model.paused { model.resume() } else { model.paused = true; autoTask?.cancel() }
-                }
-                .buttonStyle(.bordered)
-                .tint(Theme.cyan)
-            }
-            Button { stopRuleShown = true } label: { Image(systemName: "line.3.horizontal.decrease.circle") }
-                .buttonStyle(.bordered)
-                .tint(Theme.cyan)
-                .accessibilityLabel("Stop rule")
+            .buttonStyle(.bordered)
+            .tint(Theme.cyan)
+            .accessibilityLabel("Stop rule")
         }
         .overlay(alignment: .top) { noteView }
+    }
+
+    /// The rip mode for this rip (docs/18-ripping.md, Rip modes). Sift shows on a stream and on a recorded rip,
+    /// but it is off there.
+    private var modeMenu: some View {
+        Menu {
+            ForEach(RipMode.allCases, id: \.self) { mode in
+                Button {
+                    if model.allowedModes.contains(mode) {
+                        model.mode = mode
+                    } else {
+                        model.note = model.recording.isEmpty ? "Sift is off on a live stream. Viewers want to see the cards."
+                            : "Sift is off on a recorded rip. Viewers want to see the cards."
+                    }
+                } label: {
+                    if model.mode == mode { Label(mode.label, systemImage: "checkmark") } else { Text(mode.label) }
+                }
+            }
+        } label: {
+            VStack(spacing: 1) {
+                Text("MODE").font(.system(size: 9, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                HStack(spacing: 3) {
+                    Text(model.mode.label).font(.subheadline.weight(.semibold))
+                    Image(systemName: "chevron.up.chevron.down").font(.caption2)
+                }
+            }
+            .frame(minWidth: 64, minHeight: 38)
+        }
+        .buttonStyle(.bordered)
+        .tint(Theme.cyan)
+        .accessibilityLabel("Rip mode: \(model.mode.label)")
     }
 
     /// A short note above the controls, for example why Sift is off.

@@ -269,11 +269,11 @@ A set can have rare special packs that replace the slot map
 
 ### Condition on the reveal
 
-The condition of the card in hand shows in the column on the left of
-the stack, as the condition grade and the wear in words, for example
+The condition of the card in hand shows in the card panel under the
+stack, as the condition grade and the wear in words, for example
 "NM · Looks clean". The value of a pulled card uses its condition
 price (see [10-grading.md](10-grading.md#condition-grades)). Its
-cut shows in the column on the right: the front, then the back. The cut
+cut shows on the next line of the panel: the front, then the back. The cut
 is as sharp as the player's centering tool can read it (see
 [10-grading.md](10-grading.md#cut-and-wear)). The summary also shows
 the condition and the front cut next to each hit.
@@ -360,14 +360,26 @@ The cards that the player already saw go to a **pile**.
 - The pile shows the cards as real cards, not as a text list.
 - The pile sits above the stack. Its top card shows its name and its
   market price next to it.
-- The screen layout, from top to bottom: the pile, then the stack with
-  a column on each side, then the price panel. The left column shows
-  the condition, and the right column shows the cut, front and back.
-  The price panel shows only the name and the prices. The spare height
-  goes evenly between the rows, so no gap opens under the stack, and
-  the panel never covers the card. The sealed pack sits in the middle
-  of the free space, and its cards move to the stack when they come
-  out.
+- The screen layout, from top to bottom: the top bar, the pile, the
+  stack, the card panel, and the controls.
+  - The top bar has three short lines: the set and the pack count, the
+    product, and the pack value, cost, and net. Skip and Done are icon
+    buttons. A recorded rip shows "REC" here.
+  - The stack uses the full width of the screen.
+  - The card panel shows the name, the raw price, the rarity and the
+    condition, the cut, and one row of the PSA 10, CGC 10, and BGS 10
+    prices. A tap on that row opens the full graded grid. The grid
+    stays open or closed between rips. With no card face up, the panel
+    keeps its height and shows a hint.
+  - The controls are one row: the mode menu, Flip, the pack trick, and
+    the stop rule. In Fast and Sift, Pause takes the place of the pack
+    trick.
+- The screen measures the top bar and the bottom panel, and sizes the
+  card from the height that is left. The card shrinks when the panel
+  grows, so the panel never covers the card. The spare height goes
+  evenly between the rows, so no gap opens under the stack. The sealed
+  pack sits in the middle of the free space, and its cards move to the
+  stack when they come out.
 - A tap on the pile puts the top card back on the front of the stack.
 - The peek is the only way to see a card before the rip reveals it.
 - The pile holds all cards from the **current pack**, and every **hit

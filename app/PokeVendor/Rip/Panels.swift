@@ -19,93 +19,110 @@ struct StatCell: View {
     }
 }
 
+/// The top bar: the set and the pack count, the product, the money of the pack, and Skip and Done.
+/// It stays short, so the card on the table gets the height.
 struct TopBar: View {
     let model: RipModel
     let onSkip: () -> Void
     let onClose: () -> Void
 
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    let sets = Set(model.combinedSlugs ?? []).count
-                    Text(sets > 1 ? "\(sets) sets" : model.cardSet.name).font(.headline)
-                    Text(model.shownPack.map { "Hits only · Pack \($0.index + 1) of \($0.count)" }
-                         ?? "Pack \(model.packIndex + 1) of \(model.queue.count) · \(model.currentPack?.productName ?? "Booster pack")")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(Theme.muted)
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                let sets = Set(model.combinedSlugs ?? []).count
+                let pack = model.shownPack.map { "Pack \($0.index + 1) of \($0.count)" } ?? "Pack \(model.packIndex + 1) of \(model.queue.count)"
+                Text("\(sets > 1 ? "\(sets) sets" : model.cardSet.name) · \(pack)")
+                    .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                if !model.recording.isEmpty {
+                    // Record & Rip: the camera is on for the whole rip.
+                    Label("REC", systemImage: "record.circle.fill")
+                        .font(.caption.weight(.bold).monospaced())
+                        .foregroundStyle(.red)
                 }
-                Spacer()
+                Spacer(minLength: 8)
                 if model.phase == .sealed || model.phase == .open {
-                    Button(model.combinedSlugs == nil ? "Skip pack" : "Skip all", action: onSkip)
-                        .font(.subheadline.weight(.semibold))
-                        .buttonStyle(.bordered)
-                        .tint(Theme.cyan)
+                    Button(action: onSkip) { Image(systemName: "forward.end.fill") }
+                        .accessibilityLabel(model.combinedSlugs == nil ? "Skip pack" : "Skip all")
                 }
-                Button(action: onClose) {
-                    Label("Done", systemImage: "xmark")
-                        .font(.subheadline.weight(.semibold))
-                }
-                .buttonStyle(.bordered)
-                .tint(Theme.cyan)
+                Button(action: onClose) { Image(systemName: "xmark") }
+                    .accessibilityLabel("Done")
             }
-            HStack(spacing: 0) {
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.circle)
+            .tint(Theme.cyan)
+            Text(model.shownPack != nil ? "Hits only" : model.currentPack?.productName ?? "Booster pack")
+                .font(.caption.monospaced())
+                .foregroundStyle(Theme.muted)
+                .lineLimit(1)
+            HStack(spacing: 14) {
                 let net = model.shownValue - model.shownCost
-                StatCell(label: "Pack value", value: money(model.shownValue))
-                StatCell(label: "Cost", value: money(model.shownCost))
-                StatCell(label: "Net", value: signedMoney(net), color: net >= 0 ? Theme.green : Theme.orange)
+                stat("VALUE", money(model.shownValue), Theme.text)
+                stat("COST", money(model.shownCost), Theme.text)
+                stat("NET", signedMoney(net), net >= 0 ? Theme.green : Theme.orange)
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
     }
+
+    private func stat(_ label: String, _ value: String, _ color: Color) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            Text(label).font(.system(size: 9, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            Text(value).font(.subheadline.monospaced().weight(.semibold)).foregroundStyle(color)
+        }
+    }
 }
 
+/// The card in hand: the name, the raw price, the condition, the cut, and the graded prices. One row shows the three
+/// grade-10 prices. A tap on it opens the full grid. With no card, the same rows stay in place under a hint, so the
+/// panel keeps its height and the card on the table does not move.
 struct CardInfo: View {
     let card: RipCard?
+    let tool: Int
+    let hint: String
+    @Binding var gradesOpen: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let card {
-                HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 6) {
-                            Text(card.name).font(.headline).lineLimit(1)
-                            if card.isHit {
-                                Text("HIT")
-                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                    .padding(.horizontal, 5)
-                                    .padding(.vertical, 2)
-                                    .background(Theme.green.opacity(0.2))
-                                    .foregroundStyle(Theme.green)
-                            }
-                        }
-                        Text(card.subtitle)
-                            .font(.caption.monospaced())
-                            .foregroundStyle(Theme.muted)
-                            .lineLimit(1)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text("RAW")
-                            .font(.system(size: 10, weight: .semibold))
-                            .kerning(0.8)
-                            .foregroundStyle(Theme.muted)
-                        Text(money(card.market))
-                            .font(.system(size: 20, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(card.isHit ? Theme.green : Theme.text)
-                    }
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(card?.name ?? " ").font(.headline).lineLimit(1)
+                if card?.isHit == true {
+                    Text("HIT")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Theme.green.opacity(0.2))
+                        .foregroundStyle(Theme.green)
                 }
-                if let print = card.print {
-                    GradedPricesGrid(print: print)
-                } else {
-                    GradedPricesGrid(print: nil)
-                }
-            } else {
-                Text("Tap the card to reveal it.\nHold the stack to peek at the cards.")
+                Spacer(minLength: 8)
+                Text("RAW").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                Text(card.map { money($0.market) } ?? " ")
+                    .font(.system(size: 20, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(card?.isHit == true ? Theme.green : Theme.text)
+            }
+            HStack(spacing: 8) {
+                Text(card?.subtitle ?? " ")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(1)
+                Spacer(minLength: 4)
+                if let card, card.print != nil { WearText(wear: card.condition.wear).lineLimit(1) }
+            }
+            cutLine
+            grades
+        }
+        .opacity(card == nil ? 0 : 1)
+        .overlay {
+            if card == nil {
+                Text(hint)
                     .font(.subheadline)
                     .foregroundStyle(Theme.muted)
-                    .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .padding(12)
@@ -113,6 +130,66 @@ struct CardInfo: View {
         .framed()
     }
 
+    /// The front and back cut on one line: words without a tool, or left to right and top to bottom with one.
+    private var cutLine: some View {
+        let cut = card?.condition.cut
+        let front = cut.map { CutReading.front($0, tool: tool) }
+        let back = cut.map { CutReading.back($0, tool: tool) }
+        return HStack(alignment: .firstTextBaseline, spacing: 6) {
+            label("CUT")
+            Text(front.map(Self.text) ?? " ")
+            label("BACK").padding(.leading, 6)
+            Text(back.map(Self.text) ?? " ")
+            Spacer(minLength: 0)
+        }
+        .font(.caption2.monospaced())
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .opacity(card?.print == nil ? 0 : 1)
+    }
+
+    private static func text(_ r: CutReading) -> String {
+        r.words ?? "LR \(r.lr) TB \(r.tb)" + (r.spread > 0 ? " ±\(r.spread)" : "")
+    }
+
+    private var grades: some View {
+        let print = card?.print
+        return Button {
+            withAnimation(.easeInOut(duration: 0.25)) { gradesOpen.toggle() }
+        } label: {
+            HStack(alignment: gradesOpen ? .top : .center, spacing: 10) {
+                if gradesOpen {
+                    GradedPricesGrid(print: print)
+                } else {
+                    grade("PSA 10", print?.gradedPrice("psa10"))
+                    grade("CGC 10", print?.gradedPrice("cgc10"))
+                    grade("BGS 10", print?.gradedPrice("bgs10"))
+                    Spacer(minLength: 0)
+                }
+                Image(systemName: gradesOpen ? "chevron.up" : "chevron.down")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Theme.cyan)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(card == nil)
+        .accessibilityLabel(gradesOpen ? "Hide the graded prices" : "Show all graded prices")
+    }
+
+    private func grade(_ label: String, _ price: Double?) -> some View {
+        HStack(spacing: 4) {
+            Text(label).foregroundStyle(Theme.muted)
+            Text(price.map(money) ?? "—").foregroundStyle(price == nil ? Theme.muted : Theme.text)
+        }
+        .font(.system(size: 12, design: .monospaced))
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+    }
+
+    private func label(_ text: String) -> some View {
+        Text(text).font(.system(size: 9, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+    }
 }
 
 /// CGC Pristine 10, 10, and 9, PSA 10 and 9, and BGS Black Label, 10, and 9.5.
@@ -314,64 +391,5 @@ struct SummaryView: View {
             if model.canPost { RipEpisodeButtons(model: model) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-/// The condition of the card in hand, in the column on the left of the stack.
-struct ConditionColumn: View {
-    let card: RipCard
-
-    var body: some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            SideHeader(text: "CONDITION")
-            WearText(wear: card.condition.wear)
-                .multilineTextAlignment(.trailing)
-        }
-        .frame(maxWidth: .infinity, alignment: .trailing)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
-/// The cut of the card in hand, front and back, in the column on the right of the stack.
-struct CutColumn: View {
-    let card: RipCard
-    let tool: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            SideHeader(text: "CUT")
-            reading(.front(card.condition.cut, tool: tool))
-            SideHeader(text: "BACK").padding(.top, 4)
-            reading(.back(card.condition.cut, tool: tool))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-
-    @ViewBuilder
-    private func reading(_ r: CutReading) -> some View {
-        if let words = r.words {
-            Text(words).font(.caption)
-        } else {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("LR \(r.lr)")
-                Text("TB \(r.tb)")
-                if r.spread > 0 {
-                    Text("±\(r.spread)").foregroundStyle(Theme.muted)
-                }
-            }
-            .font(.caption2.monospaced())
-        }
-    }
-}
-
-private struct SideHeader: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(.system(size: 9, weight: .semibold))
-            .kerning(0.8)
-            .foregroundStyle(Theme.muted)
     }
 }
