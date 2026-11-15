@@ -216,7 +216,7 @@ extension GameStore {
     func shortBlock(_ series: ShortSeries?, long: Bool) -> String? {
         if !hasAccount { return "Start a social account first." }
         if let series, series.lastEpisodeDay == data.day { return "This series has an episode today." }
-        let hours = long ? Balance.longEditHours : Balance.shortEditHours
+        let hours = editHours(long: long)
         guard let start = slot(for: hours), start + hours <= Balance.dayEnd else { return "It is too late to edit a video today." }
         return nil
     }
@@ -228,7 +228,7 @@ extension GameStore {
                            gainFactor: Double = 1, sponsored: Bool = false) -> SocialPost? {
         guard let si = data.shorts.series.firstIndex(where: { $0.id == seriesID }),
               shortBlock(data.shorts.series[si], long: long) == nil else { return nil }
-        let hours = long ? Balance.longEditHours : Balance.shortEditHours
+        let hours = editHours(long: long)
         guard spendHours(hours) else { return nil }
         var s = data.social
         let today = data.day

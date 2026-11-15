@@ -356,7 +356,8 @@ struct Listing: Codable, Hashable {
     }
 
     let channel: Channel
-    let price: Double
+    /// The asking price. The TCGplayer repricer can lower it.
+    var price: Double
     let dayListed: Int
     var auctionEndDay: Int?
     var insured: Bool
@@ -364,6 +365,8 @@ struct Listing: Codable, Hashable {
     var listedWear: Wear?
     /// True when the listed condition is better than the true condition. Nil on old saves and on other listings.
     var overstatedCondition: Bool?
+    /// The price the player set, before the repricer lowered it. Nil when it never did.
+    var startPrice: Double?
 }
 
 enum ItemStatus: Codable, Hashable {

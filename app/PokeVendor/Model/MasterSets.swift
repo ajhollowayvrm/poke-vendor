@@ -159,11 +159,13 @@ extension GameStore {
         data.completedMasterSets[slug] = data.day
         let root = MasterSet.value(slug).squareRoot()
         let range = Balance.masterSetReputationRange
-        let rep = min(range.upperBound, max(range.lowerBound, Int(root * Balance.masterSetReputationPerRoot)))
+        // The premium binder shows the set off better: more reputation and followers.
+        let binder = hasUpgrade(.premiumBinder) ? Balance.premiumBinderFactor : 1
+        let rep = Int((Double(min(range.upperBound, max(range.lowerBound, Int(root * Balance.masterSetReputationPerRoot)))) * binder).rounded())
         addReputation(rep)
         var reward = "Reputation +\(rep)"
         if hasAccount {
-            let followers = Int(root * Balance.masterSetFollowersPerRoot)
+            let followers = Int(root * Balance.masterSetFollowersPerRoot * binder)
             data.social.followers += followers
             reward += ", followers +\(followers)"
         }

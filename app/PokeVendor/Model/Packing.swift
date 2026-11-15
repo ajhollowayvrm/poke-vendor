@@ -147,11 +147,13 @@ extension Balance {
 extension GameStore {
     /// The room in each bin, from the upgrades.
     func capacity(_ bin: CarryBin) -> Int {
-        switch bin {
+        let space = switch bin {
         case .binder: Balance.binderSpace[hasUpgrade(.vendorBinder) ? 1 : 0]
         case .slabBox: Balance.slabBoxSpace[hasUpgrade(.slabCase) ? 1 : 0]
         case .tote: Balance.toteSpace[hasUpgrade(.foldingCart) ? 1 : 0]
         }
+        // The cargo van carries more of each bin.
+        return hasUpgrade(.cargoVan) ? Int((Double(space) * Balance.cargoVanFactor).rounded()) : space
     }
 
     /// The days before today when the item sat on a table, in the last 21 days.

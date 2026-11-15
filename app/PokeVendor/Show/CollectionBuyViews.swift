@@ -196,6 +196,7 @@ struct CollectionTradeSheet: View {
 
 /// The card someone asks about: what the player can read by eye, the raw price, and the graded prices.
 struct AdviceCardView: View {
+    @Environment(GameStore.self) private var store
     let ask: AdviceAsk
     let raw: Double
 
@@ -216,6 +217,10 @@ struct AdviceCardView: View {
                         .foregroundStyle(Theme.muted)
                     if let tier = Balance.gradingTiers[.psa]?.first {
                         Text("PSA \(tier.name): \(money(tier.fee)), \(tier.days) days").font(.caption2).foregroundStyle(Theme.muted)
+                    }
+                    if store.hasUpgrade(.gradeEstimate) {
+                        let likely = GameStore.likelyGrades(ask.condition)
+                        Text("Likely PSA \(likely.low.formatted()) to \(likely.high.formatted())").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
                     }
                 }
             }

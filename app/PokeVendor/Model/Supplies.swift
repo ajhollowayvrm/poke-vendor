@@ -138,10 +138,15 @@ extension GameStore {
 
     // MARK: - Buying
 
+    /// A pack's price, with the supply wholesale account.
+    func supplyPackPrice(_ item: SupplyItem) -> Double {
+        hasUpgrade(.supplyAccount) ? (item.packPrice * Balance.supplyAccountFactor * 100).rounded() / 100 : item.packPrice
+    }
+
     /// Buys packs from the online Supplies storefront. The packs arrive at once.
     func buySupply(_ item: SupplyItem, packs: Int) -> String? {
         guard packs > 0 else { return nil }
-        let total = item.packPrice * Double(packs)
+        let total = supplyPackPrice(item) * Double(packs)
         guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }
         let pieces = item.packSize * packs
         addLedger(-total, .supplies, "\(pieces) \(item.name.lowercased()) · Supplies")

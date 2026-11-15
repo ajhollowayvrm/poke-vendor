@@ -178,7 +178,7 @@ struct LotSheet: View {
     }
 
     var body: some View {
-        let costs = GameStore.saleCosts(price: price, channel: channel, sealed: !sealed.isEmpty, insured: insured && channel.ships)
+        let costs = store.saleCosts(price: price, channel: channel, sealed: !sealed.isEmpty, insured: insured && channel.ships)
         let net = price - costs.fees - costs.shipping - costs.insurance
         NavigationStack {
             Form {

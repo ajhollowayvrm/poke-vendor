@@ -785,7 +785,8 @@ final class ShowSession {
         let venue = Venue(kind: .show, name: show.name,
                           detail: "\(show.size.label)\(show.size.days > 1 ? " · day \(store.day - show.startDay + 1) of 2" : "") · \(show.booked ? "your table" : "walk-in")",
                           open: Balance.showOpen, close: Balance.showClose, hours: Balance.showClose - Balance.showOpen,
-                          visitorsMean: show.size.buyersPerDay, hasFloor: true, hasTable: show.booked, showID: show.id,
+                          visitorsMean: show.size.buyersPerDay * (show.booked && store.hasUpgrade(.premiumBooth) ? Balance.premiumBoothFactor : 1),
+                          hasFloor: true, hasTable: show.booked, showID: show.id,
                           crowd: show.size == .regional ? .regionalShow : .localShow)
         store.seedContacts()
         self.init(venue: venue, store: store, show: show,
@@ -818,7 +819,7 @@ final class ShowSession {
             let source = store.fakeSource(contact: self.vendors[i].contactID, fallback: venue.fakeSource)
             for j in self.vendors[i].items.indices {
                 if bonus > 0 { self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus)) }
-                self.vendors[i].items[j].rollFake(source: source, tired: store.tiredFactor)
+                self.vendors[i].items[j].rollFake(source: source, tired: store.eyeFactor)
             }
             // Reputation Trusted and up: a recurring vendor gives the player a first look at the best stock (docs/04).
             if venue.isShow, self.vendors[i].contactID != nil, store.reputationTier >= 2 {
@@ -1085,7 +1086,7 @@ final class ShowSession {
         case .mystery: (nil, false)
         }
         v.goodsFake = Counterfeit.roll(source: source, sealed: sealed, slug: slug, market: v.goodsMarket)
-        if let fake = v.goodsFake { v.goodsLooksOff = Counterfeit.eyeballCatches(fake, tired: store.tiredFactor) }
+        if let fake = v.goodsFake { v.goodsLooksOff = Counterfeit.eyeballCatches(fake, tired: store.eyeFactor) }
     }
 
     /// A regular: their own name, more patience, and better prices for a player they know. A regular at Trusted or
@@ -2163,7 +2164,7 @@ final class ShowSession {
             // A trader's card can be a fake too.
             card.fake = Counterfeit.roll(source: venue.fakeSource == .none ? .stranger : venue.fakeSource, sealed: false, slug: slug,
                                          market: card.market)
-            if let fake = card.fake { card.looksOff = Counterfeit.eyeballCatches(fake, tired: store.tiredFactor) }
+            if let fake = card.fake { card.looksOff = Counterfeit.eyeballCatches(fake, tired: store.eyeFactor) }
             if card.market <= value, card.market >= 1 { return card }
         }
         return nil

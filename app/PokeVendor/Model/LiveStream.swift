@@ -305,7 +305,7 @@ final class StreamSession {
 
     /// Takes the money on Whatnot. Returns the fees.
     private func sell(_ item: StreamItem, price: Double) -> Double {
-        let costs = GameStore.saleCosts(price: price, channel: .whatnot, sealed: item.sealed, insured: false)
+        let costs = store.saleCosts(price: price, channel: .whatnot, sealed: item.sealed, insured: false)
         store.sellOnStream(item, price: price)
         sold.append((item.name, price, costs.fees + costs.shipping))
         interest = min(1, interest + 0.1)

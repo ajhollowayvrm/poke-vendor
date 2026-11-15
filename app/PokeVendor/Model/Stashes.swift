@@ -100,7 +100,7 @@ extension ShowSession {
                 floor = min(ask, market * Double.random(in: floorRange) * (1 - level.priceBonus))
             }
             var item = VendorItem(goods: goods, price: max(1, Self.round(ask)), market: market)
-            item.rollFake(source: source, tired: store.tiredFactor)
+            item.rollFake(source: source, tired: store.eyeFactor)
             items.append(StashItem(item: item, floor: floor, pc: pc))
         }
         v.stash = items

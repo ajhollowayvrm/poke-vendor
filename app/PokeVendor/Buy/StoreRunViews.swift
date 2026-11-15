@@ -246,12 +246,19 @@ struct SellToShopBox: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Bulk · \(group.cards.count) cards").font(.subheadline)
-                        Text("mkt \(money(group.value)) · store credit only").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        Text("mkt \(money(group.value))\(store.hasUpgrade(.bulkBroker) ? "" : " · store credit only")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                     }
                     Spacer()
                     Button("Credit \(money(store.bulkCredit(group)))") { store.sellBulk(group.id, at: shop) }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
+                    if store.hasUpgrade(.bulkBroker) {
+                        // The bulk broker pays cash (docs/09-upgrades.md).
+                        Button("Cash \(money(store.bulkCash(group)))") { store.sellBulkForCash(group.id) }
+                            .buttonStyle(.bordered)
+                            .tint(Theme.green)
+                            .controlSize(.small)
+                    }
                 }
             }
         }

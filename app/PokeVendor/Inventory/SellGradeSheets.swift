@@ -101,7 +101,7 @@ struct SellSheet: View {
     private var totalProfit: Double {
         lines.reduce(0) { sum, line in
             let p = channel == .ebayAuction ? reference(line) : price(line)
-            let costs = GameStore.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
+            let costs = store.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
             let net = p - costs.fees - costs.shipping - costs.insurance
             return sum + (net - (paidEach(line) ?? 0)) * Double(count(line))
         }
@@ -183,7 +183,7 @@ struct SellSheet: View {
                 Section("Items") {
                     ForEach(lines) { line in
                         let p = channel == .ebayAuction ? reference(line) : price(line)
-                        let costs = GameStore.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
+                        let costs = store.saleCosts(price: p, channel: channel, sealed: line.sealed, insured: insured)
                         VStack(alignment: .leading, spacing: 3) {
                             Text(line.name).font(.subheadline.weight(.medium))
                             if line.isRaw, let card = store.card(line.id) {
@@ -281,7 +281,9 @@ struct GradeSheet: View {
         let cards = store.data.raw.filter { ids.contains($0.id) && $0.status == nil }
         let tiers = Balance.gradingTiers[company] ?? []
         let tier = tiers[min(tierIndex, tiers.count - 1)]
-        let total = tier.fee * Double(cards.count)
+        // The PSA membership lowers the fee and the turnaround.
+        let total = store.gradingFee(tier, company) * Double(cards.count)
+        let days = store.gradingDays(tier, company)
         NavigationStack {
             Form {
                 Section("Company") {
@@ -294,7 +296,7 @@ struct GradeSheet: View {
                 Section("Service") {
                     Picker("Service", selection: $tierIndex) {
                         ForEach(tiers.indices, id: \.self) { i in
-                            Text("\(tiers[i].name) · \(money(tiers[i].fee)) · \(tiers[i].days) days").tag(i)
+                            Text("\(tiers[i].name) · \(money(store.gradingFee(tiers[i], company))) · \(store.gradingDays(tiers[i], company)) days").tag(i)
                         }
                     }
                     .pickerStyle(.inline)
@@ -306,6 +308,13 @@ struct GradeSheet: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(card.print.name).font(.subheadline)
                                 RawLooks(condition: card.condition)
+                                if store.hasUpgrade(.gradeEstimate) {
+                                    // The grade estimate service (docs/09-upgrades.md).
+                                    let likely = GameStore.likelyGrades(card.condition, company: company)
+                                    Text("Likely \(company.rawValue) \(likely.low.formatted()) to \(likely.high.formatted())")
+                                        .font(.caption.monospaced())
+                                        .foregroundStyle(Theme.cyan)
+                                }
                                 HStack(spacing: 4) {
                                     Text("Back").font(.caption).foregroundStyle(Theme.muted)
                                     CutLine(reading: .back(card.condition.cut, tool: store.data.centeringTool))
@@ -332,7 +341,7 @@ struct GradeSheet: View {
                     }
                     if company.billsOnReturn {
                         // PSA bills when the grades come back (docs/10-grading.md, Paying PSA).
-                        Text("You pay nothing now. In \(tier.days) days, PSA charges your cash. If the cash does not cover the bill, PSA holds the slabs until you pay.")
+                        Text("You pay nothing now. In \(days) days, PSA charges your cash. If the cash does not cover the bill, PSA holds the slabs until you pay.")
                             .font(.caption).foregroundStyle(Theme.muted)
                         if store.unpaidGradingTotal > 0 {
                             Text("Unpaid PSA bills: \(money(store.unpaidGradingTotal)).").font(.caption).foregroundStyle(Theme.orange)

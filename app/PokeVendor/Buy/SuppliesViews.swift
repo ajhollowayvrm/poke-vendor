@@ -31,16 +31,16 @@ struct SuppliesView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(item.name).font(.subheadline.weight(.medium))
                             Text(item.detail).font(.caption).foregroundStyle(Theme.muted)
-                            Text("In hand \(store.supplyCount(item)) · pack of \(item.packSize) · \(money(item.packPrice)) · \(money(item.unitPrice)) each")
+                            Text("In hand \(store.supplyCount(item)) · pack of \(item.packSize) · \(money(store.supplyPackPrice(item))) · \(money(store.supplyPackPrice(item) / Double(item.packSize))) each")
                                 .font(.caption.monospaced())
                                 .foregroundStyle(store.supplyCount(item) == 0 ? Theme.orange : Theme.muted)
-                            Stepper("\(n) pack\(n == 1 ? "" : "s") · \(money(item.packPrice * Double(n)))",
+                            Stepper("\(n) pack\(n == 1 ? "" : "s") · \(money(store.supplyPackPrice(item) * Double(n)))",
                                     value: Binding(get: { n }, set: { packs[item.rawValue] = $0 }), in: 1...20)
                                 .font(.caption)
                             Button("Buy") { message = store.buySupply(item, packs: n) ?? "Bought \(n * item.packSize) \(item.name.lowercased())." }
                                 .primaryButton()
                                 .controlSize(.small)
-                                .disabled(!store.canAfford(item.packPrice * Double(n)))
+                                .disabled(!store.canAfford(store.supplyPackPrice(item) * Double(n)))
                         }
                     }
                     .padding(12)

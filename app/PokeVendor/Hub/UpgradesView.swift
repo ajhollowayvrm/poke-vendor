@@ -3,6 +3,7 @@ import SwiftUI
 /// Every upgrade in the game (docs/09-upgrades.md).
 struct UpgradesView: View {
     @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
 
     var body: some View {
         ScrollView {
@@ -16,7 +17,7 @@ struct UpgradesView: View {
                         row(name: Balance.centeringTools.last?.name ?? "Centering scanner", detail: "Exact numbers for both faces.",
                             cost: 0, owned: true, icon: "ruler", canBuy: false) {}
                     }
-                    ForEach([Upgrade.cornerLoupe, .edgeLight, .surfaceLamp], id: \.self) { upgradeRow($0) }
+                    ForEach([Upgrade.cornerLoupe, .edgeLight, .surfaceLamp, .gradeEstimate, .psaMembership], id: \.self) { upgradeRow($0) }
                 }
                 DetailBox(title: "Selling and shows") {
                     row(name: "Vendor kit", detail: Balance.vendorKitDetail, cost: Balance.vendorKitCost, owned: store.data.vendorKit,
@@ -25,10 +26,18 @@ struct UpgradesView: View {
                     upgradeRow(.salesAnalytics)
                     upgradeRow(.cardReader)
                     upgradeRow(.authTool)
+                    upgradeRow(.uvLight)
                     upgradeRow(.vendorBinder)
                     upgradeRow(.slabCase)
                     upgradeRow(.foldingCart)
+                    upgradeRow(.cargoVan)
+                    upgradeRow(.premiumBooth)
                     upgradeRow(.showcaseCase)
+                }
+                DetailBox(title: "Selling online") {
+                    upgradeRow(.shippingKit)
+                    upgradeRow(.repricer)
+                    upgradeRow(.proSeller)
                 }
                 DetailBox(title: "Contacts") {
                     upgradeRow(.contactBook)
@@ -41,6 +50,13 @@ struct UpgradesView: View {
                     upgradeRow(.savedSearch)
                     upgradeRow(.sellerResearch)
                     upgradeRow(.lotAppraisal)
+                    upgradeRow(.sortingTrays)
+                    upgradeRow(.bulkBroker)
+                    upgradeRow(.supplyAccount)
+                    upgradeRow(.priceTracker)
+                }
+                DetailBox(title: "Collecting") {
+                    upgradeRow(.premiumBinder)
                 }
                 DetailBox(title: "Storage and security") {
                     upgradeRow(.lockedCase)
@@ -57,6 +73,16 @@ struct UpgradesView: View {
                         canBuy: store.hasAccount && store.canAfford(Balance.analyticsUpgradeCost)) { store.buyAnalytics() }
                     upgradeRow(.studioLights)
                     upgradeRow(.cameraKit)
+                    upgradeRow(.editingSoftware)
+                }
+                // Upgrades that live on their own screens (docs/09-upgrades.md).
+                DetailBox(title: "On other screens") {
+                    elsewhere("Store fixtures and a bigger space", detail: "Display cases, a sealed wall, play tables, cameras, a sign, a point-of-sale system, and bigger units.",
+                              icon: "storefront", enabled: store.cardStore != nil) { nav.path.append(.cardStore) }
+                    elsewhere("Vending machine parts", detail: "A card reader, a camera, and remote stock data, for each machine.",
+                              icon: "cabinet", enabled: !store.machines.isEmpty) { nav.path.append(.vending) }
+                    elsewhere("Collection insurance", detail: "Payouts for theft and damage, for a premium every 4 weeks.",
+                              icon: "umbrella", enabled: true) { nav.path.append(.wallet) }
                 }
             }
             .padding(16)
@@ -64,6 +90,23 @@ struct UpgradesView: View {
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Upgrades")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func elsewhere(_ name: String, detail: String, icon: String, enabled: Bool, open: @escaping () -> Void) -> some View {
+        Button(action: open) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: icon).font(.title3).foregroundStyle(Theme.cyan).frame(width: 28)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(name).font(.subheadline.weight(.semibold))
+                    Text(enabled ? detail : detail + " Not open yet.").font(.caption).foregroundStyle(Theme.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
     }
 
     private func upgradeRow(_ u: Upgrade) -> some View {

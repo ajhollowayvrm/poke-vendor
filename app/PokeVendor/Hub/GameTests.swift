@@ -27,6 +27,7 @@ final class GameTests {
         timed("listings", listings)
         timed("psa", psaBills)
         timed("collections", collections)
+        timed("upgrades", upgrades)
         timed("seasons", seasonsAndSave)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
@@ -280,6 +281,45 @@ final class GameTests {
         let arrived = (store.data.raw.map(\.id) + store.data.slabs.map(\.id) + store.data.sealed.map(\.id)).filter { !held.contains($0) }
         check(store.data.lotOrders.isEmpty && arrived.count == listing.lot.pieces.count,
               "\(arrived.count) of \(listing.lot.pieces.count) eBay lot items arrived")
+    }
+
+    // MARK: - Upgrades (docs/09-upgrades.md)
+
+    /// Each upgrade with a number changes that number.
+    private func upgrades() {
+        fresh()
+        func own(_ u: Upgrade) { store.data.upgrades.append(u.rawValue) }
+        let before = store.saleCosts(price: 50, channel: .tcgplayer, sealed: false, insured: false)
+        let tier = Balance.gradingTiers[.psa]?.last ?? GradingTier(name: "Test", fee: 100, days: 10)
+        let fee = store.gradingFee(tier, .psa), days = store.gradingDays(tier, .psa)
+        let binder = store.capacity(.binder)
+        let edit = store.editHours(long: false)
+        let supplies = store.supplyPackPrice(.mailer)
+        for u in [Upgrade.shippingKit, .proSeller, .psaMembership, .betterCar, .cargoVan, .editingSoftware, .supplyAccount, .repricer, .bulkBroker] { own(u) }
+        let after = store.saleCosts(price: 50, channel: .tcgplayer, sealed: false, insured: false)
+        check(after.shipping < before.shipping, "the shipping kit did not lower shipping")
+        check(after.fees < before.fees, "the Pro seller upgrade did not lower the TCGplayer fee")
+        check(store.gradingFee(tier, .psa) < fee && store.gradingDays(tier, .psa) < days, "the PSA membership did not lower the fee and the days")
+        check(store.gradingFee(tier, .cgc) == tier.fee, "the PSA membership lowered a CGC fee")
+        check(store.capacity(.binder) > binder, "the cargo van did not add carry space")
+        check(store.editHours(long: false) < edit, "the editing software did not cut the editing time")
+        check(store.supplyPackPrice(.mailer) < supplies, "the supply account did not lower supply prices")
+
+        // The repricer drops to the lowest listing, but never under 85% of the player's price.
+        var listing = Listing(channel: .tcgplayer, price: 100, dayListed: 0, insured: false)
+        check(store.reprice(&listing, lowest: 90) && abs(listing.price - 90) < 0.01, "the repricer did not match the lowest listing")
+        _ = store.reprice(&listing, lowest: 10)
+        check(abs(listing.price - 100 * Balance.repricerFloor) < 0.01, "the repricer went to \(money(listing.price)), under its floor")
+
+        // The bulk broker pays cash for bulk.
+        if let print = prismatic.first {
+            store.data.bulk.append(BulkGroup(ripID: UUID(), setSlug: "prismatic-evolutions", date: .now, cards: Array(repeating: print, count: 40)))
+            let cash = store.cash
+            if let group = store.data.bulk.last {
+                store.sellBulkForCash(group.id)
+                check(store.cash > cash && !store.data.bulk.contains { $0.id == group.id }, "the bulk broker did not pay cash")
+            }
+        }
     }
 
     // MARK: - Seasons and the save (docs/05-pricing-and-market.md)

@@ -879,6 +879,21 @@ final class GameStore {
         (group.value * Balance.bulkCreditRate * 100).rounded() / 100
     }
 
+    /// The bulk broker's cash price for a bulk group.
+    func bulkCash(_ group: BulkGroup) -> Double {
+        (group.value * Balance.bulkCashRate * 100).rounded() / 100
+    }
+
+    /// With the bulk broker, bulk sells for cash. The broker does not check for fakes.
+    func sellBulkForCash(_ id: UUID) {
+        guard hasUpgrade(.bulkBroker), let group = data.bulk.first(where: { $0.id == id }) else { return }
+        let cash = bulkCash(group)
+        data.bulk.removeAll { $0.id == id }
+        addLedger(cash, .sale, "\(group.cards.count) bulk cards · bulk broker")
+        log("Sold \(group.cards.count) bulk cards to the bulk broker for \(money(cash)).", cash: cash)
+        save()
+    }
+
     /// Bulk sells for store credit only.
     func sellBulk(_ id: UUID, at store: LocalStore) {
         guard let group = data.bulk.first(where: { $0.id == id }) else { return }
@@ -1000,24 +1015,26 @@ final class GameStore {
     func submit(_ ids: Set<UUID>, to company: GradingCompany, tier: GradingTier) {
         let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil }
         guard !cards.isEmpty else { return }
-        let fee = tier.fee * Double(cards.count)
+        // The PSA membership lowers the fee and the turnaround.
+        let fee = gradingFee(tier, company) * Double(cards.count)
+        let days = gradingDays(tier, company)
         let label = "\(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) \(tier.name)"
         // PSA bills when the grades come back. The order's ID ties its cards to the bill (docs/10, Paying PSA).
         let orderID: UUID
         if company.billsOnReturn {
             orderID = UUID()
             data.gradingBills.append(GradingBill(id: orderID, company: company, tier: tier.name, cards: cards.count, amount: fee,
-                                                 dueDay: data.day + tier.days))
+                                                 dueDay: data.day + days))
         } else {
             orderID = addLedger(-fee, .grading, label, pending: true)
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) && data.raw[i].status == nil {
-            data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: tier.days, ledgerID: orderID)
+            data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: days, ledgerID: orderID)
         }
         if company.billsOnReturn {
-            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days). The bill of \(money(fee)) comes with the grades.")
+            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(days) days). The bill of \(money(fee)) comes with the grades.")
         } else {
-            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days).", cash: -fee)
+            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(days) days).", cash: -fee)
         }
         useGradingSupplies(cards: cards.count)
         save()
@@ -1278,7 +1295,9 @@ final class GameStore {
                     lines.append(result.line)
                     if result.sold { continue }
                 }
-            case .listed(let listing):
+            case .listed(var listing):
+                // The repricer follows the lowest TCGplayer listing for the condition.
+                if reprice(&listing, lowest: Self.tcgLowest(for: card.print, wear: card.listedWear(in: listing))) { card.status = .listed(listing) }
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: card.print.name, listing: listing, price: sale, sealed: false, paid: card.paid,
                                               fake: card.fake, known: card.isKnownFake, card: card,
@@ -1306,7 +1325,8 @@ final class GameStore {
                     lines.append(result.line)
                     if result.sold { continue }
                 }
-            case .listed(let listing):
+            case .listed(var listing):
+                if reprice(&listing, lowest: Self.tcgLowest(for: card.print)) { card.status = .listed(listing) }
                 if let sale = rollSale(listing, card: card) {
                     lines.append(completeSale(name: "\(card.print.name) \(card.grade?.label ?? "")", listing: listing,
                                               price: sale, sealed: false, paid: card.paid, fake: card.fake, known: card.isKnownFake,
@@ -1425,7 +1445,7 @@ final class GameStore {
     /// `paid` is what the player paid for the item, for the receipt. Nil for a pulled card.
     func completeSaleNow(name: String, channel: Listing.Channel, price: Double, sealed: Bool, insured: Bool, paid: Double?,
                          slab: Bool = false, overstated: Bool = false, ids: [UUID] = [], markets: [UUID: Double]? = nil) -> String {
-        let costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
+        let costs = saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
         addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated, ids: ids,

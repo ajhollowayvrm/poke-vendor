@@ -35,6 +35,16 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case warehouse, ownHome
     /// eBay collection lots: more listings, a check on the seller, and an estimate of the worth (docs/33-collections.md).
     case savedSearch, sellerResearch, lotAppraisal
+    /// Selling online: cheaper shipping, a TCGplayer repricer, and the Pro seller fee (docs/09-upgrades.md).
+    case shippingKit, repricer, proSeller
+    /// Grading: a PSA membership, a grade estimate, and a UV light for fakes.
+    case psaMembership, gradeEstimate, uvLight
+    /// Shows: a cargo van for more carry space, and a premium booth for more visitors.
+    case cargoVan, premiumBooth
+    /// Buying: sorting trays for collections, a bulk broker, a supply account, and a price tracker.
+    case sortingTrays, bulkBroker, supplyAccount, priceTracker
+    /// Short-form video editing, and a better master set binder.
+    case editingSoftware, premiumBinder
 
     var name: String {
         switch self {
@@ -64,6 +74,20 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .savedSearch: "Saved eBay searches"
         case .sellerResearch: "Seller research"
         case .lotAppraisal: "Lot appraisal app"
+        case .shippingKit: "Shipping scale and label printer"
+        case .repricer: "TCGplayer auto-repricer"
+        case .proSeller: "TCGplayer Pro seller"
+        case .psaMembership: "PSA membership"
+        case .gradeEstimate: "Grade estimate service"
+        case .uvLight: "UV light"
+        case .cargoVan: "Cargo van"
+        case .premiumBooth: "Premium booth"
+        case .sortingTrays: "Sorting trays"
+        case .bulkBroker: "Bulk broker"
+        case .supplyAccount: "Supply wholesale account"
+        case .priceTracker: "Price tracker app"
+        case .editingSoftware: "Editing software"
+        case .premiumBinder: "Premium master set binder"
         }
     }
 
@@ -78,23 +102,37 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .edgeLight: "Shows the edge subgrade on every raw card."
         case .surfaceLamp: "Shows the surface subgrade on every raw card."
         case .studioLights: "Better video. Posts and streams reach 25% more people."
-        case .cameraKit: "Much better video. Posts and streams reach 50% more people. Needs the studio lights."
+        case .cameraKit: "Much better video. Posts and streams reach 50% more people."
         case .salesAnalytics: "When you list or consign, each item shows what you paid and your profit after fees, before you commit."
         case .contactBook: "Room for \(Balance.contactBookSizes[1]) contacts instead of \(Balance.contactBookSizes[0])."
         case .bigContactBook: "Room for \(Balance.contactBookSizes[2]) contacts."
         case .cardReader: "Take card payments at shows, meets, and your store counter. Buyers with no cash stop walking away. A card sale costs \(Balance.readerFeeRate.formatted(.percent.precision(.fractionLength(1)))) plus \(money(Balance.readerFeeFixed))."
         case .showcaseCase: "A lit case for \(Balance.showcaseSlots) cards of \(money(Balance.showcaseMinValue)) or more. Bring it to a table: more people come, whales come more often, and some ask to buy a showcase card at a premium."
-        case .lockedCase: "Cuts the chance of theft at a show table, and from your car, by \(Int((1 - Balance.lockedCaseFactor) * 100))%."
+        case .lockedCase: "Cuts the chance of theft at a show table, and from your car, by \(Int(((1 - Balance.lockedCaseFactor) * 100).rounded()))%."
         case .vendorBinder: "Carry \(Balance.binderSpace[1]) raw cards to a table instead of \(Balance.binderSpace[0])."
         case .slabCase: "Carry \(Balance.slabBoxSpace[1]) slabs to a table instead of \(Balance.slabBoxSpace[0])."
         case .foldingCart: "Carry \(Balance.toteSpace[1]) spaces of sealed product to a table instead of \(Balance.toteSpace[0]). A booster box takes 7."
-        case .dehumidifier: "Cuts the chance of water damage to raw cards in storage by \(Int((1 - Balance.dehumidifierFactor) * 100))%."
+        case .dehumidifier: "Cuts the chance of water damage to raw cards in storage by \(Int(((1 - Balance.dehumidifierFactor) * 100).rounded()))%."
         case .fireSafe: "A sealed safe for your cards. Water damage to raw cards in storage cannot happen."
         case .warehouse: "Room for any amount of stock. You never pay for a storage unit again."
         case .ownHome: "Rent stops for good, so a missed rent payment can no longer end the run. Upkeep is \(money(Balance.ownHomeUpkeep)) every 4 weeks."
         case .savedSearch: "eBay shows \(Balance.ebayLotCountSaved) collection lots instead of \(Balance.ebayLotCount), and new lots come every day instead of every \(Balance.ebayLotDays) days."
         case .sellerResearch: "Each eBay lot shows whether the seller also sells singles from their lots. Most sellers who call a searched lot \"unsearched\" do."
         case .lotAppraisal: "Each eBay lot shows a range for its worth to a dealer, from what the listing shows. It cannot tell whether someone searched the lot."
+        case .shippingKit: "Shipping costs \(Int(((1 - Balance.shippingKitFactor) * 100).rounded()))% less on every sale that ships."
+        case .repricer: "Each day, a TCGplayer listing over the lowest listing drops to it. It never goes under \(Int(Balance.repricerFloor * 100))% of your price."
+        case .proSeller: "The TCGplayer fee drops from \(Balance.tcgFeeRate.formatted(.percent.precision(.fractionLength(2)))) to \((Balance.tcgFeeRate - Balance.proSellerFeeCut).formatted(.percent.precision(.fractionLength(2))))."
+        case .psaMembership: "PSA fees are \(Int(((1 - Balance.psaMemberFeeFactor) * 100).rounded()))% lower, and PSA returns grades \(Int(((1 - Balance.psaMemberDaysFactor) * 100).rounded()))% sooner."
+        case .gradeEstimate: "The grade sheet and grading questions show the likely PSA grade range of each raw card."
+        case .uvLight: "Your eye catches a fake \(Int(((Balance.uvLightFactor - 1) * 100).rounded()))% more often when you look at something to buy."
+        case .cargoVan: "\(Int(((Balance.cargoVanFactor - 1) * 100).rounded()))% more carry space in the binder, the slab case, and the tote."
+        case .premiumBooth: "A better spot at a booked show table: \(Int(((Balance.premiumBoothFactor - 1) * 100).rounded()))% more visitors."
+        case .sortingTrays: "Going through a collection at your table takes half the time."
+        case .bulkBroker: "Sell bulk at a game shop stop for cash, at \(Int(Balance.bulkCashRate * 100))% of market, not only for store credit."
+        case .supplyAccount: "Supplies cost \(Int(((1 - Balance.supplyAccountFactor) * 100).rounded()))% less."
+        case .priceTracker: "Market news arrives \(Balance.priceTrackerLead) days before prices start to move."
+        case .editingSoftware: "Shorts take \(Int(((1 - Balance.editingFactor) * 100).rounded()))% less editing time."
+        case .premiumBinder: "A completed master set pays \(Int(((Balance.premiumBinderFactor - 1) * 100).rounded()))% more reputation and followers."
         }
     }
 
@@ -128,6 +166,20 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .savedSearch: "magnifyingglass.circle"
         case .sellerResearch: "person.text.rectangle"
         case .lotAppraisal: "camera.viewfinder"
+        case .shippingKit: "scalemass"
+        case .repricer: "arrow.down.right.circle"
+        case .proSeller: "star.circle"
+        case .psaMembership: "person.badge.shield.checkmark"
+        case .gradeEstimate: "chart.bar.xaxis"
+        case .uvLight: "flashlight.on.fill"
+        case .cargoVan: "box.truck"
+        case .premiumBooth: "tent"
+        case .sortingTrays: "tray.2"
+        case .bulkBroker: "dollarsign.arrow.circlepath"
+        case .supplyAccount: "shippingbox.circle"
+        case .priceTracker: "chart.line.uptrend.xyaxis.circle"
+        case .editingSoftware: "film"
+        case .premiumBinder: "books.vertical.circle"
         }
     }
 
@@ -136,6 +188,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         switch self {
         case .cameraKit: .studioLights
         case .bigContactBook: .contactBook
+        case .cargoVan: .betterCar
         default: nil
         }
     }
@@ -148,6 +201,9 @@ extension Balance {
         .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600, .cardReader: Balance.cardReaderCost,
         .lockedCase: 220, .showcaseCase: Balance.showcaseCost, .vendorBinder: 40, .slabCase: 90, .foldingCart: 120, .dehumidifier: 120, .fireSafe: 400,
         .warehouse: 90_000, .ownHome: 350_000, .savedSearch: 80, .sellerResearch: 150, .lotAppraisal: 250,
+        .shippingKit: 180, .repricer: 200, .proSeller: 2_000, .psaMembership: 1_200, .gradeEstimate: 300, .uvLight: 75,
+        .cargoVan: 6_500, .premiumBooth: 3_000, .sortingTrays: 90, .bulkBroker: 250, .supplyAccount: 150, .priceTracker: 200,
+        .editingSoftware: 150, .premiumBinder: 60,
     ]
     /// Contact book room: no upgrade, the contact book, and the big contact book.
     static let contactBookSizes = [4, 8, 15]
@@ -156,6 +212,67 @@ extension Balance {
     static let betterCarFarSaleHours = 6.0
     /// Content quality with no lights, with lights, and with the camera kit.
     static let productionQuality = [1.0, 1.25, 1.5]
+    static let shippingKitFactor = 0.7
+    static let repricerFloor = 0.85
+    static let proSellerFeeCut = 0.025
+    static let psaMemberFeeFactor = 0.8
+    static let psaMemberDaysFactor = 0.8
+    static let uvLightFactor = 1.3
+    static let cargoVanFactor = 1.5
+    static let premiumBoothFactor = 1.2
+    static let bulkCashRate = 0.35
+    static let supplyAccountFactor = 0.8
+    static let priceTrackerLead = 2
+    static let editingFactor = 0.6
+    static let premiumBinderFactor = 1.25
+    static let posClerkFactor = 1.0
+}
+
+@MainActor
+extension GameStore {
+    /// The fees, shipping, and insurance of a sale, with the shipping kit and the Pro seller fee.
+    func saleCosts(price: Double, channel: Listing.Channel, sealed: Bool, insured: Bool) -> (fees: Double, shipping: Double, insurance: Double) {
+        var costs = Self.saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
+        if hasUpgrade(.shippingKit) { costs.shipping = (costs.shipping * Balance.shippingKitFactor * 100).rounded() / 100 }
+        if hasUpgrade(.proSeller), channel == .tcgplayer { costs.fees = max(0, costs.fees - price * Balance.proSellerFeeCut) }
+        return costs
+    }
+
+    /// A grading tier's fee and days, with the PSA membership.
+    func gradingFee(_ tier: GradingTier, _ company: GradingCompany) -> Double {
+        company == .psa && hasUpgrade(.psaMembership) ? (tier.fee * Balance.psaMemberFeeFactor * 100).rounded() / 100 : tier.fee
+    }
+
+    func gradingDays(_ tier: GradingTier, _ company: GradingCompany) -> Int {
+        company == .psa && hasUpgrade(.psaMembership) ? max(1, Int((Double(tier.days) * Balance.psaMemberDaysFactor).rounded(.up))) : tier.days
+    }
+
+    /// The player's eye for fakes: tired days make it worse, and the UV light makes it better.
+    var eyeFactor: Double { tiredFactor * (hasUpgrade(.uvLight) ? Balance.uvLightFactor : 1) }
+
+    /// The editing time of a short, in hours, with the editing software.
+    func editHours(long: Bool) -> Double {
+        (long ? Balance.longEditHours : Balance.shortEditHours) * (hasUpgrade(.editingSoftware) ? Balance.editingFactor : 1)
+    }
+
+    /// The likely PSA grades of a raw card: the 15th and the 85th percentile of 60 grade rolls.
+    static func likelyGrades(_ condition: Condition, company: GradingCompany = .psa) -> (low: Double, high: Double) {
+        let rolls = (0..<60).map { _ in gradeResult(condition, company: company).grade }.sorted()
+        return (rolls[9], rolls[50])
+    }
+
+    /// The TCGplayer repricer: a listing over the lowest listing drops to it, but not under its floor. Returns true when
+    /// the price changed.
+    func reprice(_ listing: inout Listing, lowest: Double) -> Bool {
+        guard hasUpgrade(.repricer), listing.channel == .tcgplayer, listing.price > lowest + 0.004 else { return false }
+        let start = listing.startPrice ?? listing.price
+        let floor = (start * Balance.repricerFloor * 100).rounded() / 100
+        let next = max(lowest, floor)
+        guard next < listing.price - 0.004 else { return false }
+        listing.startPrice = start
+        listing.price = next
+        return true
+    }
 }
 
 @MainActor

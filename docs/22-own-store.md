@@ -224,6 +224,7 @@ when the store closes.
 | Play tables | $700 | Two events: a Friday tournament and a weekend Pokemon League (see [Events](#events)). Someone must staff the store |
 | Security cameras | $350 | Stops shoplifting |
 | Lighted sign | $300 | ×1.15 customers every day |
+| Point-of-sale system | $900 | The clerk sells as well as the player: customers buy as often as with the player, not 85% as often |
 
 ## Events
 

@@ -455,7 +455,7 @@ extension GameStore {
 
     private func makeEbayLot() -> EbayLot {
         let theme = CollectionTheme.allCases.randomElement() ?? .mixedBox
-        var lot = CollectionLot.make(theme, fakes: .ebay, tired: tiredFactor)
+        var lot = CollectionLot.make(theme, fakes: .ebay, tired: eyeFactor)
         // Photos do not show what an eye at the table would see. The look happens when the box arrives.
         for i in lot.pieces.indices { lot.pieces[i].looksOff = false }
         while lot.dealValue > Balance.ebayLotMax, lot.pieces.count > 1 { lot.pieces.removeFirst() }
@@ -582,7 +582,7 @@ extension GameStore {
             var lot = order.listing.lot
             // Now the player can look at each card by eye.
             for i in lot.pieces.indices {
-                if let fake = lot.pieces[i].fake { lot.pieces[i].looksOff = Counterfeit.eyeballCatches(fake, tired: tiredFactor) }
+                if let fake = lot.pieces[i].fake { lot.pieces[i].looksOff = Counterfeit.eyeballCatches(fake, tired: eyeFactor) }
             }
             receiveCollection(lot, pieces: nil, price: order.listing.total, payment: .prepaid, from: "an eBay seller", at: "eBay")
             let best = lot.pieces.first.map { " Best: \($0.name), \(money($0.market))." } ?? ""
@@ -604,7 +604,7 @@ extension ShowSession {
         let theme: CollectionTheme = type == .closetCleaner ? [.childhoodBinder, .mixedBox, .estate].randomElement() ?? .mixedBox
             : CollectionTheme.allCases.randomElement() ?? .modernBinder
         let source = store.fakeSource(contact: nil, fallback: venue.fakeSource == .none ? .stranger : venue.fakeSource)
-        var lot = CollectionLot.make(theme, fakes: source, tired: store.tiredFactor)
+        var lot = CollectionLot.make(theme, fakes: source, tired: store.eyeFactor)
         let (askRange, floorRange) = Self.collectionRanges(type)
         let askShare = Double.random(in: askRange)
         // Most sellers bring what the player can pay for: they keep their best cards. Now and then, someone brings it all.
@@ -741,7 +741,7 @@ extension ShowSession {
         note = picked == nil ? "You bought the whole collection. It's in your Inventory." : "You bought \(count) cards. They kept the rest."
         maybePromote(v, points: 15)
         // Going through a whole collection takes time.
-        finish(minutes: picked == nil ? .random(in: 15...25) : .random(in: 8...14))
+        finish(minutes: sortMinutes(whole: picked == nil))
         Haptics.hit()
     }
 
@@ -794,8 +794,13 @@ extension ShowSession {
         store.recordDeal(v.contactID, what: "Traded for their collection", price: cost, market: market, slug: lot.pieces.first?.slug, scored: true)
         score(.buy, price: cost, market: market, pushed: false, v)
         maybePromote(v, points: 15)
-        finish(minutes: picked == nil ? .random(in: 15...25) : .random(in: 8...14))
+        finish(minutes: sortMinutes(whole: picked == nil))
         Haptics.hit()
+    }
+
+    /// The time to go through a collection. Sorting trays halve it.
+    private func sortMinutes(whole: Bool) -> Double {
+        (whole ? .random(in: 15...25) : .random(in: 8...14)) * (store.hasUpgrade(.sortingTrays) ? 0.5 : 1)
     }
 
     /// What table items count for in a trade for a collection.

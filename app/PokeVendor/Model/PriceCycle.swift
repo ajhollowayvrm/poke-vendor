@@ -202,9 +202,16 @@ extension GameStore {
         data.marketEvents.removeAll { day - $0.startDay >= $0.days }
         var lines: [String] = []
         if data.marketEvents.count < Balance.marketEventsMax, Double.random(in: 0..<1) < Balance.marketEventChance,
-           let event = rollMarketEvent() {
+           var event = rollMarketEvent() {
+            // The price tracker sees the chatter first: the news comes days before the prices move.
+            if hasUpgrade(.priceTracker) {
+                event = MarketEvent(kind: event.kind, subject: event.subject, title: event.title, startDay: event.startDay + Balance.priceTrackerLead,
+                                    days: event.days, peak: event.peak)
+                lines.append("Price tracker: \(event.title) Prices start to move in \(Balance.priceTrackerLead) days.")
+            } else {
+                lines.append("Market news: \(event.title)")
+            }
             data.marketEvents.append(event)
-            lines.append("Market news: \(event.title)")
         }
         if day % 28 == 0 {
             syncMarket()

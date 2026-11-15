@@ -41,7 +41,7 @@ enum StoreLocation: String, Codable, CaseIterable, Hashable {
 
 /// A one-time buy for the store. The store keeps it until the store closes.
 enum StoreFixture: String, Codable, CaseIterable, Hashable {
-    case extraCase, sealedWall, playTables, cameras, sign
+    case extraCase, sealedWall, playTables, cameras, sign, pos
 
     var name: String {
         switch self {
@@ -50,6 +50,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .playTables: "Play tables"
         case .cameras: "Security cameras"
         case .sign: "Lighted sign"
+        case .pos: "Point-of-sale system"
         }
     }
 
@@ -60,6 +61,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .playTables: "Events: a Friday tournament and a weekend Pokemon League. Entry fees, and more people in the store."
         case .cameras: "Stops shoplifting on the days the clerk is alone."
         case .sign: "\(Int((Balance.signTrafficBonus - 1) * 100))% more customers every day."
+        case .pos: "The clerk sells as well as you do: a scanner, prices on screen, and a card terminal."
         }
     }
 
@@ -70,6 +72,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .playTables: "gamecontroller"
         case .cameras: "video.badge.checkmark"
         case .sign: "lightbulb.max"
+        case .pos: "barcode.viewfinder"
         }
     }
 
@@ -157,7 +160,7 @@ extension Balance {
     static let storeSealedSlots = 40
     static let extraCaseSlots = 60
     static let sealedWallSlots = 60
-    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300]
+    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900]
     static let signTrafficBonus = 1.15
     static let tournamentPlayers = 8...16
     /// The clerk sells a bit worse than the owner: customers buy this often, and never take a second item.
@@ -542,7 +545,8 @@ extension GameStore {
         for _ in 0..<customers {
             guard Double.random(in: 0..<1) >= Balance.storeBrowseChance else { continue }
             // The clerk loses some sales that the owner would close.
-            guard Double.random(in: 0..<1) < Balance.clerkSalesFactor * clerkPaymentFactor else { continue }
+            let clerk = data.cardStore?.has(.pos) == true ? Balance.posClerkFactor : Balance.clerkSalesFactor
+            guard Double.random(in: 0..<1) < clerk * clerkPaymentFactor else { continue }
             let roll = Double.random(in: 0..<1)
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare
