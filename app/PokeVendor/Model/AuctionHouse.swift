@@ -155,7 +155,7 @@ extension GameStore {
         market * house.bidderStrength * PriceCycle.seasonDemand(sealed: false) / (1 + house.buyerPremium)
     }
 
-    /// Sends a slab to an auction house. `ignoreGate` is for the soak test only.
+    /// Sends a slab to an auction house. `ignoreGate` is for the tests only.
     @discardableResult
     func consignToAuction(_ id: UUID, house: AuctionHouse, reserveShare: Double?, ignoreGate: Bool = false) -> Bool {
         guard let i = data.slabs.firstIndex(where: { $0.id == id }) else { return false }

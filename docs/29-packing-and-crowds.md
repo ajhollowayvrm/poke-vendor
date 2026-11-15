@@ -273,24 +273,14 @@ and the local shows. One record is simple, and the player can read it.
 save loads with no stale records and no last load. The first table
 starts with the dearest items that fit.
 
-**Does the soak test still work?** Yes, and it now tests the packing
-rules. On every other table, the soak clears the load, picks items by
-hand, and fills. It checks:
+**What do the tests check?** The game tests (`-test`, see
+[07-platform-and-scope.md](07-platform-and-scope.md)) play a booked
+show, the store counter, and the meets. For each visit, they check:
 
-- No bin is over its limit, and an item too big for its bin never goes
-  in.
-- At a booked show, the soak walks the floor, comes back, and tries to
-  add an item. The load must not grow.
-- The grading booth turns down a raw card that is not in the load, and
-  a vendor turns down a trade item that is not in the load.
+- The default load does not overfill a bin.
 - Every item that leaves the stock during a visit was in the load.
-- The game keeps the bag, and the passed list matches the counts.
 
-The soak also grades one card at a regional booth. It counts each check,
-so a check that never ran shows as 0. It buys the three bin
-upgrades on day 30, so it plays both bin sizes. The soak prints one
-`SOAK PACK` line, and a `SOAK PACK FAIL` line for each broken rule. Run
-`-soak 60` after a change to this system.
+Run `-test` after a change to this system.
 
 ## Not in this change
 

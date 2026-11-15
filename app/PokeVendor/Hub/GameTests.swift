@@ -1,0 +1,293 @@
+import Foundation
+
+#if DEBUG
+/// The test run: `-test` plays fresh runs through the main systems and checks the rules that matter most. It prints
+/// one line for each failed check, then "TEST OK" or "TEST FAILED" with the count and the time. It replaces the save
+/// on the simulator.
+///
+/// Keep it fast and small. Add a check only for a rule that broke before, or for a rule that moves money or items.
+@MainActor
+final class GameTests {
+    private let store: GameStore
+    private var fails: [String] = []
+    private var checks = 0
+
+    init(store: GameStore) { self.store = store }
+
+    func run() {
+        let start = Date()
+        collection()
+        shorts()
+        listings()
+        seasonsAndSave()
+        days()
+        let ms = Int(Date().timeIntervalSince(start) * 1000)
+        for line in fails { print("TEST FAIL:", line) }
+        print(fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms")
+        // The console is a pipe, so stdout is buffered. Push the report out now.
+        fflush(stdout)
+    }
+
+    private func check(_ ok: Bool, _ what: @autoclosure () -> String) {
+        checks += 1
+        if !ok { fails.append(what()) }
+    }
+
+    /// A fresh run with cash and a social account.
+    private func fresh() {
+        store.startRun()
+        store.addTestCash(20_000)
+        store.testFollowers(1_200)
+    }
+
+    private var prismatic: [CardPrint] { SetLibrary.set("prismatic-evolutions").prints }
+
+    /// Opens every pack of a rip in Sift mode.
+    private func ripAll(_ items: [SealedItem]) -> RipModel {
+        let model = RipModel(items: items, store: store)
+        model.mode = .sift
+        var steps = 0
+        while model.phase != .done || model.hasNextPack, steps < 40 {
+            steps += 1
+            if model.phase == .done { model.nextPack() } else { _ = model.sift(); model.resume() }
+        }
+        return model
+    }
+
+    // MARK: - The PC, the master sets, and the showcase (docs/08-ui-direction.md)
+
+    private func collection() {
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 10 }).prefix(3) { store.addTestCard(print) }
+        let cards = Array(store.data.raw.suffix(3))
+        guard cards.count == 3 else { return check(false, "the collection test has no cards") }
+        store.setPC([cards[0].id], true)
+        store.startMasterSet(cards[1].setSlug)
+        check(store.addToMasterSet([cards[1].id]) == 1, "a card did not go into its started master set")
+        let stock = Set(store.showStock.cards.map(\.id))
+        check(stock.contains(cards[0].id), "a PC card cannot go to a show")
+        check(!stock.contains(cards[1].id), "a master set card can go to a show")
+
+        store.data.upgrades.append(Upgrade.showcaseCase.rawValue)
+        if let dear = prismatic.max(by: { ($0.market ?? 0) < ($1.market ?? 0) }) {
+            let id = store.addTestSlab(dear, grade: SlabGrade(company: .psa, grade: 10))
+            store.addToShowcase(id)
+            check(store.card(id)?.inShowcase == true, "a PSA 10 of the dearest Prismatic card did not go into the showcase")
+            check(!store.showStock.cards.contains { $0.id == id }, "a showcase card is in the show stock")
+        }
+        if cards[2].market < Balance.showcaseMinValue {
+            check(store.showcaseBlock(cards[2]) != nil, "a card under \(money(Balance.showcaseMinValue)) can go into the showcase")
+        }
+
+        // The smallest set, with two copies of each print: the start rule, the spares, the reward, and one payment.
+        guard let slug = SetLibrary.index.filter({ $0.prints > 0 }).min(by: { $0.prints < $1.prints })?.slug else { return }
+        let slots = MasterSet.slots(slug)
+        let before = Set(store.data.raw.map(\.id))
+        for print in slots + slots { store.addTestCard(print, slug: slug) }
+        let ids = Set(store.data.raw.map(\.id)).subtracting(before)
+        check(store.addToMasterSet(ids) == 0, "a card went into a master set that was not started")
+        store.startMasterSet(slug)
+        let spares = store.masterSetSpares(slug)
+        check(spares.count == slots.count, "\(spares.count) spares for \(slots.count) empty slots")
+        let rep = store.data.reputation
+        store.addToMasterSet(Set(spares.map(\.id)))
+        check(store.isMasterSetCompleted(slug), "the \(slug) master set did not complete")
+        check(store.data.reputation > rep, "the master set paid no reputation")
+        check(store.masterSetSpares(slug).isEmpty, "a full master set still has spares")
+        if let one = spares.first {
+            let paid = store.data.reputation
+            store.removeFromMasterSet(one.id)
+            store.addToMasterSet([one.id])
+            check(store.data.reputation == paid, "a master set paid twice")
+        }
+    }
+
+    // MARK: - Short-form video (docs/32-short-form-video.md)
+
+    private func shorts() {
+        fresh()
+        store.startPnL(start: 500, goal: 5, days: 30)
+        for _ in 0..<3 { store.addTestPack() }
+        let packs = store.data.sealed.filter { $0.source == "Test pack" }
+        guard store.series(.pnl) != nil, packs.count == 3 else { return check(false, "the P&L test did not start") }
+        func cash() -> Double { store.series(.pnl)?.cash ?? 0 }
+
+        store.addToChallenge([packs[0].id])
+        check(abs(cash() - (500 - packs[0].paid)) < 0.01, "adding a pack moved the challenge cash to \(money(cash()))")
+
+        let formats = store.recordableSeries([packs[1]])
+        check(formats == [.pnl], "a pack that can join the challenge records for \(formats)")
+        store.prepareRecording([packs[1]], for: formats)
+        check(store.isChallengeItem(packs[1].id), "Record & Rip did not add the pack to the challenge")
+        let model = ripAll([packs[1]])
+        let pulled = store.data.raw.filter { $0.ripID == model.ripID }
+        check(!pulled.isEmpty && pulled.allSatisfy { store.isChallengeItem($0.id) }, "the pulls of a challenge pack did not join it")
+
+        if let card = pulled.max(by: { $0.realMarket < $1.realMarket }) {
+            let before = cash()
+            let price = (card.realMarket * store.standing(.castle).buylistRate * 100).rounded() / 100
+            if store.sellToShop(card.id, at: .castle) {
+                check(abs(cash() - before - price) < 0.01, "a shop sale added \(money(cash() - before)) to the challenge, not \(money(price))")
+                check(!store.isChallengeItem(card.id), "a sold card stayed in the challenge")
+            }
+        }
+
+        check(store.postPnLEpisode(rip: model.episode) != nil, "the P&L episode of a recorded rip did not post")
+        check(store.postPnLEpisode() == nil, "a series posted twice in one day")
+        check(!store.recordableSeries([packs[2]]).contains(.pnl), "a series with an episode today can be recorded")
+
+        store.startRipSeries(target: 100)
+        let hit = RipEpisode(packs: 1, spent: 5, bestValue: 150, bestName: "Test card", hitCardID: nil)
+        check(store.postRipEpisode(hit) != nil, "the Rip until I hit finale did not post")
+        check(store.series(.ripUntil) == nil, "the rip series stayed after its finale")
+    }
+
+    // MARK: - Bulk unlist (docs/08-ui-direction.md, Bulk unlist)
+
+    private func listings() {
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(4) { store.addTestCard(print) }
+        let cards = Array(store.data.raw.suffix(4))
+        guard cards.count == 4 else { return check(false, "the listing test has no cards") }
+        let fixed = Set(cards.prefix(3).map(\.id))
+        store.list(fixed, channel: .ebay, price: { _ in 20 }, auctionDays: nil, insured: false)
+        store.list([cards[3].id], channel: .ebay, price: { _ in 20 }, auctionDays: 3, insured: false)
+        let taken = store.removeListings(fixed.union([cards[3].id]))
+        check(taken == fixed.count, "took down \(taken) of \(fixed.count) listings")
+        check(!fixed.contains { store.canRemoveListing($0) }, "a listing stayed up")
+        check(store.card(cards[3].id)?.status != nil, "a running eBay auction came down")
+        check(!store.data.fbOffers.contains { fixed.contains($0.itemID) }, "an offer outlived its listing")
+    }
+
+    // MARK: - Seasons and the save (docs/05-pricing-and-market.md)
+
+    private func seasonsAndSave() {
+        var seasonFails = 0
+        for d in 0..<366 {
+            let w = PriceCycle.weekOfYear(day: d)
+            if w < 0 || w >= Balance.weeksPerYear { seasonFails += 1 }
+            for f in [PriceCycle.seasonDemand(sealed: true, day: d), PriceCycle.seasonDemand(sealed: false, day: d),
+                      PriceCycle.seasonSealedPrice(day: d), PriceCycle.seasonTraffic(day: d)] where f < 0.85 || f > 1.16 {
+                seasonFails += 1
+            }
+            if d > 0, abs(PriceCycle.seasonSealedPrice(day: d) - PriceCycle.seasonSealedPrice(day: d - 1)) > 0.01 { seasonFails += 1 }
+        }
+        check(seasonFails == 0, "\(seasonFails) season factors are out of range or jump")
+
+        guard let saved = try? JSONEncoder().encode(store.data),
+              let loaded = try? JSONDecoder().decode(GameData.self, from: saved) else {
+            return check(false, "the save did not encode and decode")
+        }
+        check(PriceCycle.startWeek(seed: loaded.marketSeed) == PriceCycle.startWeek, "a save and a load changed the start week")
+        check(loaded.raw.count == store.data.raw.count && loaded.sealed.count == store.data.sealed.count
+              && loaded.shorts == store.data.shorts, "a save and a load lost items or shorts")
+    }
+
+    // MARK: - Fourteen days of play
+
+    /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.
+    /// End Day touches every system, so an exclusivity crash shows up here (memory: the exclusivity trap).
+    private func days() {
+        fresh()
+        store.data.vendorKit = true
+        store.addReputation(400)
+        for print in prismatic.filter({ ($0.market ?? 0) > 10 }).prefix(8) { store.addTestCard(print) }
+        for _ in 0..<16 { store.addTestPack() }
+
+        store.buyMachine()
+        store.buyMachine()
+        check(store.machines.count == 2, "bought \(store.machines.count) vending machines, not 2")
+        for (k, m) in store.machines.enumerated() {
+            check(store.placeMachine(m.id, at: k == 0 ? .gasStation : .laundromat), "could not place a vending machine")
+        }
+        var stocked = 0
+        func visitMachines() {
+            for m in store.machines where m.host != nil {
+                if !store.atMachine(m.id) { _ = store.visitMachine(m.id) }
+                guard store.atMachine(m.id) else { continue }
+                stocked += store.stockMachine(m.id, items: Set(store.vendableSealed.filter { $0.packs <= 3 }.prefix(6).map(\.id)))
+            }
+        }
+        visitMachines()
+
+        var fakeID: UUID?
+        if let dear = prismatic.max(by: { ($0.market ?? 0) < ($1.market ?? 0) }) {
+            let id = store.addTestSlab(dear, grade: SlabGrade(company: .psa, grade: 10), fake: .convincing)
+            check(store.consignToAuction(id, house: .heritage, reserveShare: nil, ignoreGate: true), "could not consign a slab")
+            fakeID = id
+        }
+
+        // A series with no episodes must die after 3 missed days.
+        store.startRipSeries(target: 1_000)
+        store.testOpenCardStore(.stripMall, term: 1)
+        store.setClerk(true)
+        let pick = store.stockable
+        store.stockStore(Set(pick.cards.prefix(4).map(\.id) + pick.sealed.prefix(4).map(\.id)))
+        store.addTestShow(.local)
+
+        var shows = 0
+        for day in 0..<14 {
+            if day == 0, store.canGoToShowToday, let started = store.startShowDay() {
+                play(ShowSession(show: started, store: store))
+                shows += 1
+            }
+            if day % 4 == 2, let s = store.startCounter() { play(s) }
+            for kind in store.meetsToday { if let s = store.startMeet(kind) { play(s) } }
+            if day == 3 { _ = ripAll(Array(store.data.sealed.filter { $0.status == nil && !$0.setAside }.prefix(2))) }
+            if day == 7 { visitMachines() }
+            if let id = fakeID, store.day == Balance.auctionIntakeDays + 1 {
+                var back = false
+                if case .arriving = store.card(id)?.status { back = true }
+                check(store.card(id)?.isKnownFake == true && back, "the auction house did not catch the fake")
+            }
+            store.report = nil
+            if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }
+            store.endDay()
+        }
+        check(shows == 1, "the booked test show did not start")
+        check(store.series(.ripUntil) == nil, "a series with no episodes did not die")
+        let inStock = store.machines.reduce(0) { $0 + $1.stock.count }
+        let out = store.machines.reduce(0) { $0 + $1.soldCount + $1.stolenCount + $1.returnedCount }
+        check(stocked > 0 && stocked == inStock + out, "vending: \(stocked) stocked, but \(inStock) in stock and \(out) out")
+        check(!store.machines.contains { $0.cashBox < 0 }, "a vending cash box is negative")
+        check(!store.data.dealStories.contains { $0.day < store.day }, "a deal story stayed in the queue past its day")
+    }
+
+    /// Plays one show, meet, or counter session with simple moves. The load must fit its bins, and every item that
+    /// leaves the stock must come from the load (docs/29-packing-and-crowds.md).
+    private func play(_ session: ShowSession) {
+        let stockIDs = { () -> Set<UUID> in let s = self.store.showStock; return Set(s.cards.map(\.id) + s.sealed.map(\.id)) }
+        let before = stockIDs()
+        if session.phase == .setup {
+            let used = session.usage(session.loadItems)
+            for bin in CarryBin.allCases where used[bin, default: 0] > store.capacity(bin) {
+                check(false, "the load at \(session.venue.name) overfills the \(bin.name)")
+            }
+            if session.hasTable { session.openTable() } else { session.walkFloor() }
+        }
+        let load = session.bring
+        var steps = 0
+        while session.phase != .summary, steps < 60 {
+            steps += 1
+            if let v = session.current {
+                switch v.intent {
+                case .buy: session.accept()
+                case .trade: session.proposeTrade(valuing: 100)
+                case .sell: if v.naive { session.payFair() } else { session.counter(v.goodsMarket * 0.75) }
+                }
+            } else if session.phase == .table {
+                session.nextVisitor()
+            } else if session.phase == .floor {
+                session.packUp()
+            } else {
+                break
+            }
+        }
+        if session.venue.limitsLoad {
+            let gone = before.subtracting(stockIDs())
+            check(gone.isSubset(of: load), "\(gone.subtracting(load).count) items left the stock at \(session.venue.name) from outside the load")
+        }
+        store.finishEncounter(session)
+    }
+}
+#endif

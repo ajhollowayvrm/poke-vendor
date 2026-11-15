@@ -34,8 +34,8 @@ final class SoundFX {
     func play(_ sound: Sound) {
         guard Self.isOn else { return }
         #if DEBUG
-        // A soak run plays no sound.
-        guard !ProcessInfo.processInfo.arguments.contains("-soak") else { return }
+        // A test run plays no sound.
+        guard !ProcessInfo.processInfo.arguments.contains("-test") else { return }
         #endif
         start()
         guard ready, let buffer = buffer(for: sound) else { return }

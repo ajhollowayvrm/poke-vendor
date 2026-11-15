@@ -281,7 +281,7 @@ about $1,200. A normal episode of 20,000 views pays about $1.20.
 
 ## Open topics
 
-- The quality numbers are first guesses. A soak run must check that a
+- The quality numbers are first guesses. A playtest must check that a
   normal player gains followers from shorts at a rate close to quick
   posts, and that a viral finale is a rare event.
 - The P&L challenge needs a check of each sale path, so that every sale

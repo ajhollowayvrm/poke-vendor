@@ -142,6 +142,7 @@
 		8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */; };
 		897A07D0BDDA180C5FBAB178 /* JobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772DBF76AEF228531662272E /* JobView.swift */; };
 		8A5EBAA0C3FD3D657C581694 /* generations.json in Resources */ = {isa = PBXBuildFile; fileRef = 66B77CF9FA79C477304765CF /* generations.json */; };
+		8A7B672CD6647283B94B2B24 /* GameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2383AC5B43DFCF54E5DC0845 /* GameTests.swift */; };
 		8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */ = {isa = PBXBuildFile; fileRef = 40AFA031CD12EA2F8CAF859A /* ultra-prism.json */; };
 		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
@@ -302,6 +303,7 @@
 		201CF0C8665BF1729BF4B106 /* paldean-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paldean-fates.json"; sourceTree = "<group>"; };
 		20D2A072C747DEAB8413196A /* Supplies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supplies.swift; sourceTree = "<group>"; };
 		22DCF071A80BA4398E968082 /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
+		2383AC5B43DFCF54E5DC0845 /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
 		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
 		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
 		28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSealedBuylist.swift; sourceTree = "<group>"; };
@@ -859,6 +861,7 @@
 				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
 				693B97517632F808C60DEBC0 /* CardStoreView.swift */,
 				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
+				2383AC5B43DFCF54E5DC0845 /* GameTests.swift */,
 				45590D9E41CDC734C72A2FA8 /* GoalsMarketViews.swift */,
 				22DCF071A80BA4398E968082 /* HubView.swift */,
 				79825428637090327C8725BE /* HubView+Debug.swift */,
@@ -1160,6 +1163,7 @@
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				7A35C872266C162E6BEC2E3D /* Events.swift in Sources */,
 				57856FEC663D96592E925B4F /* GameStore.swift in Sources */,
+				8A7B672CD6647283B94B2B24 /* GameTests.swift in Sources */,
 				4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */,
 				97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */,
 				C3628ED56F834AE0680701D4 /* Haggling.swift in Sources */,

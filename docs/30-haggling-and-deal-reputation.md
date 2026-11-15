@@ -266,21 +266,10 @@ its own rule (−30). A scam does not also make a story.
 **What happens to old saves?** The new fields have defaults: no stories
 in the queue, and no reputation from deals today.
 
-**How does the soak test it?** The soak plays counters inside and
-outside the band, final offers, trades at several valuations, a trade
-instead of cash, and bundles. It checks:
-
-- No visitor walks away after a counter inside the fair band.
-- A counter inside the band never uses patience.
-- The reputation from deals in one day never goes over 6.
-- A bundle sells both items, or neither.
-- A trade instead of cash moves exactly one table item.
-- Each story in the queue comes out on its day, and the queue empties.
-
-It prints one `SOAK DEALS` line, and a `SOAK DEALS FAIL` line for each
-broken rule. The line counts each kind of move, so a move that never
-happened shows as 0. The soak tells an angry walk-away apart from a
-buyer who leaves because they have no cash.
+**What do the tests check?** The game tests (`-test`, see
+[07-platform-and-scope.md](07-platform-and-scope.md)) play deals at a
+show, the store counter, and the meets for 14 days. They check that
+each story in the queue comes out on its day.
 
 ## Not in this change
 

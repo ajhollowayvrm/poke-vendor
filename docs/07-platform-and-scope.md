@@ -92,8 +92,13 @@ The game trims old ledger, activity, and post history at End Day. See
 [19-prototype-values.md](19-prototype-values.md#the-save-file).
 
 The hub has no test menu.
-`-soak <days>` as a launch argument plays that many days by itself and
-prints a report to the console.
+`-test` as a launch argument runs the game tests (`Hub/GameTests.swift`)
+in a Debug build. The tests play fresh runs through the main systems
+and 14 days of End Day. They print one `TEST FAIL` line for each broken
+rule, then `TEST OK` or `TEST FAILED` with the count and the time. A
+run takes about 2 seconds. The tests replace the save on the device.
+Run them with `xcrun simctl launch --console-pty booted
+com.ajholloway.pokevendor -test`.
 
 ## Pokemon IP note
 
