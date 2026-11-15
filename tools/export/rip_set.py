@@ -1,6 +1,7 @@
 """Export one set for the rip screen of the iOS app.
 
 Usage: python3 tools/export/rip_set.py <set> [<set> ...]
+       python3 tools/export/rip_set.py --first <set> [<set> ...]   (the 1st Edition run, as <set>-1st-edition)
 
 Writes app/PokeVendor/Resources/Sets/<set>.json with:
 - the slots of one pack, in pack order (front card first), each with its outcomes and final odds
@@ -11,6 +12,11 @@ Writes app/PokeVendor/Resources/Sets/<set>.json with:
   (a newer pull), else from tools/ppt/cache/. tools/export/fill_graded.py fills the other grades and removes
   `gradedSales`;
 - the cost of one pack: the market price of the loose booster pack (tools/ppt/cache/sealed/).
+
+A set with a 1st Edition run (Jungle to Neo Destiny) also has a 1st Edition set file, made with --first: the same
+slots, the 1st Edition prints with their 1st Edition prices, and the 1st Edition pack. All image sources show the 1st
+Edition scan for these sets, so an Unlimited print whose image has a patch in Resources/destamp.json gets "#destamp" on
+its image URL, and the app lays the patch over the stamp (tools/images/destamp.py).
 
 tools/export/catalog.py writes the sealed products.
 
@@ -267,10 +273,11 @@ def price_print(matches, variant):
     return None, {}, {}, None
 
 
-def pack_cost(slug):
-    """The market price of a plain loose booster pack: the cheapest one that is not sleeved, 1st Edition, or a bundle."""
+def pack_cost(slug, first=False):
+    """The market price of a plain loose booster pack: the cheapest one that is not sleeved or a bundle. `first` picks
+    the 1st Edition pack, else a pack that is not 1st Edition."""
     groups = {str(g) for g in J.TCGCSV_MAP.get(slug, [])}
-    skip = re.compile(r"Sleeved|Art Bundle|Blister|1st Edition|Bundle|Box|Case|Set of|Display", re.I)
+    skip = re.compile(r"Sleeved|Art Bundle|Blister|Bundle|Box|Case|Set of|Display" + ("" if first else r"|1st Edition"), re.I)
     best = None
     for f in glob.glob(os.path.join(SEALED, "*.json")):
         if os.path.basename(f)[:-5] not in groups:
@@ -278,13 +285,13 @@ def pack_cost(slug):
         data = json.load(open(f))
         for p in (data.get("data", []) if isinstance(data, dict) else data):
             name = p.get("name", "")
-            if "Booster Pack" in name and not skip.search(name) and p.get("unopenedPrice"):
+            if "Booster Pack" in name and not skip.search(name) and p.get("unopenedPrice") and (not first or "1st Edition" in name):
                 if best is None or p["unopenedPrice"] < best[0]:
                     best = (p["unopenedPrice"], p.get("imageCdnUrl800") or p.get("imageUrl"))
     return best or (None, None)
 
 
-def pack_image(slug):
+def pack_image(slug, first=False):
     """The image of a booster pack of the set from the TCGCSV product list, for a set whose pack has no price. A set
     that was never sold in packs (Southern Islands) has none."""
     for gid in J.TCGCSV_MAP.get(slug, []):
@@ -293,19 +300,35 @@ def pack_image(slug):
             continue
         for p in json.load(open(path)).get("results", []):
             name = p.get("name", "")
-            if re.search(r"Booster Pack|Pack\b", name) and not re.search(r"Box|Case|Display|Blister|Sleeved|Bundle|Code Card|Sampling|1st Edition", name):
+            if re.search(r"Booster Pack|Pack\b", name) and not re.search(r"Box|Case|Display|Blister|Sleeved|Bundle|Code Card|Sampling", name) \
+                    and ("1st Edition" in name) == first:
                 return f"https://tcgplayer-cdn.tcgplayer.com/product/{p['productId']}_in_800x800.jpg"
     return None
 
 
-def export(slug):
+DESTAMP = os.path.join(ROOT, "app", "PokeVendor", "Resources", "destamp.json")
+
+
+def destamped(image, patches):
+    """The image URL of an Unlimited print: with "#destamp" when its 1st Edition stamp has a patch."""
+    m = re.search(r"/product/(\d+)_", image or "")
+    return f"{image}#destamp" if m and m.group(1) in patches else image
+
+
+def export(slug, first=False):
     sets, eras = O.load(), O.era_map()
     s = sets[slug]
     t = open(os.path.join(ROOT, "docs", "sets", f"{slug}.md")).read()
     name = re.match(r"^# (.+?)(?: \(\d{4}\))?$", t.splitlines()[0]).group(1)
     matches = ppt_matches(slug, s["cards"])
     # A pack holds one print run. The app rips the first run that the set file lists (for Base Set, Unlimited).
-    runs = s["runs"][:1]
+    # --first rips the 1st Edition run into its own set file.
+    run = next((i for i, r in enumerate(s["runs"]) if "1st Edition" in r), None) if first else 0
+    if run is None:
+        sys.exit(f"{slug}: the set file lists no 1st Edition run")
+    runs = s["runs"][run:run + 1]
+    out_slug, out_name = (f"{slug}-1st-edition", f"{name} 1st Edition") if first else (slug, name)
+    patches = {} if first or not os.path.exists(DESTAMP) else json.load(open(DESTAMP))
     prints, index, slots = [], {}, []
     has_energy_row = False
     for slot, res in O.final_odds(slug, s, O.era_pool(sets, eras), eras).items():
@@ -323,12 +346,16 @@ def export(slug):
                     continue
                 for option in options:
                     hits = [v for v in c["variants"] if V.variant_matches(v, option, runs)]
+                    # The match also takes the plain variant name. A 1st Edition file keeps only 1st Edition prints.
+                    if first:
+                        hits = [v for v in hits if "1st Edition" in v]
                     if not hits:
                         continue
                     for v in hits:
                         key = (c["num"], v)
                         if key not in index:
                             market, grades, sales, image = price_print(matches[c["num"]], v)
+                            image = destamped(image, patches)
                             index[key] = len(prints)
                             prints.append({"num": c["num"], "name": c["name"], "rarity": c["rarity"],
                                            "variant": v, "market": market, "graded": grades,
@@ -337,11 +364,11 @@ def export(slug):
                     break
             outcomes.append({"name": r[2], "entry": r[3], "odds": round(p / 100, 6), "prints": ids})
         slots.append({"name": slot, "count": slot_count(slot, rows[0][0][1]), "outcomes": outcomes})
-    cost, image = pack_cost(slug)
-    image = image or pack_image(slug)
+    cost, image = pack_cost(slug, first)
+    image = image or pack_image(slug, first)
     os.makedirs(OUT, exist_ok=True)
     order, trick, series = pack_order(eras.get(slug), slots, has_energy_row, slug)
-    out = {"slug": slug, "name": name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": image,
+    out = {"slug": out_slug, "name": out_name, "era": eras.get(slug), "series": series, "packCost": cost, "packImage": image,
            "slots": slots, "order": order, "trick": trick, "prints": prints}
     specials = special_packs(slug, prints, index)
     if specials:
@@ -349,15 +376,17 @@ def export(slug):
     pairs = paired_cards(slug, index)
     if pairs:
         out["pairs"] = pairs
-    path = os.path.join(OUT, f"{slug}.json")
+    path = os.path.join(OUT, f"{out_slug}.json")
     json.dump(out, open(path, "w"), ensure_ascii=False, indent=1)
     unpriced = sum(1 for p in prints if p["market"] is None)
-    print(f"{slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), pack cost {cost}, "
+    print(f"{out_slug}: {len(slots)} slots, {len(prints)} prints ({unpriced} with no price), pack cost {cost}, "
           f"trick {trick}, order {order} -> {os.path.relpath(path, ROOT)}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(__doc__)
+    first = "--first" in sys.argv
     for a in sys.argv[1:]:
-        export(a)
+        if a != "--first":
+            export(a, first)

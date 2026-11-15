@@ -256,7 +256,10 @@ final class GameStore {
     init() {
         url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("game.json")
-        if let file = try? Data(contentsOf: url), let saved = Self.decodeSave(file) {
+        if let file = try? Data(contentsOf: url), var saved = Self.decodeSave(file) {
+            // Cards from before the stamp patches show the Unlimited image too.
+            for i in saved.raw.indices { Destamp.migrate(&saved.raw[i]) }
+            for i in saved.slabs.indices { Destamp.migrate(&saved.slabs[i]) }
             data = saved
         } else {
             data = GameData()

@@ -1,0 +1,1515 @@
+{
+ "slug": "gym-challenge-1st-edition",
+ "name": "Gym Challenge 1st Edition",
+ "era": "wizards-of-the-coast",
+ "series": "Wizards of the Coast",
+ "packCost": 816.67,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/138140_in_800x800.jpg",
+ "slots": [
+  {
+   "name": "Common",
+   "count": 6,
+   "outcomes": [
+    {
+     "name": "Common",
+     "entry": "Common",
+     "odds": 1.0,
+     "prints": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Energy",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Basic Energy",
+     "entry": "Common",
+     "odds": 1.0,
+     "prints": [
+      41,
+      42,
+      43,
+      44,
+      45,
+      46
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Uncommon",
+   "count": 3,
+   "outcomes": [
+    {
+     "name": "Uncommon",
+     "entry": "Uncommon",
+     "odds": 1.0,
+     "prints": [
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rare slot",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Rare Holo",
+     "entry": "Rare Holo",
+     "odds": 0.333,
+     "prints": [
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108
+     ]
+    },
+    {
+     "name": "Rare",
+     "entry": "Rare",
+     "odds": 0.667,
+     "prints": [
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129
+     ]
+    }
+   ]
+  }
+ ],
+ "order": [
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Energy",
+  "Rare slot",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon"
+ ],
+ "trick": 3,
+ "prints": [
+  {
+   "num": "60/132",
+   "name": "Blaine's Charmander",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 28.15,
+   "graded": {"psa1":14.67,"psa2":14.67,"psa3":14.67,"psa4":14.67,"psa5":14.67,"psa6":21.38,"psa7":30.49,"psa8":51.17,"psa9":96.75,"psa10":638.22,"cgc1":8.4,"cgc1_5":8.4,"cgc2":8.4,"cgc2_5":8.4,"cgc3":8.4,"cgc3_5":8.4,"cgc4":8.4,"cgc4_5":8.4,"cgc5":8.4,"cgc5_5":8.4,"cgc6":8.4,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":15.6,"cgc8":17.88,"cgc8_5":20.4,"cgc9":25.2,"cgc9_5":31.2,"cgc10":96.0,"bgs1":6.68,"bgs1_5":6.68,"bgs2":6.68,"bgs2_5":6.68,"bgs3":6.68,"bgs3_5":6.68,"bgs4":6.68,"bgs4_5":6.68,"bgs5":6.68,"bgs5_5":8.2,"bgs6":9.87,"bgs6_5":9.87,"bgs7":14.68,"bgs7_5":15.25,"bgs8":20.66,"bgs8_5":26.83,"bgs9":33.8,"bgs9_5":82.87,"bgs10":255.69},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83863_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6","cgc7","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "61/132",
+   "name": "Blaine's Doduo",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.22,
+   "graded": {"psa1":6.66,"psa2":6.66,"psa3":6.66,"psa4":8.79,"psa5":9.95,"psa6":10.71,"psa7":13.43,"psa8":19.74,"psa9":22.0,"psa10":179.0,"cgc1":3.73,"cgc1_5":3.73,"cgc2":3.73,"cgc2_5":3.73,"cgc3":3.73,"cgc3_5":3.73,"cgc4":3.73,"cgc4_5":4.31,"cgc5":5.04,"cgc5_5":5.3,"cgc6":5.7,"cgc6_5":5.87,"cgc7":6.0,"cgc7_5":6.0,"cgc8":10.8,"cgc8_5":10.8,"cgc9":10.8,"cgc9_5":13.2,"cgc10":25.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":9.19,"bgs9":9.19,"bgs9_5":13.8,"bgs10":72.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83866_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "62/132",
+   "name": "Blaine's Growlithe",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 11.6,
+   "graded": {"psa1":16.56,"psa2":16.56,"psa3":16.56,"psa4":16.56,"psa5":16.66,"psa6":20.28,"psa7":33.0,"psa8":34.62,"psa9":62.88,"psa10":377.5,"cgc1":7.0,"cgc1_5":7.0,"cgc2":7.0,"cgc2_5":7.0,"cgc3":7.0,"cgc3_5":7.0,"cgc4":7.0,"cgc4_5":7.0,"cgc5":7.0,"cgc5_5":7.0,"cgc6":9.6,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":9.6,"cgc8":10.8,"cgc8_5":23.09,"cgc9":28.8,"cgc9_5":28.8,"cgc10":40.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.86,"bgs6_5":6.86,"bgs7":10.96,"bgs7_5":11.35,"bgs8":16.0,"bgs8_5":22.76,"bgs9":23.8,"bgs9_5":36.66,"bgs10":183.49},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83870_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "63/132",
+   "name": "Blaine's Mankey",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.61,
+   "graded": {"psa1":8.37,"psa2":8.37,"psa3":8.37,"psa4":10.93,"psa5":12.0,"psa6":13.22,"psa7":16.53,"psa8":25.0,"psa9":35.0,"psa10":179.0,"cgc1":4.67,"cgc1_5":4.67,"cgc2":4.67,"cgc2_5":4.67,"cgc3":4.67,"cgc3_5":4.67,"cgc4":4.67,"cgc4_5":4.9,"cgc5":5.82,"cgc5_5":6.27,"cgc6":6.96,"cgc6_5":7.22,"cgc7":7.54,"cgc7_5":7.54,"cgc8":8.94,"cgc8_5":12.01,"cgc9":13.2,"cgc9_5":18.7,"cgc10":30.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.85,"bgs8_5":10.2,"bgs9":10.2,"bgs9_5":16.8,"bgs10":92.49},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83874_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "64/132",
+   "name": "Blaine's Ponyta",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.03,
+   "graded": {"psa1":9.34,"psa2":9.34,"psa3":9.34,"psa4":12.35,"psa5":12.5,"psa6":12.5,"psa7":12.5,"psa8":12.5,"psa9":39.64,"psa10":245.25,"cgc1":5.22,"cgc1_5":5.22,"cgc2":5.22,"cgc2_5":5.22,"cgc3":5.22,"cgc3_5":5.22,"cgc4":5.22,"cgc4_5":5.22,"cgc5":6.71,"cgc5_5":7.1,"cgc6":7.77,"cgc6_5":8.16,"cgc7":8.51,"cgc7_5":15.0,"cgc8":15.0,"cgc8_5":15.0,"cgc9":19.0,"cgc9_5":19.0,"cgc10":19.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.76,"bgs8":8.99,"bgs8_5":11.4,"bgs9":11.4,"bgs9_5":16.8,"bgs10":94.82},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83878_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "65/132",
+   "name": "Blaine's Rhyhorn",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.96,
+   "graded": {"psa1":10.13,"psa2":10.13,"psa3":10.13,"psa4":12.82,"psa5":13.94,"psa6":14.09,"psa7":18.09,"psa8":20.0,"psa9":41.0,"psa10":219.59,"cgc1":5.28,"cgc1_5":5.28,"cgc2":5.28,"cgc2_5":5.28,"cgc3":5.28,"cgc3_5":5.28,"cgc4":5.28,"cgc4_5":5.28,"cgc5":7.0,"cgc5_5":7.0,"cgc6":7.74,"cgc6_5":8.01,"cgc7":8.66,"cgc7_5":9.6,"cgc8":10.0,"cgc8_5":17.95,"cgc9":18.0,"cgc9_5":18.0,"cgc10":25.7,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.75,"bgs7_5":7.68,"bgs8":8.4,"bgs8_5":8.4,"bgs9":8.4,"bgs9_5":20.67,"bgs10":95.24},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83883_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc5","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "66/132",
+   "name": "Blaine's Vulpix",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 6.7,
+   "graded": {"psa1":13.71,"psa2":13.71,"psa3":13.71,"psa4":13.71,"psa5":13.71,"psa6":15.95,"psa7":24.0,"psa8":30.0,"psa9":54.0,"psa10":350.0,"cgc1":6.99,"cgc1_5":6.99,"cgc2":6.99,"cgc2_5":6.99,"cgc3":6.99,"cgc3_5":6.99,"cgc4":6.99,"cgc4_5":6.99,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.2,"cgc8":7.2,"cgc8_5":7.2,"cgc9":20.4,"cgc9_5":20.4,"cgc10":34.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.73,"bgs7_5":8.92,"bgs8":12.07,"bgs8_5":19.07,"bgs9":30.3,"bgs9_5":30.3,"bgs10":178.16},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83886_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "67/132",
+   "name": "Brock's Diglett",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.69,
+   "graded": {"psa1":6.44,"psa2":6.44,"psa3":6.44,"psa4":8.35,"psa5":8.39,"psa6":10.56,"psa7":13.44,"psa8":20.11,"psa9":22.73,"psa10":36.6,"cgc1":3.66,"cgc1_5":3.66,"cgc2":3.66,"cgc2_5":3.66,"cgc3":3.66,"cgc3_5":3.66,"cgc4":3.66,"cgc4_5":3.67,"cgc5":3.84,"cgc5_5":4.91,"cgc6":5.02,"cgc6_5":5.3,"cgc7":5.76,"cgc7_5":5.76,"cgc8":9.6,"cgc8_5":9.6,"cgc9":10.2,"cgc9_5":10.2,"cgc10":69.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":8.4,"bgs9":8.4,"bgs9_5":13.21,"bgs10":64.74},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83961_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc8","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "68/132",
+   "name": "Brock's Geodude",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.53,
+   "graded": {"psa1":10.27,"psa2":10.27,"psa3":10.27,"psa4":13.42,"psa5":13.42,"psa6":13.71,"psa7":17.5,"psa8":24.25,"psa9":62.5,"psa10":274.5,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.56,"cgc5":6.98,"cgc5_5":6.98,"cgc6":7.66,"cgc6_5":7.86,"cgc7":8.17,"cgc7_5":8.17,"cgc8":9.49,"cgc8_5":9.6,"cgc9":13.2,"cgc9_5":13.2,"cgc10":28.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.06,"bgs7_5":7.58,"bgs8":9.42,"bgs8_5":13.15,"bgs9":13.15,"bgs9_5":20.84,"bgs10":106.07},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83965_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc8_5","cgc9_5","cgc10"]
+  },
+  {
+   "num": "69/132",
+   "name": "Erika's Jigglypuff",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 15.37,
+   "graded": {"psa1":16.17,"psa2":16.17,"psa3":16.17,"psa4":16.17,"psa5":16.66,"psa6":20.68,"psa7":31.95,"psa8":43.34,"psa9":50.99,"psa10":905.0,"cgc1":7.19,"cgc1_5":7.19,"cgc2":7.19,"cgc2_5":7.19,"cgc3":7.19,"cgc3_5":7.19,"cgc4":7.19,"cgc4_5":7.19,"cgc5":8.48,"cgc5_5":9.05,"cgc6":10.01,"cgc6_5":10.01,"cgc7":11.4,"cgc7_5":11.4,"cgc8":12.0,"cgc8_5":13.8,"cgc9":19.8,"cgc9_5":24.74,"cgc10":37.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.62,"bgs7":7.2,"bgs7_5":7.2,"bgs8":7.2,"bgs8_5":7.2,"bgs9":19.08,"bgs9_5":35.28,"bgs10":191.86},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85298_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5"]
+  },
+  {
+   "num": "70/132",
+   "name": "Erika's Oddish",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 5.47,
+   "graded": {"psa1":12.05,"psa2":12.05,"psa3":12.05,"psa4":12.05,"psa5":12.05,"psa6":14.26,"psa7":16.0,"psa8":28.84,"psa9":36.25,"psa10":239.35,"cgc1":5.53,"cgc1_5":5.53,"cgc2":5.53,"cgc2_5":5.53,"cgc3":5.53,"cgc3_5":5.53,"cgc4":5.53,"cgc4_5":5.8,"cgc5":6.76,"cgc5_5":7.1,"cgc6":7.22,"cgc6_5":7.22,"cgc7":7.61,"cgc7_5":9.6,"cgc8":11.7,"cgc8_5":13.4,"cgc9":13.4,"cgc9_5":14.4,"cgc10":43.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.72,"bgs7_5":8.13,"bgs8":10.97,"bgs8_5":14.1,"bgs9":14.1,"bgs9_5":24.07,"bgs10":137.95},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85302_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "71/132",
+   "name": "Erika's Paras",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.67,
+   "graded": {"psa1":14.04,"psa2":14.04,"psa3":14.04,"psa4":15.44,"psa5":15.44,"psa6":15.44,"psa7":18.42,"psa8":26.5,"psa9":26.5,"psa10":179.0,"cgc1":8.18,"cgc1_5":8.18,"cgc2":8.18,"cgc2_5":8.18,"cgc3":8.18,"cgc3_5":8.18,"cgc4":8.18,"cgc4_5":8.18,"cgc5":8.18,"cgc5_5":8.7,"cgc6":8.7,"cgc6_5":9.23,"cgc7":9.75,"cgc7_5":9.75,"cgc8":10.69,"cgc8_5":35.0,"cgc9":35.0,"cgc9_5":35.0,"cgc10":36.75,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":8.07,"bgs7":8.07,"bgs7_5":10.58,"bgs8":13.72,"bgs8_5":13.72,"bgs9":13.72,"bgs9_5":22.42,"bgs10":113.06},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85304_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc8_5"]
+  },
+  {
+   "num": "72/132",
+   "name": "Giovanni's Machop",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 4.77,
+   "graded": {"psa1":8.14,"psa2":8.14,"psa3":8.14,"psa4":8.5,"psa5":8.5,"psa6":8.5,"psa7":9.37,"psa8":21.44,"psa9":21.44,"psa10":176.0,"cgc1":4.68,"cgc1_5":4.68,"cgc2":4.68,"cgc2_5":4.68,"cgc3":4.68,"cgc3_5":4.68,"cgc4":4.68,"cgc4_5":4.68,"cgc5":5.12,"cgc5_5":5.8,"cgc6":6.34,"cgc6_5":6.61,"cgc7":6.91,"cgc7_5":9.6,"cgc8":9.6,"cgc8_5":10.2,"cgc9":10.5,"cgc9_5":23.99,"cgc10":30.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.77,"bgs8":8.6,"bgs8_5":11.69,"bgs9":12.0,"bgs9_5":26.4,"bgs10":85.16},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85714_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "73/132",
+   "name": "Giovanni's Magikarp",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 18.75,
+   "graded": {"psa1":23.31,"psa2":23.31,"psa3":23.31,"psa4":23.31,"psa5":23.31,"psa6":27.8,"psa7":34.0,"psa8":45.89,"psa9":89.25,"psa10":850.0,"cgc1":9.49,"cgc1_5":9.49,"cgc2":9.49,"cgc2_5":9.49,"cgc3":9.49,"cgc3_5":9.49,"cgc4":9.49,"cgc4_5":9.49,"cgc5":11.4,"cgc5_5":11.4,"cgc6":11.4,"cgc6_5":11.4,"cgc7":11.4,"cgc7_5":14.4,"cgc8":14.4,"cgc8_5":21.8,"cgc9":28.8,"cgc9_5":52.2,"cgc10":93.6,"bgs1":7.64,"bgs1_5":7.64,"bgs2":7.64,"bgs2_5":7.64,"bgs3":7.64,"bgs3_5":7.64,"bgs4":7.64,"bgs4_5":7.85,"bgs5":8.16,"bgs5_5":8.99,"bgs6":9.78,"bgs6_5":9.78,"bgs7":12.0,"bgs7_5":12.0,"bgs8":12.0,"bgs8_5":12.0,"bgs9":12.0,"bgs9_5":425.0,"bgs10":446.25},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85715_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "74/132",
+   "name": "Giovanni's Meowth",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 8.65,
+   "graded": {"psa1":10.5,"psa2":10.5,"psa3":10.5,"psa4":10.5,"psa5":10.5,"psa6":26.0,"psa7":33.0,"psa8":40.0,"psa9":72.0,"psa10":544.5,"cgc1":8.69,"cgc1_5":8.69,"cgc2":8.69,"cgc2_5":8.69,"cgc3":8.69,"cgc3_5":8.69,"cgc4":8.69,"cgc4_5":8.69,"cgc5":9.4,"cgc5_5":9.51,"cgc6":9.6,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":9.6,"cgc8":12.0,"cgc8_5":15.6,"cgc9":16.8,"cgc9_5":24.0,"cgc10":48.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.67,"bgs6_5":7.67,"bgs7":11.9,"bgs7_5":12.03,"bgs8":16.34,"bgs8_5":22.67,"bgs9":50.0,"bgs9_5":50.0,"bgs10":203.06},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85717_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "77/132",
+   "name": "Koga's Ekans",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.34,
+   "graded": {"psa1":10.2,"psa2":10.2,"psa3":10.2,"psa4":10.83,"psa5":12.34,"psa6":13.32,"psa7":16.59,"psa8":18.0,"psa9":39.12,"psa10":184.99,"cgc1":3.44,"cgc1_5":3.44,"cgc2":3.44,"cgc2_5":3.44,"cgc3":3.44,"cgc3_5":3.44,"cgc4":3.44,"cgc4_5":4.83,"cgc5":5.98,"cgc5_5":6.52,"cgc6":7.28,"cgc6_5":7.33,"cgc7":7.81,"cgc7_5":7.81,"cgc8":9.46,"cgc8_5":9.6,"cgc9":18.0,"cgc9_5":19.2,"cgc10":26.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.3,"bgs8_5":9.0,"bgs9":9.0,"bgs9_5":40.0,"bgs10":95.04},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86507_in_800x800.jpg",
+   "gradedReal": ["psa1","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "78/132",
+   "name": "Koga's Grimer",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 4.71,
+   "graded": {"psa1":11.02,"psa2":11.02,"psa3":11.02,"psa4":14.05,"psa5":14.65,"psa6":15.49,"psa7":19.5,"psa8":25.0,"psa9":43.33,"psa10":249.04,"cgc1":6.14,"cgc1_5":6.14,"cgc2":6.14,"cgc2_5":6.14,"cgc3":6.14,"cgc3_5":6.14,"cgc4":6.14,"cgc4_5":6.14,"cgc5":6.95,"cgc5_5":7.17,"cgc6":8.03,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.62,"cgc8":10.58,"cgc8_5":14.89,"cgc9":16.04,"cgc9_5":16.19,"cgc10":31.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.61,"bgs7_5":8.15,"bgs8":10.97,"bgs8_5":12.6,"bgs9":12.6,"bgs9_5":22.02,"bgs10":112.59},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86509_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "79/132",
+   "name": "Koga's Koffing",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.84,
+   "graded": {"psa1":10.35,"psa2":10.35,"psa3":10.35,"psa4":12.54,"psa5":12.76,"psa6":12.79,"psa7":16.43,"psa8":29.5,"psa9":31.57,"psa10":218.07,"cgc1":5.85,"cgc1_5":5.85,"cgc2":5.85,"cgc2_5":5.85,"cgc3":5.85,"cgc3_5":5.85,"cgc4":5.85,"cgc4_5":5.96,"cgc5":6.52,"cgc5_5":6.52,"cgc6":7.39,"cgc6_5":7.5,"cgc7":7.83,"cgc7_5":7.83,"cgc8":9.04,"cgc8_5":11.0,"cgc9":15.0,"cgc9_5":15.0,"cgc10":32.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.93,"bgs8":9.36,"bgs8_5":12.04,"bgs9":12.04,"bgs9_5":19.45,"bgs10":106.03},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86512_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "80/132",
+   "name": "Koga's Pidgey",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 5.13,
+   "graded": {"psa1":8.85,"psa2":8.85,"psa3":8.85,"psa4":8.85,"psa5":14.99,"psa6":14.99,"psa7":16.03,"psa8":16.05,"psa9":38.5,"psa10":222.5,"cgc1":4.15,"cgc1_5":4.15,"cgc2":4.15,"cgc2_5":4.15,"cgc3":4.15,"cgc3_5":4.15,"cgc4":4.15,"cgc4_5":4.54,"cgc5":4.91,"cgc5_5":5.7,"cgc6":5.7,"cgc6_5":5.78,"cgc7":5.84,"cgc7_5":5.84,"cgc8":6.0,"cgc8_5":8.99,"cgc9":10.8,"cgc9_5":14.4,"cgc10":26.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.68,"bgs8_5":10.8,"bgs9":10.8,"bgs9_5":13.2,"bgs10":101.93},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86517_in_800x800.jpg",
+   "gradedReal": ["psa5","psa8","psa9","psa10","cgc8","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "81/132",
+   "name": "Koga's Tangela",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 4.63,
+   "graded": {"psa1":9.73,"psa2":9.73,"psa3":9.73,"psa4":12.0,"psa5":12.0,"psa6":12.0,"psa7":12.0,"psa8":12.0,"psa9":55.62,"psa10":192.44,"cgc1":5.51,"cgc1_5":5.51,"cgc2":5.51,"cgc2_5":5.51,"cgc3":5.51,"cgc3_5":5.51,"cgc4":5.51,"cgc4_5":5.58,"cgc5":6.61,"cgc5_5":6.61,"cgc6":7.79,"cgc6_5":7.99,"cgc7":8.21,"cgc7_5":8.21,"cgc8":9.6,"cgc8_5":9.6,"cgc9":22.0,"cgc9_5":22.0,"cgc10":30.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.74,"bgs8_5":13.63,"bgs9":13.8,"bgs9_5":20.52,"bgs10":102.33},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86518_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "82/132",
+   "name": "Koga's Weedle",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.97,
+   "graded": {"psa1":9.79,"psa2":9.79,"psa3":9.79,"psa4":11.95,"psa5":12.89,"psa6":13.85,"psa7":17.41,"psa8":35.0,"psa9":35.0,"psa10":217.5,"cgc1":5.33,"cgc1_5":5.33,"cgc2":5.33,"cgc2_5":5.33,"cgc3":5.33,"cgc3_5":5.33,"cgc4":5.33,"cgc4_5":5.58,"cgc5":6.5,"cgc5_5":6.5,"cgc6":6.5,"cgc6_5":6.5,"cgc7":6.5,"cgc7_5":6.5,"cgc8":9.6,"cgc8_5":10.0,"cgc9":13.5,"cgc9_5":14.4,"cgc10":27.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.62,"bgs7_5":6.93,"bgs8":9.41,"bgs8_5":11.72,"bgs9":11.72,"bgs9_5":18.69,"bgs10":96.04},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86519_in_800x800.jpg",
+   "gradedReal": ["psa8","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "83/132",
+   "name": "Koga's Zubat",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.61,
+   "graded": {"psa1":8.46,"psa2":8.46,"psa3":8.46,"psa4":10.62,"psa5":11.86,"psa6":12.29,"psa7":15.47,"psa8":19.25,"psa9":25.5,"psa10":154.45,"cgc1":4.53,"cgc1_5":4.53,"cgc2":4.53,"cgc2_5":4.53,"cgc3":4.53,"cgc3_5":4.53,"cgc4":4.53,"cgc4_5":4.53,"cgc5":5.68,"cgc5_5":5.81,"cgc6":6.48,"cgc6_5":6.67,"cgc7":7.2,"cgc7_5":7.2,"cgc8":8.0,"cgc8_5":11.05,"cgc9":20.0,"cgc9_5":20.0,"cgc10":30.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.32,"bgs8_5":8.4,"bgs9":8.4,"bgs9_5":17.35,"bgs10":82.42},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86521_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "84/132",
+   "name": "Lt. Surge's Pikachu",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 28.04,
+   "graded": {"psa1":21.14,"psa2":21.14,"psa3":21.14,"psa4":21.14,"psa5":21.14,"psa6":35.5,"psa7":45.0,"psa8":71.93,"psa9":156.0,"psa10":1022.5,"cgc1":9.6,"cgc1_5":9.6,"cgc2":9.6,"cgc2_5":9.6,"cgc3":9.6,"cgc3_5":9.6,"cgc4":9.6,"cgc4_5":9.6,"cgc5":13.32,"cgc5_5":13.32,"cgc6":14.29,"cgc6_5":14.67,"cgc7":18.57,"cgc7_5":21.39,"cgc8":22.09,"cgc8_5":28.56,"cgc9":44.0,"cgc9_5":54.6,"cgc10":213.0,"bgs1":8.65,"bgs1_5":8.65,"bgs2":8.65,"bgs2_5":8.65,"bgs3":8.65,"bgs3_5":8.65,"bgs4":8.65,"bgs4_5":8.65,"bgs5":8.65,"bgs5_5":11.4,"bgs6":14.35,"bgs6_5":14.35,"bgs7":22.2,"bgs7_5":22.2,"bgs8":22.2,"bgs8_5":22.2,"bgs9":22.2,"bgs9_5":122.46,"bgs10":394.51},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86860_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc4_5","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "85/132",
+   "name": "Lt. Surge's Rattata",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.54,
+   "graded": {"psa1":8.6,"psa2":8.6,"psa3":8.6,"psa4":10.43,"psa5":12.07,"psa6":12.58,"psa7":16.47,"psa8":22.4,"psa9":24.0,"psa10":91.7,"cgc1":4.56,"cgc1_5":4.56,"cgc2":4.56,"cgc2_5":4.56,"cgc3":4.56,"cgc3_5":4.56,"cgc4":4.56,"cgc4_5":4.61,"cgc5":5.77,"cgc5_5":6.31,"cgc6":7.2,"cgc6_5":7.2,"cgc7":9.6,"cgc7_5":9.8,"cgc8":10.0,"cgc8_5":11.7,"cgc9":16.44,"cgc9_5":17.15,"cgc10":41.62,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.96,"bgs8":8.4,"bgs8_5":8.4,"bgs9":8.4,"bgs9_5":17.89,"bgs10":81.81},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86866_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc6","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "86/132",
+   "name": "Lt. Surge's Voltorb",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.32,
+   "graded": {"psa1":8.27,"psa2":8.27,"psa3":8.27,"psa4":10.01,"psa5":10.01,"psa6":10.91,"psa7":15.0,"psa8":20.5,"psa9":30.0,"psa10":119.0,"cgc1":5.14,"cgc1_5":5.14,"cgc2":5.14,"cgc2_5":5.14,"cgc3":5.14,"cgc3_5":5.14,"cgc4":5.14,"cgc4_5":5.14,"cgc5":5.14,"cgc5_5":5.14,"cgc6":5.73,"cgc6_5":6.04,"cgc7":6.24,"cgc7_5":6.24,"cgc8":7.23,"cgc8_5":9.67,"cgc9":11.52,"cgc9_5":13.2,"cgc10":26.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.7,"bgs8":8.28,"bgs8_5":9.84,"bgs9":9.84,"bgs9_5":14.97,"bgs10":84.84},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86872_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc9_5","cgc10"]
+  },
+  {
+   "num": "87/132",
+   "name": "Misty's Horsea",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.02,
+   "graded": {"psa1":11.93,"psa2":11.93,"psa3":11.93,"psa4":13.75,"psa5":13.75,"psa6":13.75,"psa7":21.15,"psa8":31.95,"psa9":44.86,"psa10":225.0,"cgc1":6.56,"cgc1_5":6.56,"cgc2":6.56,"cgc2_5":6.56,"cgc3":6.56,"cgc3_5":6.56,"cgc4":6.56,"cgc4_5":6.56,"cgc5":7.13,"cgc5_5":8.5,"cgc6":9.2,"cgc6_5":9.2,"cgc7":9.6,"cgc7_5":9.6,"cgc8":9.6,"cgc8_5":13.0,"cgc9":15.6,"cgc9_5":19.44,"cgc10":135.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.74,"bgs5":6.74,"bgs5_5":6.74,"bgs6":6.74,"bgs6_5":6.74,"bgs7":8.74,"bgs7_5":8.83,"bgs8":12.11,"bgs8_5":14.4,"bgs9":14.4,"bgs9_5":60.0,"bgs10":124.7},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87533_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "88/132",
+   "name": "Misty's Magikarp",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 12.72,
+   "graded": {"psa1":20.95,"psa2":20.95,"psa3":20.95,"psa4":20.95,"psa5":21.21,"psa6":23.98,"psa7":36.57,"psa8":48.0,"psa9":83.62,"psa10":625.83,"cgc1":8.67,"cgc1_5":8.67,"cgc2":8.67,"cgc2_5":8.67,"cgc3":8.67,"cgc3_5":8.67,"cgc4":8.67,"cgc4_5":8.75,"cgc5":10.85,"cgc5_5":12.05,"cgc6":12.29,"cgc6_5":12.29,"cgc7":13.8,"cgc7_5":13.88,"cgc8":17.1,"cgc8_5":18.85,"cgc9":25.2,"cgc9_5":36.8,"cgc10":118.5,"bgs1":7.21,"bgs1_5":7.21,"bgs2":7.21,"bgs2_5":7.21,"bgs3":7.21,"bgs3_5":7.21,"bgs4":7.21,"bgs4_5":7.58,"bgs5":8.0,"bgs5_5":8.51,"bgs6":9.05,"bgs6_5":9.83,"bgs7":12.0,"bgs7_5":12.0,"bgs8":12.0,"bgs8_5":12.0,"bgs9":12.0,"bgs9_5":42.05,"bgs10":244.54},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87534_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "89/132",
+   "name": "Misty's Poliwag",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 4.12,
+   "graded": {"psa1":11.36,"psa2":11.36,"psa3":11.36,"psa4":12.86,"psa5":15.1,"psa6":15.45,"psa7":24.09,"psa8":31.26,"psa9":39.0,"psa10":262.5,"cgc1":6.47,"cgc1_5":6.47,"cgc2":6.47,"cgc2_5":6.47,"cgc3":6.47,"cgc3_5":6.47,"cgc4":6.47,"cgc4_5":6.47,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.8,"cgc6_5":7.8,"cgc7":7.8,"cgc7_5":10.2,"cgc8":10.8,"cgc8_5":10.8,"cgc9":18.0,"cgc9_5":18.56,"cgc10":69.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.53,"bgs7_5":8.66,"bgs8":11.68,"bgs8_5":15.73,"bgs9":16.45,"bgs9_5":23.39,"bgs10":110.72},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87536_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc5_5","cgc7","cgc7_5","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "90/132",
+   "name": "Misty's Psyduck",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 27.56,
+   "graded": {"psa1":14.0,"psa2":14.0,"psa3":14.0,"psa4":14.0,"psa5":14.0,"psa6":34.5,"psa7":37.62,"psa8":59.5,"psa9":128.5,"psa10":900.0,"cgc1":9.65,"cgc1_5":9.65,"cgc2":9.65,"cgc2_5":9.65,"cgc3":9.65,"cgc3_5":9.65,"cgc4":9.65,"cgc4_5":9.65,"cgc5":9.65,"cgc5_5":9.65,"cgc6":10.8,"cgc6_5":10.8,"cgc7":10.8,"cgc7_5":17.47,"cgc8":23.7,"cgc8_5":24.5,"cgc9":35.4,"cgc9_5":37.0,"cgc10":174.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":7.51,"bgs6":11.33,"bgs6_5":11.33,"bgs7":14.4,"bgs7_5":14.4,"bgs8":14.4,"bgs8_5":14.4,"bgs9":14.4,"bgs9_5":96.2,"bgs10":302.96},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87540_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa8","psa9","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "91/132",
+   "name": "Misty's Seel",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.75,
+   "graded": {"psa1":9.26,"psa2":9.26,"psa3":9.26,"psa4":12.0,"psa5":12.0,"psa6":12.0,"psa7":12.0,"psa8":28.56,"psa9":32.5,"psa10":281.76,"cgc1":5.86,"cgc1_5":5.86,"cgc2":5.86,"cgc2_5":5.86,"cgc3":5.86,"cgc3_5":5.86,"cgc4":5.86,"cgc4_5":5.86,"cgc5":6.38,"cgc5_5":6.38,"cgc6":7.37,"cgc6_5":7.64,"cgc7":10.8,"cgc7_5":10.8,"cgc8":10.8,"cgc8_5":10.8,"cgc9":13.2,"cgc9_5":25.0,"cgc10":25.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":7.02,"bgs8":9.31,"bgs8_5":13.72,"bgs9":22.0,"bgs9_5":22.0,"bgs10":100.89},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87544_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc7","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "92/132",
+   "name": "Misty's Staryu",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.96,
+   "graded": {"psa1":10.47,"psa2":10.47,"psa3":10.47,"psa4":11.95,"psa5":13.79,"psa6":14.62,"psa7":16.0,"psa8":22.0,"psa9":45.0,"psa10":182.0,"cgc1":5.53,"cgc1_5":5.53,"cgc2":5.53,"cgc2_5":5.53,"cgc3":5.53,"cgc3_5":5.53,"cgc4":5.53,"cgc4_5":5.53,"cgc5":6.75,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.97,"cgc7":8.32,"cgc7_5":8.32,"cgc8":9.74,"cgc8_5":12.0,"cgc9":23.48,"cgc9_5":23.48,"cgc10":31.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.73,"bgs7_5":8.08,"bgs8":8.4,"bgs8_5":8.4,"bgs9":8.4,"bgs9_5":19.64,"bgs10":100.41},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87548_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc6","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "93/132",
+   "name": "Sabrina's Abra",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 6.06,
+   "graded": {"psa1":12.5,"psa2":12.5,"psa3":12.5,"psa4":12.5,"psa5":12.5,"psa6":12.5,"psa7":12.5,"psa8":28.25,"psa9":49.05,"psa10":246.0,"cgc1":5.91,"cgc1_5":5.91,"cgc2":5.91,"cgc2_5":5.91,"cgc3":5.91,"cgc3_5":5.91,"cgc4":5.91,"cgc4_5":6.0,"cgc5":7.06,"cgc5_5":7.73,"cgc6":8.6,"cgc6_5":8.6,"cgc7":12.0,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":17.0,"cgc9":17.0,"cgc9_5":17.4,"cgc10":50.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.17,"bgs7_5":9.59,"bgs8":12.49,"bgs8_5":12.6,"bgs9":12.6,"bgs9_5":80.0,"bgs10":149.69},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88864_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc6","cgc7","cgc8_5","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "94/132",
+   "name": "Sabrina's Abra",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 14.03,
+   "graded": {"psa1":16.34,"psa2":16.34,"psa3":16.34,"psa4":16.34,"psa5":16.76,"psa6":26.73,"psa7":29.08,"psa8":46.99,"psa9":90.0,"psa10":334.75,"cgc1":7.0,"cgc1_5":7.0,"cgc2":7.0,"cgc2_5":7.0,"cgc3":7.0,"cgc3_5":7.0,"cgc4":7.0,"cgc4_5":7.0,"cgc5":7.0,"cgc5_5":7.0,"cgc6":7.0,"cgc6_5":7.0,"cgc7":7.0,"cgc7_5":7.2,"cgc8":12.0,"cgc8_5":13.8,"cgc9":15.0,"cgc9_5":24.74,"cgc10":59.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.44,"bgs6_5":7.44,"bgs7":11.19,"bgs7_5":11.19,"bgs8":15.3,"bgs8_5":18.0,"bgs9":18.0,"bgs9_5":36.38,"bgs10":185.49},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88865_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "95/132",
+   "name": "Sabrina's Drowzee",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.94,
+   "graded": {"psa1":8.45,"psa2":8.45,"psa3":8.45,"psa4":9.6,"psa5":9.6,"psa6":9.6,"psa7":9.6,"psa8":21.13,"psa9":34.0,"psa10":215.25,"cgc1":4.9,"cgc1_5":4.9,"cgc2":4.9,"cgc2_5":4.9,"cgc3":4.9,"cgc3_5":4.9,"cgc4":4.9,"cgc4_5":4.9,"cgc5":5.87,"cgc5_5":6.17,"cgc6":8.0,"cgc6_5":8.0,"cgc7":9.6,"cgc7_5":9.6,"cgc8":10.8,"cgc8_5":11.58,"cgc9":13.2,"cgc9_5":14.6,"cgc10":30.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.78,"bgs8":9.01,"bgs8_5":11.4,"bgs9":11.4,"bgs9_5":16.8,"bgs10":92.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88868_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc6","cgc7","cgc8","cgc9","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "96/132",
+   "name": "Sabrina's Gastly",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 14.35,
+   "graded": {"psa1":15.0,"psa2":15.0,"psa3":15.0,"psa4":15.0,"psa5":15.0,"psa6":15.0,"psa7":28.29,"psa8":60.5,"psa9":95.0,"psa10":624.5,"cgc1":7.71,"cgc1_5":7.71,"cgc2":7.71,"cgc2_5":7.71,"cgc3":7.71,"cgc3_5":7.71,"cgc4":7.71,"cgc4_5":7.71,"cgc5":8.97,"cgc5_5":9.6,"cgc6":9.6,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":9.6,"cgc8":11.0,"cgc8_5":11.0,"cgc9":18.1,"cgc9_5":31.09,"cgc10":54.0,"bgs1":8.17,"bgs1_5":8.17,"bgs2":8.17,"bgs2_5":8.17,"bgs3":8.17,"bgs3_5":8.17,"bgs4":8.17,"bgs4_5":8.23,"bgs5":8.23,"bgs5_5":8.23,"bgs6":8.23,"bgs6_5":8.23,"bgs7":11.47,"bgs7_5":12.09,"bgs8":14.4,"bgs8_5":14.4,"bgs9":14.4,"bgs9_5":45.6,"bgs10":209.67},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88871_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "97/132",
+   "name": "Sabrina's Gastly",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 17.16,
+   "graded": {"psa1":17.1,"psa2":17.1,"psa3":17.1,"psa4":17.1,"psa5":17.1,"psa6":17.1,"psa7":35.5,"psa8":62.5,"psa9":85.62,"psa10":516.0,"cgc1":9.64,"cgc1_5":9.64,"cgc2":9.64,"cgc2_5":9.64,"cgc3":9.64,"cgc3_5":9.64,"cgc4":9.64,"cgc4_5":9.64,"cgc5":10.39,"cgc5_5":11.59,"cgc6":11.84,"cgc6_5":11.84,"cgc7":12.55,"cgc7_5":13.12,"cgc8":15.0,"cgc8_5":15.0,"cgc9":21.0,"cgc9_5":24.5,"cgc10":86.4,"bgs1":9.93,"bgs1_5":9.93,"bgs2":9.93,"bgs2_5":9.93,"bgs3":9.93,"bgs3_5":9.93,"bgs4":9.93,"bgs4_5":9.93,"bgs5":9.93,"bgs5_5":9.93,"bgs6":9.93,"bgs6_5":9.93,"bgs7":14.15,"bgs7_5":14.51,"bgs8":18.96,"bgs8_5":19.2,"bgs9":19.2,"bgs9_5":41.26,"bgs10":244.31},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88872_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "98/132",
+   "name": "Sabrina's Porygon",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 6.16,
+   "graded": {"psa1":13.46,"psa2":13.46,"psa3":13.46,"psa4":13.46,"psa5":13.46,"psa6":21.5,"psa7":21.5,"psa8":21.5,"psa9":35.0,"psa10":252.0,"cgc1":6.85,"cgc1_5":6.85,"cgc2":6.85,"cgc2_5":6.85,"cgc3":6.85,"cgc3_5":6.85,"cgc4":6.85,"cgc4_5":6.85,"cgc5":7.45,"cgc5_5":8.56,"cgc6":8.56,"cgc6_5":14.4,"cgc7":14.4,"cgc7_5":14.4,"cgc8":14.4,"cgc8_5":14.5,"cgc9":21.0,"cgc9_5":42.0,"cgc10":55.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.8,"bgs7":8.58,"bgs7_5":9.76,"bgs8":12.77,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":16.8,"bgs10":160.99},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88885_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc6_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "99/132",
+   "name": "Sabrina's Psyduck",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 24.17,
+   "graded": {"psa1":23.39,"psa2":23.39,"psa3":23.39,"psa4":23.39,"psa5":23.39,"psa6":23.39,"psa7":45.0,"psa8":71.0,"psa9":158.5,"psa10":900.0,"cgc1":12.87,"cgc1_5":12.87,"cgc2":12.87,"cgc2_5":12.87,"cgc3":12.87,"cgc3_5":12.87,"cgc4":12.87,"cgc4_5":12.87,"cgc5":15.24,"cgc5_5":16.1,"cgc6":17.91,"cgc6_5":19.2,"cgc7":19.45,"cgc7_5":20.5,"cgc8":22.8,"cgc8_5":24.77,"cgc9":38.0,"cgc9_5":54.0,"cgc10":176.25,"bgs1":15.59,"bgs1_5":15.59,"bgs2":15.59,"bgs2_5":15.59,"bgs3":15.59,"bgs3_5":15.59,"bgs4":15.59,"bgs4_5":15.59,"bgs5":15.59,"bgs5_5":15.59,"bgs6":15.59,"bgs6_5":15.59,"bgs7":16.8,"bgs7_5":16.8,"bgs8":16.8,"bgs8_5":16.8,"bgs9":16.8,"bgs9_5":62.08,"bgs10":341.07},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88887_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "124/132",
+   "name": "Fervor",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.59,
+   "graded": {"psa1":7.29,"psa2":7.29,"psa3":7.29,"psa4":9.36,"psa5":9.36,"psa6":9.63,"psa7":12.11,"psa8":14.2,"psa9":47.5,"psa10":179.0,"cgc1":3.68,"cgc1_5":3.68,"cgc2":3.68,"cgc2_5":3.68,"cgc3":3.68,"cgc3_5":3.68,"cgc4":3.68,"cgc4_5":4.96,"cgc5":5.16,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.2,"cgc8":7.2,"cgc8_5":7.2,"cgc9":7.2,"cgc9_5":7.2,"cgc10":13.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.74,"bgs8_5":9.24,"bgs9":9.24,"bgs9_5":13.84,"bgs10":71.51},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85430_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc5_5","cgc9_5","cgc10"]
+  },
+  {
+   "num": "125/132",
+   "name": "Transparent Walls",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.24,
+   "graded": {"psa1":7.17,"psa2":7.17,"psa3":7.17,"psa4":8.31,"psa5":8.4,"psa6":8.4,"psa7":8.4,"psa8":17.09,"psa9":21.9,"psa10":76.0,"cgc1":4.12,"cgc1_5":4.12,"cgc2":4.12,"cgc2_5":4.12,"cgc3":4.12,"cgc3_5":4.12,"cgc4":4.12,"cgc4_5":4.12,"cgc5":4.39,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":8.0,"cgc7_5":8.0,"cgc8":8.0,"cgc8_5":9.6,"cgc9":9.68,"cgc9_5":12.6,"cgc10":23.99,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.57,"bgs8_5":8.47,"bgs9":8.47,"bgs9_5":12.87,"bgs10":68.34},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/90017_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc7","cgc8_5","cgc9_5","cgc10"]
+  },
+  {
+   "num": "126/132",
+   "name": "Warp Point",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.44,
+   "graded": {"psa1":7.61,"psa2":7.61,"psa3":7.61,"psa4":8.4,"psa5":8.4,"psa6":8.4,"psa7":13.01,"psa8":18.44,"psa9":31.15,"psa10":213.0,"cgc1":4.4,"cgc1_5":4.4,"cgc2":4.4,"cgc2_5":4.4,"cgc3":4.4,"cgc3_5":4.4,"cgc4":4.4,"cgc4_5":4.68,"cgc5":5.25,"cgc5_5":5.25,"cgc6":5.92,"cgc6_5":6.0,"cgc7":6.3,"cgc7_5":6.3,"cgc8":8.52,"cgc8_5":9.21,"cgc9":14.0,"cgc9_5":14.0,"cgc10":19.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.73,"bgs8_5":9.82,"bgs9":9.82,"bgs9_5":15.95,"bgs10":76.02},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/90476_in_800x800.jpg",
+   "gradedReal": ["psa6","psa9","psa10","cgc6_5","cgc8","cgc9","cgc10"]
+  },
+  {
+   "num": "127/132",
+   "name": "Fighting Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.51,
+   "graded": {"psa1":7.23,"psa2":7.23,"psa3":7.23,"psa4":9.45,"psa5":10.03,"psa6":10.03,"psa7":11.0,"psa8":11.0,"psa9":32.59,"psa10":182.0,"cgc1":3.99,"cgc1_5":3.99,"cgc2":3.99,"cgc2_5":3.99,"cgc3":3.99,"cgc3_5":3.99,"cgc4":3.99,"cgc4_5":4.35,"cgc5":4.95,"cgc5_5":4.95,"cgc6":5.68,"cgc6_5":5.86,"cgc7":6.0,"cgc7_5":6.0,"cgc8":6.0,"cgc8_5":9.0,"cgc9":12.0,"cgc9_5":14.4,"cgc10":22.53,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.71,"bgs8_5":8.73,"bgs9":8.73,"bgs9_5":15.02,"bgs10":71.55},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85436_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5"]
+  },
+  {
+   "num": "128/132",
+   "name": "Fire Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.34,
+   "graded": {"psa1":6.2,"psa2":6.2,"psa3":6.2,"psa4":6.99,"psa5":7.21,"psa6":8.31,"psa7":10.8,"psa8":13.49,"psa9":19.99,"psa10":67.2,"cgc1":3.49,"cgc1_5":3.49,"cgc2":3.49,"cgc2_5":3.49,"cgc3":3.49,"cgc3_5":3.49,"cgc4":3.49,"cgc4_5":3.5,"cgc5":3.5,"cgc5_5":3.77,"cgc6":4.2,"cgc6_5":4.4,"cgc7":4.52,"cgc7_5":4.52,"cgc8":5.22,"cgc8_5":6.0,"cgc9":8.6,"cgc9_5":8.6,"cgc10":22.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":6.85,"bgs9":6.85,"bgs9_5":10.51,"bgs10":54.58},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85455_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "129/132",
+   "name": "Grass Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.89,
+   "graded": {"psa1":6.67,"psa2":6.67,"psa3":6.67,"psa4":6.75,"psa5":6.75,"psa6":6.75,"psa7":6.75,"psa8":16.54,"psa9":24.32,"psa10":222.5,"cgc1":3.66,"cgc1_5":3.66,"cgc2":3.66,"cgc2_5":3.66,"cgc3":3.66,"cgc3_5":3.66,"cgc4":3.66,"cgc4_5":4.02,"cgc5":4.54,"cgc5_5":4.6,"cgc6":5.04,"cgc6_5":5.41,"cgc7":5.46,"cgc7_5":5.46,"cgc8":6.0,"cgc8_5":8.0,"cgc9":9.0,"cgc9_5":10.29,"cgc10":31.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":8.61,"bgs9":8.61,"bgs9_5":14.35,"bgs10":63.58},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85872_in_800x800.jpg",
+   "gradedReal": ["psa7","psa10","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "130/132",
+   "name": "Lightning Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 2.42,
+   "graded": {"psa1":8.72,"psa2":8.72,"psa3":8.72,"psa4":9.83,"psa5":9.96,"psa6":11.38,"psa7":14.1,"psa8":25.0,"psa9":25.99,"psa10":143.9,"cgc1":4.86,"cgc1_5":4.86,"cgc2":4.86,"cgc2_5":4.86,"cgc3":4.86,"cgc3_5":4.86,"cgc4":4.86,"cgc4_5":5.08,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.2,"cgc8":7.49,"cgc8_5":9.0,"cgc9":9.0,"cgc9_5":11.71,"cgc10":22.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.36,"bgs8_5":10.3,"bgs9":10.3,"bgs9_5":15.57,"bgs10":82.1},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86758_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc5","cgc7_5","cgc9","cgc10"]
+  },
+  {
+   "num": "131/132",
+   "name": "Psychic Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 1.91,
+   "graded": {"psa1":8.51,"psa2":8.51,"psa3":8.51,"psa4":9.81,"psa5":11.29,"psa6":11.29,"psa7":18.25,"psa8":19.14,"psa9":30.0,"psa10":159.5,"cgc1":5.07,"cgc1_5":5.07,"cgc2":5.07,"cgc2_5":5.07,"cgc3":5.07,"cgc3_5":5.07,"cgc4":5.07,"cgc4_5":5.07,"cgc5":5.73,"cgc5_5":5.73,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":7.2,"cgc8_5":7.2,"cgc9":18.99,"cgc9_5":18.99,"cgc10":25.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.48,"bgs8_5":9.8,"bgs9":9.8,"bgs9_5":16.92,"bgs10":77.51},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88416_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9"]
+  },
+  {
+   "num": "132/132",
+   "name": "Water Energy",
+   "rarity": "Common",
+   "variant": "Normal (1st Edition)",
+   "market": 3.83,
+   "graded": {"psa1":7.91,"psa2":7.91,"psa3":7.91,"psa4":9.53,"psa5":10.25,"psa6":12.15,"psa7":13.3,"psa8":13.75,"psa9":30.0,"psa10":221.5,"cgc1":4.45,"cgc1_5":4.45,"cgc2":4.45,"cgc2_5":4.45,"cgc3":4.45,"cgc3_5":4.45,"cgc4":4.45,"cgc4_5":4.98,"cgc5":5.03,"cgc5_5":5.05,"cgc6":5.84,"cgc6_5":6.0,"cgc7":6.65,"cgc7_5":7.2,"cgc8":7.2,"cgc8_5":7.2,"cgc9":7.2,"cgc9_5":17.0,"cgc10":27.16,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.12,"bgs8_5":9.65,"bgs9":9.65,"bgs9_5":15.97,"bgs10":83.16},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/90504_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc9","cgc9_5"]
+  },
+  {
+   "num": "31/132",
+   "name": "Blaine's Charmeleon",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 21.27,
+   "graded": {"psa1":26.78,"psa2":26.78,"psa3":26.78,"psa4":26.78,"psa5":28.14,"psa6":39.99,"psa7":42.49,"psa8":82.49,"psa9":126.25,"psa10":572.98,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":9.6,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":15.5,"cgc8":18.6,"cgc8_5":18.6,"cgc9":25.1,"cgc9_5":41.06,"cgc10":204.5,"bgs1":9.82,"bgs1_5":9.82,"bgs2":9.82,"bgs2_5":9.82,"bgs3":9.82,"bgs3_5":9.82,"bgs4":9.82,"bgs4_5":10.1,"bgs5":11.16,"bgs5_5":13.3,"bgs6":14.23,"bgs6_5":14.23,"bgs7":19.63,"bgs7_5":20.78,"bgs8":28.13,"bgs8_5":89.95,"bgs9":89.95,"bgs9_5":89.95,"bgs10":322.27},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83864_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc7","cgc7_5","cgc8_5","cgc9","cgc10","bgs8_5"]
+  },
+  {
+   "num": "32/132",
+   "name": "Blaine's Dodrio",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.36,
+   "graded": {"psa1":8.24,"psa2":8.24,"psa3":8.24,"psa4":8.24,"psa5":8.24,"psa6":11.7,"psa7":13.57,"psa8":17.5,"psa9":28.0,"psa10":37.2,"cgc1":4.55,"cgc1_5":4.55,"cgc2":4.55,"cgc2_5":4.55,"cgc3":4.55,"cgc3_5":4.55,"cgc4":4.55,"cgc4_5":4.93,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.4,"cgc8":8.4,"cgc8_5":9.14,"cgc9":12.0,"cgc9_5":16.8,"cgc10":38.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.87,"bgs8":8.93,"bgs8_5":10.69,"bgs9":10.69,"bgs9_5":19.2,"bgs10":99.72},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83865_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc5","cgc6","cgc6_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "33/132",
+   "name": "Blaine's Rapidash",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 7.22,
+   "graded": {"psa1":15.58,"psa2":15.58,"psa3":15.58,"psa4":15.58,"psa5":16.39,"psa6":17.0,"psa7":17.0,"psa8":17.0,"psa9":75.0,"psa10":300.0,"cgc1":7.32,"cgc1_5":7.32,"cgc2":7.32,"cgc2_5":7.32,"cgc3":7.32,"cgc3_5":7.32,"cgc4":7.32,"cgc4_5":7.56,"cgc5":9.04,"cgc5_5":9.39,"cgc6":9.39,"cgc6_5":9.39,"cgc7":10.42,"cgc7_5":10.42,"cgc8":18.5,"cgc8_5":18.9,"cgc9":23.0,"cgc9_5":24.0,"cgc10":50.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.67,"bgs7":9.49,"bgs7_5":10.55,"bgs8":14.14,"bgs8_5":18.7,"bgs9":18.7,"bgs9_5":31.2,"bgs10":193.25},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83882_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "34/132",
+   "name": "Brock's Graveler",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 4.66,
+   "graded": {"psa1":9.91,"psa2":9.91,"psa3":9.91,"psa4":13.61,"psa5":13.68,"psa6":14.77,"psa7":18.56,"psa8":25.99,"psa9":44.0,"psa10":325.0,"cgc1":5.42,"cgc1_5":5.42,"cgc2":5.42,"cgc2_5":5.42,"cgc3":5.42,"cgc3_5":5.42,"cgc4":5.42,"cgc4_5":5.71,"cgc5":6.71,"cgc5_5":6.81,"cgc6":7.88,"cgc6_5":8.04,"cgc7":8.39,"cgc7_5":8.39,"cgc8":9.6,"cgc8_5":12.0,"cgc9":12.0,"cgc9_5":15.05,"cgc10":26.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.88,"bgs8":9.41,"bgs8_5":12.0,"bgs9":12.0,"bgs9_5":20.98,"bgs10":103.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83968_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "35/132",
+   "name": "Brock's Primeape",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 7.53,
+   "graded": {"psa1":16.02,"psa2":16.02,"psa3":16.02,"psa4":16.02,"psa5":16.02,"psa6":31.95,"psa7":31.95,"psa8":32.83,"psa9":32.83,"psa10":350.0,"cgc1":7.53,"cgc1_5":7.53,"cgc2":7.53,"cgc2_5":7.53,"cgc3":7.53,"cgc3_5":7.53,"cgc4":7.53,"cgc4_5":7.53,"cgc5":8.58,"cgc5_5":9.21,"cgc6":9.52,"cgc6_5":9.52,"cgc7":9.6,"cgc7_5":9.6,"cgc8":9.6,"cgc8_5":18.42,"cgc9":18.69,"cgc9_5":20.41,"cgc10":97.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.11,"bgs6_5":7.11,"bgs7":10.66,"bgs7_5":10.78,"bgs8":14.36,"bgs8_5":20.4,"bgs9":20.4,"bgs9_5":36.23,"bgs10":176.6},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83976_in_800x800.jpg",
+   "gradedReal": ["psa6","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc10","bgs9"]
+  },
+  {
+   "num": "36/132",
+   "name": "Brock's Sandslash",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 8.28,
+   "graded": {"psa1":12.27,"psa2":12.27,"psa3":12.27,"psa4":12.27,"psa5":13.51,"psa6":16.52,"psa7":23.29,"psa8":36.45,"psa9":69.34,"psa10":450.15,"cgc1":5.37,"cgc1_5":5.37,"cgc2":5.37,"cgc2_5":5.37,"cgc3":5.37,"cgc3_5":5.37,"cgc4":5.37,"cgc4_5":5.88,"cgc5":6.75,"cgc5_5":7.62,"cgc6":7.8,"cgc6_5":7.8,"cgc7":7.8,"cgc7_5":7.8,"cgc8":7.8,"cgc8_5":9.6,"cgc9":12.0,"cgc9_5":13.2,"cgc10":58.99,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.17,"bgs7_5":7.17,"bgs8":10.14,"bgs8_5":14.4,"bgs9":14.4,"bgs9_5":27.06,"bgs10":146.94},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83984_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "37/132",
+   "name": "Brock's Vulpix",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 16.98,
+   "graded": {"psa1":15.97,"psa2":15.97,"psa3":15.97,"psa4":15.97,"psa5":15.97,"psa6":21.26,"psa7":28.64,"psa8":45.0,"psa9":71.87,"psa10":377.5,"cgc1":7.35,"cgc1_5":7.35,"cgc2":7.35,"cgc2_5":7.35,"cgc3":7.35,"cgc3_5":7.35,"cgc4":7.35,"cgc4_5":8.28,"cgc5":8.96,"cgc5_5":9.75,"cgc6":9.75,"cgc6_5":10.09,"cgc7":10.23,"cgc7_5":10.23,"cgc8":12.33,"cgc8_5":15.45,"cgc9":15.6,"cgc9_5":19.2,"cgc10":41.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.73,"bgs7":9.86,"bgs7_5":10.55,"bgs8":14.09,"bgs8_5":20.4,"bgs9":20.4,"bgs9_5":30.94,"bgs10":201.4},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83986_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "38/132",
+   "name": "Erika's Bellsprout",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 4.68,
+   "graded": {"psa1":8.95,"psa2":8.95,"psa3":8.95,"psa4":11.11,"psa5":11.99,"psa6":13.96,"psa7":15.0,"psa8":15.0,"psa9":15.0,"psa10":207.5,"cgc1":5.04,"cgc1_5":5.04,"cgc2":5.04,"cgc2_5":5.04,"cgc3":5.04,"cgc3_5":5.04,"cgc4":5.04,"cgc4_5":5.34,"cgc5":6.03,"cgc5_5":6.03,"cgc6":6.77,"cgc6_5":6.94,"cgc7":7.37,"cgc7_5":7.37,"cgc8":10.8,"cgc8_5":11.4,"cgc9":15.3,"cgc9_5":23.8,"cgc10":27.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.47,"bgs8_5":11.37,"bgs9":11.37,"bgs9_5":18.0,"bgs10":91.92},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85283_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "39/132",
+   "name": "Erika's Bulbasaur",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 42.3,
+   "graded": {"psa1":15.29,"psa2":15.29,"psa3":15.29,"psa4":15.29,"psa5":15.29,"psa6":29.04,"psa7":34.62,"psa8":51.0,"psa9":135.99,"psa10":510.0,"cgc1":5.0,"cgc1_5":5.0,"cgc2":5.0,"cgc2_5":5.0,"cgc3":5.0,"cgc3_5":5.0,"cgc4":5.0,"cgc4_5":5.0,"cgc5":5.0,"cgc5_5":5.0,"cgc6":5.0,"cgc6_5":5.0,"cgc7":12.84,"cgc7_5":14.22,"cgc8":18.72,"cgc8_5":22.0,"cgc9":22.8,"cgc9_5":23.4,"cgc10":203.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":7.02,"bgs6":10.17,"bgs6_5":10.23,"bgs7":14.76,"bgs7_5":15.61,"bgs8":20.08,"bgs8_5":24.6,"bgs9":24.6,"bgs9_5":89.32,"bgs10":296.13},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85286_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc6_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "40/132",
+   "name": "Erika's Clefairy",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 21.68,
+   "graded": {"psa1":23.14,"psa2":23.14,"psa3":23.14,"psa4":23.14,"psa5":45.0,"psa6":45.0,"psa7":45.0,"psa8":50.0,"psa9":85.0,"psa10":575.96,"cgc1":11.04,"cgc1_5":11.04,"cgc2":11.04,"cgc2_5":11.04,"cgc3":11.04,"cgc3_5":11.04,"cgc4":11.04,"cgc4_5":11.46,"cgc5":11.98,"cgc5_5":12.63,"cgc6":12.99,"cgc6_5":12.99,"cgc7":13.2,"cgc7_5":13.2,"cgc8":13.2,"cgc8_5":19.88,"cgc9":24.6,"cgc9_5":28.3,"cgc10":61.7,"bgs1":7.28,"bgs1_5":7.28,"bgs2":7.28,"bgs2_5":7.28,"bgs3":7.28,"bgs3_5":7.28,"bgs4":7.63,"bgs4_5":10.88,"bgs5":11.18,"bgs5_5":11.18,"bgs6":11.18,"bgs6_5":11.18,"bgs7":15.96,"bgs7_5":16.02,"bgs8":21.6,"bgs8_5":26.45,"bgs9":26.45,"bgs9_5":44.0,"bgs10":260.37},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85289_in_800x800.jpg",
+   "gradedReal": ["psa5","psa8","psa9","psa10","cgc6_5","cgc8","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "41/132",
+   "name": "Erika's Ivysaur",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 33.3,
+   "graded": {"psa1":20.3,"psa2":20.3,"psa3":20.3,"psa4":20.3,"psa5":20.3,"psa6":31.44,"psa7":39.0,"psa8":55.25,"psa9":113.75,"psa10":553.61,"cgc1":8.4,"cgc1_5":8.4,"cgc2":8.4,"cgc2_5":8.4,"cgc3":8.4,"cgc3_5":8.4,"cgc4":8.4,"cgc4_5":8.4,"cgc5":8.4,"cgc5_5":8.4,"cgc6":12.52,"cgc6_5":12.75,"cgc7":15.81,"cgc7_5":16.8,"cgc8":16.8,"cgc8_5":16.8,"cgc9":55.0,"cgc9_5":55.0,"cgc10":675.0,"bgs1":10.24,"bgs1_5":10.24,"bgs2":10.24,"bgs2_5":10.24,"bgs3":10.24,"bgs3_5":10.24,"bgs4":10.24,"bgs4_5":10.24,"bgs5":10.24,"bgs5_5":12.59,"bgs6":14.22,"bgs6_5":14.22,"bgs7":18.95,"bgs7_5":19.35,"bgs8":22.8,"bgs8_5":22.8,"bgs9":22.8,"bgs9_5":123.2,"bgs10":367.39},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85297_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "42/132",
+   "name": "Giovanni's Machoke",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 6.25,
+   "graded": {"psa1":16.35,"psa2":16.35,"psa3":16.35,"psa4":16.35,"psa5":16.35,"psa6":17.95,"psa7":27.33,"psa8":51.26,"psa9":59.25,"psa10":262.5,"cgc1":7.31,"cgc1_5":7.31,"cgc2":7.31,"cgc2_5":7.31,"cgc3":7.31,"cgc3_5":7.31,"cgc4":7.31,"cgc4_5":7.52,"cgc5":9.35,"cgc5_5":10.01,"cgc6":10.01,"cgc6_5":10.1,"cgc7":10.88,"cgc7_5":10.88,"cgc8":18.25,"cgc8_5":18.99,"cgc9":23.4,"cgc9_5":23.4,"cgc10":43.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.72,"bgs7":10.39,"bgs7_5":11.6,"bgs8":15.4,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":32.76,"bgs10":188.14},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85713_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "43/132",
+   "name": "Giovanni's Meowth",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 22.51,
+   "graded": {"psa1":16.51,"psa2":16.51,"psa3":16.51,"psa4":16.51,"psa5":16.51,"psa6":22.22,"psa7":33.0,"psa8":36.0,"psa9":76.31,"psa10":548.31,"cgc1":7.39,"cgc1_5":7.39,"cgc2":7.39,"cgc2_5":7.39,"cgc3":7.39,"cgc3_5":7.39,"cgc4":7.39,"cgc4_5":7.62,"cgc5":8.84,"cgc5_5":9.24,"cgc6":9.88,"cgc6_5":9.92,"cgc7":10.8,"cgc7_5":10.8,"cgc8":12.68,"cgc8_5":13.8,"cgc9":16.8,"cgc9_5":19.2,"cgc10":38.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.11,"bgs7":10.9,"bgs7_5":10.96,"bgs8":14.78,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":34.27,"bgs10":196.07},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85716_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "44/132",
+   "name": "Giovanni's Nidorina",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.18,
+   "graded": {"psa1":9.56,"psa2":9.56,"psa3":9.56,"psa4":9.56,"psa5":9.62,"psa6":13.18,"psa7":18.34,"psa8":23.86,"psa9":28.28,"psa10":284.86,"cgc1":4.18,"cgc1_5":4.18,"cgc2":4.18,"cgc2_5":4.18,"cgc3":4.18,"cgc3_5":4.18,"cgc4":4.18,"cgc4_5":4.93,"cgc5":5.39,"cgc5_5":6.32,"cgc6":6.32,"cgc6_5":6.32,"cgc7":6.81,"cgc7_5":6.81,"cgc8":8.4,"cgc8_5":8.4,"cgc9":14.85,"cgc9_5":20.0,"cgc10":30.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.56,"bgs8_5":10.8,"bgs9":10.8,"bgs9_5":20.29,"bgs10":117.59},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85722_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "45/132",
+   "name": "Giovanni's Nidorino",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 11.4,
+   "graded": {"psa1":14.77,"psa2":14.77,"psa3":14.77,"psa4":14.77,"psa5":15.99,"psa6":18.98,"psa7":24.8,"psa8":33.98,"psa9":49.0,"psa10":307.64,"cgc1":6.88,"cgc1_5":6.88,"cgc2":6.88,"cgc2_5":6.88,"cgc3":6.88,"cgc3_5":6.88,"cgc4":6.88,"cgc4_5":7.25,"cgc5":7.87,"cgc5_5":8.4,"cgc6":8.4,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.4,"cgc8":8.4,"cgc8_5":8.4,"cgc9":20.53,"cgc9_5":21.54,"cgc10":115.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.83,"bgs6_5":7.09,"bgs7":10.27,"bgs7_5":10.67,"bgs8":13.9,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":31.52,"bgs10":175.89},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85723_in_800x800.jpg",
+   "gradedReal": ["psa5","psa8","psa9","psa10","cgc6_5","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "46/132",
+   "name": "Koga's Golbat",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.63,
+   "graded": {"psa1":33.0,"psa2":33.0,"psa3":33.0,"psa4":33.0,"psa5":33.0,"psa6":33.0,"psa7":33.0,"psa8":39.97,"psa9":52.5,"psa10":274.21,"cgc1":5.09,"cgc1_5":5.09,"cgc2":5.09,"cgc2_5":5.09,"cgc3":5.09,"cgc3_5":5.09,"cgc4":5.17,"cgc4_5":6.44,"cgc5":7.23,"cgc5_5":8.23,"cgc6":8.23,"cgc6_5":8.23,"cgc7":8.76,"cgc7_5":8.76,"cgc8":10.73,"cgc8_5":11.85,"cgc9":19.25,"cgc9_5":19.25,"cgc10":25.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.9,"bgs7":9.2,"bgs7_5":9.38,"bgs8":9.38,"bgs8_5":9.38,"bgs9":9.38,"bgs9_5":23.76,"bgs10":129.61},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86508_in_800x800.jpg",
+   "gradedReal": ["psa1","psa8","psa9","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "47/132",
+   "name": "Koga's Kakuna",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 6.25,
+   "graded": {"psa1":12.3,"psa2":12.3,"psa3":12.3,"psa4":12.3,"psa5":12.5,"psa6":12.5,"psa7":22.47,"psa8":29.54,"psa9":50.26,"psa10":275.0,"cgc1":5.96,"cgc1_5":5.96,"cgc2":5.96,"cgc2_5":5.96,"cgc3":5.96,"cgc3_5":5.96,"cgc4":5.96,"cgc4_5":6.11,"cgc5":6.84,"cgc5_5":7.81,"cgc6":7.81,"cgc6_5":7.81,"cgc7":8.31,"cgc7_5":8.31,"cgc8":10.4,"cgc8_5":11.7,"cgc9":16.2,"cgc9_5":17.59,"cgc10":42.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.8,"bgs7_5":8.11,"bgs8":10.7,"bgs8_5":16.35,"bgs9":18.65,"bgs9_5":27.5,"bgs10":153.77},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86510_in_800x800.jpg",
+   "gradedReal": ["psa6","psa9","psa10","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "48/132",
+   "name": "Koga's Koffing",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 7.95,
+   "graded": {"psa1":11.87,"psa2":11.87,"psa3":11.87,"psa4":11.87,"psa5":11.87,"psa6":15.39,"psa7":16.85,"psa8":16.85,"psa9":35.5,"psa10":293.0,"cgc1":5.34,"cgc1_5":5.34,"cgc2":5.34,"cgc2_5":5.34,"cgc3":5.34,"cgc3_5":5.34,"cgc4":5.34,"cgc4_5":6.16,"cgc5":6.71,"cgc5_5":7.28,"cgc6":7.28,"cgc6_5":7.28,"cgc7":8.29,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":12.0,"cgc9":15.45,"cgc9_5":15.88,"cgc10":42.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.09,"bgs7_5":7.54,"bgs8":10.2,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":24.14,"bgs10":145.87},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86511_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc7_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "49/132",
+   "name": "Koga's Pidgey",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 6.51,
+   "graded": {"psa1":10.64,"psa2":10.64,"psa3":10.64,"psa4":10.64,"psa5":10.64,"psa6":13.62,"psa7":15.5,"psa8":21.0,"psa9":36.5,"psa10":234.5,"cgc1":5.28,"cgc1_5":5.28,"cgc2":5.28,"cgc2_5":5.28,"cgc3":5.28,"cgc3_5":5.28,"cgc4":5.28,"cgc4_5":5.44,"cgc5":6.1,"cgc5_5":6.63,"cgc6":6.63,"cgc6_5":6.63,"cgc7":6.92,"cgc7_5":6.92,"cgc8":12.0,"cgc8_5":12.0,"cgc9":13.0,"cgc9_5":18.25,"cgc10":28.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":7.25,"bgs8":9.71,"bgs8_5":12.94,"bgs9":12.94,"bgs9_5":19.2,"bgs10":130.63},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86516_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "50/132",
+   "name": "Koga's Weezing",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.36,
+   "graded": {"psa1":12.67,"psa2":12.67,"psa3":12.67,"psa4":12.67,"psa5":13.72,"psa6":15.09,"psa7":20.5,"psa8":20.5,"psa9":49.86,"psa10":285.0,"cgc1":5.7,"cgc1_5":5.7,"cgc2":5.7,"cgc2_5":5.7,"cgc3":5.7,"cgc3_5":5.7,"cgc4":5.7,"cgc4_5":5.94,"cgc5":7.03,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.2,"cgc8":8.56,"cgc8_5":9.6,"cgc9":17.4,"cgc9_5":37.0,"cgc10":156.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.8,"bgs7_5":8.19,"bgs8":11.4,"bgs8_5":15.79,"bgs9":15.79,"bgs9_5":28.17,"bgs10":158.94},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86520_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc6","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "51/132",
+   "name": "Lt. Surge's Eevee",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 36.08,
+   "graded": {"psa1":11.73,"psa2":11.73,"psa3":11.73,"psa4":11.73,"psa5":11.73,"psa6":24.41,"psa7":33.48,"psa8":45.0,"psa9":48.5,"psa10":595.5,"cgc1":7.41,"cgc1_5":7.41,"cgc2":7.41,"cgc2_5":7.41,"cgc3":7.41,"cgc3_5":7.41,"cgc4":7.41,"cgc4_5":7.41,"cgc5":7.41,"cgc5_5":7.41,"cgc6":8.14,"cgc6_5":8.65,"cgc7":9.6,"cgc7_5":9.6,"cgc8":13.25,"cgc8_5":13.25,"cgc9":25.7,"cgc9_5":29.9,"cgc10":44.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.17,"bgs6_5":8.03,"bgs7":12.28,"bgs7_5":12.37,"bgs8":15.87,"bgs8_5":16.8,"bgs9":16.8,"bgs9_5":61.73,"bgs10":214.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86850_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "52/132",
+   "name": "Lt. Surge's Electrode",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.3,
+   "graded": {"psa1":12.36,"psa2":12.36,"psa3":12.36,"psa4":12.36,"psa5":12.36,"psa6":13.5,"psa7":31.95,"psa8":36.45,"psa9":40.22,"psa10":218.36,"cgc1":6.09,"cgc1_5":6.09,"cgc2":6.09,"cgc2_5":6.09,"cgc3":6.09,"cgc3_5":6.09,"cgc4":6.09,"cgc4_5":6.09,"cgc5":6.75,"cgc5_5":7.06,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.76,"cgc8":8.4,"cgc8_5":12.9,"cgc9":13.2,"cgc9_5":15.6,"cgc10":31.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.49,"bgs7_5":8.55,"bgs8":11.85,"bgs8_5":14.3,"bgs9":14.3,"bgs9_5":25.61,"bgs10":137.66},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86853_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "53/132",
+   "name": "Lt. Surge's Raticate",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 3.23,
+   "graded": {"psa1":10.36,"psa2":10.36,"psa3":10.36,"psa4":12.98,"psa5":13.96,"psa6":13.96,"psa7":18.37,"psa8":28.56,"psa9":35.1,"psa10":196.75,"cgc1":5.94,"cgc1_5":5.94,"cgc2":5.94,"cgc2_5":5.94,"cgc3":5.94,"cgc3_5":5.94,"cgc4":5.94,"cgc4_5":6.08,"cgc5":7.19,"cgc5_5":7.34,"cgc6":8.21,"cgc6_5":8.48,"cgc7":9.12,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":13.17,"cgc9":19.0,"cgc9_5":19.0,"cgc10":35.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.84,"bgs7_5":7.73,"bgs8":9.72,"bgs8_5":14.44,"bgs9":15.6,"bgs9_5":22.17,"bgs10":102.41},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86864_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc7_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "54/132",
+   "name": "Misty's Dewgong",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 8.44,
+   "graded": {"psa1":16.0,"psa2":16.0,"psa3":16.0,"psa4":16.0,"psa5":16.29,"psa6":18.85,"psa7":25.6,"psa8":38.32,"psa9":49.99,"psa10":312.0,"cgc1":6.82,"cgc1_5":6.82,"cgc2":6.82,"cgc2_5":6.82,"cgc3":6.82,"cgc3_5":6.82,"cgc4":6.82,"cgc4_5":7.29,"cgc5":8.77,"cgc5_5":9.55,"cgc6":9.82,"cgc6_5":9.82,"cgc7":10.4,"cgc7_5":10.4,"cgc8":12.6,"cgc8_5":15.52,"cgc9":18.6,"cgc9_5":22.61,"cgc10":186.25,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.71,"bgs6_5":6.71,"bgs7":9.54,"bgs7_5":9.89,"bgs8":13.85,"bgs8_5":14.4,"bgs9":14.4,"bgs9_5":33.43,"bgs10":189.2},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87526_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "55/132",
+   "name": "Sabrina's Haunter",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 46.08,
+   "graded": {"psa1":17.41,"psa2":17.41,"psa3":17.41,"psa4":17.41,"psa5":17.41,"psa6":22.8,"psa7":22.8,"psa8":22.8,"psa9":22.8,"psa10":972.5,"cgc1":10.35,"cgc1_5":10.35,"cgc2":10.35,"cgc2_5":10.35,"cgc3":10.35,"cgc3_5":10.35,"cgc4":10.35,"cgc4_5":10.35,"cgc5":10.35,"cgc5_5":10.35,"cgc6":17.4,"cgc6_5":17.4,"cgc7":17.4,"cgc7_5":18.28,"cgc8":22.91,"cgc8_5":25.2,"cgc9":58.0,"cgc9_5":76.8,"cgc10":107.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":8.36,"bgs6_5":11.88,"bgs7":17.15,"bgs7_5":17.65,"bgs8":20.4,"bgs8_5":20.4,"bgs9":20.4,"bgs9_5":83.1,"bgs10":316.51},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88877_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc6","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "56/132",
+   "name": "Sabrina's Hypno",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 9.43,
+   "graded": {"psa1":15.33,"psa2":15.33,"psa3":15.33,"psa4":15.33,"psa5":16.24,"psa6":18.79,"psa7":22.5,"psa8":37.5,"psa9":87.0,"psa10":336.0,"cgc1":6.77,"cgc1_5":6.77,"cgc2":6.77,"cgc2_5":6.77,"cgc3":6.77,"cgc3_5":6.77,"cgc4":6.77,"cgc4_5":6.77,"cgc5":8.34,"cgc5_5":8.4,"cgc6":8.4,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.4,"cgc8":12.3,"cgc8_5":13.0,"cgc9":16.8,"cgc9_5":23.48,"cgc10":79.7,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.74,"bgs7_5":10.01,"bgs8":13.97,"bgs8_5":18.05,"bgs9":18.05,"bgs9_5":33.7,"bgs10":180.16},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88879_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "57/132",
+   "name": "Sabrina's Jynx",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 9.25,
+   "graded": {"psa1":15.99,"psa2":15.99,"psa3":15.99,"psa4":15.99,"psa5":15.99,"psa6":15.99,"psa7":31.41,"psa8":31.41,"psa9":125.39,"psa10":395.0,"cgc1":7.61,"cgc1_5":7.61,"cgc2":7.61,"cgc2_5":7.61,"cgc3":7.61,"cgc3_5":7.61,"cgc4":7.61,"cgc4_5":7.67,"cgc5":8.99,"cgc5_5":10.17,"cgc6":10.17,"cgc6_5":10.17,"cgc7":11.46,"cgc7_5":11.46,"cgc8":14.35,"cgc8_5":16.8,"cgc9":28.0,"cgc9_5":28.0,"cgc10":32.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.84,"bgs5_5":6.84,"bgs6":6.84,"bgs6_5":7.93,"bgs7":11.1,"bgs7_5":11.79,"bgs8":15.31,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":35.57,"bgs10":209.03},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88880_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "58/132",
+   "name": "Sabrina's Kadabra",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 16.76,
+   "graded": {"psa1":14.5,"psa2":14.5,"psa3":14.5,"psa4":14.5,"psa5":14.5,"psa6":14.5,"psa7":33.16,"psa8":48.73,"psa9":103.97,"psa10":543.5,"cgc1":9.6,"cgc1_5":9.6,"cgc2":9.6,"cgc2_5":9.6,"cgc3":9.6,"cgc3_5":9.6,"cgc4":9.6,"cgc4_5":9.6,"cgc5":9.6,"cgc5_5":9.6,"cgc6":9.6,"cgc6_5":9.6,"cgc7":12.0,"cgc7_5":12.0,"cgc8":13.2,"cgc8_5":13.2,"cgc9":13.2,"cgc9_5":31.2,"cgc10":199.99,"bgs1":11.72,"bgs1_5":11.72,"bgs2":11.72,"bgs2_5":11.72,"bgs3":11.72,"bgs3_5":11.72,"bgs4":11.72,"bgs4_5":11.72,"bgs5":11.72,"bgs5_5":11.72,"bgs6":11.72,"bgs6_5":11.72,"bgs7":13.72,"bgs7_5":14.45,"bgs8":19.45,"bgs8_5":26.0,"bgs9":29.63,"bgs9_5":45.51,"bgs10":247.36},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88882_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "59/132",
+   "name": "Sabrina's Mr. Mime",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 13.43,
+   "graded": {"psa1":16.51,"psa2":16.51,"psa3":16.51,"psa4":16.51,"psa5":19.24,"psa6":20.91,"psa7":31.32,"psa8":31.48,"psa9":122.35,"psa10":995.0,"cgc1":7.45,"cgc1_5":7.45,"cgc2":7.45,"cgc2_5":7.45,"cgc3":7.45,"cgc3_5":7.45,"cgc4":7.45,"cgc4_5":8.41,"cgc5":9.02,"cgc5_5":10.01,"cgc6":10.38,"cgc6_5":10.38,"cgc7":10.76,"cgc7_5":10.76,"cgc8":10.76,"cgc8_5":10.76,"cgc9":12.0,"cgc9_5":24.6,"cgc10":71.1,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.7,"bgs7":10.23,"bgs7_5":10.47,"bgs8":20.5,"bgs8_5":21.28,"bgs9":21.28,"bgs9_5":38.83,"bgs10":237.08},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88883_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10","bgs8"]
+  },
+  {
+   "num": "111/132",
+   "name": "Blaine's Quiz #2",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.69,
+   "graded": {"psa1":13.19,"psa2":13.19,"psa3":13.19,"psa4":13.19,"psa5":13.19,"psa6":15.01,"psa7":31.95,"psa8":31.95,"psa9":32.99,"psa10":464.5,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":6.0,"cgc8_5":6.0,"cgc9":10.2,"cgc9_5":35.0,"cgc10":40.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.81,"bgs7_5":7.83,"bgs8":10.51,"bgs8_5":14.88,"bgs9":14.88,"bgs9_5":26.23,"bgs10":160.1},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83880_in_800x800.jpg",
+   "gradedReal": ["psa7","psa9","psa10","cgc8_5","cgc9","cgc9_5"]
+  },
+  {
+   "num": "112/132",
+   "name": "Blaine's Quiz #3",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.64,
+   "graded": {"psa1":10.95,"psa2":10.95,"psa3":10.95,"psa4":10.95,"psa5":10.95,"psa6":14.24,"psa7":18.7,"psa8":35.33,"psa9":40.79,"psa10":209.5,"cgc1":4.58,"cgc1_5":4.58,"cgc2":4.58,"cgc2_5":4.58,"cgc3":4.58,"cgc3_5":4.58,"cgc4":4.58,"cgc4_5":5.75,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.94,"cgc8":8.4,"cgc8_5":9.6,"cgc9":12.38,"cgc9_5":15.64,"cgc10":24.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.85,"bgs7_5":7.1,"bgs8":10.17,"bgs8_5":13.04,"bgs9":13.04,"bgs9_5":23.0,"bgs10":114.32},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83881_in_800x800.jpg",
+   "gradedReal": ["psa8","psa10","cgc7","cgc8","cgc8_5","cgc10"]
+  },
+  {
+   "num": "113/132",
+   "name": "Cinnabar City Gym",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 2.55,
+   "graded": {"psa1":9.09,"psa2":9.09,"psa3":9.09,"psa4":11.64,"psa5":12.25,"psa6":12.25,"psa7":15.6,"psa8":17.5,"psa9":25.2,"psa10":216.94,"cgc1":5.23,"cgc1_5":5.23,"cgc2":5.23,"cgc2_5":5.23,"cgc3":5.23,"cgc3_5":5.23,"cgc4":5.23,"cgc4_5":5.23,"cgc5":6.11,"cgc5_5":6.11,"cgc6":6.83,"cgc6_5":6.99,"cgc7":7.31,"cgc7_5":7.31,"cgc8":10.2,"cgc8_5":11.4,"cgc9":17.49,"cgc9_5":17.49,"cgc10":25.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.7,"bgs8_5":10.84,"bgs9":10.84,"bgs9_5":18.14,"bgs10":91.69},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84322_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "114/132",
+   "name": "Fuchsia City Gym",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 2.56,
+   "graded": {"psa1":6.66,"psa2":6.66,"psa3":6.66,"psa4":8.32,"psa5":8.32,"psa6":10.2,"psa7":12.19,"psa8":15.0,"psa9":29.77,"psa10":96.0,"cgc1":3.6,"cgc1_5":3.6,"cgc2":3.6,"cgc2_5":3.6,"cgc3":3.6,"cgc3_5":3.6,"cgc4":3.6,"cgc4_5":4.11,"cgc5":4.11,"cgc5_5":4.35,"cgc6":4.95,"cgc6_5":5.19,"cgc7":5.34,"cgc7_5":5.34,"cgc8":6.0,"cgc8_5":6.0,"cgc9":6.5,"cgc9_5":13.2,"cgc10":33.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":8.36,"bgs9":8.36,"bgs9_5":12.53,"bgs10":69.54},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85578_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "115/132",
+   "name": "Koga's Ninja Trick",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 6.1,
+   "graded": {"psa1":14.72,"psa2":14.72,"psa3":14.72,"psa4":14.72,"psa5":15.51,"psa6":16.29,"psa7":26.23,"psa8":28.0,"psa9":93.87,"psa10":462.5,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":6.0,"cgc8_5":12.07,"cgc9":15.6,"cgc9_5":20.51,"cgc10":33.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.84,"bgs7_5":9.22,"bgs8":12.85,"bgs8_5":17.42,"bgs9":17.42,"bgs9_5":29.12,"bgs10":178.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86514_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8","cgc9","cgc10"]
+  },
+  {
+   "num": "116/132",
+   "name": "Master Ball",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 6.29,
+   "graded": {"psa1":12.8,"psa2":12.8,"psa3":12.8,"psa4":12.8,"psa5":13.46,"psa6":15.48,"psa7":21.79,"psa8":46.35,"psa9":46.67,"psa10":800.0,"cgc1":5.31,"cgc1_5":5.31,"cgc2":5.31,"cgc2_5":5.31,"cgc3":5.31,"cgc3_5":5.31,"cgc4":5.31,"cgc4_5":5.94,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":7.8,"cgc8_5":9.2,"cgc9":9.2,"cgc9_5":17.4,"cgc10":56.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.59,"bgs7_5":7.8,"bgs8":10.96,"bgs8_5":15.76,"bgs9":15.76,"bgs9_5":27.16,"bgs10":147.72},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87251_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "117/132",
+   "name": "Max Revive",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 4.08,
+   "graded": {"psa1":12.04,"psa2":12.04,"psa3":12.04,"psa4":14.94,"psa5":15.5,"psa6":15.5,"psa7":19.48,"psa8":23.79,"psa9":23.79,"psa10":248.19,"cgc1":6.67,"cgc1_5":6.67,"cgc2":6.67,"cgc2_5":6.67,"cgc3":6.67,"cgc3_5":6.67,"cgc4":6.67,"cgc4_5":6.67,"cgc5":7.47,"cgc5_5":8.04,"cgc6":8.32,"cgc6_5":8.75,"cgc7":9.0,"cgc7_5":9.0,"cgc8":9.0,"cgc8_5":24.58,"cgc9":24.58,"cgc9_5":24.58,"cgc10":42.49,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.04,"bgs7_5":8.19,"bgs8":11.68,"bgs8_5":13.11,"bgs9":13.11,"bgs9_5":21.58,"bgs10":95.11},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87268_in_800x800.jpg",
+   "gradedReal": ["psa9","cgc8","cgc8_5","cgc10"]
+  },
+  {
+   "num": "118/132",
+   "name": "Misty's Tears",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 60.64,
+   "graded": {"psa1":28.33,"psa2":28.33,"psa3":28.33,"psa4":28.33,"psa5":33.57,"psa6":41.79,"psa7":45.95,"psa8":119.84,"psa9":193.61,"psa10":1869.07,"cgc1":12.0,"cgc1_5":12.0,"cgc2":12.0,"cgc2_5":12.0,"cgc3":12.0,"cgc3_5":12.0,"cgc4":12.0,"cgc4_5":12.0,"cgc5":12.0,"cgc5_5":12.0,"cgc6":12.0,"cgc6_5":17.8,"cgc7":17.8,"cgc7_5":17.8,"cgc8":17.8,"cgc8_5":24.0,"cgc9":24.0,"cgc9_5":72.28,"cgc10":365.0,"bgs1":13.8,"bgs1_5":13.8,"bgs2":13.8,"bgs2_5":13.8,"bgs3":13.8,"bgs3_5":13.8,"bgs4":13.8,"bgs4_5":13.88,"bgs5":17.34,"bgs5_5":18.7,"bgs6":18.7,"bgs6_5":18.7,"bgs7":26.09,"bgs7_5":27.2,"bgs8":37.97,"bgs8_5":51.24,"bgs9":199.0,"bgs9_5":199.0,"bgs10":581.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87549_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc6","cgc8","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "119/132",
+   "name": "Rocket's Minefield Gym",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 3.11,
+   "graded": {"psa1":8.99,"psa2":8.99,"psa3":8.99,"psa4":11.33,"psa5":12.13,"psa6":12.79,"psa7":15.93,"psa8":21.41,"psa9":39.99,"psa10":192.5,"cgc1":4.92,"cgc1_5":4.92,"cgc2":4.92,"cgc2_5":4.92,"cgc3":4.92,"cgc3_5":4.92,"cgc4":4.92,"cgc4_5":5.28,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":7.03,"cgc8":8.4,"cgc8_5":10.2,"cgc9":15.0,"cgc9_5":15.0,"cgc10":24.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.4,"bgs8_5":11.14,"bgs9":11.14,"bgs9_5":17.6,"bgs10":88.29},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88779_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc7","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "120/132",
+   "name": "Rocket's Secret Experiment",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 24.47,
+   "graded": {"psa1":20.67,"psa2":20.67,"psa3":20.67,"psa4":20.67,"psa5":23.24,"psa6":30.49,"psa7":36.81,"psa8":37.5,"psa9":70.0,"psa10":2549.99,"cgc1":5.0,"cgc1_5":5.0,"cgc2":5.0,"cgc2_5":5.0,"cgc3":5.0,"cgc3_5":5.0,"cgc4":5.0,"cgc4_5":5.0,"cgc5":5.0,"cgc5_5":5.0,"cgc6":5.0,"cgc6_5":5.0,"cgc7":12.0,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":12.0,"cgc9":15.6,"cgc9_5":34.87,"cgc10":81.19,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":7.13,"bgs5_5":8.17,"bgs6":9.35,"bgs6_5":9.61,"bgs7":13.2,"bgs7_5":13.2,"bgs8":17.76,"bgs8_5":25.6,"bgs9":25.6,"bgs9_5":47.52,"bgs10":269.01},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88790_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc6_5","cgc8_5","cgc9"]
+  },
+  {
+   "num": "121/132",
+   "name": "Sabrina's Psychic Control",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 32.18,
+   "graded": {"psa1":10.0,"psa2":10.0,"psa3":10.0,"psa4":10.0,"psa5":10.0,"psa6":23.9,"psa7":31.95,"psa8":34.0,"psa9":103.11,"psa10":511.96,"cgc1":6.93,"cgc1_5":6.93,"cgc2":6.93,"cgc2_5":6.93,"cgc3":6.93,"cgc3_5":6.93,"cgc4":6.93,"cgc4_5":6.93,"cgc5":6.93,"cgc5_5":6.93,"cgc6":8.35,"cgc6_5":8.51,"cgc7":10.76,"cgc7_5":10.8,"cgc8":13.79,"cgc8_5":17.6,"cgc9":20.4,"cgc9_5":22.8,"cgc10":36.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.66,"bgs6_5":7.46,"bgs7":11.77,"bgs7_5":12.1,"bgs8":12.1,"bgs8_5":12.1,"bgs9":12.1,"bgs9_5":62.37,"bgs10":205.02},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88886_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc7_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "122/132",
+   "name": "Saffron City Gym",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 5.75,
+   "graded": {"psa1":9.6,"psa2":9.6,"psa3":9.6,"psa4":9.6,"psa5":9.6,"psa6":13.19,"psa7":15.0,"psa8":15.0,"psa9":38.25,"psa10":230.0,"cgc1":4.27,"cgc1_5":4.27,"cgc2":4.27,"cgc2_5":4.27,"cgc3":4.27,"cgc3_5":4.27,"cgc4":4.27,"cgc4_5":5.38,"cgc5":5.38,"cgc5_5":5.97,"cgc6":5.97,"cgc6_5":5.97,"cgc7":6.04,"cgc7_5":6.04,"cgc8":6.92,"cgc8_5":8.4,"cgc9":10.8,"cgc9_5":10.8,"cgc10":38.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.99,"bgs8_5":11.91,"bgs9":11.91,"bgs9_5":18.76,"bgs10":120.92},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88892_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9_5","cgc10"]
+  },
+  {
+   "num": "123/132",
+   "name": "Viridian City Gym",
+   "rarity": "Uncommon",
+   "variant": "Normal (1st Edition)",
+   "market": 2.72,
+   "graded": {"psa1":7.23,"psa2":7.23,"psa3":7.23,"psa4":8.65,"psa5":9.47,"psa6":10.97,"psa7":13.0,"psa8":17.5,"psa9":19.1,"psa10":182.5,"cgc1":3.86,"cgc1_5":3.86,"cgc2":3.86,"cgc2_5":3.86,"cgc3":3.86,"cgc3_5":3.86,"cgc4":3.86,"cgc4_5":4.32,"cgc5":4.68,"cgc5_5":4.68,"cgc6":5.52,"cgc6_5":5.61,"cgc7":6.0,"cgc7_5":6.0,"cgc8":6.0,"cgc8_5":6.0,"cgc9":9.0,"cgc9_5":20.29,"cgc10":26.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.62,"bgs8_5":9.23,"bgs9":9.23,"bgs9_5":14.6,"bgs10":76.13},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/90386_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc7","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "1/132",
+   "name": "Blaine's Arcanine",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 386.48,
+   "graded": {"psa1":350.0,"psa2":350.0,"psa3":350.0,"psa4":350.0,"psa5":350.0,"psa6":416.65,"psa7":458.26,"psa8":1000.0,"psa9":2275.0,"psa10":16200.0,"cgc1":49.2,"cgc1_5":49.2,"cgc2":49.2,"cgc2_5":49.2,"cgc3":49.2,"cgc3_5":49.2,"cgc4":49.2,"cgc4_5":49.2,"cgc5":49.2,"cgc5_5":49.2,"cgc6":178.8,"cgc6_5":180.83,"cgc7":298.6,"cgc7_5":298.6,"cgc8":372.0,"cgc8_5":496.0,"cgc9":790.5,"cgc9_5":864.71,"cgc10":2760.0,"bgs1":50.86,"bgs1_5":50.86,"bgs2":50.86,"bgs2_5":50.86,"bgs3":50.86,"bgs3_5":50.86,"bgs4":55.2,"bgs4_5":67.87,"bgs5":83.45,"bgs5_5":94.89,"bgs6":213.96,"bgs6_5":213.96,"bgs7":296.4,"bgs7_5":449.55,"bgs8":449.55,"bgs8_5":581.12,"bgs9":875.5,"bgs9_5":1622.5,"bgs10":7200.0},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83860_in_800x800.jpg",
+   "gradedReal": ["psa1","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6","cgc8","cgc8_5","cgc9","cgc10","bgs4","bgs7_5","bgs8_5","bgs9","bgs9_5","bgs10"]
+  },
+  {
+   "num": "2/132",
+   "name": "Blaine's Charizard",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 699.99,
+   "graded": {"psa1":680.0,"psa2":699.0,"psa3":699.0,"psa4":702.5,"psa5":873.8,"psa6":1258.4,"psa7":1734.0,"psa8":3250.0,"psa9":4795.0,"psa10":28200.0,"cgc1":592.65,"cgc1_5":592.65,"cgc2":592.65,"cgc2_5":637.5,"cgc3":637.5,"cgc3_5":637.5,"cgc4":637.5,"cgc4_5":637.5,"cgc5":648.44,"cgc5_5":648.44,"cgc6":648.44,"cgc6_5":648.44,"cgc7":1092.28,"cgc7_5":1325.0,"cgc8":1987.08,"cgc8_5":2124.5,"cgc9":2495.75,"cgc9_5":2499.99,"cgc10":4750.0,"bgs1":360.32,"bgs1_5":360.32,"bgs2":360.32,"bgs2_5":360.32,"bgs3":360.32,"bgs3_5":360.32,"bgs4":380.78,"bgs4_5":424.68,"bgs5":473.63,"bgs5_5":568.39,"bgs6":682.1,"bgs6_5":724.93,"bgs7":1075.0,"bgs7_5":1675.0,"bgs8":1675.0,"bgs8_5":2051.56,"bgs9":2981.22,"bgs9_5":5709.99,"bgs10":14199.9},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83861_in_800x800.jpg",
+   "gradedReal": ["psa1","psa2","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc2_5","cgc7_5","cgc8","cgc8_5","cgc9_5","cgc10","bgs7","bgs7_5","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "3/132",
+   "name": "Brock's Ninetales",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 252.75,
+   "graded": {"psa1":61.12,"psa2":61.12,"psa3":61.12,"psa4":61.2,"psa5":78.0,"psa6":120.0,"psa7":197.62,"psa8":216.5,"psa9":480.0,"psa10":3065.0,"cgc1":57.13,"cgc1_5":57.13,"cgc2":57.13,"cgc2_5":57.13,"cgc3":57.13,"cgc3_5":57.13,"cgc4":57.13,"cgc4_5":57.13,"cgc5":63.55,"cgc5_5":71.5,"cgc6":71.5,"cgc6_5":81.6,"cgc7":111.1,"cgc7_5":140.0,"cgc8":141.95,"cgc8_5":187.5,"cgc9":259.0,"cgc9_5":283.36,"cgc10":530.0,"bgs1":32.77,"bgs1_5":32.77,"bgs2":32.77,"bgs2_5":32.77,"bgs3":32.77,"bgs3_5":32.77,"bgs4":33.41,"bgs4_5":37.72,"bgs5":42.58,"bgs5_5":52.82,"bgs6":65.51,"bgs6_5":67.37,"bgs7":109.45,"bgs7_5":109.45,"bgs8":113.08,"bgs8_5":198.82,"bgs9":326.25,"bgs9_5":689.99,"bgs10":1577.31},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83973_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6_5","cgc7","cgc7_5","cgc8_5","cgc9","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "4/132",
+   "name": "Erika's Venusaur",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 779.45,
+   "graded": {"psa1":160.65,"psa2":160.65,"psa3":160.65,"psa4":160.65,"psa5":285.15,"psa6":359.99,"psa7":361.25,"psa8":638.0,"psa9":1202.5,"psa10":14550.0,"cgc1":148.85,"cgc1_5":148.85,"cgc2":148.85,"cgc2_5":148.85,"cgc3":148.85,"cgc3_5":148.85,"cgc4":148.85,"cgc4_5":150.2,"cgc5":166.73,"cgc5_5":166.73,"cgc6":348.0,"cgc6_5":348.0,"cgc7":348.0,"cgc7_5":348.0,"cgc8":381.5,"cgc8_5":499.57,"cgc9":645.5,"cgc9_5":1179.38,"cgc10":2050.0,"bgs1":78.33,"bgs1_5":78.33,"bgs2":78.33,"bgs2_5":78.33,"bgs3":78.33,"bgs3_5":78.33,"bgs4":78.7,"bgs4_5":104.85,"bgs5":139.69,"bgs5_5":156.95,"bgs6":176.35,"bgs6_5":178.98,"bgs7":266.0,"bgs7_5":266.0,"bgs8":266.0,"bgs8_5":400.5,"bgs9":915.5,"bgs9_5":2951.0,"bgs10":11400.0},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85307_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc6","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8","bgs8_5","bgs9","bgs9_5","bgs10"]
+  },
+  {
+   "num": "5/132",
+   "name": "Giovanni's Gyarados",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 330.04,
+   "graded": {"psa1":212.5,"psa2":212.5,"psa3":212.5,"psa4":212.5,"psa5":282.38,"psa6":282.38,"psa7":439.98,"psa8":651.25,"psa9":1151.94,"psa10":6263.07,"cgc1":46.8,"cgc1_5":46.8,"cgc2":46.8,"cgc2_5":46.8,"cgc3":46.8,"cgc3_5":46.8,"cgc4":46.8,"cgc4_5":46.8,"cgc5":46.8,"cgc5_5":46.8,"cgc6":46.8,"cgc6_5":46.8,"cgc7":223.81,"cgc7_5":257.25,"cgc8":279.65,"cgc8_5":485.0,"cgc9":655.0,"cgc9_5":655.0,"cgc10":1692.5,"bgs1":75.11,"bgs1_5":75.11,"bgs2":75.11,"bgs2_5":75.11,"bgs3":75.11,"bgs3_5":75.11,"bgs4":81.98,"bgs4_5":111.92,"bgs5":148.61,"bgs5_5":148.61,"bgs6":148.61,"bgs6_5":148.61,"bgs7":187.0,"bgs7_5":187.0,"bgs8":226.27,"bgs8_5":490.5,"bgs9":499.99,"bgs9_5":845.5,"bgs10":3189.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85710_in_800x800.jpg",
+   "gradedReal": ["psa1","psa5","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs7_5","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "6/132",
+   "name": "Giovanni's Machamp",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 244.33,
+   "graded": {"psa1":58.48,"psa2":58.48,"psa3":58.48,"psa4":82.0,"psa5":102.12,"psa6":102.5,"psa7":138.4,"psa8":160.0,"psa9":543.38,"psa10":3312.64,"cgc1":52.66,"cgc1_5":52.66,"cgc2":52.66,"cgc2_5":52.66,"cgc3":52.66,"cgc3_5":52.66,"cgc4":52.66,"cgc4_5":52.66,"cgc5":55.26,"cgc5_5":55.26,"cgc6":55.26,"cgc6_5":55.89,"cgc7":63.6,"cgc7_5":63.6,"cgc8":132.5,"cgc8_5":165.5,"cgc9":216.0,"cgc9_5":264.67,"cgc10":699.0,"bgs1":34.11,"bgs1_5":34.11,"bgs2":34.11,"bgs2_5":34.11,"bgs3":34.11,"bgs3_5":38.84,"bgs4":48.5,"bgs4_5":54.12,"bgs5":60.4,"bgs5_5":60.51,"bgs6":60.62,"bgs6_5":61.24,"bgs7":107.86,"bgs7_5":107.86,"bgs8":155.0,"bgs8_5":188.13,"bgs9":356.0,"bgs9_5":799.0,"bgs10":1875.0},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85712_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs7","bgs8","bgs9","bgs9_5","bgs10"]
+  },
+  {
+   "num": "7/132",
+   "name": "Giovanni's Nidoking",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 159.91,
+   "graded": {"psa1":64.46,"psa2":64.46,"psa3":64.46,"psa4":69.62,"psa5":118.5,"psa6":133.88,"psa7":202.5,"psa8":258.52,"psa9":555.0,"psa10":4650.0,"cgc1":43.2,"cgc1_5":43.2,"cgc2":43.2,"cgc2_5":43.2,"cgc3":43.2,"cgc3_5":43.2,"cgc4":43.2,"cgc4_5":43.2,"cgc5":43.2,"cgc5_5":43.2,"cgc6":43.2,"cgc6_5":43.2,"cgc7":108.04,"cgc7_5":109.95,"cgc8":150.0,"cgc8_5":150.0,"cgc9":347.85,"cgc9_5":347.85,"cgc10":537.0,"bgs1":33.19,"bgs1_5":33.19,"bgs2":33.19,"bgs2_5":33.19,"bgs3":33.19,"bgs3_5":33.19,"bgs4":36.34,"bgs4_5":47.41,"bgs5":61.86,"bgs5_5":65.75,"bgs6":69.89,"bgs6_5":75.31,"bgs7":116.7,"bgs7_5":116.7,"bgs8":116.7,"bgs8_5":275.0,"bgs9":313.69,"bgs9_5":917.75,"bgs10":1843.95},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85718_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc8_5","cgc9","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "8/132",
+   "name": "Giovanni's Persian",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 292.47,
+   "graded": {"psa1":85.0,"psa2":85.0,"psa3":85.0,"psa4":103.5,"psa5":107.95,"psa6":128.0,"psa7":205.82,"psa8":383.75,"psa9":1227.5,"psa10":22500.0,"cgc1":30.0,"cgc1_5":30.0,"cgc2":30.0,"cgc2_5":30.0,"cgc3":30.0,"cgc3_5":30.0,"cgc4":30.0,"cgc4_5":30.0,"cgc5":30.0,"cgc5_5":30.0,"cgc6":30.0,"cgc6_5":30.0,"cgc7":99.25,"cgc7_5":99.25,"cgc8":99.25,"cgc8_5":336.12,"cgc9":495.0,"cgc9_5":750.0,"cgc10":1000.0,"bgs1":62.13,"bgs1_5":62.13,"bgs2":62.13,"bgs2_5":62.13,"bgs3":62.13,"bgs3_5":64.68,"bgs4":71.37,"bgs4_5":72.89,"bgs5":74.44,"bgs5_5":81.06,"bgs6":88.27,"bgs6_5":88.28,"bgs7":157.36,"bgs7_5":250.0,"bgs8":250.0,"bgs8_5":290.93,"bgs9":474.0,"bgs9_5":1775.0,"bgs10":3158.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85724_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs7_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "9/132",
+   "name": "Koga's Beedrill",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 148.54,
+   "graded": {"psa1":38.66,"psa2":38.66,"psa3":38.66,"psa4":44.44,"psa5":52.0,"psa6":55.0,"psa7":80.0,"psa8":223.67,"psa9":499.0,"psa10":5760.0,"cgc1":16.8,"cgc1_5":16.8,"cgc2":16.8,"cgc2_5":16.8,"cgc3":16.8,"cgc3_5":16.8,"cgc4":16.8,"cgc4_5":16.8,"cgc5":16.8,"cgc5_5":33.39,"cgc6":33.39,"cgc6_5":34.06,"cgc7":63.16,"cgc7_5":73.0,"cgc8":130.0,"cgc8_5":130.0,"cgc9":191.38,"cgc9_5":203.8,"cgc10":498.12,"bgs1":31.0,"bgs1_5":31.0,"bgs2":31.0,"bgs2_5":31.0,"bgs3":31.0,"bgs3_5":31.0,"bgs4":31.0,"bgs4_5":31.0,"bgs5":31.0,"bgs5_5":31.0,"bgs6":31.0,"bgs6_5":31.0,"bgs7":31.0,"bgs7_5":31.0,"bgs8":31.0,"bgs8_5":177.5,"bgs9":264.0,"bgs9_5":474.44,"bgs10":1432.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86505_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc7_5","cgc8","cgc9","cgc10","bgs8","bgs8_5","bgs9"]
+  },
+  {
+   "num": "10/132",
+   "name": "Koga's Ditto",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 100,
+   "graded": {"psa1":57.78,"psa2":57.78,"psa3":57.78,"psa4":62.72,"psa5":99.68,"psa6":125.25,"psa7":189.97,"psa8":243.75,"psa9":514.0,"psa10":4140.0,"cgc1":52.19,"cgc1_5":52.19,"cgc2":52.19,"cgc2_5":52.19,"cgc3":52.19,"cgc3_5":52.19,"cgc4":52.19,"cgc4_5":52.19,"cgc5":52.19,"cgc5_5":52.19,"cgc6":52.19,"cgc6_5":67.99,"cgc7":83.03,"cgc7_5":83.03,"cgc8":83.03,"cgc8_5":147.18,"cgc9":216.0,"cgc9_5":257.7,"cgc10":699.0,"bgs1":29.74,"bgs1_5":29.74,"bgs2":29.74,"bgs2_5":29.74,"bgs3":29.74,"bgs3_5":29.74,"bgs4":32.71,"bgs4_5":41.24,"bgs5":51.99,"bgs5_5":58.28,"bgs6":61.89,"bgs6_5":61.89,"bgs7":99.67,"bgs7_5":100.26,"bgs8":103.31,"bgs8_5":244.99,"bgs9":273.5,"bgs9_5":637.5,"bgs10":1655.24},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86506_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5","bgs9_5"]
+  },
+  {
+   "num": "11/132",
+   "name": "Lt. Surge's Raichu",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 210.66,
+   "graded": {"psa1":74.86,"psa2":74.86,"psa3":74.86,"psa4":84.15,"psa5":136.5,"psa6":152.69,"psa7":194.97,"psa8":340.12,"psa9":680.72,"psa10":5422.5,"cgc1":62.4,"cgc1_5":62.4,"cgc2":62.4,"cgc2_5":62.4,"cgc3":62.4,"cgc3_5":62.4,"cgc4":62.4,"cgc4_5":62.4,"cgc5":76.04,"cgc5_5":76.8,"cgc6":80.09,"cgc6_5":80.09,"cgc7":118.48,"cgc7_5":146.25,"cgc8":181.53,"cgc8_5":212.5,"cgc9":271.5,"cgc9_5":433.98,"cgc10":1005.0,"bgs1":40.77,"bgs1_5":40.77,"bgs2":40.77,"bgs2_5":40.77,"bgs3":40.77,"bgs3_5":41.68,"bgs4":46.46,"bgs4_5":59.17,"bgs5":75.36,"bgs5_5":79.7,"bgs6":83.82,"bgs6_5":83.82,"bgs7":128.57,"bgs7_5":134.2,"bgs8":142.1,"bgs8_5":174.0,"bgs9":381.25,"bgs9_5":823.68,"bgs10":2033.6},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86861_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa7","psa8","psa9","psa10","cgc4_5","cgc5_5","cgc6","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "12/132",
+   "name": "Misty's Golduck",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 114.49,
+   "graded": {"psa1":66.58,"psa2":66.58,"psa3":66.58,"psa4":72.02,"psa5":86.0,"psa6":116.5,"psa7":154.37,"psa8":287.5,"psa9":750.0,"psa10":20050.0,"cgc1":59.21,"cgc1_5":59.21,"cgc2":59.21,"cgc2_5":59.21,"cgc3":59.21,"cgc3_5":59.21,"cgc4":59.21,"cgc4_5":59.21,"cgc5":60.64,"cgc5_5":60.64,"cgc6":60.64,"cgc6_5":60.64,"cgc7":106.25,"cgc7_5":133.2,"cgc8":138.0,"cgc8_5":138.0,"cgc9":225.75,"cgc9_5":252.0,"cgc10":1482.5,"bgs1":44.56,"bgs1_5":44.56,"bgs2":44.56,"bgs2_5":44.56,"bgs3":44.56,"bgs3_5":44.56,"bgs4":48.98,"bgs4_5":53.52,"bgs5":58.49,"bgs5_5":68.08,"bgs6":76.87,"bgs6_5":76.87,"bgs7":118.32,"bgs7_5":118.32,"bgs8":129.06,"bgs8_5":252.5,"bgs9":265.5,"bgs9_5":1125.0,"bgs10":2263.15},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87530_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "13/132",
+   "name": "Misty's Gyarados",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 425,
+   "graded": {"psa1":217.75,"psa2":217.75,"psa3":217.75,"psa4":217.75,"psa5":250.0,"psa6":369.96,"psa7":496.25,"psa8":737.5,"psa9":1080.0,"psa10":6780.0,"cgc1":55.2,"cgc1_5":55.2,"cgc2":55.2,"cgc2_5":55.2,"cgc3":55.2,"cgc3_5":55.2,"cgc4":55.2,"cgc4_5":55.2,"cgc5":55.2,"cgc5_5":56.4,"cgc6":56.4,"cgc6_5":56.4,"cgc7":69.6,"cgc7_5":340.0,"cgc8":350.0,"cgc8_5":600.0,"cgc9":836.1,"cgc9_5":836.1,"cgc10":925.0,"bgs1":62.95,"bgs1_5":62.95,"bgs2":62.95,"bgs2_5":62.95,"bgs3":62.95,"bgs3_5":62.95,"bgs4":70.88,"bgs4_5":87.3,"bgs5":107.52,"bgs5_5":130.8,"bgs6":159.12,"bgs6_5":251.0,"bgs7":251.0,"bgs7_5":252.41,"bgs8":257.65,"bgs8_5":429.79,"bgs9":674.57,"bgs9_5":1500.0,"bgs10":3508.78},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87531_in_800x800.jpg",
+   "gradedReal": ["psa1","psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc6_5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs6_5","bgs8","bgs9","bgs9_5"]
+  },
+  {
+   "num": "14/132",
+   "name": "Rocket's Mewtwo",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 433.35,
+   "graded": {"psa1":349.44,"psa2":349.44,"psa3":349.44,"psa4":385.0,"psa5":392.44,"psa6":700.5,"psa7":776.25,"psa8":1212.49,"psa9":2070.0,"psa10":17462.63,"cgc1":255.19,"cgc1_5":255.19,"cgc2":255.19,"cgc2_5":255.19,"cgc3":255.19,"cgc3_5":255.19,"cgc4":255.19,"cgc4_5":255.19,"cgc5":261.35,"cgc5_5":261.35,"cgc6":262.04,"cgc6_5":262.04,"cgc7":455.77,"cgc7_5":685.0,"cgc8":750.0,"cgc8_5":805.0,"cgc9":1175.0,"cgc9_5":1518.07,"cgc10":2025.0,"bgs1":121.54,"bgs1_5":121.54,"bgs2":121.54,"bgs2_5":121.54,"bgs3":121.54,"bgs3_5":138.7,"bgs4":169.66,"bgs4_5":171.3,"bgs5":172.94,"bgs5_5":231.06,"bgs6":308.7,"bgs6_5":315.24,"bgs7":468.52,"bgs7_5":486.72,"bgs8":486.72,"bgs8_5":535.88,"bgs9":1476.25,"bgs9_5":2937.21,"bgs10":6517.03},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88777_in_800x800.jpg",
+   "gradedReal": ["psa1","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "15/132",
+   "name": "Rocket's Zapdos",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 238.06,
+   "graded": {"psa1":107.0,"psa2":107.0,"psa3":119.99,"psa4":119.99,"psa5":199.99,"psa6":206.86,"psa7":295.76,"psa8":401.23,"psa9":772.0,"psa10":4250.0,"cgc1":34.8,"cgc1_5":34.8,"cgc2":34.8,"cgc2_5":34.8,"cgc3":34.8,"cgc3_5":34.8,"cgc4":90.43,"cgc4_5":92.07,"cgc5":107.8,"cgc5_5":169.15,"cgc6":169.15,"cgc6_5":170.75,"cgc7":172.09,"cgc7_5":192.0,"cgc8":270.0,"cgc8_5":302.18,"cgc9":380.0,"cgc9_5":505.75,"cgc10":970.02,"bgs1":58.82,"bgs1_5":58.82,"bgs2":58.82,"bgs2_5":58.82,"bgs3":64.8,"bgs3_5":64.8,"bgs4":64.8,"bgs4_5":83.66,"bgs5":110.59,"bgs5_5":112.47,"bgs6":113.66,"bgs6_5":113.66,"bgs7":227.5,"bgs7_5":227.5,"bgs8":227.5,"bgs8_5":297.49,"bgs9":658.75,"bgs9_5":1424.99,"bgs10":2653.32},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88800_in_800x800.jpg",
+   "gradedReal": ["psa3","psa5","psa6","psa7","psa8","psa9","psa10","cgc3_5","cgc5_5","cgc6_5","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs7","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "16/132",
+   "name": "Sabrina's Alakazam",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 327.28,
+   "graded": {"psa1":95.61,"psa2":95.61,"psa3":95.61,"psa4":191.22,"psa5":191.22,"psa6":230.0,"psa7":328.89,"psa8":605.0,"psa9":1080.0,"psa10":6300.0,"cgc1":36.0,"cgc1_5":36.0,"cgc2":36.0,"cgc2_5":36.0,"cgc3":36.0,"cgc3_5":36.0,"cgc4":36.0,"cgc4_5":36.0,"cgc5":36.0,"cgc5_5":36.0,"cgc6":36.0,"cgc6_5":93.86,"cgc7":212.5,"cgc7_5":212.5,"cgc8":288.0,"cgc8_5":335.03,"cgc9":498.37,"cgc9_5":498.37,"cgc10":1350.0,"bgs1":50.95,"bgs1_5":50.95,"bgs2":50.95,"bgs2_5":50.95,"bgs3":50.95,"bgs3_5":70.78,"bgs4":93.6,"bgs4_5":93.6,"bgs5":93.6,"bgs5_5":93.6,"bgs6":93.6,"bgs6_5":93.6,"bgs7":93.6,"bgs7_5":93.6,"bgs8":93.6,"bgs8_5":93.6,"bgs9":416.1,"bgs9_5":760.01,"bgs10":2761.12},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88866_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc6","cgc7","cgc8","cgc9","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "17/132",
+   "name": "Blaine",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 116.99,
+   "graded": {"psa1":22.8,"psa2":22.8,"psa3":22.8,"psa4":22.8,"psa5":22.8,"psa6":43.24,"psa7":58.8,"psa8":140.47,"psa9":252.5,"psa10":842.3,"cgc1":21.7,"cgc1_5":21.7,"cgc2":21.7,"cgc2_5":21.7,"cgc3":21.7,"cgc3_5":21.7,"cgc4":21.7,"cgc4_5":21.7,"cgc5":21.7,"cgc5_5":21.7,"cgc6":21.7,"cgc6_5":21.7,"cgc7":36.89,"cgc7_5":44.28,"cgc8":58.6,"cgc8_5":65.35,"cgc9":66.0,"cgc9_5":82.8,"cgc10":291.87,"bgs1":13.33,"bgs1_5":13.33,"bgs2":13.33,"bgs2_5":13.33,"bgs3":13.33,"bgs3_5":13.57,"bgs4":14.46,"bgs4_5":14.46,"bgs5":14.46,"bgs5_5":18.38,"bgs6":25.31,"bgs6_5":26.33,"bgs7":39.79,"bgs7_5":40.22,"bgs8":40.22,"bgs8_5":48.0,"bgs9":189.56,"bgs9_5":247.0,"bgs10":658.17},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83858_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc8","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "18/132",
+   "name": "Giovanni",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 125,
+   "graded": {"psa1":26.14,"psa2":26.14,"psa3":26.14,"psa4":28.83,"psa5":40.26,"psa6":45.11,"psa7":45.11,"psa8":142.49,"psa9":210.0,"psa10":1238.01,"cgc1":22.93,"cgc1_5":22.93,"cgc2":22.93,"cgc2_5":22.93,"cgc3":22.93,"cgc3_5":22.93,"cgc4":22.93,"cgc4_5":22.93,"cgc5":26.69,"cgc5_5":52.5,"cgc6":52.5,"cgc6_5":52.5,"cgc7":52.5,"cgc7_5":52.5,"cgc8":59.33,"cgc8_5":81.04,"cgc9":120.0,"cgc9_5":131.4,"cgc10":763.5,"bgs1":14.41,"bgs1_5":14.41,"bgs2":14.41,"bgs2_5":14.41,"bgs3":14.41,"bgs3_5":14.41,"bgs4":16.17,"bgs4_5":19.11,"bgs5":22.58,"bgs5_5":25.5,"bgs6":28.8,"bgs6_5":32.11,"bgs7":41.23,"bgs7_5":45.22,"bgs8":45.22,"bgs8_5":48.0,"bgs9":49.2,"bgs9_5":126.0,"bgs10":712.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85708_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "19/132",
+   "name": "Koga",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 54.99,
+   "graded": {"psa1":29.75,"psa2":29.75,"psa3":29.75,"psa4":29.75,"psa5":29.75,"psa6":32.65,"psa7":57.16,"psa8":96.3,"psa9":219.93,"psa10":1226.09,"cgc1":20.93,"cgc1_5":20.93,"cgc2":20.93,"cgc2_5":20.93,"cgc3":20.93,"cgc3_5":20.93,"cgc4":20.93,"cgc4_5":20.93,"cgc5":20.93,"cgc5_5":20.93,"cgc6":21.85,"cgc6_5":21.85,"cgc7":22.8,"cgc7_5":22.8,"cgc8":49.98,"cgc8_5":79.0,"cgc9":149.99,"cgc9_5":182.99,"cgc10":250.25,"bgs1":20.54,"bgs1_5":20.54,"bgs2":20.54,"bgs2_5":20.54,"bgs3":20.54,"bgs3_5":20.54,"bgs4":20.54,"bgs4_5":20.54,"bgs5":20.54,"bgs5_5":21.74,"bgs6":23.09,"bgs6_5":23.09,"bgs7":34.9,"bgs7_5":38.75,"bgs8":48.43,"bgs8_5":78.81,"bgs9":89.59,"bgs9_5":132.0,"bgs10":702.41},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86502_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "20/132",
+   "name": "Sabrina",
+   "rarity": "Holo Rare",
+   "variant": "Holo (1st Edition)",
+   "market": 186.64,
+   "graded": {"psa1":35.81,"psa2":35.81,"psa3":35.81,"psa4":38.4,"psa5":57.89,"psa6":72.63,"psa7":89.75,"psa8":159.45,"psa9":191.49,"psa10":1663.5,"cgc1":34.12,"cgc1_5":34.12,"cgc2":34.12,"cgc2_5":34.12,"cgc3":34.12,"cgc3_5":34.12,"cgc4":34.12,"cgc4_5":34.12,"cgc5":34.12,"cgc5_5":34.12,"cgc6":34.12,"cgc6_5":34.12,"cgc7":53.7,"cgc7_5":53.7,"cgc8":81.76,"cgc8_5":140.5,"cgc9":175.0,"cgc9_5":224.0,"cgc10":260.0,"bgs1":17.73,"bgs1_5":17.73,"bgs2":17.73,"bgs2_5":17.73,"bgs3":17.73,"bgs3_5":17.74,"bgs4":19.32,"bgs4_5":23.72,"bgs5":29.12,"bgs5_5":32.62,"bgs6":36.54,"bgs6_5":40.71,"bgs7":59.68,"bgs7_5":62.48,"bgs8":62.48,"bgs8_5":78.0,"bgs9":235.0,"bgs9_5":240.0,"bgs10":936.9},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88860_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa9","psa10","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "21/132",
+   "name": "Blaine's Ninetales",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 50.6,
+   "graded": {"psa1":19.66,"psa2":19.66,"psa3":19.66,"psa4":19.66,"psa5":19.66,"psa6":29.99,"psa7":31.0,"psa8":45.0,"psa9":110.0,"psa10":950.0,"cgc1":13.06,"cgc1_5":13.06,"cgc2":13.06,"cgc2_5":13.06,"cgc3":13.06,"cgc3_5":13.06,"cgc4":13.06,"cgc4_5":13.06,"cgc5":13.06,"cgc5_5":13.06,"cgc6":13.06,"cgc6_5":13.54,"cgc7":17.27,"cgc7_5":18.9,"cgc8":31.1,"cgc8_5":31.1,"cgc9":61.49,"cgc9_5":70.67,"cgc10":208.8,"bgs1":9.4,"bgs1_5":9.4,"bgs2":9.4,"bgs2_5":9.4,"bgs3":9.4,"bgs3_5":9.4,"bgs4":9.4,"bgs4_5":9.4,"bgs5":9.4,"bgs5_5":11.74,"bgs6":14.94,"bgs6_5":15.39,"bgs7":24.69,"bgs7_5":24.69,"bgs8":27.28,"bgs8_5":33.41,"bgs9":71.3,"bgs9_5":350.0,"bgs10":497.0},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83876_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc10","bgs9_5"]
+  },
+  {
+   "num": "22/132",
+   "name": "Brock's Dugtrio",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 19.13,
+   "graded": {"psa1":7.2,"psa2":7.2,"psa3":7.2,"psa4":7.2,"psa5":7.2,"psa6":7.2,"psa7":31.95,"psa8":34.61,"psa9":54.9,"psa10":233.75,"cgc1":7.54,"cgc1_5":7.54,"cgc2":7.54,"cgc2_5":7.54,"cgc3":7.54,"cgc3_5":7.54,"cgc4":7.54,"cgc4_5":7.54,"cgc5":8.77,"cgc5_5":8.84,"cgc6":11.66,"cgc6_5":11.66,"cgc7":11.66,"cgc7_5":11.66,"cgc8":14.4,"cgc8_5":21.29,"cgc9":26.15,"cgc9_5":28.59,"cgc10":55.05,"bgs1":11.72,"bgs1_5":11.72,"bgs2":11.72,"bgs2_5":11.72,"bgs3":11.72,"bgs3_5":11.72,"bgs4":11.72,"bgs4_5":11.72,"bgs5":11.72,"bgs5_5":11.72,"bgs6":11.72,"bgs6_5":11.72,"bgs7":11.72,"bgs7_5":12.21,"bgs8":16.66,"bgs8_5":24.24,"bgs9":26.39,"bgs9_5":64.97,"bgs10":216.18},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83962_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "23/132",
+   "name": "Giovanni's Nidoqueen",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 30.18,
+   "graded": {"psa1":11.37,"psa2":11.37,"psa3":11.37,"psa4":11.37,"psa5":11.46,"psa6":13.2,"psa7":14.4,"psa8":44.69,"psa9":152.13,"psa10":357.5,"cgc1":7.73,"cgc1_5":7.73,"cgc2":7.73,"cgc2_5":7.73,"cgc3":7.73,"cgc3_5":7.73,"cgc4":7.73,"cgc4_5":7.73,"cgc5":7.73,"cgc5_5":7.73,"cgc6":7.76,"cgc6_5":8.31,"cgc7":10.06,"cgc7_5":11.54,"cgc8":18.0,"cgc8_5":18.0,"cgc9":22.8,"cgc9_5":22.8,"cgc10":100.95,"bgs1":7.41,"bgs1_5":7.41,"bgs2":7.41,"bgs2_5":7.41,"bgs3":7.41,"bgs3_5":7.41,"bgs4":7.41,"bgs4_5":7.41,"bgs5":7.85,"bgs5_5":8.42,"bgs6":8.7,"bgs6_5":8.7,"bgs7":13.13,"bgs7_5":14.46,"bgs8":16.76,"bgs8_5":21.81,"bgs9":40.46,"bgs9_5":98.35,"bgs10":290.18},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85719_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc8_5","cgc9_5","cgc10"]
+  },
+  {
+   "num": "24/132",
+   "name": "Giovanni's Pinsir",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 23.9,
+   "graded": {"psa1":15.55,"psa2":15.55,"psa3":15.55,"psa4":15.55,"psa5":15.55,"psa6":18.59,"psa7":18.59,"psa8":38.31,"psa9":51.0,"psa10":412.0,"cgc1":7.64,"cgc1_5":7.64,"cgc2":7.64,"cgc2_5":7.64,"cgc3":7.64,"cgc3_5":7.64,"cgc4":7.64,"cgc4_5":7.64,"cgc5":8.95,"cgc5_5":9.59,"cgc6":12.09,"cgc6_5":12.09,"cgc7":12.09,"cgc7_5":12.09,"cgc8":16.35,"cgc8_5":16.35,"cgc9":24.0,"cgc9_5":28.8,"cgc10":42.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.68,"bgs6_5":7.25,"bgs7":11.11,"bgs7_5":12.32,"bgs8":16.54,"bgs8_5":23.23,"bgs9":27.75,"bgs9_5":72.4,"bgs10":230.11},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85725_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "25/132",
+   "name": "Koga's Arbok",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 16.84,
+   "graded": {"psa1":13.47,"psa2":13.47,"psa3":13.47,"psa4":13.47,"psa5":13.47,"psa6":13.6,"psa7":13.6,"psa8":40.13,"psa9":42.5,"psa10":315.0,"cgc1":6.85,"cgc1_5":6.85,"cgc2":6.85,"cgc2_5":6.85,"cgc3":6.85,"cgc3_5":6.85,"cgc4":6.85,"cgc4_5":6.85,"cgc5":7.66,"cgc5_5":8.46,"cgc6":10.37,"cgc6_5":10.37,"cgc7":10.37,"cgc7_5":10.37,"cgc8":13.2,"cgc8_5":13.2,"cgc9":19.7,"cgc9_5":28.8,"cgc10":84.99,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.86,"bgs6_5":7.36,"bgs7":10.09,"bgs7_5":11.25,"bgs8":15.48,"bgs8_5":26.0,"bgs9":27.46,"bgs9_5":70.99,"bgs10":213.43},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86504_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc10","bgs8_5"]
+  },
+  {
+   "num": "26/132",
+   "name": "Koga's Muk",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 16.07,
+   "graded": {"psa1":10.56,"psa2":10.56,"psa3":10.56,"psa4":10.56,"psa5":10.56,"psa6":10.56,"psa7":10.56,"psa8":10.56,"psa9":49.0,"psa10":245.0,"cgc1":6.55,"cgc1_5":6.55,"cgc2":6.55,"cgc2_5":6.55,"cgc3":6.55,"cgc3_5":6.55,"cgc4":6.55,"cgc4_5":6.55,"cgc5":8.52,"cgc5_5":8.52,"cgc6":10.69,"cgc6_5":10.69,"cgc7":10.69,"cgc7_5":10.69,"cgc8":16.99,"cgc8_5":19.7,"cgc9":25.0,"cgc9_5":37.7,"cgc10":64.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.09,"bgs7_5":10.32,"bgs8":22.5,"bgs8_5":22.5,"bgs9":26.82,"bgs9_5":65.11,"bgs10":205.95},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86513_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8"]
+  },
+  {
+   "num": "27/132",
+   "name": "Koga's Pidgeotto",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 20.9,
+   "graded": {"psa1":13.72,"psa2":13.72,"psa3":13.72,"psa4":13.72,"psa5":13.72,"psa6":20.0,"psa7":20.0,"psa8":29.68,"psa9":50.99,"psa10":227.25,"cgc1":7.07,"cgc1_5":7.07,"cgc2":7.07,"cgc2_5":7.07,"cgc3":7.07,"cgc3_5":7.07,"cgc4":7.07,"cgc4_5":7.07,"cgc5":7.79,"cgc5_5":8.97,"cgc6":10.82,"cgc6_5":10.82,"cgc7":10.82,"cgc7_5":10.82,"cgc8":12.07,"cgc8_5":13.2,"cgc9":20.0,"cgc9_5":36.0,"cgc10":37.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":7.4,"bgs7":10.27,"bgs7_5":11.19,"bgs8":14.56,"bgs8_5":20.66,"bgs9":24.5,"bgs9_5":60.51,"bgs10":211.53},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86515_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "28/132",
+   "name": "Lt. Surge's Jolteon",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 48.82,
+   "graded": {"psa1":17.99,"psa2":17.99,"psa3":17.99,"psa4":17.99,"psa5":20.73,"psa6":23.23,"psa7":24.8,"psa8":68.0,"psa9":108.43,"psa10":528.0,"cgc1":13.84,"cgc1_5":13.84,"cgc2":13.84,"cgc2_5":13.84,"cgc3":13.84,"cgc3_5":13.84,"cgc4":13.84,"cgc4_5":13.84,"cgc5":13.84,"cgc5_5":13.84,"cgc6":13.84,"cgc6_5":13.84,"cgc7":15.6,"cgc7_5":15.6,"cgc8":15.6,"cgc8_5":26.4,"cgc9":45.0,"cgc9_5":68.37,"cgc10":370.0,"bgs1":12.23,"bgs1_5":12.23,"bgs2":12.23,"bgs2_5":12.23,"bgs3":12.23,"bgs3_5":12.23,"bgs4":12.23,"bgs4_5":12.23,"bgs5":14.68,"bgs5_5":14.68,"bgs6":14.68,"bgs6_5":14.68,"bgs7":19.92,"bgs7_5":21.23,"bgs8":25.24,"bgs8_5":33.69,"bgs9":195.0,"bgs9_5":195.0,"bgs10":427.65},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86855_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "29/132",
+   "name": "Sabrina's Gengar",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 573,
+   "graded": {"psa1":221.32,"psa2":221.32,"psa3":221.32,"psa4":225.55,"psa5":300.0,"psa6":416.22,"psa7":642.0,"psa8":817.0,"psa9":1975.0,"psa10":17990.0,"cgc1":188.92,"cgc1_5":188.92,"cgc2":188.92,"cgc2_5":188.92,"cgc3":188.92,"cgc3_5":188.92,"cgc4":188.92,"cgc4_5":188.92,"cgc5":223.54,"cgc5_5":223.54,"cgc6":223.54,"cgc6_5":257.32,"cgc7":278.41,"cgc7_5":332.17,"cgc8":415.0,"cgc8_5":552.5,"cgc9":854.5,"cgc9_5":1199.0,"cgc10":2685.0,"bgs1":121.41,"bgs1_5":121.41,"bgs2":121.41,"bgs2_5":121.41,"bgs3":121.41,"bgs3_5":121.41,"bgs4":126.88,"bgs4_5":146.33,"bgs5":156.0,"bgs5_5":156.0,"bgs6":156.0,"bgs6_5":156.0,"bgs7":156.0,"bgs7_5":156.0,"bgs8":156.0,"bgs8_5":156.0,"bgs9":156.0,"bgs9_5":156.0,"bgs10":4614.81},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88875_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "30/132",
+   "name": "Sabrina's Golduck",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 32.99,
+   "graded": {"psa1":10.94,"psa2":10.94,"psa3":10.94,"psa4":10.94,"psa5":10.94,"psa6":16.5,"psa7":16.5,"psa8":39.43,"psa9":49.1,"psa10":519.0,"cgc1":7.47,"cgc1_5":7.47,"cgc2":7.47,"cgc2_5":7.47,"cgc3":7.47,"cgc3_5":7.47,"cgc4":7.47,"cgc4_5":7.47,"cgc5":7.47,"cgc5_5":7.47,"cgc6":7.47,"cgc6_5":10.8,"cgc7":10.8,"cgc7_5":10.91,"cgc8":17.44,"cgc8_5":19.54,"cgc9":27.75,"cgc9_5":39.65,"cgc10":80.9,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.93,"bgs6_5":8.91,"bgs7":12.76,"bgs7_5":14.06,"bgs8":15.08,"bgs8_5":18.55,"bgs9":31.0,"bgs9_5":94.01,"bgs10":254.51},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88876_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "100/132",
+   "name": "Blaine",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 11.66,
+   "graded": {"psa1":10.48,"psa2":10.48,"psa3":10.48,"psa4":10.48,"psa5":10.48,"psa6":14.7,"psa7":16.74,"psa8":27.89,"psa9":39.8,"psa10":460.0,"cgc1":5.1,"cgc1_5":5.1,"cgc2":5.1,"cgc2_5":5.1,"cgc3":5.1,"cgc3_5":5.1,"cgc4":5.1,"cgc4_5":5.1,"cgc5":5.77,"cgc5_5":5.89,"cgc6":8.4,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.4,"cgc8":8.4,"cgc8_5":8.4,"cgc9":8.4,"cgc9_5":20.4,"cgc10":59.95,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":7.48,"bgs8":9.89,"bgs8_5":15.47,"bgs9":19.82,"bgs9_5":60.9,"bgs10":183.34},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83859_in_800x800.jpg",
+   "gradedReal": ["psa9","psa10","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "101/132",
+   "name": "Brock's Protection",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 10.61,
+   "graded": {"psa1":7.58,"psa2":7.58,"psa3":7.58,"psa4":7.58,"psa5":7.58,"psa6":9.7,"psa7":10.76,"psa8":10.76,"psa9":41.2,"psa10":237.5,"cgc1":3.64,"cgc1_5":3.64,"cgc2":3.64,"cgc2_5":3.64,"cgc3":3.64,"cgc3_5":3.64,"cgc4":3.64,"cgc4_5":3.64,"cgc5":4.56,"cgc5_5":4.6,"cgc6":5.81,"cgc6_5":5.81,"cgc7":5.81,"cgc7_5":5.81,"cgc8":7.08,"cgc8_5":7.25,"cgc9":9.0,"cgc9_5":16.5,"cgc10":31.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.47,"bgs8_5":11.37,"bgs9":13.75,"bgs9_5":40.34,"bgs10":132.02},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/83977_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "102/132",
+   "name": "Chaos Gym",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 11.76,
+   "graded": {"psa1":8.19,"psa2":8.19,"psa3":8.19,"psa4":8.19,"psa5":8.19,"psa6":8.19,"psa7":9.98,"psa8":31.95,"psa9":33.6,"psa10":38.4,"cgc1":4.11,"cgc1_5":4.11,"cgc2":4.11,"cgc2_5":4.11,"cgc3":4.11,"cgc3_5":4.11,"cgc4":4.11,"cgc4_5":4.11,"cgc5":4.66,"cgc5_5":4.79,"cgc6":5.92,"cgc6_5":5.92,"cgc7":5.92,"cgc7_5":5.92,"cgc8":7.2,"cgc8_5":8.4,"cgc9":11.1,"cgc9_5":15.49,"cgc10":29.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.65,"bgs8_5":12.23,"bgs9":14.22,"bgs9_5":29.12,"bgs10":113.17},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/84181_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "103/132",
+   "name": "Erika's Kindness",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 70.47,
+   "graded": {"psa1":15.33,"psa2":15.33,"psa3":15.33,"psa4":15.33,"psa5":15.33,"psa6":19.58,"psa7":41.0,"psa8":48.5,"psa9":62.77,"psa10":1300.0,"cgc1":10.63,"cgc1_5":10.63,"cgc2":10.63,"cgc2_5":10.63,"cgc3":10.63,"cgc3_5":10.63,"cgc4":10.63,"cgc4_5":10.63,"cgc5":10.63,"cgc5_5":10.63,"cgc6":10.63,"cgc6_5":10.63,"cgc7":13.14,"cgc7_5":13.2,"cgc8":13.2,"cgc8_5":13.2,"cgc9":52.5,"cgc9_5":55.73,"cgc10":136.62,"bgs1":10.23,"bgs1_5":10.23,"bgs2":10.23,"bgs2_5":10.23,"bgs3":10.23,"bgs3_5":10.23,"bgs4":10.23,"bgs4_5":10.23,"bgs5":10.31,"bgs5_5":11.88,"bgs6":12.8,"bgs6_5":12.8,"bgs7":18.75,"bgs7_5":18.75,"bgs8":22.3,"bgs8_5":27.13,"bgs9":56.53,"bgs9_5":146.8,"bgs10":413.24},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85299_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9"]
+  },
+  {
+   "num": "104/132",
+   "name": "Giovanni",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 15.49,
+   "graded": {"psa1":10.8,"psa2":10.8,"psa3":10.8,"psa4":10.8,"psa5":10.8,"psa6":15.4,"psa7":15.4,"psa8":39.6,"psa9":56.88,"psa10":322.23,"cgc1":8.12,"cgc1_5":8.12,"cgc2":8.12,"cgc2_5":8.12,"cgc3":8.12,"cgc3_5":8.12,"cgc4":8.12,"cgc4_5":8.12,"cgc5":9.76,"cgc5_5":10.42,"cgc6":12.2,"cgc6_5":12.2,"cgc7":12.2,"cgc7_5":12.2,"cgc8":16.27,"cgc8_5":23.12,"cgc9":40.11,"cgc9_5":40.11,"cgc10":57.85,"bgs1":6.71,"bgs1_5":6.71,"bgs2":6.71,"bgs2_5":6.71,"bgs3":6.71,"bgs3_5":6.71,"bgs4":6.71,"bgs4_5":6.71,"bgs5":6.71,"bgs5_5":6.71,"bgs6":8.69,"bgs6_5":8.69,"bgs7":12.82,"bgs7_5":14.18,"bgs8":20.05,"bgs8_5":25.77,"bgs9":28.19,"bgs9_5":83.94,"bgs10":218.96},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85709_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","cgc8_5","cgc9"]
+  },
+  {
+   "num": "105/132",
+   "name": "Giovanni's Last Resort",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 22.71,
+   "graded": {"psa1":12.6,"psa2":12.6,"psa3":12.6,"psa4":12.6,"psa5":12.6,"psa6":16.63,"psa7":20.5,"psa8":23.3,"psa9":128.54,"psa10":438.27,"cgc1":6.25,"cgc1_5":6.25,"cgc2":6.25,"cgc2_5":6.25,"cgc3":6.25,"cgc3_5":6.25,"cgc4":6.25,"cgc4_5":6.25,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.2,"cgc7_5":7.2,"cgc8":7.2,"cgc8_5":7.2,"cgc9":13.2,"cgc9_5":16.8,"cgc10":36.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.9,"bgs7_5":9.53,"bgs8":12.51,"bgs8_5":18.31,"bgs9":21.09,"bgs9_5":60.15,"bgs10":205.29},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/85711_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "106/132",
+   "name": "Koga",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 7.66,
+   "graded": {"psa1":9.5,"psa2":9.5,"psa3":9.5,"psa4":9.5,"psa5":9.5,"psa6":9.5,"psa7":9.5,"psa8":20.4,"psa9":35.0,"psa10":208.5,"cgc1":4.79,"cgc1_5":4.79,"cgc2":4.79,"cgc2_5":4.79,"cgc3":4.79,"cgc3_5":4.79,"cgc4":4.79,"cgc4_5":4.79,"cgc5":6.01,"cgc5_5":7.2,"cgc6":7.9,"cgc6_5":7.9,"cgc7":8.69,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":12.0,"cgc9":19.8,"cgc9_5":19.8,"cgc10":27.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.66,"bgs7_5":8.4,"bgs8":11.19,"bgs8_5":15.1,"bgs9":17.93,"bgs9_5":44.83,"bgs10":136.71},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86503_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5_5","cgc7_5","cgc9","cgc10"]
+  },
+  {
+   "num": "107/132",
+   "name": "Lt. Surge's Secret Plan",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 8.98,
+   "graded": {"psa1":8.51,"psa2":8.51,"psa3":8.51,"psa4":8.51,"psa5":8.51,"psa6":10.89,"psa7":12.51,"psa8":19.99,"psa9":37.5,"psa10":295.0,"cgc1":4.2,"cgc1_5":4.2,"cgc2":4.2,"cgc2_5":4.2,"cgc3":4.2,"cgc3_5":4.2,"cgc4":4.2,"cgc4_5":4.2,"cgc5":4.68,"cgc5_5":4.69,"cgc6":6.47,"cgc6_5":6.47,"cgc7":6.47,"cgc7_5":6.47,"cgc8":7.76,"cgc8_5":8.61,"cgc9":8.7,"cgc9_5":10.8,"cgc10":36.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":8.49,"bgs8_5":11.85,"bgs9":14.34,"bgs9_5":42.66,"bgs10":136.0},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/86867_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "108/132",
+   "name": "Misty's Wish",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 41.22,
+   "graded": {"psa1":12.37,"psa2":12.37,"psa3":12.37,"psa4":12.37,"psa5":12.76,"psa6":21.5,"psa7":24.27,"psa8":54.94,"psa9":76.5,"psa10":684.44,"cgc1":8.96,"cgc1_5":8.96,"cgc2":8.96,"cgc2_5":8.96,"cgc3":8.96,"cgc3_5":8.96,"cgc4":8.96,"cgc4_5":8.96,"cgc5":8.96,"cgc5_5":8.96,"cgc6":8.96,"cgc6_5":8.96,"cgc7":10.88,"cgc7_5":12.57,"cgc8":16.8,"cgc8_5":16.8,"cgc9":25.0,"cgc9_5":31.8,"cgc10":142.5,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":7.92,"bgs6":10.28,"bgs6_5":10.85,"bgs7":15.59,"bgs7_5":16.3,"bgs8":17.73,"bgs8_5":22.03,"bgs9":44.73,"bgs9_5":113.76,"bgs10":328.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/87553_in_800x800.jpg",
+   "gradedReal": ["psa6","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "109/132",
+   "name": "Resistance Gym",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 8.14,
+   "graded": {"psa1":7.18,"psa2":7.18,"psa3":7.18,"psa4":7.18,"psa5":7.18,"psa6":8.57,"psa7":10.16,"psa8":15.95,"psa9":29.74,"psa10":147.5,"cgc1":3.39,"cgc1_5":3.39,"cgc2":3.39,"cgc2_5":3.39,"cgc3":3.39,"cgc3_5":3.39,"cgc4":3.39,"cgc4_5":3.39,"cgc5":4.19,"cgc5_5":4.5,"cgc6":5.6,"cgc6_5":5.6,"cgc7":5.6,"cgc7_5":5.6,"cgc8":6.0,"cgc8_5":7.8,"cgc9":8.4,"cgc9_5":18.79,"cgc10":24.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":7.34,"bgs8_5":11.03,"bgs9":12.85,"bgs9_5":33.88,"bgs10":107.24},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88717_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "110/132",
+   "name": "Sabrina",
+   "rarity": "Rare",
+   "variant": "Normal (1st Edition)",
+   "market": 23.68,
+   "graded": {"psa1":18.64,"psa2":18.64,"psa3":18.64,"psa4":18.64,"psa5":18.64,"psa6":21.91,"psa7":23.23,"psa8":36.9,"psa9":85.0,"psa10":350.0,"cgc1":9.21,"cgc1_5":9.21,"cgc2":9.21,"cgc2_5":9.21,"cgc3":9.21,"cgc3_5":9.21,"cgc4":9.21,"cgc4_5":9.21,"cgc5":10.53,"cgc5_5":11.51,"cgc6":13.2,"cgc6_5":13.2,"cgc7":13.2,"cgc7_5":13.2,"cgc8":13.2,"cgc8_5":19.24,"cgc9":39.59,"cgc9_5":39.59,"cgc10":64.8,"bgs1":7.03,"bgs1_5":7.03,"bgs2":7.03,"bgs2_5":7.03,"bgs3":7.03,"bgs3_5":7.19,"bgs4":7.19,"bgs4_5":7.19,"bgs5":7.19,"bgs5_5":7.44,"bgs6":8.51,"bgs6_5":8.51,"bgs7":13.18,"bgs7_5":14.59,"bgs8":20.12,"bgs8_5":29.74,"bgs9":34.11,"bgs9_5":87.8,"bgs10":280.71},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/88861_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8","cgc9","cgc10"]
+  }
+ ]
+}

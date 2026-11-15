@@ -434,9 +434,15 @@ def main():
             continue
         image = p.get("imageCdnUrl800") or p.get("imageUrl") or f"https://tcgplayer-cdn.tcgplayer.com/product/{it['id']}_in_800x800.jpg"
         guessed += guess
-        # The set files rip Unlimited prints only, so 1st Edition and Shadowless product stays out.
-        if re.search(r"1st Edition|Shadowless", it["name"]):
+        # Shadowless product stays out. A 1st Edition product rips the 1st Edition set file of its set
+        # (tools/export/rip_set.py --first). With no such file, it stays out too.
+        if "Shadowless" in it["name"]:
             continue
+        if "1st Edition" in it["name"]:
+            first = {f"{s}-1st-edition": n for s, n in mix.items()}
+            if not first or any(s not in sets for s in first):
+                continue
+            mix = first
         raw_promos = it.get("promos", [])
         # A single variant, for example "[Glaceon]", holds only the promo that matches its name. The source often
         # lists every promo of the product wave. A "[Set of N]" holds the promos of its variants.

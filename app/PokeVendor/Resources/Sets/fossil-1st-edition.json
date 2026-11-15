@@ -1,0 +1,743 @@
+{
+ "slug": "fossil-1st-edition",
+ "name": "Fossil 1st Edition",
+ "era": "wizards-of-the-coast",
+ "series": "Wizards of the Coast",
+ "packCost": 671.23,
+ "packImage": "https://tcgplayer-cdn.tcgplayer.com/product/138133_in_800x800.jpg",
+ "slots": [
+  {
+   "name": "Common",
+   "count": 7,
+   "outcomes": [
+    {
+     "name": "Common",
+     "entry": "Common",
+     "odds": 1.0,
+     "prints": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Uncommon",
+   "count": 3,
+   "outcomes": [
+    {
+     "name": "Uncommon",
+     "entry": "Uncommon",
+     "odds": 1.0,
+     "prints": [
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rare slot",
+   "count": 1,
+   "outcomes": [
+    {
+     "name": "Rare Holo",
+     "entry": "Rare Holo",
+     "odds": 0.333,
+     "prints": [
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45
+     ]
+    },
+    {
+     "name": "Rare",
+     "entry": "Rare",
+     "odds": 0.667,
+     "prints": [
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60
+     ]
+    }
+   ]
+  }
+ ],
+ "order": [
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Common",
+  "Rare slot",
+  "Uncommon",
+  "Uncommon",
+  "Uncommon"
+ ],
+ "trick": 3,
+ "prints": [
+  {
+   "num": "46/62",
+   "name": "Ekans",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 1.76,
+   "graded": {"psa1":7.2,"psa2":7.2,"psa3":12.98,"psa4":12.98,"psa5":13.21,"psa6":15.0,"psa7":15.41,"psa8":15.41,"psa9":34.5,"psa10":207.5,"cgc1":5.8,"cgc1_5":5.8,"cgc2":5.8,"cgc2_5":5.8,"cgc3":5.8,"cgc3_5":5.8,"cgc4":5.8,"cgc4_5":5.8,"cgc5":6.0,"cgc5_5":6.0,"cgc6":7.2,"cgc6_5":7.2,"cgc7":7.8,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":13.0,"cgc9":16.99,"cgc9_5":21.5,"cgc10":33.1,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.13,"bgs7_5":8.54,"bgs8":11.09,"bgs8_5":14.51,"bgs9":18.5,"bgs9_5":49.99,"bgs10":104.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44448_in_800x800.jpg",
+   "gradedReal": ["psa2","psa6","psa8","psa9","psa10","cgc5_5","cgc6_5","cgc7","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "47/62",
+   "name": "Geodude",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 3.28,
+   "graded": {"psa1":11.66,"psa2":11.66,"psa3":11.66,"psa4":13.01,"psa5":13.7,"psa6":13.7,"psa7":20.0,"psa8":28.65,"psa9":44.28,"psa10":248.05,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.6,"cgc6_5":8.39,"cgc7":9.42,"cgc7_5":9.8,"cgc8":12.0,"cgc8_5":15.0,"cgc9":18.0,"cgc9_5":20.39,"cgc10":36.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.06,"bgs7_5":9.75,"bgs8":12.93,"bgs8_5":14.13,"bgs9":14.13,"bgs9_5":21.45,"bgs10":114.18},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44449_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6","cgc7_5","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "48/62",
+   "name": "Grimer",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 2.64,
+   "graded": {"psa1":12.25,"psa2":12.25,"psa3":12.25,"psa4":13.36,"psa5":14.62,"psa6":17.0,"psa7":20.0,"psa8":29.0,"psa9":53.44,"psa10":252.0,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.6,"cgc7":9.58,"cgc7_5":9.6,"cgc8":12.0,"cgc8_5":15.0,"cgc9":20.5,"cgc9_5":20.99,"cgc10":42.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.75,"bgs7_5":10.48,"bgs8":13.67,"bgs8_5":14.97,"bgs9":14.97,"bgs9_5":23.1,"bgs10":120.85},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44450_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc6","cgc6_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc10"]
+  },
+  {
+   "num": "49/62",
+   "name": "Horsea",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 2.28,
+   "graded": {"psa1":11.25,"psa2":11.25,"psa3":11.25,"psa4":11.25,"psa5":11.25,"psa6":11.25,"psa7":16.99,"psa8":23.25,"psa9":42.0,"psa10":255.0,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":9.6,"cgc8":12.0,"cgc8_5":12.38,"cgc9":29.97,"cgc9_5":29.97,"cgc10":31.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.83,"bgs4_5":6.83,"bgs5":6.83,"bgs5_5":6.83,"bgs6":6.83,"bgs6_5":6.83,"bgs7":9.31,"bgs7_5":9.55,"bgs8":13.06,"bgs8_5":16.37,"bgs9":68.0,"bgs9_5":110.0,"bgs10":133.31},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44451_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "51/62",
+   "name": "Krabby",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 2.13,
+   "graded": {"psa1":12.2,"psa2":12.2,"psa3":12.2,"psa4":19.99,"psa5":20.0,"psa6":20.0,"psa7":20.62,"psa8":29.87,"psa9":50.98,"psa10":186.0,"cgc1":6.92,"cgc1_5":6.92,"cgc2":6.92,"cgc2_5":6.92,"cgc3":6.92,"cgc3_5":6.92,"cgc4":6.92,"cgc4_5":6.92,"cgc5":7.0,"cgc5_5":7.59,"cgc6":8.19,"cgc6_5":8.39,"cgc7":8.4,"cgc7_5":8.4,"cgc8":9.95,"cgc8_5":9.95,"cgc9":9.95,"cgc9_5":21.12,"cgc10":34.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.77,"bgs4_5":6.77,"bgs5":6.77,"bgs5_5":6.77,"bgs6":6.77,"bgs6_5":6.99,"bgs7":10.23,"bgs7_5":10.71,"bgs8":13.45,"bgs8_5":15.68,"bgs9":15.68,"bgs9_5":99.99,"bgs10":127.49},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44453_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa7","psa8","psa9","psa10","cgc5","cgc7","cgc7_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "52/62",
+   "name": "Omanyte",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 2.93,
+   "graded": {"psa1":14.56,"psa2":14.56,"psa3":14.56,"psa4":18.7,"psa5":18.99,"psa6":19.0,"psa7":21.37,"psa8":40.35,"psa9":45.64,"psa10":323.0,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":9.42,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":9.6,"cgc8":12.6,"cgc8_5":12.6,"cgc9":19.8,"cgc9_5":23.82,"cgc10":120.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":8.42,"bgs4_5":8.46,"bgs5":8.46,"bgs5_5":8.46,"bgs6":8.46,"bgs6_5":8.46,"bgs7":11.93,"bgs7_5":12.87,"bgs8":15.5,"bgs8_5":15.5,"bgs9":15.5,"bgs9_5":27.27,"bgs10":133.92},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44454_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc7_5","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "53/62",
+   "name": "Psyduck",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 13.64,
+   "graded": {"psa1":27.4,"psa2":27.4,"psa3":27.4,"psa4":27.4,"psa5":30.63,"psa6":34.54,"psa7":43.0,"psa8":54.0,"psa9":125.0,"psa10":1062.5,"cgc1":9.2,"cgc1_5":9.2,"cgc2":9.2,"cgc2_5":9.2,"cgc3":9.2,"cgc3_5":9.2,"cgc4":9.2,"cgc4_5":9.2,"cgc5":9.2,"cgc5_5":12.5,"cgc6":12.5,"cgc6_5":16.22,"cgc7":19.25,"cgc7_5":19.25,"cgc8":19.25,"cgc8_5":19.25,"cgc9":45.0,"cgc9_5":102.85,"cgc10":131.25,"bgs1":9.83,"bgs1_5":9.83,"bgs2":9.83,"bgs2_5":9.83,"bgs3":9.83,"bgs3_5":9.83,"bgs4":9.83,"bgs4_5":10.55,"bgs5":11.99,"bgs5_5":12.73,"bgs6":12.8,"bgs6_5":12.8,"bgs7":20.18,"bgs7_5":20.24,"bgs8":27.49,"bgs8_5":32.53,"bgs9":53.0,"bgs9_5":310.0,"bgs10":392.28},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44455_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc5","cgc6","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "54/62",
+   "name": "Shellder",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 1.95,
+   "graded": {"psa1":6.0,"psa2":6.0,"psa3":6.0,"psa4":6.0,"psa5":8.4,"psa6":14.54,"psa7":16.62,"psa8":20.88,"psa9":27.88,"psa10":199.69,"cgc1":5.75,"cgc1_5":5.75,"cgc2":5.75,"cgc2_5":5.75,"cgc3":5.75,"cgc3_5":5.75,"cgc4":5.75,"cgc4_5":5.75,"cgc5":6.6,"cgc5_5":6.61,"cgc6":7.8,"cgc6_5":9.99,"cgc7":9.99,"cgc7_5":9.99,"cgc8":10.8,"cgc8_5":13.35,"cgc9":14.4,"cgc9_5":21.0,"cgc10":33.6,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":7.7,"bgs7_5":8.46,"bgs8":11.12,"bgs8_5":13.13,"bgs9":13.13,"bgs9_5":35.49,"bgs10":101.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44456_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa7","psa8","psa9","psa10","cgc5","cgc6","cgc6_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "55/62",
+   "name": "Slowpoke",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 5.83,
+   "graded": {"psa1":8.4,"psa2":8.4,"psa3":12.7,"psa4":12.7,"psa5":12.7,"psa6":16.0,"psa7":23.75,"psa8":34.0,"psa9":66.0,"psa10":516.5,"cgc1":8.4,"cgc1_5":8.4,"cgc2":8.4,"cgc2_5":8.4,"cgc3":8.4,"cgc3_5":8.4,"cgc4":8.4,"cgc4_5":8.4,"cgc5":8.4,"cgc5_5":8.4,"cgc6":9.6,"cgc6_5":9.6,"cgc7":11.63,"cgc7_5":11.63,"cgc8":13.5,"cgc8_5":14.4,"cgc9":21.2,"cgc9_5":29.25,"cgc10":105.4,"bgs1":7.45,"bgs1_5":7.45,"bgs2":7.45,"bgs2_5":7.45,"bgs3":7.45,"bgs3_5":7.45,"bgs4":7.45,"bgs4_5":7.45,"bgs5":7.45,"bgs5_5":7.45,"bgs6":7.91,"bgs6_5":7.91,"bgs7":11.95,"bgs7_5":12.38,"bgs8":16.86,"bgs8_5":26.0,"bgs9":34.0,"bgs9_5":40.64,"bgs10":187.28},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44457_in_800x800.jpg",
+   "gradedReal": ["psa2","psa5","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "56/62",
+   "name": "Tentacool",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 1.44,
+   "graded": {"psa1":9.83,"psa2":9.83,"psa3":9.83,"psa4":10.85,"psa5":15.99,"psa6":16.94,"psa7":16.94,"psa8":17.0,"psa9":36.5,"psa10":245.0,"cgc1":5.68,"cgc1_5":5.68,"cgc2":5.68,"cgc2_5":5.68,"cgc3":5.68,"cgc3_5":5.68,"cgc4":5.68,"cgc4_5":5.68,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.6,"cgc7":7.8,"cgc7_5":7.8,"cgc8":10.49,"cgc8_5":12.0,"cgc9":14.4,"cgc9_5":19.0,"cgc10":25.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":8.07,"bgs7_5":8.66,"bgs8":14.5,"bgs8_5":14.5,"bgs9":14.5,"bgs9_5":50.5,"bgs10":108.1},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44458_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa8","psa9","psa10","cgc6","cgc6_5","cgc7","cgc8_5","cgc9","cgc9_5","cgc10","bgs8","bgs9_5"]
+  },
+  {
+   "num": "57/62",
+   "name": "Zubat",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 2.21,
+   "graded": {"psa1":9.6,"psa2":9.6,"psa3":9.6,"psa4":14.09,"psa5":14.09,"psa6":18.75,"psa7":19.75,"psa8":27.03,"psa9":37.5,"psa10":215.5,"cgc1":6.35,"cgc1_5":6.35,"cgc2":6.35,"cgc2_5":6.35,"cgc3":6.35,"cgc3_5":6.35,"cgc4":6.35,"cgc4_5":6.35,"cgc5":7.2,"cgc5_5":7.23,"cgc6":9.6,"cgc6_5":9.6,"cgc7":9.6,"cgc7_5":10.8,"cgc8":10.8,"cgc8_5":13.27,"cgc9":14.4,"cgc9_5":21.0,"cgc10":37.9,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.46,"bgs7_5":10.22,"bgs8":12.99,"bgs8_5":14.82,"bgs9":14.82,"bgs9_5":23.2,"bgs10":111.7},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44459_in_800x800.jpg",
+   "gradedReal": ["psa3","psa6","psa7","psa8","psa9","psa10","cgc5","cgc6","cgc7_5","cgc8","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "59/62",
+   "name": "Energy Search",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 1.15,
+   "graded": {"psa1":6.5,"psa2":6.5,"psa3":6.5,"psa4":7.94,"psa5":8.46,"psa6":9.84,"psa7":11.68,"psa8":11.68,"psa9":24.01,"psa10":85.2,"cgc1":3.86,"cgc1_5":3.86,"cgc2":3.86,"cgc2_5":3.86,"cgc3":3.86,"cgc3_5":3.86,"cgc4":3.86,"cgc4_5":3.86,"cgc5":4.17,"cgc5_5":4.47,"cgc6":4.96,"cgc6_5":5.12,"cgc7":6.0,"cgc7_5":8.0,"cgc8":8.0,"cgc8_5":8.75,"cgc9":8.94,"cgc9_5":10.8,"cgc10":48.27,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":9.3,"bgs9":12.5,"bgs9_5":13.9,"bgs10":66.05},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44461_in_800x800.jpg",
+   "gradedReal": ["psa8","psa9","psa10","cgc7","cgc7_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "60/62",
+   "name": "Gambler",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 7.39,
+   "graded": {"psa1":16.64,"psa2":16.64,"psa3":16.64,"psa4":16.64,"psa5":29.69,"psa6":29.69,"psa7":29.69,"psa8":41.38,"psa9":83.86,"psa10":626.38,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":8.6,"cgc7_5":8.6,"cgc8":11.4,"cgc8_5":13.2,"cgc9":15.6,"cgc9_5":23.6,"cgc10":144.5,"bgs1":6.68,"bgs1_5":6.68,"bgs2":6.68,"bgs2_5":6.68,"bgs3":6.68,"bgs3_5":6.68,"bgs4":6.68,"bgs4_5":9.25,"bgs5":9.53,"bgs5_5":9.53,"bgs6":9.53,"bgs6_5":9.53,"bgs7":11.29,"bgs7_5":12.21,"bgs8":15.59,"bgs8_5":21.24,"bgs9":21.24,"bgs9_5":37.89,"bgs10":202.26},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44462_in_800x800.jpg",
+   "gradedReal": ["psa5","psa8","psa9","psa10","cgc6","cgc6_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "61/62",
+   "name": "Recycle",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 3.9,
+   "graded": {"psa1":8.51,"psa2":8.51,"psa3":8.51,"psa4":9.76,"psa5":11.36,"psa6":13.64,"psa7":14.32,"psa8":16.5,"psa9":18.75,"psa10":138.0,"cgc1":5.14,"cgc1_5":5.14,"cgc2":5.14,"cgc2_5":5.14,"cgc3":5.14,"cgc3_5":5.14,"cgc4":5.14,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":8.0,"cgc7":8.0,"cgc7_5":8.0,"cgc8":9.6,"cgc8_5":10.39,"cgc9":12.0,"cgc9_5":28.99,"cgc10":30.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":7.27,"bgs8":9.64,"bgs8_5":11.69,"bgs9":11.69,"bgs9_5":19.2,"bgs10":90.85},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44463_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc4_5","cgc6_5","cgc8","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "62/62",
+   "name": "Mysterious Fossil",
+   "rarity": "Common",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 1.15,
+   "graded": {"psa1":4.25,"psa2":4.25,"psa3":4.25,"psa4":4.25,"psa5":4.25,"psa6":4.25,"psa7":4.25,"psa8":14.75,"psa9":21.5,"psa10":136.5,"cgc1":0.99,"cgc1_5":0.99,"cgc2":0.99,"cgc2_5":0.99,"cgc3":0.99,"cgc3_5":0.99,"cgc4":0.99,"cgc4_5":0.99,"cgc5":0.99,"cgc5_5":0.99,"cgc6":0.99,"cgc6_5":0.99,"cgc7":0.99,"cgc7_5":0.99,"cgc8":0.99,"cgc8_5":0.99,"cgc9":3.93,"cgc9_5":20.74,"cgc10":137.49,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":6.6,"bgs7_5":6.6,"bgs8":6.6,"bgs8_5":6.6,"bgs9":6.6,"bgs9_5":11.21,"bgs10":53.79},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44464_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc8_5","cgc9","cgc9_5","cgc10"]
+  },
+  {
+   "num": "31/62",
+   "name": "Arbok",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 4.66,
+   "graded": {"psa1":8.4,"psa2":8.4,"psa3":10.36,"psa4":10.36,"psa5":10.36,"psa6":10.36,"psa7":23.97,"psa8":34.62,"psa9":78.48,"psa10":308.75,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":9.29,"cgc6_5":9.31,"cgc7":10.13,"cgc7_5":10.13,"cgc8":10.8,"cgc8_5":10.8,"cgc9":15.99,"cgc9_5":26.0,"cgc10":42.0,"bgs1":6.0,"bgs1_5":6.0,"bgs2":6.0,"bgs2_5":6.0,"bgs3":6.0,"bgs3_5":6.0,"bgs4":6.0,"bgs4_5":6.0,"bgs5":6.0,"bgs5_5":6.0,"bgs6":6.0,"bgs6_5":6.0,"bgs7":9.6,"bgs7_5":9.6,"bgs8":9.6,"bgs8_5":9.6,"bgs9":41.48,"bgs9_5":67.99,"bgs10":141.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44433_in_800x800.jpg",
+   "gradedReal": ["psa2","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs6_5","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "32/62",
+   "name": "Cloyster",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 4.34,
+   "graded": {"psa1":12.4,"psa2":12.4,"psa3":12.4,"psa4":12.4,"psa5":12.4,"psa6":17.5,"psa7":25.5,"psa8":40.22,"psa9":67.0,"psa10":322.99,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":8.0,"cgc7":8.0,"cgc7_5":8.0,"cgc8":10.8,"cgc8_5":12.0,"cgc9":26.0,"cgc9_5":26.0,"cgc10":40.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":7.14,"bgs6_5":7.14,"bgs7":11.05,"bgs7_5":11.73,"bgs8":16.28,"bgs8_5":38.5,"bgs9":38.5,"bgs9_5":38.5,"bgs10":134.87},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44434_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc2_5","cgc5_5","cgc6","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5"]
+  },
+  {
+   "num": "33/62",
+   "name": "Gastly",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 6.95,
+   "graded": {"psa1":14.0,"psa2":14.0,"psa3":14.0,"psa4":14.0,"psa5":20.0,"psa6":20.0,"psa7":28.0,"psa8":51.5,"psa9":113.22,"psa10":498.5,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":10.2,"cgc6":10.2,"cgc6_5":10.2,"cgc7":10.2,"cgc7_5":10.2,"cgc8":10.2,"cgc8_5":12.6,"cgc9":26.0,"cgc9_5":40.0,"cgc10":340.75,"bgs1":8.74,"bgs1_5":8.74,"bgs2":8.74,"bgs2_5":8.74,"bgs3":8.74,"bgs3_5":8.74,"bgs4":8.74,"bgs4_5":9.48,"bgs5":10.45,"bgs5_5":10.45,"bgs6":10.45,"bgs6_5":10.45,"bgs7":12.69,"bgs7_5":15.5,"bgs8":18.54,"bgs8_5":23.0,"bgs9":24.74,"bgs9_5":38.0,"bgs10":226.6},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44435_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs7_5","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "34/62",
+   "name": "Golbat",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 6.03,
+   "graded": {"psa1":14.88,"psa2":14.88,"psa3":14.88,"psa4":14.88,"psa5":16.0,"psa6":16.61,"psa7":21.53,"psa8":26.75,"psa9":51.48,"psa10":288.0,"cgc1":6.75,"cgc1_5":6.75,"cgc2":6.75,"cgc2_5":6.75,"cgc3":6.75,"cgc3_5":6.75,"cgc4":6.75,"cgc4_5":6.75,"cgc5":6.75,"cgc5_5":6.75,"cgc6":9.29,"cgc6_5":9.29,"cgc7":10.94,"cgc7_5":12.0,"cgc8":12.0,"cgc8_5":16.0,"cgc9":20.0,"cgc9_5":28.8,"cgc10":47.4,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.65,"bgs6":6.72,"bgs6_5":6.72,"bgs7":10.8,"bgs7_5":11.32,"bgs8":15.22,"bgs8_5":29.0,"bgs9":29.0,"bgs9_5":79.0,"bgs10":166.54},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44436_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc5_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5","bgs9_5"]
+  },
+  {
+   "num": "35/62",
+   "name": "Golduck",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 6.09,
+   "graded": {"psa1":12.75,"psa2":12.75,"psa3":12.75,"psa4":12.75,"psa5":12.75,"psa6":12.75,"psa7":22.88,"psa8":41.5,"psa9":70.12,"psa10":295.5,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":10.23,"cgc7":12.52,"cgc7_5":17.49,"cgc8":17.49,"cgc8_5":22.5,"cgc9":31.2,"cgc9_5":42.5,"cgc10":85.0,"bgs1":10.55,"bgs1_5":10.55,"bgs2":10.55,"bgs2_5":10.55,"bgs3":10.55,"bgs3_5":10.55,"bgs4":10.55,"bgs4_5":10.55,"bgs5":10.55,"bgs5_5":10.55,"bgs6":10.55,"bgs6_5":10.55,"bgs7":12.23,"bgs7_5":13.62,"bgs8":18.27,"bgs8_5":26.26,"bgs9":36.99,"bgs9_5":69.99,"bgs10":226.38},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44437_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5","cgc6","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "36/62",
+   "name": "Golem",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 6.51,
+   "graded": {"psa1":16.24,"psa2":16.24,"psa3":16.24,"psa4":16.24,"psa5":16.75,"psa6":16.75,"psa7":25.45,"psa8":33.5,"psa9":96.9,"psa10":532.5,"cgc1":8.79,"cgc1_5":8.79,"cgc2":8.79,"cgc2_5":8.79,"cgc3":8.79,"cgc3_5":8.79,"cgc4":8.79,"cgc4_5":8.79,"cgc5":11.04,"cgc5_5":11.04,"cgc6":12.0,"cgc6_5":12.0,"cgc7":12.5,"cgc7_5":12.5,"cgc8":12.6,"cgc8_5":15.0,"cgc9":29.0,"cgc9_5":33.77,"cgc10":124.91,"bgs1":8.24,"bgs1_5":8.24,"bgs2":8.24,"bgs2_5":8.24,"bgs3":8.24,"bgs3_5":8.24,"bgs4":8.24,"bgs4_5":8.9,"bgs5":9.0,"bgs5_5":9.0,"bgs6":9.0,"bgs6_5":9.0,"bgs7":9.0,"bgs7_5":9.0,"bgs8":17.34,"bgs8_5":23.45,"bgs9":23.45,"bgs9_5":42.28,"bgs10":229.94},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44438_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5","cgc6","cgc8","cgc8_5","cgc9","cgc10","bgs7_5"]
+  },
+  {
+   "num": "37/62",
+   "name": "Graveler",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 4.44,
+   "graded": {"psa1":10.8,"psa2":10.8,"psa3":10.8,"psa4":10.8,"psa5":16.37,"psa6":16.5,"psa7":26.5,"psa8":35.0,"psa9":48.0,"psa10":287.53,"cgc1":6.5,"cgc1_5":6.5,"cgc2":6.5,"cgc2_5":6.5,"cgc3":6.5,"cgc3_5":6.5,"cgc4":6.5,"cgc4_5":6.5,"cgc5":6.5,"cgc5_5":6.5,"cgc6":6.5,"cgc6_5":6.5,"cgc7":6.5,"cgc7_5":6.5,"cgc8":6.5,"cgc8_5":20.0,"cgc9":21.4,"cgc9_5":25.1,"cgc10":63.75,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.77,"bgs5_5":6.77,"bgs6":6.77,"bgs6_5":6.77,"bgs7":10.05,"bgs7_5":10.05,"bgs8":10.05,"bgs8_5":10.05,"bgs9":15.13,"bgs9_5":25.94,"bgs10":124.15},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44439_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5"]
+  },
+  {
+   "num": "38/62",
+   "name": "Kingler",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 3.11,
+   "graded": {"psa1":12.18,"psa2":12.18,"psa3":12.18,"psa4":12.72,"psa5":12.72,"psa6":14.4,"psa7":28.8,"psa8":29.95,"psa9":30.59,"psa10":276.0,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":7.2,"cgc6_5":7.2,"cgc7":8.75,"cgc7_5":8.75,"cgc8":12.6,"cgc8_5":12.6,"cgc9":14.0,"cgc9_5":22.8,"cgc10":66.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.87,"bgs6_5":7.06,"bgs7":10.05,"bgs7_5":10.84,"bgs8":13.88,"bgs8_5":17.09,"bgs9":54.33,"bgs9_5":54.33,"bgs10":130.08},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44440_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "39/62",
+   "name": "Magmar",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 5.72,
+   "graded": {"psa1":13.85,"psa2":13.85,"psa3":13.85,"psa4":13.85,"psa5":13.85,"psa6":13.85,"psa7":27.19,"psa8":42.5,"psa9":68.62,"psa10":561.88,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":10.5,"cgc6":11.4,"cgc6_5":11.4,"cgc7":11.4,"cgc7_5":11.4,"cgc8":11.4,"cgc8_5":19.5,"cgc9":25.87,"cgc9_5":79.25,"cgc10":135.5,"bgs1":11.53,"bgs1_5":11.53,"bgs2":11.53,"bgs2_5":11.53,"bgs3":11.53,"bgs3_5":11.53,"bgs4":11.53,"bgs4_5":11.53,"bgs5":11.53,"bgs5_5":11.53,"bgs6":11.53,"bgs6_5":11.53,"bgs7":13.06,"bgs7_5":13.44,"bgs8":19.67,"bgs8_5":49.2,"bgs9":49.2,"bgs9_5":49.2,"bgs10":236.89},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44441_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5","cgc5_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5"]
+  },
+  {
+   "num": "40/62",
+   "name": "Omastar",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 5.71,
+   "graded": {"psa1":10.0,"psa2":10.0,"psa3":10.0,"psa4":10.0,"psa5":14.5,"psa6":14.52,"psa7":17.07,"psa8":20.0,"psa9":41.5,"psa10":403.75,"cgc1":6.5,"cgc1_5":6.5,"cgc2":6.5,"cgc2_5":8.6,"cgc3":8.6,"cgc3_5":8.6,"cgc4":8.6,"cgc4_5":8.6,"cgc5":8.6,"cgc5_5":8.6,"cgc6":8.66,"cgc6_5":8.66,"cgc7":10.5,"cgc7_5":10.5,"cgc8":10.5,"cgc8_5":14.5,"cgc9":21.5,"cgc9_5":41.5,"cgc10":111.7,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.97,"bgs5_5":6.97,"bgs6":6.97,"bgs6_5":6.97,"bgs7":9.24,"bgs7_5":10.3,"bgs8":13.9,"bgs8_5":17.89,"bgs9":17.89,"bgs9_5":20.4,"bgs10":171.49},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44442_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc2","cgc7","cgc8_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "41/62",
+   "name": "Sandslash",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 5.95,
+   "graded": {"psa1":14.25,"psa2":14.25,"psa3":14.25,"psa4":14.25,"psa5":15.99,"psa6":20.5,"psa7":20.5,"psa8":32.75,"psa9":59.75,"psa10":276.0,"cgc1":6.67,"cgc1_5":6.67,"cgc2":6.67,"cgc2_5":6.67,"cgc3":6.67,"cgc3_5":6.67,"cgc4":6.67,"cgc4_5":6.67,"cgc5":7.46,"cgc5_5":8.23,"cgc6":8.4,"cgc6_5":8.4,"cgc7":8.4,"cgc7_5":8.4,"cgc8":8.4,"cgc8_5":12.15,"cgc9":18.6,"cgc9_5":27.0,"cgc10":61.2,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.97,"bgs7_5":10.29,"bgs8":13.24,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":31.62,"bgs10":158.05},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44443_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "42/62",
+   "name": "Seadra",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 4.67,
+   "graded": {"psa1":14.57,"psa2":14.57,"psa3":14.57,"psa4":20.0,"psa5":20.0,"psa6":20.15,"psa7":29.89,"psa8":35.0,"psa9":54.0,"psa10":264.0,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":9.6,"cgc8_5":10.8,"cgc9":19.8,"cgc9_5":30.0,"cgc10":280.0,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":8.85,"bgs4_5":8.85,"bgs5":8.85,"bgs5_5":8.85,"bgs6":8.85,"bgs6_5":8.85,"bgs7":10.88,"bgs7_5":11.14,"bgs8":15.54,"bgs8_5":20.23,"bgs9":80.0,"bgs9_5":80.0,"bgs10":149.28},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44444_in_800x800.jpg",
+   "gradedReal": ["psa4","psa7","psa8","psa9","psa10","cgc6","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "43/62",
+   "name": "Slowbro",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 9.36,
+   "graded": {"psa1":19.99,"psa2":19.99,"psa3":19.99,"psa4":22.89,"psa5":29.0,"psa6":29.0,"psa7":30.88,"psa8":40.75,"psa9":89.9,"psa10":573.75,"cgc1":9.85,"cgc1_5":9.85,"cgc2":9.85,"cgc2_5":9.85,"cgc3":9.85,"cgc3_5":9.85,"cgc4":9.85,"cgc4_5":9.85,"cgc5":9.85,"cgc5_5":9.85,"cgc6":9.85,"cgc6_5":9.85,"cgc7":9.85,"cgc7_5":9.85,"cgc8":11.4,"cgc8_5":20.9,"cgc9":33.9,"cgc9_5":39.0,"cgc10":143.0,"bgs1":8.4,"bgs1_5":8.4,"bgs2":8.4,"bgs2_5":8.4,"bgs3":8.4,"bgs3_5":8.4,"bgs4":8.4,"bgs4_5":8.4,"bgs5":8.4,"bgs5_5":8.4,"bgs6":8.4,"bgs6_5":8.4,"bgs7":8.4,"bgs7_5":8.4,"bgs8":20.09,"bgs8_5":28.92,"bgs9":42.49,"bgs9_5":50.22,"bgs10":258.75},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44445_in_800x800.jpg",
+   "gradedReal": ["psa3","psa5","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs7_5","bgs9"]
+  },
+  {
+   "num": "44/62",
+   "name": "Tentacruel",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 4.82,
+   "graded": {"psa1":12.5,"psa2":12.5,"psa3":12.5,"psa4":12.5,"psa5":12.5,"psa6":12.5,"psa7":20.17,"psa8":27.5,"psa9":72.75,"psa10":421.63,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":7.2,"cgc6":9.26,"cgc6_5":9.45,"cgc7":9.91,"cgc7_5":9.91,"cgc8":12.0,"cgc8_5":12.0,"cgc9":21.5,"cgc9_5":22.05,"cgc10":43.77,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":7.12,"bgs4_5":7.12,"bgs5":7.12,"bgs5_5":7.12,"bgs6":7.12,"bgs6_5":7.12,"bgs7":9.66,"bgs7_5":10.05,"bgs8":13.32,"bgs8_5":17.22,"bgs9":18.0,"bgs9_5":25.56,"bgs10":133.07},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44446_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "45/62",
+   "name": "Weezing",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 3.85,
+   "graded": {"psa1":12.28,"psa2":12.28,"psa3":12.28,"psa4":13.85,"psa5":19.29,"psa6":19.29,"psa7":22.69,"psa8":23.55,"psa9":48.5,"psa10":360.0,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":7.0,"cgc5":7.0,"cgc5_5":7.0,"cgc6":7.0,"cgc6_5":7.0,"cgc7":7.0,"cgc7_5":7.2,"cgc8":13.0,"cgc8_5":18.0,"cgc9":19.6,"cgc9_5":22.58,"cgc10":40.8,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.6,"bgs5_5":6.6,"bgs6":6.6,"bgs6_5":6.6,"bgs7":9.25,"bgs7_5":9.96,"bgs8":13.56,"bgs8_5":18.1,"bgs9":32.75,"bgs9_5":32.75,"bgs10":127.94},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44447_in_800x800.jpg",
+   "gradedReal": ["psa5","psa8","psa9","psa10","cgc4","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "58/62",
+   "name": "Mr. Fuji",
+   "rarity": "Uncommon",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 8.37,
+   "graded": {"psa1":15.35,"psa2":15.35,"psa3":15.35,"psa4":15.35,"psa5":18.16,"psa6":18.16,"psa7":18.25,"psa8":46.0,"psa9":117.78,"psa10":679.15,"cgc1":6.0,"cgc1_5":6.0,"cgc2":6.0,"cgc2_5":6.0,"cgc3":6.0,"cgc3_5":6.0,"cgc4":6.0,"cgc4_5":6.0,"cgc5":6.0,"cgc5_5":6.0,"cgc6":6.0,"cgc6_5":6.0,"cgc7":6.0,"cgc7_5":6.0,"cgc8":11.5,"cgc8_5":12.0,"cgc9":22.45,"cgc9_5":24.4,"cgc10":94.99,"bgs1":6.6,"bgs1_5":6.6,"bgs2":6.6,"bgs2_5":6.6,"bgs3":6.6,"bgs3_5":6.6,"bgs4":6.6,"bgs4_5":6.6,"bgs5":6.99,"bgs5_5":6.99,"bgs6":6.99,"bgs6_5":6.99,"bgs7":8.8,"bgs7_5":8.8,"bgs8":8.8,"bgs8_5":8.8,"bgs9":8.8,"bgs9_5":33.87,"bgs10":184.86},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44460_in_800x800.jpg",
+   "gradedReal": ["psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "1/62",
+   "name": "Aerodactyl",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 96.39,
+   "graded": {"psa1":33.4,"psa2":33.4,"psa3":33.4,"psa4":33.4,"psa5":62.12,"psa6":62.12,"psa7":109.75,"psa8":203.25,"psa9":541.0,"psa10":5071.99,"cgc1":25.2,"cgc1_5":25.2,"cgc2":25.2,"cgc2_5":25.2,"cgc3":25.2,"cgc3_5":25.2,"cgc4":25.2,"cgc4_5":25.2,"cgc5":25.2,"cgc5_5":25.2,"cgc6":25.2,"cgc6_5":25.2,"cgc7":30.0,"cgc7_5":64.99,"cgc8":128.0,"cgc8_5":135.13,"cgc9":224.31,"cgc9_5":253.01,"cgc10":757.1,"bgs1":40.17,"bgs1_5":40.17,"bgs2":40.17,"bgs2_5":40.17,"bgs3":40.17,"bgs3_5":40.17,"bgs4":40.17,"bgs4_5":40.17,"bgs5":44.35,"bgs5_5":44.35,"bgs6":44.35,"bgs6_5":44.35,"bgs7":64.79,"bgs7_5":69.38,"bgs8":92.03,"bgs8_5":128.75,"bgs9":295.0,"bgs9_5":519.71,"bgs10":1263.9},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44418_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "2/62",
+   "name": "Articuno",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 197.37,
+   "graded": {"psa1":36.0,"psa2":36.0,"psa3":46.0,"psa4":47.59,"psa5":125.75,"psa6":153.96,"psa7":213.75,"psa8":441.0,"psa9":1379.97,"psa10":24749.5,"cgc1":56.8,"cgc1_5":56.8,"cgc2":56.8,"cgc2_5":56.8,"cgc3":56.8,"cgc3_5":56.8,"cgc4":56.8,"cgc4_5":88.83,"cgc5":88.83,"cgc5_5":95.18,"cgc6":95.18,"cgc6_5":101.4,"cgc7":101.4,"cgc7_5":118.8,"cgc8":195.0,"cgc8_5":204.0,"cgc9":331.5,"cgc9_5":716.0,"cgc10":1948.75,"bgs1":38.4,"bgs1_5":38.4,"bgs2":38.4,"bgs2_5":38.4,"bgs3":38.4,"bgs3_5":38.4,"bgs4":38.4,"bgs4_5":62.42,"bgs5":80.25,"bgs5_5":88.8,"bgs6":91.75,"bgs6_5":91.75,"bgs7":174.0,"bgs7_5":174.0,"bgs8":210.0,"bgs8_5":276.13,"bgs9":593.0,"bgs9_5":1860.0,"bgs10":3086.89},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106518_in_800x800.jpg",
+   "gradedReal": ["psa2","psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc4","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs4","bgs5_5","bgs7","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "3/62",
+   "name": "Ditto",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 135.32,
+   "graded": {"psa1":67.5,"psa2":67.5,"psa3":67.5,"psa4":67.5,"psa5":69.84,"psa6":150.0,"psa7":170.0,"psa8":226.16,"psa9":630.0,"psa10":4427.65,"cgc1":26.4,"cgc1_5":26.4,"cgc2":26.4,"cgc2_5":26.4,"cgc3":26.4,"cgc3_5":43.2,"cgc4":58.7,"cgc4_5":58.7,"cgc5":58.7,"cgc5_5":68.09,"cgc6":68.09,"cgc6_5":88.5,"cgc7":88.5,"cgc7_5":91.69,"cgc8":144.55,"cgc8_5":175.0,"cgc9":255.0,"cgc9_5":294.5,"cgc10":847.5,"bgs1":32.1,"bgs1_5":32.1,"bgs2":32.1,"bgs2_5":32.1,"bgs3":32.1,"bgs3_5":32.1,"bgs4":32.1,"bgs4_5":32.1,"bgs5":32.17,"bgs5_5":47.14,"bgs6":66.49,"bgs6_5":66.49,"bgs7":91.87,"bgs7_5":98.4,"bgs8":98.4,"bgs8_5":168.5,"bgs9":387.5,"bgs9_5":550.0,"bgs10":1671.33},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106519_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc3","cgc3_5","cgc5","cgc6_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "4/62",
+   "name": "Dragonite",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 582.67,
+   "graded": {"psa1":148.8,"psa2":148.8,"psa3":148.8,"psa4":250.0,"psa5":302.55,"psa6":390.75,"psa7":588.41,"psa8":1062.5,"psa9":3210.0,"psa10":16999.99,"cgc1":101.4,"cgc1_5":101.4,"cgc2":101.4,"cgc2_5":101.4,"cgc3":101.4,"cgc3_5":101.4,"cgc4":101.4,"cgc4_5":101.4,"cgc5":101.4,"cgc5_5":101.4,"cgc6":101.4,"cgc6_5":260.57,"cgc7":332.0,"cgc7_5":496.75,"cgc8":526.58,"cgc8_5":750.0,"cgc9":945.0,"cgc9_5":1892.5,"cgc10":5300.0,"bgs1":159.0,"bgs1_5":159.0,"bgs2":159.0,"bgs2_5":159.0,"bgs3":159.0,"bgs3_5":159.0,"bgs4":159.0,"bgs4_5":159.0,"bgs5":159.0,"bgs5_5":159.0,"bgs6":159.0,"bgs6_5":159.0,"bgs7":159.0,"bgs7_5":159.0,"bgs8":159.0,"bgs8_5":621.0,"bgs9":1395.0,"bgs9_5":4200.0,"bgs10":6738.67},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106520_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc6","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "5/62",
+   "name": "Gengar",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 725,
+   "graded": {"psa1":38.4,"psa2":38.4,"psa3":267.5,"psa4":361.0,"psa5":425.0,"psa6":580.0,"psa7":907.5,"psa8":1345.0,"psa9":3970.0,"psa10":102000.0,"cgc1":315.12,"cgc1_5":315.12,"cgc2":315.12,"cgc2_5":315.12,"cgc3":399.0,"cgc3_5":399.0,"cgc4":399.0,"cgc4_5":399.0,"cgc5":432.0,"cgc5_5":432.0,"cgc6":506.0,"cgc6_5":544.08,"cgc7":549.5,"cgc7_5":549.5,"cgc8":661.0,"cgc8_5":1199.5,"cgc9":1527.5,"cgc9_5":1543.5,"cgc10":6300.0,"bgs1":132.73,"bgs1_5":132.73,"bgs2":132.73,"bgs2_5":132.73,"bgs3":251.31,"bgs3_5":291.94,"bgs4":339.15,"bgs4_5":367.99,"bgs5":369.46,"bgs5_5":369.46,"bgs6":399.38,"bgs6_5":602.0,"bgs7":602.0,"bgs7_5":602.0,"bgs8":1111.11,"bgs8_5":1190.0,"bgs9":1950.5,"bgs9_5":3420.0,"bgs10":11159.54},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106521_in_800x800.jpg",
+   "gradedReal": ["psa2","psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc3","cgc5","cgc6","cgc6_5","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs4","bgs6_5","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "6/62",
+   "name": "Haunter",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 170.99,
+   "graded": {"psa1":72.74,"psa2":72.74,"psa3":72.74,"psa4":72.74,"psa5":78.1,"psa6":96.7,"psa7":178.0,"psa8":220.0,"psa9":755.5,"psa10":4119.32,"cgc1":33.6,"cgc1_5":33.6,"cgc2":33.6,"cgc2_5":33.6,"cgc3":33.6,"cgc3_5":33.6,"cgc4":33.6,"cgc4_5":33.6,"cgc5":33.6,"cgc5_5":33.6,"cgc6":69.09,"cgc6_5":74.49,"cgc7":98.1,"cgc7_5":125.0,"cgc8":135.0,"cgc8_5":175.0,"cgc9":220.0,"cgc9_5":339.99,"cgc10":1050.01,"bgs1":53.33,"bgs1_5":53.33,"bgs2":53.33,"bgs2_5":53.33,"bgs3":53.33,"bgs3_5":53.33,"bgs4":53.33,"bgs4_5":53.33,"bgs5":59.64,"bgs5_5":66.36,"bgs6":66.59,"bgs6_5":66.59,"bgs7":95.41,"bgs7_5":97.95,"bgs8":139.84,"bgs8_5":193.0,"bgs9":482.5,"bgs9_5":679.38,"bgs10":1721.66},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106522_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "7/62",
+   "name": "Hitmonlee",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 105.26,
+   "graded": {"psa1":30.9,"psa2":30.9,"psa3":30.9,"psa4":30.9,"psa5":61.99,"psa6":87.5,"psa7":123.74,"psa8":187.68,"psa9":499.99,"psa10":6310.9,"cgc1":10.5,"cgc1_5":10.5,"cgc2":10.5,"cgc2_5":24.0,"cgc3":24.0,"cgc3_5":24.0,"cgc4":24.0,"cgc4_5":24.0,"cgc5":49.55,"cgc5_5":52.01,"cgc6":52.01,"cgc6_5":55.35,"cgc7":64.76,"cgc7_5":69.6,"cgc8":112.56,"cgc8_5":138.0,"cgc9":184.88,"cgc9_5":316.0,"cgc10":839.0,"bgs1":28.45,"bgs1_5":28.45,"bgs2":28.45,"bgs2_5":28.45,"bgs3":28.45,"bgs3_5":28.45,"bgs4":28.45,"bgs4_5":28.45,"bgs5":32.0,"bgs5_5":32.0,"bgs6":32.0,"bgs6_5":32.0,"bgs7":62.4,"bgs7_5":62.4,"bgs8":62.4,"bgs8_5":208.24,"bgs9":220.62,"bgs9_5":1135.0,"bgs10":1586.59},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106523_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc1_5","cgc4_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs6_5","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "8/62",
+   "name": "Hypno",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 105.12,
+   "graded": {"psa1":28.86,"psa2":28.86,"psa3":28.86,"psa4":28.86,"psa5":47.0,"psa6":67.2,"psa7":79.5,"psa8":141.88,"psa9":396.0,"psa10":2880.0,"cgc1":19.2,"cgc1_5":19.2,"cgc2":19.2,"cgc2_5":19.2,"cgc3":19.2,"cgc3_5":19.2,"cgc4":19.2,"cgc4_5":19.2,"cgc5":31.2,"cgc5_5":33.0,"cgc6":39.39,"cgc6_5":44.58,"cgc7":53.16,"cgc7_5":57.79,"cgc8":99.0,"cgc8_5":136.75,"cgc9":171.5,"cgc9_5":223.22,"cgc10":450.0,"bgs1":22.18,"bgs1_5":22.18,"bgs2":22.18,"bgs2_5":22.18,"bgs3":22.18,"bgs3_5":22.18,"bgs4":22.18,"bgs4_5":22.18,"bgs5":26.65,"bgs5_5":31.87,"bgs6":36.77,"bgs6_5":36.77,"bgs7":59.99,"bgs7_5":59.99,"bgs8":84.77,"bgs8_5":98.5,"bgs9":190.63,"bgs9_5":847.5,"bgs10":1075.8},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106524_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc4_5","cgc5","cgc5_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9_5"]
+  },
+  {
+   "num": "9/62",
+   "name": "Kabutops",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 118.93,
+   "graded": {"psa1":54.99,"psa2":54.99,"psa3":54.99,"psa4":54.99,"psa5":76.0,"psa6":91.56,"psa7":133.38,"psa8":208.0,"psa9":549.99,"psa10":8442.5,"cgc1":30.0,"cgc1_5":30.0,"cgc2":30.0,"cgc2_5":30.0,"cgc3":30.0,"cgc3_5":30.0,"cgc4":30.0,"cgc4_5":30.0,"cgc5":51.0,"cgc5_5":60.26,"cgc6":60.26,"cgc6_5":67.86,"cgc7":72.75,"cgc7_5":107.96,"cgc8":128.69,"cgc8_5":136.36,"cgc9":212.0,"cgc9_5":318.14,"cgc10":863.5,"bgs1":39.57,"bgs1_5":39.57,"bgs2":39.57,"bgs2_5":39.57,"bgs3":39.57,"bgs3_5":39.57,"bgs4":39.57,"bgs4_5":41.44,"bgs5":48.72,"bgs5_5":53.47,"bgs6":57.87,"bgs6_5":57.87,"bgs7":92.11,"bgs7_5":178.88,"bgs8":178.88,"bgs8_5":182.19,"bgs9":205.75,"bgs9_5":560.0,"bgs10":1714.68},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106525_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc4_5","cgc5","cgc7_5","cgc8_5","cgc9","cgc10","bgs7_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "10/62",
+   "name": "Lapras",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 231.13,
+   "graded": {"psa1":50.86,"psa2":50.86,"psa3":50.86,"psa4":60.25,"psa5":88.0,"psa6":113.75,"psa7":190.79,"psa8":289.99,"psa9":786.25,"psa10":24600.0,"cgc1":24.0,"cgc1_5":24.0,"cgc2":24.0,"cgc2_5":24.0,"cgc3":24.0,"cgc3_5":24.0,"cgc4":24.0,"cgc4_5":24.0,"cgc5":24.0,"cgc5_5":27.6,"cgc6":74.84,"cgc6_5":82.83,"cgc7":84.15,"cgc7_5":84.15,"cgc8":194.5,"cgc8_5":233.32,"cgc9":315.0,"cgc9_5":650.0,"cgc10":1635.0,"bgs1":14.9,"bgs1_5":14.9,"bgs2":14.9,"bgs2_5":14.9,"bgs3":14.9,"bgs3_5":14.9,"bgs4":14.9,"bgs4_5":15.05,"bgs5":18.19,"bgs5_5":20.68,"bgs6":73.06,"bgs6_5":73.06,"bgs7":118.13,"bgs7_5":132.5,"bgs8":162.4,"bgs8_5":175.0,"bgs9":427.78,"bgs9_5":2157.75,"bgs10":2676.09},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44419_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc5_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs5","bgs7_5","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "11/62",
+   "name": "Magneton",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 68.35,
+   "graded": {"psa1":35.0,"psa2":35.0,"psa3":35.0,"psa4":35.0,"psa5":45.81,"psa6":48.25,"psa7":75.12,"psa8":113.75,"psa9":195.0,"psa10":1949.49,"cgc1":26.42,"cgc1_5":26.42,"cgc2":26.42,"cgc2_5":26.42,"cgc3":26.42,"cgc3_5":26.42,"cgc4":26.42,"cgc4_5":26.42,"cgc5":26.42,"cgc5_5":39.2,"cgc6":39.2,"cgc6_5":43.61,"cgc7":43.61,"cgc7_5":64.8,"cgc8":72.84,"cgc8_5":77.0,"cgc9":110.0,"cgc9_5":222.75,"cgc10":484.0,"bgs1":28.34,"bgs1_5":28.34,"bgs2":28.34,"bgs2_5":28.34,"bgs3":28.34,"bgs3_5":28.34,"bgs4":28.34,"bgs4_5":28.34,"bgs5":28.8,"bgs5_5":28.8,"bgs6":28.8,"bgs6_5":28.8,"bgs7":28.8,"bgs7_5":28.8,"bgs8":52.8,"bgs8_5":107.49,"bgs9":154.0,"bgs9_5":340.0,"bgs10":836.79},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44420_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs7_5","bgs8","bgs8_5","bgs9_5"]
+  },
+  {
+   "num": "12/62",
+   "name": "Moltres",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 184.59,
+   "graded": {"psa1":57.38,"psa2":73.97,"psa3":73.97,"psa4":73.97,"psa5":85.0,"psa6":150.73,"psa7":221.25,"psa8":301.25,"psa9":851.24,"psa10":4899.99,"cgc1":50.27,"cgc1_5":57.07,"cgc2":60.14,"cgc2_5":60.14,"cgc3":60.14,"cgc3_5":62.57,"cgc4":62.57,"cgc4_5":67.83,"cgc5":68.9,"cgc5_5":68.9,"cgc6":72.0,"cgc6_5":78.9,"cgc7":110.44,"cgc7_5":166.0,"cgc8":179.32,"cgc8_5":210.0,"cgc9":325.0,"cgc9_5":520.58,"cgc10":1262.5,"bgs1":26.84,"bgs1_5":30.47,"bgs2":33.06,"bgs2_5":33.06,"bgs3":33.06,"bgs3_5":33.06,"bgs4":33.99,"bgs4_5":36.76,"bgs5":39.76,"bgs5_5":52.94,"bgs6":85.81,"bgs6_5":93.0,"bgs7":121.31,"bgs7_5":122.2,"bgs8":148.75,"bgs8_5":177.0,"bgs9":397.5,"bgs9_5":1560.0,"bgs10":2102.84},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44421_in_800x800.jpg",
+   "gradedReal": ["psa1","psa2","psa5","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc6","cgc6_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs5_5","bgs6_5","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "13/62",
+   "name": "Muk",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 63.08,
+   "graded": {"psa1":24.99,"psa2":24.99,"psa3":24.99,"psa4":24.99,"psa5":39.0,"psa6":51.4,"psa7":71.67,"psa8":120.0,"psa9":251.5,"psa10":1699.99,"cgc1":15.5,"cgc1_5":15.5,"cgc2":15.5,"cgc2_5":22.48,"cgc3":22.48,"cgc3_5":22.48,"cgc4":22.48,"cgc4_5":22.48,"cgc5":28.9,"cgc5_5":28.9,"cgc6":28.9,"cgc6_5":28.9,"cgc7":30.0,"cgc7_5":39.1,"cgc8":62.1,"cgc8_5":63.49,"cgc9":161.88,"cgc9_5":161.88,"cgc10":540.5,"bgs1":21.04,"bgs1_5":21.04,"bgs2":21.04,"bgs2_5":21.04,"bgs3":21.04,"bgs3_5":21.04,"bgs4":21.04,"bgs4_5":21.04,"bgs5":23.71,"bgs5_5":27.22,"bgs6":28.14,"bgs6_5":28.14,"bgs7":39.56,"bgs7_5":39.6,"bgs8":39.6,"bgs8_5":58.0,"bgs9":114.75,"bgs9_5":158.0,"bgs10":715.55},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44422_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa7","psa8","psa9","psa10","cgc2","cgc5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "14/62",
+   "name": "Raichu",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 202.8,
+   "graded": {"psa1":29.0,"psa2":29.0,"psa3":29.0,"psa4":50.93,"psa5":62.0,"psa6":119.49,"psa7":150.0,"psa8":277.5,"psa9":675.0,"psa10":5999.49,"cgc1":62.08,"cgc1_5":62.08,"cgc2":62.08,"cgc2_5":62.08,"cgc3":62.08,"cgc3_5":62.08,"cgc4":62.08,"cgc4_5":62.08,"cgc5":90.0,"cgc5_5":90.0,"cgc6":90.0,"cgc6_5":90.0,"cgc7":94.25,"cgc7_5":98.18,"cgc8":120.78,"cgc8_5":168.0,"cgc9":249.99,"cgc9_5":350.0,"cgc10":1657.5,"bgs1":83.14,"bgs1_5":83.14,"bgs2":83.14,"bgs2_5":83.14,"bgs3":83.14,"bgs3_5":83.14,"bgs4":84.96,"bgs4_5":84.96,"bgs5":84.96,"bgs5_5":84.96,"bgs6":84.96,"bgs6_5":84.96,"bgs7":94.35,"bgs7_5":94.35,"bgs8":100.7,"bgs8_5":212.5,"bgs9":245.25,"bgs9_5":1450.0,"bgs10":1881.11},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44423_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs4","bgs7_5","bgs8","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "15/62",
+   "name": "Zapdos",
+   "rarity": "Rare",
+   "variant": "Holo (Galaxy, 1st Edition)",
+   "market": 215.67,
+   "graded": {"psa1":41.0,"psa2":41.0,"psa3":41.0,"psa4":76.0,"psa5":88.8,"psa6":131.25,"psa7":179.99,"psa8":305.95,"psa9":911.48,"psa10":6600.0,"cgc1":25.2,"cgc1_5":25.2,"cgc2":25.2,"cgc2_5":25.2,"cgc3":25.2,"cgc3_5":25.2,"cgc4":25.2,"cgc4_5":25.2,"cgc5":65.99,"cgc5_5":65.99,"cgc6":67.2,"cgc6_5":87.51,"cgc7":96.0,"cgc7_5":96.0,"cgc8":96.0,"cgc8_5":96.0,"cgc9":271.0,"cgc9_5":456.0,"cgc10":1212.5,"bgs1":39.6,"bgs1_5":39.6,"bgs2":39.6,"bgs2_5":39.6,"bgs3":39.6,"bgs3_5":39.6,"bgs4":53.92,"bgs4_5":58.28,"bgs5":63.0,"bgs5_5":65.22,"bgs6":74.07,"bgs6_5":74.07,"bgs7":122.3,"bgs7_5":154.0,"bgs8":189.0,"bgs8_5":235.16,"bgs9":437.92,"bgs9_5":727.98,"bgs10":1906.09},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44424_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc4_5","cgc5_5","cgc6","cgc6_5","cgc7","cgc8_5","cgc9","cgc9_5","cgc10","bgs3_5","bgs7","bgs7_5","bgs8","bgs8_5","bgs9"]
+  },
+  {
+   "num": "16/62",
+   "name": "Aerodactyl",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 26.16,
+   "graded": {"psa1":15.62,"psa2":15.62,"psa3":15.62,"psa4":15.62,"psa5":22.5,"psa6":22.5,"psa7":28.0,"psa8":59.0,"psa9":85.0,"psa10":634.3,"cgc1":7.2,"cgc1_5":7.2,"cgc2":7.2,"cgc2_5":7.2,"cgc3":7.2,"cgc3_5":7.2,"cgc4":7.2,"cgc4_5":7.2,"cgc5":7.2,"cgc5_5":10.8,"cgc6":10.8,"cgc6_5":11.13,"cgc7":13.11,"cgc7_5":14.7,"cgc8":15.0,"cgc8_5":15.0,"cgc9":38.4,"cgc9_5":94.65,"cgc10":175.0,"bgs1":8.04,"bgs1_5":8.04,"bgs2":8.04,"bgs2_5":8.04,"bgs3":8.04,"bgs3_5":8.04,"bgs4":8.04,"bgs4_5":8.55,"bgs5":11.69,"bgs5_5":11.69,"bgs6":11.69,"bgs6_5":11.69,"bgs7":16.6,"bgs7_5":18.15,"bgs8":20.82,"bgs8_5":26.4,"bgs9":26.4,"bgs9_5":118.85,"bgs10":319.12},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106526_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc5","cgc5_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "17/62",
+   "name": "Articuno",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 36.49,
+   "graded": {"psa1":22.94,"psa2":22.94,"psa3":22.94,"psa4":22.94,"psa5":22.94,"psa6":22.94,"psa7":48.5,"psa8":89.0,"psa9":176.07,"psa10":1190.0,"cgc1":16.55,"cgc1_5":16.55,"cgc2":16.55,"cgc2_5":16.55,"cgc3":16.55,"cgc3_5":16.55,"cgc4":16.55,"cgc4_5":16.55,"cgc5":16.55,"cgc5_5":16.55,"cgc6":24.0,"cgc6_5":24.0,"cgc7":24.0,"cgc7_5":25.38,"cgc8":32.34,"cgc8_5":36.0,"cgc9":84.97,"cgc9_5":108.47,"cgc10":350.0,"bgs1":21.22,"bgs1_5":21.22,"bgs2":21.22,"bgs2_5":21.22,"bgs3":21.22,"bgs3_5":21.22,"bgs4":21.22,"bgs4_5":21.22,"bgs5":21.22,"bgs5_5":21.22,"bgs6":21.22,"bgs6_5":21.22,"bgs7":29.1,"bgs7_5":42.0,"bgs8":42.0,"bgs8_5":58.0,"bgs9":94.74,"bgs9_5":208.54,"bgs10":546.37},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44425_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6","cgc8","cgc8_5","cgc9","cgc10","bgs7_5","bgs8_5"]
+  },
+  {
+   "num": "18/62",
+   "name": "Ditto",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 24.94,
+   "graded": {"psa1":28.28,"psa2":28.28,"psa3":28.28,"psa4":28.28,"psa5":33.57,"psa6":46.11,"psa7":52.58,"psa8":89.6,"psa9":145.32,"psa10":630.0,"cgc1":11.5,"cgc1_5":11.5,"cgc2":11.5,"cgc2_5":11.5,"cgc3":11.5,"cgc3_5":11.5,"cgc4":11.5,"cgc4_5":11.5,"cgc5":11.5,"cgc5_5":15.91,"cgc6":19.2,"cgc6_5":19.2,"cgc7":19.2,"cgc7_5":19.2,"cgc8":21.5,"cgc8_5":21.5,"cgc9":24.6,"cgc9_5":62.13,"cgc10":66.6,"bgs1":8.48,"bgs1_5":8.48,"bgs2":8.48,"bgs2_5":8.48,"bgs3":8.48,"bgs3_5":8.48,"bgs4":9.17,"bgs4_5":10.0,"bgs5":10.91,"bgs5_5":12.79,"bgs6":14.99,"bgs6_5":15.6,"bgs7":22.77,"bgs7_5":24.74,"bgs8":30.68,"bgs8_5":33.24,"bgs9":48.9,"bgs9_5":115.0,"bgs10":368.53},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44426_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc7_5","cgc8_5","cgc9","cgc10","bgs8_5","bgs9","bgs9_5"]
+  },
+  {
+   "num": "19/62",
+   "name": "Dragonite",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 105.75,
+   "graded": {"psa1":42.5,"psa2":42.5,"psa3":42.5,"psa4":65.0,"psa5":65.0,"psa6":79.69,"psa7":102.0,"psa8":161.82,"psa9":360.0,"psa10":1502.5,"cgc1":27.7,"cgc1_5":27.7,"cgc2":27.7,"cgc2_5":27.7,"cgc3":27.7,"cgc3_5":27.7,"cgc4":27.7,"cgc4_5":28.09,"cgc5":42.5,"cgc5_5":42.5,"cgc6":42.5,"cgc6_5":42.5,"cgc7":42.5,"cgc7_5":45.0,"cgc8":51.0,"cgc8_5":85.79,"cgc9":126.0,"cgc9_5":151.75,"cgc10":597.5,"bgs1":25.2,"bgs1_5":25.2,"bgs2":25.2,"bgs2_5":25.2,"bgs3":25.2,"bgs3_5":25.2,"bgs4":25.2,"bgs4_5":25.2,"bgs5":25.2,"bgs5_5":32.33,"bgs6":43.99,"bgs6_5":85.0,"bgs7":85.0,"bgs7_5":85.0,"bgs8":86.04,"bgs8_5":212.5,"bgs9":213.75,"bgs9_5":392.67,"bgs10":931.28},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44427_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa6","psa7","psa8","psa9","psa10","cgc4","cgc4_5","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs5","bgs6_5","bgs8_5","bgs9"]
+  },
+  {
+   "num": "20/62",
+   "name": "Gengar",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 119.53,
+   "graded": {"psa1":71.1,"psa2":71.1,"psa3":71.1,"psa4":71.1,"psa5":102.88,"psa6":109.0,"psa7":211.19,"psa8":259.0,"psa9":670.0,"psa10":2880.0,"cgc1":45.6,"cgc1_5":45.6,"cgc2":45.6,"cgc2_5":45.6,"cgc3":45.6,"cgc3_5":45.6,"cgc4":45.6,"cgc4_5":45.6,"cgc5":45.6,"cgc5_5":45.6,"cgc6":59.99,"cgc6_5":59.99,"cgc7":59.99,"cgc7_5":59.99,"cgc8":152.71,"cgc8_5":156.25,"cgc9":350.0,"cgc9_5":616.16,"cgc10":772.5,"bgs1":25.2,"bgs1_5":25.2,"bgs2":25.2,"bgs2_5":25.2,"bgs3":25.2,"bgs3_5":25.2,"bgs4":25.2,"bgs4_5":25.2,"bgs5":25.2,"bgs5_5":25.2,"bgs6":25.2,"bgs6_5":25.2,"bgs7":25.2,"bgs7_5":25.2,"bgs8":156.0,"bgs8_5":157.5,"bgs9":445.0,"bgs9_5":634.11,"bgs10":1654.55},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44428_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc5_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs7_5","bgs8","bgs8_5","bgs9"]
+  },
+  {
+   "num": "21/62",
+   "name": "Haunter",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 27.41,
+   "graded": {"psa1":26.0,"psa2":26.0,"psa3":26.0,"psa4":34.0,"psa5":53.12,"psa6":53.12,"psa7":56.78,"psa8":60.23,"psa9":188.75,"psa10":952.0,"cgc1":19.99,"cgc1_5":19.99,"cgc2":19.99,"cgc2_5":19.99,"cgc3":19.99,"cgc3_5":19.99,"cgc4":21.04,"cgc4_5":21.04,"cgc5":21.04,"cgc5_5":21.04,"cgc6":21.04,"cgc6_5":21.72,"cgc7":27.48,"cgc7_5":29.66,"cgc8":30.8,"cgc8_5":72.5,"cgc9":88.0,"cgc9_5":150.25,"cgc10":167.12,"bgs1":17.83,"bgs1_5":17.83,"bgs2":17.83,"bgs2_5":17.83,"bgs3":17.83,"bgs3_5":17.83,"bgs4":18.81,"bgs4_5":23.51,"bgs5":25.1,"bgs5_5":25.1,"bgs6":25.1,"bgs6_5":25.1,"bgs7":35.1,"bgs7_5":38.19,"bgs8":41.48,"bgs8_5":71.0,"bgs9":150.0,"bgs9_5":235.06,"bgs10":577.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44429_in_800x800.jpg",
+   "gradedReal": ["psa3","psa4","psa5","psa7","psa8","psa9","psa10","cgc3_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs8_5","bgs9"]
+  },
+  {
+   "num": "22/62",
+   "name": "Hitmonlee",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 14.93,
+   "graded": {"psa1":18.9,"psa2":18.9,"psa3":18.9,"psa4":18.9,"psa5":18.9,"psa6":21.25,"psa7":21.99,"psa8":58.77,"psa9":95.26,"psa10":408.0,"cgc1":8.83,"cgc1_5":8.83,"cgc2":8.83,"cgc2_5":8.83,"cgc3":8.83,"cgc3_5":8.83,"cgc4":8.83,"cgc4_5":8.83,"cgc5":10.41,"cgc5_5":11.76,"cgc6":12.0,"cgc6_5":13.52,"cgc7":13.52,"cgc7_5":13.52,"cgc8":16.8,"cgc8_5":21.5,"cgc9":29.75,"cgc9_5":42.97,"cgc10":119.4,"bgs1":8.39,"bgs1_5":8.39,"bgs2":8.39,"bgs2_5":8.39,"bgs3":8.39,"bgs3_5":8.39,"bgs4":8.39,"bgs4_5":8.39,"bgs5":8.39,"bgs5_5":8.86,"bgs6":9.77,"bgs6_5":9.77,"bgs7":14.44,"bgs7_5":15.59,"bgs8":20.4,"bgs8_5":20.4,"bgs9":20.4,"bgs9_5":82.24,"bgs10":260.81},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44430_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc6","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "23/62",
+   "name": "Hypno",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 17.22,
+   "graded": {"psa1":18.75,"psa2":18.75,"psa3":18.75,"psa4":18.75,"psa5":18.75,"psa6":28.36,"psa7":31.01,"psa8":49.0,"psa9":97.0,"psa10":430.29,"cgc1":11.35,"cgc1_5":11.35,"cgc2":11.35,"cgc2_5":11.35,"cgc3":11.35,"cgc3_5":11.35,"cgc4":11.35,"cgc4_5":11.35,"cgc5":12.0,"cgc5_5":12.0,"cgc6":12.0,"cgc6_5":12.0,"cgc7":16.55,"cgc7_5":16.55,"cgc8":21.23,"cgc8_5":35.37,"cgc9":65.46,"cgc9_5":65.46,"cgc10":128.5,"bgs1":9.28,"bgs1_5":9.28,"bgs2":9.28,"bgs2_5":9.28,"bgs3":9.28,"bgs3_5":9.28,"bgs4":9.28,"bgs4_5":9.28,"bgs5":9.28,"bgs5_5":9.88,"bgs6":11.51,"bgs6_5":11.51,"bgs7":17.83,"bgs7_5":19.16,"bgs8":26.21,"bgs8_5":36.66,"bgs9":40.6,"bgs9_5":100.11,"bgs10":308.38},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44431_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "24/62",
+   "name": "Kabutops",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 22.48,
+   "graded": {"psa1":21.0,"psa2":21.0,"psa3":21.0,"psa4":21.0,"psa5":23.63,"psa6":28.02,"psa7":29.5,"psa8":57.5,"psa9":117.5,"psa10":588.0,"cgc1":8.0,"cgc1_5":8.0,"cgc2":8.0,"cgc2_5":8.0,"cgc3":8.0,"cgc3_5":8.0,"cgc4":8.0,"cgc4_5":8.0,"cgc5":8.0,"cgc5_5":8.0,"cgc6":8.0,"cgc6_5":8.0,"cgc7":16.4,"cgc7_5":16.4,"cgc8":23.63,"cgc8_5":35.0,"cgc9":47.8,"cgc9_5":84.0,"cgc10":166.25,"bgs1":10.35,"bgs1_5":10.35,"bgs2":10.35,"bgs2_5":10.35,"bgs3":10.35,"bgs3_5":10.35,"bgs4":10.35,"bgs4_5":10.35,"bgs5":10.35,"bgs5_5":11.63,"bgs6":12.97,"bgs6_5":12.97,"bgs7":17.44,"bgs7_5":20.42,"bgs8":27.39,"bgs8_5":37.2,"bgs9":37.2,"bgs9_5":37.2,"bgs10":340.3},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/44432_in_800x800.jpg",
+   "gradedReal": ["psa4","psa6","psa7","psa8","psa9","psa10","cgc6_5","cgc7_5","cgc8_5","cgc9","cgc9_5","cgc10","bgs9_5"]
+  },
+  {
+   "num": "25/62",
+   "name": "Lapras",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 28.6,
+   "graded": {"psa1":23.49,"psa2":23.49,"psa3":23.49,"psa4":23.49,"psa5":24.97,"psa6":33.99,"psa7":36.99,"psa8":93.95,"psa9":123.25,"psa10":444.0,"cgc1":9.6,"cgc1_5":9.6,"cgc2":9.6,"cgc2_5":9.6,"cgc3":9.6,"cgc3_5":9.6,"cgc4":9.6,"cgc4_5":9.6,"cgc5":9.6,"cgc5_5":15.6,"cgc6":15.6,"cgc6_5":15.6,"cgc7":15.6,"cgc7_5":20.4,"cgc8":20.4,"cgc8_5":44.99,"cgc9":86.0,"cgc9_5":92.78,"cgc10":233.75,"bgs1":13.79,"bgs1_5":13.79,"bgs2":13.79,"bgs2_5":13.79,"bgs3":13.79,"bgs3_5":13.79,"bgs4":13.79,"bgs4_5":13.79,"bgs5":15.39,"bgs5_5":17.61,"bgs6":17.61,"bgs6_5":17.61,"bgs7":25.13,"bgs7_5":26.23,"bgs8":32.91,"bgs8_5":44.9,"bgs9":441.12,"bgs9_5":441.12,"bgs10":513.57},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106527_in_800x800.jpg",
+   "gradedReal": ["psa6","psa7","psa8","psa9","psa10","cgc5","cgc7","cgc8","cgc8_5","cgc9","cgc10","bgs9"]
+  },
+  {
+   "num": "26/62",
+   "name": "Magneton",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 14.07,
+   "graded": {"psa1":11.65,"psa2":11.65,"psa3":11.65,"psa4":11.65,"psa5":11.65,"psa6":18.49,"psa7":35.72,"psa8":40.4,"psa9":115.02,"psa10":488.17,"cgc1":8.69,"cgc1_5":8.69,"cgc2":8.69,"cgc2_5":8.69,"cgc3":8.69,"cgc3_5":8.69,"cgc4":8.69,"cgc4_5":8.69,"cgc5":11.16,"cgc5_5":11.94,"cgc6":14.35,"cgc6_5":14.35,"cgc7":14.75,"cgc7_5":18.0,"cgc8":18.05,"cgc8_5":20.7,"cgc9":39.77,"cgc9_5":63.0,"cgc10":90.0,"bgs1":8.81,"bgs1_5":8.81,"bgs2":8.81,"bgs2_5":8.81,"bgs3":8.81,"bgs3_5":8.81,"bgs4":8.81,"bgs4_5":8.81,"bgs5":8.81,"bgs5_5":8.81,"bgs6":9.59,"bgs6_5":9.59,"bgs7":14.92,"bgs7_5":15.6,"bgs8":15.6,"bgs8_5":15.6,"bgs9":15.6,"bgs9_5":85.65,"bgs10":255.89},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106528_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "27/62",
+   "name": "Moltres",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 32.93,
+   "graded": {"psa1":23.0,"psa2":23.0,"psa3":23.0,"psa4":28.75,"psa5":28.75,"psa6":41.0,"psa7":44.25,"psa8":75.67,"psa9":225.0,"psa10":1120.6,"cgc1":13.0,"cgc1_5":13.0,"cgc2":13.0,"cgc2_5":13.0,"cgc3":13.0,"cgc3_5":13.0,"cgc4":13.0,"cgc4_5":17.89,"cgc5":17.89,"cgc5_5":24.95,"cgc6":24.95,"cgc6_5":35.0,"cgc7":35.0,"cgc7_5":41.8,"cgc8":50.5,"cgc8_5":51.99,"cgc9":90.95,"cgc9_5":232.5,"cgc10":241.61,"bgs1":9.6,"bgs1_5":9.6,"bgs2":9.6,"bgs2_5":9.6,"bgs3":9.6,"bgs3_5":9.6,"bgs4":9.6,"bgs4_5":9.6,"bgs5":9.6,"bgs5_5":9.6,"bgs6":9.6,"bgs6_5":9.6,"bgs7":30.63,"bgs7_5":33.85,"bgs8":43.24,"bgs8_5":46.8,"bgs9":46.8,"bgs9_5":46.8,"bgs10":543.46},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106529_in_800x800.jpg",
+   "gradedReal": ["psa3","psa5","psa6","psa7","psa8","psa9","psa10","cgc4","cgc5_5","cgc6_5","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs6_5","bgs9_5"]
+  },
+  {
+   "num": "28/62",
+   "name": "Muk",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 15.69,
+   "graded": {"psa1":17.37,"psa2":17.37,"psa3":17.37,"psa4":17.37,"psa5":17.37,"psa6":23.77,"psa7":33.98,"psa8":52.0,"psa9":58.8,"psa10":515.39,"cgc1":9.2,"cgc1_5":9.2,"cgc2":9.2,"cgc2_5":9.2,"cgc3":9.2,"cgc3_5":9.2,"cgc4":9.2,"cgc4_5":9.2,"cgc5":10.2,"cgc5_5":10.2,"cgc6":10.2,"cgc6_5":10.2,"cgc7":10.2,"cgc7_5":10.2,"cgc8":13.85,"cgc8_5":23.81,"cgc9":26.4,"cgc9_5":70.0,"cgc10":82.75,"bgs1":7.15,"bgs1_5":7.15,"bgs2":7.15,"bgs2_5":7.15,"bgs3":7.15,"bgs3_5":7.15,"bgs4":7.44,"bgs4_5":7.44,"bgs5":7.44,"bgs5_5":8.1,"bgs6":9.22,"bgs6_5":9.22,"bgs7":13.34,"bgs7_5":15.3,"bgs8":20.22,"bgs8_5":29.88,"bgs9":32.4,"bgs9_5":43.2,"bgs10":256.1},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106530_in_800x800.jpg",
+   "gradedReal": ["psa5","psa7","psa8","psa9","psa10","cgc7_5","cgc8","cgc9","cgc9_5","cgc10","bgs9","bgs9_5"]
+  },
+  {
+   "num": "29/62",
+   "name": "Raichu",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 25.64,
+   "graded": {"psa1":23.1,"psa2":23.1,"psa3":23.1,"psa4":23.1,"psa5":30.0,"psa6":34.75,"psa7":50.0,"psa8":80.38,"psa9":132.5,"psa10":599.0,"cgc1":10.8,"cgc1_5":10.8,"cgc2":10.8,"cgc2_5":10.8,"cgc3":10.8,"cgc3_5":10.8,"cgc4":10.8,"cgc4_5":10.8,"cgc5":10.8,"cgc5_5":13.33,"cgc6":15.05,"cgc6_5":15.6,"cgc7":18.0,"cgc7_5":20.4,"cgc8":20.4,"cgc8_5":51.0,"cgc9":52.87,"cgc9_5":87.5,"cgc10":150.0,"bgs1":10.84,"bgs1_5":10.84,"bgs2":10.84,"bgs2_5":10.84,"bgs3":10.84,"bgs3_5":10.84,"bgs4":10.84,"bgs4_5":12.34,"bgs5":14.07,"bgs5_5":15.14,"bgs6":15.66,"bgs6_5":15.66,"bgs7":24.16,"bgs7_5":26.07,"bgs8":29.08,"bgs8_5":31.2,"bgs9":31.2,"bgs9_5":159.42,"bgs10":384.44},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106531_in_800x800.jpg",
+   "gradedReal": ["psa4","psa5","psa6","psa7","psa8","psa9","psa10","cgc5","cgc6_5","cgc7","cgc8","cgc8_5","cgc9","cgc9_5","cgc10","bgs9"]
+  },
+  {
+   "num": "30/62",
+   "name": "Zapdos",
+   "rarity": "Rare",
+   "variant": "Normal (Galaxy, 1st Edition)",
+   "market": 31.04,
+   "graded": {"psa1":29.75,"psa2":29.75,"psa3":29.75,"psa4":29.75,"psa5":29.75,"psa6":57.5,"psa7":61.85,"psa8":122.24,"psa9":222.5,"psa10":1110.0,"cgc1":16.8,"cgc1_5":16.8,"cgc2":16.8,"cgc2_5":16.8,"cgc3":16.8,"cgc3_5":16.8,"cgc4":16.8,"cgc4_5":16.8,"cgc5":16.8,"cgc5_5":16.8,"cgc6":16.8,"cgc6_5":16.8,"cgc7":16.8,"cgc7_5":18.0,"cgc8":34.2,"cgc8_5":53.0,"cgc9":123.4,"cgc9_5":130.56,"cgc10":232.38,"bgs1":14.63,"bgs1_5":14.63,"bgs2":14.63,"bgs2_5":14.63,"bgs3":14.63,"bgs3_5":14.63,"bgs4":14.63,"bgs4_5":14.63,"bgs5":14.63,"bgs5_5":19.77,"bgs6":24.35,"bgs6_5":24.35,"bgs7":36.0,"bgs7_5":37.26,"bgs8":45.38,"bgs8_5":136.07,"bgs9":350.0,"bgs9_5":350.0,"bgs10":636.13},
+   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106532_in_800x800.jpg",
+   "gradedReal": ["psa5","psa6","psa7","psa8","psa9","psa10","cgc7","cgc7_5","cgc8","cgc8_5","cgc9","cgc10","bgs8_5","bgs9"]
+  }
+ ]
+}

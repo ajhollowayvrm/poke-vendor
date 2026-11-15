@@ -437,10 +437,14 @@ struct EbayLotSheet: View {
                 Text(listing.claimsUnsearched ? "No photos. The seller says: \"Never looked through it.\"" : "No photos.")
                     .font(.subheadline)
             case .photos:
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 80), spacing: 8)], spacing: 8) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 90), spacing: 10, alignment: .top)], spacing: 12) {
                     ForEach(listing.shownPieces) { piece in
-                        VStack(spacing: 3) {
-                            GoodsThumb(goods: piece.goods).frame(height: 100)
+                        VStack(spacing: 4) {
+                            // The photo keeps the shape of a card and stays inside its cell, so the name sits under it.
+                            Color.clear
+                                .aspectRatio(63.0 / 88.0, contentMode: .fit)
+                                .overlay { GoodsThumb(goods: piece.goods) }
+                                .clipShape(RoundedRectangle(cornerRadius: 4))
                             Text(piece.name).font(.caption2).lineLimit(1)
                             Text(money(piece.market)).font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                         }

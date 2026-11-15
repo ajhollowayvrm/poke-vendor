@@ -129,7 +129,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
 
     var ebayTitle: String {
         switch self {
-        case .childhoodBinder: "Vintage WOTC Pokemon binder lot - holos!"
+        case .childhoodBinder: "Vintage Pokemon binder lot - holos!"
         case .modernBinder: "HUGE modern Pokemon card lot - ex, full arts"
         case .mixedBox: "Shoebox of Pokemon cards - old and new"
         case .estate: "Estate Pokemon collection - binders, slabs, sealed"
@@ -197,7 +197,8 @@ struct CollectionLot: Codable, Hashable {
     static func make(_ theme: CollectionTheme, fakes source: FakeSource, tired: Double) -> CollectionLot {
         let played = theme.played
         // A real collection centers on a few sets. Fewer sets also means fewer set files to load.
-        let sets = Array(theme.sets.shuffled().prefix(Int.random(in: 2...4)))
+        // A 1st Edition set file is not its own set here. randomPrint turns a card 1st Edition now and then.
+        let sets = Array(theme.sets.filter { !SetLibrary.isFirstEdition($0) }.shuffled().prefix(Int.random(in: 2...4)))
         var pieces: [CollectionPiece] = []
         for _ in 0..<Int.random(in: theme.singles) {
             let hit = Double.random(in: 0..<1) < 0.15

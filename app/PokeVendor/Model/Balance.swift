@@ -48,6 +48,9 @@ enum Balance {
     static let olderEras: Set<String> = ["ex", "diamond-pearl-platinum", "heartgold-soulsilver", "black-white", "xy", "sun-moon",
                                          "sword-shield"]
     static let modernEras: Set<String> = ["scarlet-violet", "mega-evolution"]
+    /// The share of WOTC cards found in the wild (vendors, sellers, collections) that are 1st Edition. The 1st
+    /// Edition print run was far smaller than the Unlimited run.
+    static let firstEditionShare = 0.15
     static let vintageSets = SetLibrary.slugs(eras: vintageEras)
     static let olderSets = SetLibrary.slugs(eras: olderEras)
     static let modernSets = SetLibrary.slugs(eras: modernEras)

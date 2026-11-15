@@ -24,6 +24,14 @@
   "release": "1999-10-10"
  },
  {
+  "slug": "fossil-1st-edition",
+  "name": "Fossil 1st Edition",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 61,
+  "release": "1999-10-10"
+ },
+ {
   "slug": "gym-challenge",
   "name": "Gym Challenge",
   "era": "wizards-of-the-coast",
@@ -32,8 +40,24 @@
   "release": "2000-10-16"
  },
  {
+  "slug": "gym-challenge-1st-edition",
+  "name": "Gym Challenge 1st Edition",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 130,
+  "release": "2000-10-16"
+ },
+ {
   "slug": "gym-heroes",
   "name": "Gym Heroes",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 132,
+  "release": "2000-08-14"
+ },
+ {
+  "slug": "gym-heroes-1st-edition",
+  "name": "Gym Heroes 1st Edition",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
   "prints": 132,
@@ -48,8 +72,24 @@
   "release": "1999-06-16"
  },
  {
+  "slug": "jungle-1st-edition",
+  "name": "Jungle 1st Edition",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 64,
+  "release": "1999-06-16"
+ },
+ {
   "slug": "neo-destiny",
   "name": "Neo Destiny",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 113,
+  "release": "2002-02-28"
+ },
+ {
+  "slug": "neo-destiny-1st-edition",
+  "name": "Neo Destiny 1st Edition",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
   "prints": 113,
@@ -64,6 +104,14 @@
   "release": "2001-06-01"
  },
  {
+  "slug": "neo-discovery-1st-edition",
+  "name": "Neo Discovery 1st Edition",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 75,
+  "release": "2001-06-01"
+ },
+ {
   "slug": "neo-genesis",
   "name": "Neo Genesis",
   "era": "wizards-of-the-coast",
@@ -72,8 +120,24 @@
   "release": "2000-12-16"
  },
  {
+  "slug": "neo-genesis-1st-edition",
+  "name": "Neo Genesis 1st Edition",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 111,
+  "release": "2000-12-16"
+ },
+ {
   "slug": "neo-revelation",
   "name": "Neo Revelation",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 66,
+  "release": "2001-09-21"
+ },
+ {
+  "slug": "neo-revelation-1st-edition",
+  "name": "Neo Revelation 1st Edition",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
   "prints": 66,
@@ -90,6 +154,14 @@
  {
   "slug": "team-rocket",
   "name": "Team Rocket",
+  "era": "wizards-of-the-coast",
+  "series": "Wizards of the Coast",
+  "prints": 83,
+  "release": "2000-04-24"
+ },
+ {
+  "slug": "team-rocket-1st-edition",
+  "name": "Team Rocket 1st Edition",
   "era": "wizards-of-the-coast",
   "series": "Wizards of the Coast",
   "prints": 83,

@@ -11,7 +11,8 @@ struct CardPrint: Codable, Hashable {
     let baseMarket: Double?
     /// Graded prices by key, for example "psa10" or "bgs9_5". A grade with no sales data is nil.
     let graded: [String: Double?]
-    let image: String?
+    /// The image URL. A save from before the stamp patches gets "#destamp" when it loads (Destamp.migrate).
+    var image: String?
     /// The graded keys that hold a real sale price. The other keys hold an estimate (tools/export/fill_graded.py).
     /// Nil in an old file: every price is real.
     var gradedReal: [String]? = nil

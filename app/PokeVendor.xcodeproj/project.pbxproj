@@ -19,6 +19,7 @@
 		085A46C44F6F4811EA21DE23 /* crown-zenith.json in Resources */ = {isa = PBXBuildFile; fileRef = C54A7EE716D8B3165068669F /* crown-zenith.json */; };
 		0995BCAC20317ADD99AB997E /* Taxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5F86050C95B7226F93873C /* Taxes.swift */; };
 		0B3C36D61F4A2B88E17758D1 /* Supplies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D2A072C747DEAB8413196A /* Supplies.swift */; };
+		0B64F9CA51E7C74EBA58A377 /* gym-challenge-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = AB1C957636EDC5EFEE0853E3 /* gym-challenge-1st-edition.json */; };
 		0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062B034B3D8890FD6A19F10F /* StoreGrowthViews.swift */; };
 		0C4343AE15D1C4DD4B064E5F /* dragon.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F522C90FE86AD311AB076F5 /* dragon.json */; };
 		0CFAD014F3343BA39A16ABE0 /* SaleProblems.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC08691AB0384D342F8CF4F /* SaleProblems.swift */; };
@@ -33,6 +34,7 @@
 		1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB5E54A48F045F4D8D408CD /* plasma-storm.json */; };
 		14BC4B51E0FEAF475510B430 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */; };
 		1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */ = {isa = PBXBuildFile; fileRef = C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */; };
+		179DF689C158578B8EAEF5BC /* team-rocket-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = 79CA8019BFA3AA3CC88EDA3B /* team-rocket-1st-edition.json */; };
 		18D0A389AC8681EB12B78A9B /* Stashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E9F9E012F05AC4B3E9A5B /* Stashes.swift */; };
 		195C11923ACA6B27DE48E506 /* CollectionBuyViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB33981612CBC52FCFA0A2B /* CollectionBuyViews.swift */; };
 		1A558BF86A2E9FD90EAD01C4 /* Packing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29666B46E0F524E81D932375 /* Packing.swift */; };
@@ -48,6 +50,7 @@
 		20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */; };
 		2219F859C69DE0AD1A553DB2 /* unified-minds.json in Resources */ = {isa = PBXBuildFile; fileRef = 523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */; };
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
+		2506F5C420DBA9C5171C4523 /* gym-heroes-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = CCDC5BC3CF78F1FEF20BBAA9 /* gym-heroes-1st-edition.json */; };
 		26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E94D7F70903BA100DDFBA0F /* burning-shadows.json */; };
 		2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */ = {isa = PBXBuildFile; fileRef = E389E8E864F1F2802B2B9E76 /* surging-sparks.json */; };
 		290A84E7043308C76B2FD6A9 /* SaleReceiptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DA09FC2EFE76D57AFC6910 /* SaleReceiptView.swift */; };
@@ -65,6 +68,8 @@
 		33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */ = {isa = PBXBuildFile; fileRef = 3300530D0D241B426A6EF827 /* supreme-victors.json */; };
 		351DC793C3969007906440D0 /* neo-genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */; };
 		36AB26CDEBC9E7E4B8CF79D8 /* 151.json in Resources */ = {isa = PBXBuildFile; fileRef = F608F1C0EB11E6D8282E4752 /* 151.json */; };
+		36E3C77980CF4B7B642EC5A3 /* jungle-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F8350F19FCD62A934D4409F /* jungle-1st-edition.json */; };
+		388EDFCE5AEA4B78871B2D4C /* neo-destiny-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = 3CBB15631162BD3EB2FBA5F2 /* neo-destiny-1st-edition.json */; };
 		3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4C3DE0AE86F620B2D63227E /* Assets.xcassets */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
 		3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCAA7018CABF3E161025536 /* CoinFlipView.swift */; };
@@ -79,6 +84,7 @@
 		475B860FD55F4C5531477F54 /* StoreShelfControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */; };
 		480ED1135C7167834012A28F /* UpgradesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BCE444E4AD984840D93FF6 /* UpgradesView.swift */; };
 		484DB0AF7BC480439CDBAACC /* Social.swift in Sources */ = {isa = PBXBuildFile; fileRef = D894A52F7AE73A7EAF8DF6D3 /* Social.swift */; };
+		489E1B159291A35342874C70 /* fossil-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */; };
 		499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */ = {isa = PBXBuildFile; fileRef = FB1006AA43D16FB5FB572A8A /* legend-maker.json */; };
 		4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
@@ -165,6 +171,7 @@
 		A07A114ABDEBAD8A2DAF8EB4 /* black-white.json in Resources */ = {isa = PBXBuildFile; fileRef = CE9178C1573E5068893700E2 /* black-white.json */; };
 		A12FA90603696A823D4B70CE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39FE2287AB7BA7F1781A41B /* SettingsView.swift */; };
 		A144BF1527518313ED6C8305 /* PersonalCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1321113F37B7D300C763312 /* PersonalCollection.swift */; };
+		A184275078009426BEE854E8 /* destamp.json in Resources */ = {isa = PBXBuildFile; fileRef = 459FE3BD9876271D53A9CD87 /* destamp.json */; };
 		A19D67979C8CAF529E1CFB48 /* sword-shield.json in Resources */ = {isa = PBXBuildFile; fileRef = 3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */; };
 		A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */; };
 		A23959C53D96A6BA2D1002CF /* chaos-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 4DD5E1F23E40B91260779107 /* chaos-rising.json */; };
@@ -173,6 +180,7 @@
 		A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */ = {isa = PBXBuildFile; fileRef = 77CD37AEDEDAD5767A419067 /* Effects.metal */; };
 		A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */; };
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
+		A594A05B05D0A05E3C748B74 /* neo-genesis-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
 		A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5188F9BDD662DDFD44100F /* AuctionViews.swift */; };
 		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
@@ -220,6 +228,7 @@
 		CA12F46151423814D55751CF /* southern-islands.json in Resources */ = {isa = PBXBuildFile; fileRef = 3DAA9319761EC5C721BCC199 /* southern-islands.json */; };
 		CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */; };
 		CB079E91CC1C7523A92B2F88 /* rebel-clash.json in Resources */ = {isa = PBXBuildFile; fileRef = EC719A5C459CB908DDE8EBAB /* rebel-clash.json */; };
+		CBA46384E9252AC4448B4E46 /* neo-discovery-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = AEF22D5F29B5F8AC42F419C3 /* neo-discovery-1st-edition.json */; };
 		CCD94901C0FAFE8579F3CD57 /* temporal-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = FE044E20B20FB2490087A1C9 /* temporal-forces.json */; };
 		CE1998E35759637232B010E7 /* power-keepers.json in Resources */ = {isa = PBXBuildFile; fileRef = 75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */; };
 		CEEF4E3A6CDCEFF858C2C41E /* obsidian-flames.json in Resources */ = {isa = PBXBuildFile; fileRef = 7C47B50B9FFDCF815C603661 /* obsidian-flames.json */; };
@@ -239,6 +248,7 @@
 		DBFC167DB548632A66CAD0CC /* team-up.json in Resources */ = {isa = PBXBuildFile; fileRef = 56E647BE8C027106C56398C6 /* team-up.json */; };
 		DCAB7F71458A848ECE4C2955 /* call-of-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 9585374A5165787745D53792 /* call-of-legends.json */; };
 		DE127BF53B694C9C1ADE6494 /* pokemon-go.json in Resources */ = {isa = PBXBuildFile; fileRef = 26D896AE01B12460672CC225 /* pokemon-go.json */; };
+		DE2A97B90FEB666FB025C651 /* neo-revelation-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = 4E3B1A90DAD9E3AEDEE99C48 /* neo-revelation-1st-edition.json */; };
 		E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3BA8BD31DC2985216CD192 /* ContactsView.swift */; };
 		E2DE7F1C1A266CD5F832269C /* paradox-rift.json in Resources */ = {isa = PBXBuildFile; fileRef = DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */; };
 		E35DFC53EC82DCEE02ECC9BB /* HubView+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79825428637090327C8725BE /* HubView+Debug.swift */; };
@@ -339,6 +349,7 @@
 		3BE8F9A509ED85647311ACD5 /* Balance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Balance.swift; sourceTree = "<group>"; };
 		3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sword-shield.json"; sourceTree = "<group>"; };
 		3C913785BCCC6A46053CC9E7 /* LateGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LateGame.swift; sourceTree = "<group>"; };
+		3CBB15631162BD3EB2FBA5F2 /* neo-destiny-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-destiny-1st-edition.json"; sourceTree = "<group>"; };
 		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
 		3DDA3B83589268718F6EE970 /* RipSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipSettings.swift; sourceTree = "<group>"; };
 		3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViews.swift; sourceTree = "<group>"; };
@@ -348,6 +359,7 @@
 		42F6EF496DC38B97131F0BBF /* deoxys.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = deoxys.json; sourceTree = "<group>"; };
 		4473746B05B5FA0E51C41885 /* SetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetData.swift; sourceTree = "<group>"; };
 		45590D9E41CDC734C72A2FA8 /* GoalsMarketViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsMarketViews.swift; sourceTree = "<group>"; };
+		459FE3BD9876271D53A9CD87 /* destamp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = destamp.json; sourceTree = "<group>"; };
 		46393BDB097F065796D9D1CD /* SlabViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlabViews.swift; sourceTree = "<group>"; };
 		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
 		4755B9D1944633247C22C671 /* Counterfeits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counterfeits.swift; sourceTree = "<group>"; };
@@ -360,6 +372,7 @@
 		4CD3B410588AC949381EBBA1 /* ShowGoodsRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowGoodsRows.swift; sourceTree = "<group>"; };
 		4DB852494E5092892E066499 /* crimson-invasion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crimson-invasion.json"; sourceTree = "<group>"; };
 		4DD5E1F23E40B91260779107 /* chaos-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "chaos-rising.json"; sourceTree = "<group>"; };
+		4E3B1A90DAD9E3AEDEE99C48 /* neo-revelation-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-revelation-1st-edition.json"; sourceTree = "<group>"; };
 		50F97256E10C06386BD90E19 /* WalletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletView.swift; sourceTree = "<group>"; };
 		514263C9681529DF5523A095 /* astral-radiance.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "astral-radiance.json"; sourceTree = "<group>"; };
 		51D032B98E3876431FC5F38E /* crystal-guardians.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crystal-guardians.json"; sourceTree = "<group>"; };
@@ -402,6 +415,7 @@
 		6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge.json"; sourceTree = "<group>"; };
 		6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreEventsBox.swift; sourceTree = "<group>"; };
 		6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mcdonalds-collection-2021.json"; sourceTree = "<group>"; };
+		6F8350F19FCD62A934D4409F /* jungle-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "jungle-1st-edition.json"; sourceTree = "<group>"; };
 		7059D12A0BDE88D4B10AD156 /* cosmic-eclipse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "cosmic-eclipse.json"; sourceTree = "<group>"; };
 		706996EC960CDBFD05E8A4BC /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreLease.swift; sourceTree = "<group>"; };
@@ -417,6 +431,7 @@
 		77CD37AEDEDAD5767A419067 /* Effects.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Effects.metal; sourceTree = "<group>"; };
 		781DF97D530EE9737F37D11A /* BuyViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyViews.swift; sourceTree = "<group>"; };
 		79825428637090327C8725BE /* HubView+Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HubView+Debug.swift"; sourceTree = "<group>"; };
+		79CA8019BFA3AA3CC88EDA3B /* team-rocket-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-rocket-1st-edition.json"; sourceTree = "<group>"; };
 		7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipCard.swift; sourceTree = "<group>"; };
 		7C47B50B9FFDCF815C603661 /* obsidian-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "obsidian-flames.json"; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
@@ -455,14 +470,18 @@
 		A0DE4A3A88218162B90C004E /* darkness-ablaze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "darkness-ablaze.json"; sourceTree = "<group>"; };
 		A0F8FE73178F1D0515A4ECD8 /* unseen-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "unseen-forces.json"; sourceTree = "<group>"; };
 		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
+		A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fossil-1st-edition.json"; sourceTree = "<group>"; };
 		A54CEBF267C5CF60E282DE79 /* journey-together.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "journey-together.json"; sourceTree = "<group>"; };
 		A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-magma-vs-team-aqua.json"; sourceTree = "<group>"; };
 		A7B821E5FBD06698D7A362DE /* hidden-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-fates.json"; sourceTree = "<group>"; };
 		A8AFC53B64CB50A5F4C542D2 /* Lots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lots.swift; sourceTree = "<group>"; };
 		A9F4C9816D29FE5052461E66 /* twilight-masquerade.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "twilight-masquerade.json"; sourceTree = "<group>"; };
 		AA0DCB9D1A8DADB810AE091A /* Offers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Offers.swift; sourceTree = "<group>"; };
+		AB1C957636EDC5EFEE0853E3 /* gym-challenge-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-challenge-1st-edition.json"; sourceTree = "<group>"; };
 		AB5F86050C95B7226F93873C /* Taxes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Taxes.swift; sourceTree = "<group>"; };
+		ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-genesis-1st-edition.json"; sourceTree = "<group>"; };
 		ABEC49B92B688FF0FB93A7E6 /* plasma-freeze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-freeze.json"; sourceTree = "<group>"; };
+		AEF22D5F29B5F8AC42F419C3 /* neo-discovery-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery-1st-edition.json"; sourceTree = "<group>"; };
 		B0187D483A5C15351A60C863 /* RipView+Reveal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RipView+Reveal.swift"; sourceTree = "<group>"; };
 		B1321113F37B7D300C763312 /* PersonalCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCollection.swift; sourceTree = "<group>"; };
 		B20617D3991981E63F15727B /* vivid-voltage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "vivid-voltage.json"; sourceTree = "<group>"; };
@@ -488,6 +507,7 @@
 		CBAAA70DD15AB8D85C728652 /* undaunted.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = undaunted.json; sourceTree = "<group>"; };
 		CC0E8783F786B72E1D0FF385 /* evolutions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = evolutions.json; sourceTree = "<group>"; };
 		CC667D87E2F82D64D9B1C45F /* MessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesView.swift; sourceTree = "<group>"; };
+		CCDC5BC3CF78F1FEF20BBAA9 /* gym-heroes-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-heroes-1st-edition.json"; sourceTree = "<group>"; };
 		CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "evolving-skies.json"; sourceTree = "<group>"; };
 		CE9178C1573E5068893700E2 /* black-white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-white.json"; sourceTree = "<group>"; };
 		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
@@ -669,19 +689,23 @@
 				38930186931A1B4CDBBF0541 /* firered-leafgreen.json */,
 				8331C960F48E73F49D7795EA /* flashfire.json */,
 				6A3AD0BCDB38AA494BCC68E2 /* forbidden-light.json */,
+				A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */,
 				99D48054DE8D081D34F8C24C /* fossil.json */,
 				687D38A7B84E86024E927A14 /* furious-fists.json */,
 				5430A1321F8CBDA7347D1045 /* fusion-strike.json */,
 				66B77CF9FA79C477304765CF /* generations.json */,
 				F704E86B4D99E71629CF9403 /* great-encounters.json */,
 				7F23F60653C3E9407ECEFD30 /* guardians-rising.json */,
+				AB1C957636EDC5EFEE0853E3 /* gym-challenge-1st-edition.json */,
 				6E8FF6F80C788BEB617DC1E5 /* gym-challenge.json */,
+				CCDC5BC3CF78F1FEF20BBAA9 /* gym-heroes-1st-edition.json */,
 				DEFF895D495560C72743EFB4 /* gym-heroes.json */,
 				47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */,
 				A7B821E5FBD06698D7A362DE /* hidden-fates.json */,
 				8FC50C93732086290DFAC1F5 /* hidden-legends.json */,
 				B2AC5F4521315B8D910BC433 /* holon-phantoms.json */,
 				A54CEBF267C5CF60E282DE79 /* journey-together.json */,
+				6F8350F19FCD62A934D4409F /* jungle-1st-edition.json */,
 				6187C2CFFD057E0E448F0CC8 /* jungle.json */,
 				FB1006AA43D16FB5FB572A8A /* legend-maker.json */,
 				649C90774494AA3AF98125AC /* legendary-collection.json */,
@@ -694,9 +718,13 @@
 				68FCBC7F28BF23865FDBB3A8 /* mcdonalds-collection-2022.json */,
 				16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */,
 				F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */,
+				3CBB15631162BD3EB2FBA5F2 /* neo-destiny-1st-edition.json */,
 				C7D7A80674367593A62BDC34 /* neo-destiny.json */,
+				AEF22D5F29B5F8AC42F419C3 /* neo-discovery-1st-edition.json */,
 				FAF0483A8B75F89A628B7214 /* neo-discovery.json */,
+				ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */,
 				D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */,
+				4E3B1A90DAD9E3AEDEE99C48 /* neo-revelation-1st-edition.json */,
 				DA5C18FE38F47E61DC1CE03A /* neo-revelation.json */,
 				D24E9F46D8D0F6804E3A974E /* next-destinies.json */,
 				E6189A16D1D0CA7A824D0A89 /* noble-victories.json */,
@@ -737,6 +765,7 @@
 				E389E8E864F1F2802B2B9E76 /* surging-sparks.json */,
 				3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */,
 				A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */,
+				79CA8019BFA3AA3CC88EDA3B /* team-rocket-1st-edition.json */,
 				E0EB54699B33908D30FBF375 /* team-rocket-returns.json */,
 				F52ED77C7307D16459401032 /* team-rocket.json */,
 				56E647BE8C027106C56398C6 /* team-up.json */,
@@ -850,6 +879,7 @@
 			isa = PBXGroup;
 			children = (
 				33CED089D9AD4D92AB2AAA7C /* catalog.json */,
+				459FE3BD9876271D53A9CD87 /* destamp.json */,
 				383520ADD17820B56C2198FB /* set-index.json */,
 				7A7341C8A80847AE81A54F71 /* Sets */,
 			);
@@ -1036,6 +1066,7 @@
 				1069E7B522DF4AB884A86E26 /* delta-reign.json in Resources */,
 				BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */,
 				B3E96DBC625CE0339D0C6A71 /* deoxys.json in Resources */,
+				A184275078009426BEE854E8 /* destamp.json in Resources */,
 				B61765C7106375126BC3C120 /* destined-rivals.json in Resources */,
 				D110EAA94F1CC7FA2125A4A7 /* detective-pikachu.json in Resources */,
 				DA07C0C29E594ADB19D89E5D /* diamond-and-pearl.json in Resources */,
@@ -1054,19 +1085,23 @@
 				ACF5B660614980C8BD8B47D3 /* firered-leafgreen.json in Resources */,
 				918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */,
 				B13BD14DDCFB7DEE1B4A5AEF /* forbidden-light.json in Resources */,
+				489E1B159291A35342874C70 /* fossil-1st-edition.json in Resources */,
 				F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */,
 				687AA6D24FCF3B0F9C82C980 /* furious-fists.json in Resources */,
 				E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */,
 				8A5EBAA0C3FD3D657C581694 /* generations.json in Resources */,
 				01B52477A653B94A932BC9D1 /* great-encounters.json in Resources */,
 				8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */,
+				0B64F9CA51E7C74EBA58A377 /* gym-challenge-1st-edition.json in Resources */,
 				EDCA9A39313247058C6D12F7 /* gym-challenge.json in Resources */,
+				2506F5C420DBA9C5171C4523 /* gym-heroes-1st-edition.json in Resources */,
 				70DF3A3E570528BDFD6AA2D0 /* gym-heroes.json in Resources */,
 				E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */,
 				7C5A3938AD7C39E9F648D624 /* hidden-fates.json in Resources */,
 				2AF9A223A3257CE3B7510D1B /* hidden-legends.json in Resources */,
 				E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */,
 				20ACDC2AD6EFF4506C4CFB33 /* journey-together.json in Resources */,
+				36E3C77980CF4B7B642EC5A3 /* jungle-1st-edition.json in Resources */,
 				BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */,
 				499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */,
 				F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */,
@@ -1079,9 +1114,13 @@
 				AF6680EF1C075F13F5988FB8 /* mcdonalds-collection-2022.json in Resources */,
 				E987F761094EC1E109A698C6 /* mega-evolution.json in Resources */,
 				B117636776B873FA508360EC /* mysterious-treasures.json in Resources */,
+				388EDFCE5AEA4B78871B2D4C /* neo-destiny-1st-edition.json in Resources */,
 				B113E9810C556F46D4350158 /* neo-destiny.json in Resources */,
+				CBA46384E9252AC4448B4E46 /* neo-discovery-1st-edition.json in Resources */,
 				B3C2C938CCDDCE663A45170D /* neo-discovery.json in Resources */,
+				A594A05B05D0A05E3C748B74 /* neo-genesis-1st-edition.json in Resources */,
 				351DC793C3969007906440D0 /* neo-genesis.json in Resources */,
+				DE2A97B90FEB666FB025C651 /* neo-revelation-1st-edition.json in Resources */,
 				EDD8C4793FF75C17DC34588C /* neo-revelation.json in Resources */,
 				1D16BBCABB4082705F1ECA89 /* next-destinies.json in Resources */,
 				0191A177B9D9F22F7729EA6B /* noble-victories.json in Resources */,
@@ -1123,6 +1162,7 @@
 				2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */,
 				A19D67979C8CAF529E1CFB48 /* sword-shield.json in Resources */,
 				6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */,
+				179DF689C158578B8EAEF5BC /* team-rocket-1st-edition.json in Resources */,
 				82A33877EA510DCB157F0C0A /* team-rocket-returns.json in Resources */,
 				8016D9B3919FBD6BA8715381 /* team-rocket.json in Resources */,
 				DBFC167DB548632A66CAD0CC /* team-up.json in Resources */,

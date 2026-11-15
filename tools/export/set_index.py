@@ -27,7 +27,8 @@ def main():
     for f in glob.glob(os.path.join(SETS, "*.json")):
         d = json.load(open(f))
         out.append({"slug": d["slug"], "name": d["name"], "era": d.get("era") or "", "series": d.get("series") or "",
-                    "prints": len(d["prints"]), "release": releases.get(d["slug"])})
+                    # A 1st Edition set file has the release date of its set.
+                    "prints": len(d["prints"]), "release": releases.get(d["slug"]) or releases.get(d["slug"].removesuffix("-1st-edition"))})
     out.sort(key=lambda x: (ERA_ORDER.index(x["era"]) if x["era"] in ERA_ORDER else 99, x["name"]))
     json.dump(out, open(OUT, "w"), ensure_ascii=False, indent=1)
     print(f"{len(out)} sets -> {os.path.relpath(OUT, ROOT)}")

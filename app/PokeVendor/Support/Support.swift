@@ -38,6 +38,48 @@ enum Haptics {
 }
 
 /// Loads card images once and keeps them in memory.
+/// Every image source shows the 1st Edition scan for the WOTC sets with two print runs (Jungle to Neo Destiny). The
+/// Unlimited prints of those sets have "#destamp" on their image URL, and a small patch in Resources/destamp.json covers
+/// the stamp (tools/images/destamp.py). The 1st Edition prints keep the stamp.
+enum Destamp {
+    private struct Patch: Decodable {
+        let x, y, w, h, iw, ih: Double
+        let jpg: String
+    }
+
+    private static let patches: [String: Patch] = {
+        guard let url = Bundle.main.url(forResource: "destamp", withExtension: "json"), let data = try? Data(contentsOf: url),
+              let patches = try? JSONDecoder().decode([String: Patch].self, from: data) else { return [:] }
+        return patches
+    }()
+
+    static func hasPatch(_ image: String?) -> Bool {
+        guard let image, let url = URL(string: image), let id = url.lastPathComponent.split(separator: "_").first else { return false }
+        return patches[String(id)] != nil
+    }
+
+    /// A card from a save made before the patches: an Unlimited print with a patch gets "#destamp".
+    static func migrate(_ card: inout OwnedCard) {
+        guard let image = card.print.image, !image.contains("#"), !card.print.variant.contains("1st Edition"),
+              !SetLibrary.isFirstEdition(card.setSlug), hasPatch(image) else { return }
+        card.print.image = image + "#destamp"
+    }
+
+    /// The image with its patch over the stamp, when the URL asks for one and a patch exists.
+    static func apply(_ image: UIImage, url: URL) -> UIImage {
+        guard url.fragment == "destamp", let id = url.lastPathComponent.split(separator: "_").first,
+              let patch = patches[String(id)], let data = Data(base64Encoded: patch.jpg), let piece = UIImage(data: data),
+              patch.iw > 0, patch.ih > 0 else { return image }
+        let sx = image.size.width / patch.iw, sy = image.size.height / patch.ih
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = image.scale
+        return UIGraphicsImageRenderer(size: image.size, format: format).image { _ in
+            image.draw(at: .zero)
+            piece.draw(in: CGRect(x: patch.x * sx, y: patch.y * sy, width: patch.w * sx, height: patch.h * sy))
+        }
+    }
+}
+
 final class ImageStore: @unchecked Sendable {
     static let shared = ImageStore()
     private let cache = NSCache<NSURL, UIImage>()
@@ -49,9 +91,13 @@ final class ImageStore: @unchecked Sendable {
     /// `upright` turns a sideways card scan to portrait. Pass it only for card images, never for product images.
     func load(_ url: URL, upright: Bool = false) async -> UIImage? {
         if let image = cached(url) { return image }
-        guard let (data, _) = try? await URLSession.shared.data(from: url),
+        // The fragment is for the app, not the server. "#destamp" covers a 1st Edition stamp (Destamp below).
+        var request = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        request?.fragment = nil
+        guard let (data, _) = try? await URLSession.shared.data(from: request?.url ?? url),
               let loaded = UIImage(data: data) else { return nil }
-        let image = upright ? Self.upright(loaded) : loaded
+        let fixed = Destamp.apply(loaded, url: url)
+        let image = upright ? Self.upright(fixed) : fixed
         let prepared = await image.byPreparingForDisplay() ?? image
         cache.setObject(prepared, forKey: url as NSURL)
         return prepared

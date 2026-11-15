@@ -28,6 +28,7 @@ final class GameTests {
         timed("psa", psaBills)
         timed("collections", collections)
         timed("upgrades", upgrades)
+        timed("editions", editions)
         timed("seasons", seasonsAndSave)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
@@ -319,6 +320,31 @@ final class GameTests {
                 store.sellBulkForCash(group.id)
                 check(store.cash > cash && !store.data.bulk.contains { $0.id == group.id }, "the bulk broker did not pay cash")
             }
+        }
+    }
+
+    // MARK: - 1st Edition and Unlimited (docs/13-sets.md, Print runs)
+
+    /// A WOTC set with two runs has an Unlimited set file with patched images, and a 1st Edition set file with the
+    /// stamped images and its own packs.
+    private func editions() {
+        check(SetLibrary.firstEdition(of: "jungle") == "jungle-1st-edition", "Jungle has no 1st Edition set file")
+        check(SetLibrary.firstEdition(of: "prismatic-evolutions") == nil, "a modern set has a 1st Edition set file")
+        let unlimited = SetLibrary.set("jungle").prints
+        let first = SetLibrary.set("jungle-1st-edition").prints
+        check(unlimited.filter { $0.image?.hasSuffix("#destamp") == true }.count >= unlimited.count - 2,
+              "Jungle Unlimited prints do not ask for the stamp patch")
+        check(first.allSatisfy { $0.variant.contains("1st Edition") && $0.image?.contains("#") != true },
+              "the Jungle 1st Edition file holds a print that is not 1st Edition, or a patched image")
+        check(SetLibrary.catalog.contains { $0.homeSlug == "jungle-1st-edition" && $0.kind == "Booster pack" },
+              "the catalog has no Jungle 1st Edition pack")
+        // A card saved before the patches gets the patched image when the save loads.
+        if let print = unlimited.first(where: { $0.image?.hasSuffix("#destamp") == true }) {
+            var old = print
+            old.image = print.image?.replacingOccurrences(of: "#destamp", with: "")
+            var card = OwnedCard(print: old, setSlug: "jungle", acquired: .now, paid: nil, ripID: nil)
+            Destamp.migrate(&card)
+            check(card.print.image == print.image, "an old Jungle card did not get the patched image")
         }
     }
 

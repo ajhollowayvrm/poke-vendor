@@ -54,6 +54,17 @@ enum SetLibrary {
         index.filter { eras.contains($0.era) }.map(\.slug)
     }
 
+    /// A 1st Edition set file: the 1st Edition run of a WOTC set (tools/export/rip_set.py --first).
+    static let firstEditionSuffix = "-1st-edition"
+
+    static func isFirstEdition(_ slug: String) -> Bool { slug.hasSuffix(firstEditionSuffix) }
+
+    /// The 1st Edition set file of a set, when it has one.
+    static func firstEdition(of slug: String) -> String? {
+        let first = slug + firstEditionSuffix
+        return infoBySlug[first] == nil ? nil : first
+    }
+
     static func set(_ slug: String) -> SetData {
         if let set = cache[slug] { return set }
         let set = SetData.load(slug)
@@ -421,7 +432,7 @@ struct Consignment: Codable, Hashable {
 /// A single card that the player owns: raw, or in a slab when it has a grade.
 struct OwnedCard: Codable, Identifiable, Hashable {
     var id = UUID()
-    let print: CardPrint
+    var print: CardPrint
     let setSlug: String
     let acquired: Date
     /// Nil for a pulled card. The opened product holds the amount paid (docs/08-ui-direction.md, Inventory).

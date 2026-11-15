@@ -419,7 +419,12 @@ enum VendorFloor {
 
     /// A hit from the sets. Cheaper cards are more common, so a big card is a real find.
     static func randomPrint(from sets: [String], minMarket: Double, maxMarket: Double = .infinity) -> (CardPrint, String)? {
-        let slug = sets.randomElement() ?? "prismatic-evolutions"
+        // A 1st Edition set file does not count as its own set: its set can turn up as 1st Edition now and then.
+        let base = sets.filter { !SetLibrary.isFirstEdition($0) }
+        var slug = (base.isEmpty ? sets : base).randomElement() ?? "prismatic-evolutions"
+        if let first = SetLibrary.firstEdition(of: slug), sets.contains(first), Double.random(in: 0..<1) < Balance.firstEditionShare {
+            slug = first
+        }
         let prints = SetLibrary.set(slug).prints.filter {
             let m = $0.market ?? 0
             return m >= minMarket && m <= maxMarket && !["Common", "Uncommon"].contains($0.rarity)

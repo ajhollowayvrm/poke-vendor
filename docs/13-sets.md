@@ -116,6 +116,35 @@ sealed products from them.
 - 12 older sets have no sealed product in the catalog, and no loose
   pack price. Their cards still show up as singles.
 
+## 1st Edition and Unlimited
+
+Nine WOTC sets have a 1st Edition print run and an Unlimited print run:
+Jungle, Fossil, Team Rocket, Gym Heroes, Gym Challenge, Neo Genesis,
+Neo Discovery, Neo Revelation, and Neo Destiny. A pack holds one run.
+
+- **Two set files.** `<set>.json` holds the Unlimited run.
+  `<set>-1st-edition.json` holds the 1st Edition run, with the 1st
+  Edition prices and the 1st Edition pack (`tools/export/rip_set.py
+  --first <set>`). The 1st Edition set is a set of its own in the game,
+  for example "Jungle 1st Edition", with its own master set.
+- **Products.** The catalog sells the Unlimited packs and boxes from the
+  Unlimited file, and the 1st Edition packs and boxes from the 1st
+  Edition file. Shadowless Base Set product stays out.
+- **Images.** TCGplayer, pokemontcg.io, TCGdex, and pkmncards all show
+  the 1st Edition scan for these sets. `tools/images/destamp.py` finds
+  the stamp on each scan and inpaints it, and keeps a small patch of
+  each image in `Resources/destamp.json` (about 1.8 MB for 836 images).
+  An Unlimited print with a patch has "#destamp" on its image URL, and
+  the app lays the patch over the stamp when it loads the image. A 1st
+  Edition print keeps the stamp. A card from an older save gets the
+  patched image when the save loads.
+- **In the wild.** Vendors, sellers, and collections draw a card from
+  the Unlimited set. 15% of the time it is 1st Edition instead, because
+  the 1st Edition run was far smaller.
+- **Graded prices.** The graded sales data does not split the two
+  runs, so both files hold the same real graded prices for a card. The
+  raw prices are split.
+
 ## Sets done so far
 
 142 set files: 133 in 11 eras, and 9 Play! Pokémon Prize Pack series. Every English
