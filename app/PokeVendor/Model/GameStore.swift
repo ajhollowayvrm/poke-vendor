@@ -126,6 +126,8 @@ struct GameData: Codable {
     var completedMasterSets: [String: Int] = [:]
     /// The master sets the player started from the Master sets tab, by set slug, and the day of each.
     var startedMasterSets: [String: Int] = [:]
+    /// PSA orders that bill when the grades come back (docs/10-grading.md, Paying PSA).
+    var gradingBills: [GradingBill] = []
     /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
     var shorts = ShortsState()
 }
@@ -214,6 +216,7 @@ extension GameData {
         machines = v(.machines, machines)
         completedMasterSets = v(.completedMasterSets, completedMasterSets)
         startedMasterSets = v(.startedMasterSets, startedMasterSets)
+        gradingBills = v(.gradingBills, gradingBills)
         shorts = v(.shorts, shorts)
     }
 }
@@ -988,12 +991,24 @@ final class GameStore {
         let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil }
         guard !cards.isEmpty else { return }
         let fee = tier.fee * Double(cards.count)
-        let ledgerID = addLedger(-fee, .grading, "\(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) \(tier.name)",
-                                 pending: true)
-        for i in data.raw.indices where ids.contains(data.raw[i].id) && data.raw[i].status == nil {
-            data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: tier.days, ledgerID: ledgerID)
+        let label = "\(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) \(tier.name)"
+        // PSA bills when the grades come back. The order's ID ties its cards to the bill (docs/10, Paying PSA).
+        let orderID: UUID
+        if company.billsOnReturn {
+            orderID = UUID()
+            data.gradingBills.append(GradingBill(id: orderID, company: company, tier: tier.name, cards: cards.count, amount: fee,
+                                                 dueDay: data.day + tier.days))
+        } else {
+            orderID = addLedger(-fee, .grading, label, pending: true)
         }
-        log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days).", cash: -fee)
+        for i in data.raw.indices where ids.contains(data.raw[i].id) && data.raw[i].status == nil {
+            data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: tier.days, ledgerID: orderID)
+        }
+        if company.billsOnReturn {
+            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days). The bill of \(money(fee)) comes with the grades.")
+        } else {
+            log("Sent \(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) (\(tier.name), \(tier.days) days).", cash: -fee)
+        }
         useGradingSupplies(cards: cards.count)
         save()
     }
@@ -1064,6 +1079,7 @@ final class GameStore {
 
         lines += advanceSealed()
         lines += advanceCards()
+        lines += gradingBillsEndDay()
         lines += advanceSocial()
         scheduleShows()
         scheduleSales()
@@ -1199,9 +1215,11 @@ final class GameStore {
                             return false
                         }
                     }
+                    // PSA holds a finished order until its bill is paid. End Day pays it when the cash covers it.
+                    let returned: ItemStatus? = company.billsOnReturn ? .heldAtGrader(company: company, billID: ledgerID) : nil
                     // A grader catches every fake. The fee stays paid (docs/14, Detection).
                     if let fake = card.fake {
-                        card.status = nil
+                        card.status = returned
                         card.fakeKnown = true
                         lines.append("\(company.rawValue) flagged your \(card.print.name) as counterfeit (\(fake.label.lowercased())). No grade, and the fee is not refunded.")
                         raw.append(card)
@@ -1209,7 +1227,7 @@ final class GameStore {
                     }
                     let grade = Self.gradeResult(card.condition, company: company)
                     let before = card.market
-                    card.status = nil
+                    card.status = returned
                     card.grade = grade
                     card.verified = true
                     noteGradeReturn(ledgerID: ledgerID, company: company.rawValue, card: card, before: before)

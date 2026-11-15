@@ -24,6 +24,24 @@ extension HubView {
             case "raw": nav.path = [.inventory(.raw)]
             case "card": nav.path = [.inventory(.raw)] + (store.data.raw.first.map { [.card($0.id)] } ?? [])
             case "slab": nav.path = [.inventory(.slabs)] + (store.data.slabs.first { $0.status == nil }.map { [.card($0.id)] } ?? [])
+            case "psabill":
+                // A held PSA order, and one still at PSA, in the Grading tab.
+                store.startRun()
+                for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 }).prefix(3) { store.addTestCard(print) }
+                let ids = store.data.raw.suffix(3).map(\.id)
+                if let express = Balance.gradingTiers[.psa]?.last, let value = Balance.gradingTiers[.psa]?.first {
+                    store.submit(Set(ids.prefix(2)), to: .psa, tier: express)
+                    for i in store.data.raw.indices {
+                        if case .atGrader(let c, let t, _, let id) = store.data.raw[i].status {
+                            store.data.raw[i].status = .atGrader(company: c, tier: t, daysLeft: 1, ledgerID: id)
+                        }
+                    }
+                    store.addTestCash(40 - store.cash)
+                    store.endDay()
+                    store.report = nil
+                    store.submit([ids[2]], to: .psa, tier: value)
+                }
+                nav.path = [.inventory(.grading)]
             case "masterset":
                 let slug = store.startedMasterSets.first { !$0.complete }?.slug ?? store.startedMasterSets.first?.slug
                 nav.path = [.inventory(.sealed)] + (slug.map { [.masterSet($0)] } ?? [])

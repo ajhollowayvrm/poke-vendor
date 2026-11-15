@@ -19,6 +19,7 @@ final class GameTests {
         collection()
         shorts()
         listings()
+        psaBills()
         seasonsAndSave()
         days()
         let ms = Int(Date().timeIntervalSince(start) * 1000)
@@ -157,6 +158,42 @@ final class GameTests {
         check(!fixed.contains { store.canRemoveListing($0) }, "a listing stayed up")
         check(store.card(cards[3].id)?.status != nil, "a running eBay auction came down")
         check(!store.data.fbOffers.contains { fixed.contains($0.itemID) }, "an offer outlived its listing")
+    }
+
+    // MARK: - Paying PSA (docs/10-grading.md, Paying PSA)
+
+    /// PSA bills when the grades come back. With no cash for the bill, PSA holds the order until the player pays.
+    private func psaBills() {
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(2) { store.addTestCard(print) }
+        let ids = Set(store.data.raw.suffix(2).map(\.id))
+        guard ids.count == 2, let tier = Balance.gradingTiers[.psa]?.last else { return check(false, "the PSA test has no cards") }
+        let fee = tier.fee * 2
+        let cashBefore = store.cash
+        store.submit(ids, to: .psa, tier: tier)
+        // Card savers can cost a little. The fee must not leave now.
+        check(cashBefore - store.cash < fee - 0.01, "PSA took the fee when the cards went in")
+        check(abs(store.unpaidGradingTotal - fee) < 0.01, "the PSA bill is \(money(store.unpaidGradingTotal)), not \(money(fee))")
+
+        // The grades come back tomorrow, and the cash does not cover the bill.
+        for i in store.data.raw.indices {
+            if case .atGrader(let company, let name, _, let id) = store.data.raw[i].status {
+                store.data.raw[i].status = .atGrader(company: company, tier: name, daysLeft: 1, ledgerID: id)
+            }
+        }
+        store.addTestCash(10 - store.cash)
+        store.report = nil
+        store.endDay()
+        guard let bill = store.gradingBills.first else { return check(false, "the PSA bill went away with no payment") }
+        check(bill.held, "an unpaid PSA order is not held")
+        check(store.heldCards(bill.id).count == 2, "PSA holds \(store.heldCards(bill.id).count) of 2 cards")
+        check(store.data.slabs.filter { ids.contains($0.id) }.allSatisfy { $0.status != nil }, "a held slab is free to sell")
+
+        store.addTestCash(1_000)
+        let before = store.cash
+        check(store.payGradingBill(bill.id), "the PSA bill did not pay")
+        check(abs(before - store.cash - fee) < 0.01, "paying PSA took \(money(before - store.cash)), not \(money(fee))")
+        check(store.gradingBills.isEmpty && store.heldCards(bill.id).isEmpty, "paid PSA cards are still held")
     }
 
     // MARK: - Seasons and the save (docs/05-pricing-and-market.md)

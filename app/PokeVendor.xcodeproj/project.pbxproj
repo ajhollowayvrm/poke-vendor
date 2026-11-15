@@ -154,6 +154,7 @@
 		976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */; };
 		97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45590D9E41CDC734C72A2FA8 /* GoalsMarketViews.swift */; };
 		99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */ = {isa = PBXBuildFile; fileRef = 514263C9681529DF5523A095 /* astral-radiance.json */; };
+		9A7285B1FEC3B63592FC035D /* GradingBills.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5203F6759EAD53285517DF /* GradingBills.swift */; };
 		9CB15D4A7DECA40699DFDEA7 /* AuctionHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */; };
 		9E137F2DE0EED4CCFDA16759 /* sandstorm.json in Resources */ = {isa = PBXBuildFile; fileRef = FE24D22F379B1A8349AED4A6 /* sandstorm.json */; };
 		9E264DB7991475D250875154 /* crystal-guardians.json in Resources */ = {isa = PBXBuildFile; fileRef = 51D032B98E3876431FC5F38E /* crystal-guardians.json */; };
@@ -538,6 +539,7 @@
 		FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionHouse.swift; sourceTree = "<group>"; };
 		FB1006AA43D16FB5FB572A8A /* legend-maker.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legend-maker.json"; sourceTree = "<group>"; };
 		FB443286D950ABAD944C7A64 /* dragon-frontiers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-frontiers.json"; sourceTree = "<group>"; };
+		FB5203F6759EAD53285517DF /* GradingBills.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradingBills.swift; sourceTree = "<group>"; };
 		FDDB3709D7BFD861D4F66368 /* celebrations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = celebrations.json; sourceTree = "<group>"; };
 		FE044E20B20FB2490087A1C9 /* temporal-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "temporal-forces.json"; sourceTree = "<group>"; };
 		FE24D22F379B1A8349AED4A6 /* sandstorm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sandstorm.json; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				38152100E3F21C13B7C61E1B /* GameStore.swift */,
 				4B1D85597836B370B32E25FC /* GarageSales.swift */,
+				FB5203F6759EAD53285517DF /* GradingBills.swift */,
 				9A3F8FDD2CE737F599D33A89 /* Haggling.swift */,
 				1B3A5E9B134DA765470B7666 /* Inventory.swift */,
 				96BDDA1B76A85BD73D8A9400 /* Job.swift */,
@@ -1166,6 +1169,7 @@
 				8A7B672CD6647283B94B2B24 /* GameTests.swift in Sources */,
 				4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */,
 				97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */,
+				9A7285B1FEC3B63592FC035D /* GradingBills.swift in Sources */,
 				C3628ED56F834AE0680701D4 /* Haggling.swift in Sources */,
 				FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */,
 				E35DFC53EC82DCEE02ECC9BB /* HubView+Debug.swift in Sources */,

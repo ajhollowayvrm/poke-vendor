@@ -332,6 +332,33 @@ does not use the day's hour budget. It shows up as an event in the recent-activi
 the card returns (see the Wallet screen mockup in
 [08-ui-direction.md](08-ui-direction.md)).
 
+## Paying PSA
+
+PSA bills an order when the grades come back, as real PSA does. CGC and
+BGS take the fee when the cards go in. The grading booth at a show
+takes its fee on the spot.
+
+- **Submit.** A PSA order takes no cash when the cards go in. The grade
+  sheet shows "Bill when the grades come back", the day the bill comes
+  due, and the unpaid PSA bills so far. The player can send cards to
+  PSA with no cash in hand.
+- **The grades come back.** At End Day, PSA charges the cash for the
+  whole order when the cash covers it. Then the slabs come back to
+  Inventory.
+- **No cash for the bill.** PSA holds the whole order: the slabs, and
+  any card that PSA flagged as fake. A held card shows its grade and
+  the tag "PSA · UNPAID". It stays in the Grading tab, and it cannot
+  be sold, listed, or taken to a show. Each End Day, PSA tries the
+  charge again, oldest order first. The player can also pay from the
+  Grading tab or from the card's status box.
+- **The PSA bills box** at the top of the Grading tab lists each held
+  order with Pay, and each order still at PSA with its bill and the
+  days until it comes due. It shows the total due against the cash.
+- **Why:** the player must keep a reserve for the bills to come. A
+  player who spends every dollar finds the best slabs held at PSA.
+
+A held order has no deadline and no storage fee.
+
 ## Counterfeit interaction
 
 Submitting a card for grading also authenticates it: PSA/BGS/CGC reject

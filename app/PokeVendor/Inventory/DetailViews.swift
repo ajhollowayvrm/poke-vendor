@@ -42,8 +42,23 @@ struct StatusBox: View {
                 Text("In hand").font(.subheadline)
             case .onTheWay(let days, let from):
                 Text("On the way from \(from.rawValue) · arrives in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
-            case .atGrader(let company, let tier, let days, _):
+            case .atGrader(let company, let tier, let days, let orderID):
                 Text("At \(company.rawValue) (\(tier)) · back in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
+                if let bill = store.gradingBills.first(where: { $0.id == orderID }) {
+                    Text("The bill of \(money(bill.amount)) comes with the grades. Keep the cash for it, or \(company.rawValue) holds the order.")
+                        .font(.caption)
+                        .foregroundStyle(Theme.muted)
+                }
+            case .heldAtGrader(let company, let billID):
+                Text("Graded. \(company.rawValue) holds the order until you pay its bill.").font(.subheadline)
+                if let bill = store.gradingBills.first(where: { $0.id == billID }) {
+                    Button("Pay \(money(bill.amount)) for \(bill.cards) card\(bill.cards == 1 ? "" : "s")") { store.payGradingBill(billID) }
+                        .primaryButton()
+                        .disabled(!store.canAfford(bill.amount))
+                    if !store.canAfford(bill.amount) {
+                        Text("You have \(money(store.cash)).").font(.caption).foregroundStyle(Theme.orange)
+                    }
+                }
             case .atAuthenticator(let days, _):
                 Text("At the authenticator · back in \(days) day\(days == 1 ? "" : "s")").font(.subheadline)
             case .arriving(let days, let from):

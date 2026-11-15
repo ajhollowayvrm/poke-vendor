@@ -326,13 +326,21 @@ struct GradeSheet: View {
                 }
                 Section {
                     HStack {
-                        Text("Total fee")
+                        Text(company.billsOnReturn ? "Bill when the grades come back" : "Total fee")
                         Spacer()
                         Text(money(total)).font(.body.monospaced().weight(.semibold))
                     }
+                    if company.billsOnReturn {
+                        // PSA bills when the grades come back (docs/10-grading.md, Paying PSA).
+                        Text("You pay nothing now. In \(tier.days) days, PSA charges your cash. If the cash does not cover the bill, PSA holds the slabs until you pay.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                        if store.unpaidGradingTotal > 0 {
+                            Text("Unpaid PSA bills: \(money(store.unpaidGradingTotal)).").font(.caption).foregroundStyle(Theme.orange)
+                        }
+                    }
                     Text("Card savers: \(cards.count) needed, \(store.supplyCount(.cardSaver)) in hand. Missing ones cost \(money(SupplyItem.cardSaver.rushPrice)) each.")
                         .font(.caption).foregroundStyle(Theme.muted)
-                    if !store.canAfford(total) {
+                    if !company.billsOnReturn, !store.canAfford(total) {
                         Text("You have \(money(store.cash)). That is not enough.").foregroundStyle(Theme.orange)
                     }
                 }
@@ -347,7 +355,7 @@ struct GradeSheet: View {
                         store.submit(Set(cards.map(\.id)), to: company, tier: tier)
                         dismiss()
                     }
-                    .disabled(cards.isEmpty || !store.canAfford(total))
+                    .disabled(cards.isEmpty || (!company.billsOnReturn && !store.canAfford(total)))
                 }
             }
         }
@@ -355,7 +363,7 @@ struct GradeSheet: View {
 
     private var companyNote: String {
         switch company {
-        case .psa: "Slowest and most expensive. The highest resale value for the same grade."
+        case .psa: "Slowest and most expensive. The highest resale value for the same grade. You pay when the grades come back."
         case .bgs: "Mid speed and cost. Prints all four subgrades. All 10s is a Black Label."
         case .cgc: "Fastest and cheapest. Less resale value for the same grade. The best 10s are Pristine."
         }

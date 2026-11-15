@@ -369,6 +369,8 @@ struct Listing: Codable, Hashable {
 enum ItemStatus: Codable, Hashable {
     case onTheWay(daysLeft: Int, store: Storefront)
     case atGrader(company: GradingCompany, tier: String, daysLeft: Int, ledgerID: UUID)
+    /// Graded, but PSA holds the order until the player pays its bill (docs/10-grading.md, Paying PSA).
+    case heldAtGrader(company: GradingCompany, billID: UUID)
     case listed(Listing)
     /// At the paid authenticator (docs/14-counterfeit-risk.md).
     case atAuthenticator(daysLeft: Int, ledgerID: UUID)
@@ -391,6 +393,7 @@ enum ItemStatus: Codable, Hashable {
         switch self {
         case .onTheWay(let days, _): "ON THE WAY · \(days)D"
         case .atGrader(let company, _, let days, _): "AT \(company.rawValue) · \(days)D"
+        case .heldAtGrader(let company, _): "\(company.rawValue) · UNPAID"
         case .listed(let listing): "LISTED · \(listing.channel.rawValue.uppercased())"
         case .atAuthenticator(let days, _): "AUTHENTICATING · \(days)D"
         case .arriving(let days, _): "ARRIVING · \(days)D"

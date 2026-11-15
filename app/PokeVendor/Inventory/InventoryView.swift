@@ -16,8 +16,10 @@ enum InventorySection: String, CaseIterable, Hashable {
 extension OwnedCard {
     /// A raw card at a grader shows in the At Grading tab, not in Raw.
     var isAtGrader: Bool {
-        if case .atGrader = status { return true }
-        return false
+        switch status {
+        case .atGrader, .heldAtGrader: true
+        default: false
+        }
     }
 }
 
@@ -59,7 +61,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         switch item.status {
         case .onTheWay: return self == .onTheWay
         case .arriving: return self == .arriving
-        case .atGrader: return self == .atGrader
+        case .atGrader, .heldAtGrader: return self == .atGrader
         case .atAuthenticator: return self == .authenticating
         case .listed: return self == .listed
         case .consigned: return self == .consigned
@@ -105,6 +107,7 @@ struct InventoryView: View {
                 case .stock:
                     tabPicker
                     controls
+                    if tab == .grading, !store.gradingBills.isEmpty { GradingBillsBox() }
                     rows
                 case .pc:
                     PCSection(selecting: selecting, selection: $selection)
@@ -328,7 +331,7 @@ struct InventoryView: View {
             case .bulk:
                 Text("Sell bulk at a game shop stop.").font(.caption).foregroundStyle(Theme.muted)
             case .grading:
-                Text("These cards come back as slabs when the grades are done.").font(.caption).foregroundStyle(Theme.muted)
+                Text("These cards come back as slabs when the grades are done and paid.").font(.caption).foregroundStyle(Theme.muted)
             }
         }
         .padding(.horizontal, 16)
@@ -449,9 +452,10 @@ struct InventoryView: View {
     private var sealedInHand: [SealedItem] { store.data.sealed.filter { !$0.setAside } }
     /// The raw cards that are not at a grader.
     private var rawInHand: [OwnedCard] { store.data.raw.filter { !$0.isAtGrader && !$0.setAside } }
-    private var slabsInHand: [OwnedCard] { store.data.slabs.filter { !$0.setAside } }
+    /// A slab that PSA holds shows in the Grading tab until its bill is paid.
+    private var slabsInHand: [OwnedCard] { store.data.slabs.filter { !$0.setAside && !$0.isAtGrader } }
 
-    private var atGrading: [OwnedCard] { store.data.raw.filter(\.isAtGrader) }
+    private var atGrading: [OwnedCard] { (store.data.raw + store.data.slabs).filter(\.isAtGrader) }
 
     private var sortedSealed: [SealedItem] {
         let items = sealedInHand.filter { filter.matches($0) }
@@ -664,6 +668,44 @@ extension ItemActions where Extra == EmptyView {
     init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
          done: @escaping () -> Void = {}) {
         self.init(kind: kind, ids: ids, stackIDs: stackIDs, present: present, done: done) { EmptyView() }
+    }
+}
+
+/// The PSA bills: the held orders with Pay, and the orders still at PSA with the day their bill comes due
+/// (docs/10-grading.md, Paying PSA).
+struct GradingBillsBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let bills = store.gradingBills.sorted { $0.dueDay < $1.dueDay }
+        let total = store.unpaidGradingTotal
+        DetailBox(title: "PSA bills") {
+            ForEach(bills) { bill in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(bill.cards) card\(bill.cards == 1 ? "" : "s") · \(bill.tier)").font(.subheadline)
+                        Text(bill.held ? "Graded · held until you pay"
+                             : "Due in \(max(0, bill.dueDay - store.day)) day\(bill.dueDay - store.day == 1 ? "" : "s"), with the grades")
+                            .font(.caption)
+                            .foregroundStyle(bill.held ? Theme.orange : Theme.muted)
+                    }
+                    Spacer()
+                    if bill.held {
+                        Button("Pay \(money(bill.amount))") { store.payGradingBill(bill.id) }
+                            .primaryButton()
+                            .disabled(!store.canAfford(bill.amount))
+                    } else {
+                        Text(money(bill.amount)).font(.subheadline.monospaced())
+                    }
+                }
+            }
+            Text("Total due \(money(total)). You have \(money(store.cash)).")
+                .font(.caption.monospaced())
+                .foregroundStyle(store.canAfford(total) ? Theme.muted : Theme.orange)
+            Text("PSA bills when the grades come back, and charges your cash when it covers the bill. Keep a reserve, or PSA holds the slabs until you pay.")
+                .font(.caption2)
+                .foregroundStyle(Theme.muted)
+        }
     }
 }
 
