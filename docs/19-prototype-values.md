@@ -101,9 +101,13 @@ run. Holds are not built. Consignment and league night are built.
 
 | Company | Service | Fee | Days |
 | --- | --- | --- | --- |
-| PSA | Value | $25 | 45 |
-| PSA | Regular | $75 | 15 |
-| PSA | Express | $150 | 7 |
+| PSA | Value Bulk (members, 20+ cards, up to $500) | $24.99 | 45 |
+| PSA | Regular (up to $1,500) | $79.99 | 21 |
+| PSA | Express (up to $2,500) | $199 | 10 |
+| PSA | Super Express (up to $5,000) | $349 | 5 |
+| PSA | Walk-Through (up to $10,000) | $599 | 3 |
+| PSA | Premium 1, 2, 3, 5 (up to $25,000, $50,000, $100,000, $250,000) | $999, $1,999, $2,999, $4,999 | 2 |
+| PSA | Premium 10 (no cap) | $9,999 | 2 |
 | CGC | Economy | $18 | 30 |
 | CGC | Standard | $30 | 12 |
 | CGC | Express | $65 | 5 |

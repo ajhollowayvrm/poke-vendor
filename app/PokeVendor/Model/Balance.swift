@@ -107,8 +107,18 @@ enum Balance {
 
     // Grading (docs/10-grading.md)
     static let gradingTiers: [GradingCompany: [GradingTier]] = [
-        .psa: [GradingTier(name: "Value", fee: 25, days: 45), GradingTier(name: "Regular", fee: 75, days: 15),
-               GradingTier(name: "Express", fee: 150, days: 7)],
+        // PSA's levels and value caps in November 2026. The days are game days, about a third of PSA's business days.
+        // PSA paused its other Value levels in June 2026. Value Bulk is for members, 20 cards or more.
+        .psa: [GradingTier(name: "Value Bulk", fee: 24.99, days: 45, maxValue: 500, minCards: 20, membersOnly: true),
+               GradingTier(name: "Regular", fee: 79.99, days: 21, maxValue: 1_500),
+               GradingTier(name: "Express", fee: 199, days: 10, maxValue: 2_500),
+               GradingTier(name: "Super Express", fee: 349, days: 5, maxValue: 5_000),
+               GradingTier(name: "Walk-Through", fee: 599, days: 3, maxValue: 10_000),
+               GradingTier(name: "Premium 1", fee: 999, days: 2, maxValue: 25_000),
+               GradingTier(name: "Premium 2", fee: 1_999, days: 2, maxValue: 50_000),
+               GradingTier(name: "Premium 3", fee: 2_999, days: 2, maxValue: 100_000),
+               GradingTier(name: "Premium 5", fee: 4_999, days: 2, maxValue: 250_000),
+               GradingTier(name: "Premium 10", fee: 9_999, days: 2)],
         .cgc: [GradingTier(name: "Economy", fee: 18, days: 30), GradingTier(name: "Standard", fee: 30, days: 12),
                GradingTier(name: "Express", fee: 65, days: 5)],
         .bgs: [GradingTier(name: "Base", fee: 20, days: 40), GradingTier(name: "Standard", fee: 50, days: 15),
@@ -156,6 +166,15 @@ struct GradingTier: Hashable {
     let name: String
     let fee: Double
     let days: Int
+    /// The most a graded card can be worth at this level. PSA upcharges a card worth more. Nil: no cap.
+    var maxValue: Double? = nil
+    /// The fewest cards in one order at this level.
+    var minCards = 1
+    /// Only a PSA member can use this level.
+    var membersOnly = false
+
+    /// The PSA level that a person with no membership uses for one card. Grading advice prices with it.
+    static var psaStandard: GradingTier { Balance.gradingTiers[.psa]?.first { $0.name == "Regular" } ?? GradingTier(name: "Regular", fee: 79.99, days: 21) }
 }
 
 enum Storefront: String, Codable, CaseIterable, Hashable {

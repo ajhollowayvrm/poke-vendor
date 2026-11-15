@@ -16,7 +16,10 @@ struct GradingBill: Codable, Identifiable, Hashable {
     let company: GradingCompany
     let tier: String
     let cards: Int
-    let amount: Double
+    /// The bill: the fees, and the upcharges that come with the grades.
+    var amount: Double
+    /// The upcharges in the bill. Nil when there are none, and in a save from before upcharges.
+    var upcharge: Double?
     /// The day the grades come back.
     let dueDay: Int
     /// True when the grades are back and PSA holds the order.
@@ -29,6 +32,21 @@ extension GameStore {
 
     /// The PSA bills that are not paid: the orders still at PSA, and the orders that PSA holds.
     var unpaidGradingTotal: Double { data.gradingBills.reduce(0) { $0 + $1.amount } }
+
+    /// PSA's upcharge for a card worth more than its level allows: the fee difference to the cheapest level whose cap
+    /// covers the card's value after grading. Nil when the card fits its level.
+    func psaUpcharge(tier name: String, value: Double) -> (tier: GradingTier, fee: Double)? {
+        guard let tiers = Balance.gradingTiers[.psa], let tier = tiers.first(where: { $0.name == name }), let cap = tier.maxValue,
+              value > cap, let up = tiers.first(where: { ($0.maxValue ?? .infinity) >= value && $0.fee > tier.fee }) else { return nil }
+        return (up, ((gradingFee(up, .psa) - gradingFee(tier, .psa)) * 100).rounded() / 100)
+    }
+
+    /// Adds an upcharge to an order's bill.
+    func addUpcharge(_ billID: UUID, _ fee: Double) {
+        guard let i = data.gradingBills.firstIndex(where: { $0.id == billID }) else { return }
+        data.gradingBills[i].amount += fee
+        data.gradingBills[i].upcharge = (data.gradingBills[i].upcharge ?? 0) + fee
+    }
 
     /// The cards of an order that PSA holds.
     func heldCards(_ billID: UUID) -> [OwnedCard] {

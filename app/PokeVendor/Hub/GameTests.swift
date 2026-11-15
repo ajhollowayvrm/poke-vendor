@@ -26,6 +26,7 @@ final class GameTests {
         timed("shorts", shorts)
         timed("listings", listings)
         timed("psa", psaBills)
+        timed("upcharges", psaUpcharges)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -113,6 +114,15 @@ final class GameTests {
         }
     }
 
+    /// PSA upcharges to the cheapest level that covers the graded value, for the fee difference.
+    private func psaUpcharges() {
+        let up = store.psaUpcharge(tier: "Regular", value: 3_000)
+        check(up?.tier.name == "Super Express", "a $3,000 card at Regular went to \(up?.tier.name ?? "nothing"), not Super Express")
+        check(abs((up?.fee ?? 0) - (349 - 79.99)) < 0.01, "the upcharge is \(money(up?.fee ?? 0)), not the fee difference")
+        check(store.psaUpcharge(tier: "Regular", value: 1_000) == nil, "a card under its level's cap got an upcharge")
+        check(store.psaUpcharge(tier: "Premium 10", value: 1_000_000) == nil, "Premium 10 has an upcharge")
+    }
+
     // MARK: - Short-form video (docs/32-short-form-video.md)
 
     private func shorts() {
@@ -177,7 +187,9 @@ final class GameTests {
         fresh()
         for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(2) { store.addTestCard(print) }
         let ids = Set(store.data.raw.suffix(2).map(\.id))
-        guard ids.count == 2, let tier = Balance.gradingTiers[.psa]?.last else { return check(false, "the PSA test has no cards") }
+        guard ids.count == 2, let tier = Balance.gradingTiers[.psa]?.first(where: { $0.name == "Express" }) else {
+            return check(false, "the PSA test has no cards")
+        }
         let fee = tier.fee * 2
         let cashBefore = store.cash
         store.submit(ids, to: .psa, tier: tier)
@@ -291,7 +303,7 @@ final class GameTests {
         fresh()
         func own(_ u: Upgrade) { store.data.upgrades.append(u.rawValue) }
         let before = store.saleCosts(price: 50, channel: .tcgplayer, sealed: false, insured: false)
-        let tier = Balance.gradingTiers[.psa]?.last ?? GradingTier(name: "Test", fee: 100, days: 10)
+        let tier = GradingTier.psaStandard
         let fee = store.gradingFee(tier, .psa), days = store.gradingDays(tier, .psa)
         let binder = store.capacity(.binder)
         let edit = store.editHours(long: false)

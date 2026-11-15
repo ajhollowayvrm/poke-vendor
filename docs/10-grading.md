@@ -272,15 +272,35 @@ Instead:
   and should be pulled from those companies directly whenever the game
   actually needs current figures, rather than baked into this doc.
 
-The game still models three speed tiers per company (Economy /
-Standard / Express, collapsed down from each real company's larger
-tier list) and declared-value upcharges (a real practice worth
-keeping — under-declaring a valuable card to save on fees has a real
-downside if it's lost or damaged in transit, a natural fit for the
-game's existing risk/variance design, see
-[01-premise-and-loop.md](01-premise-and-loop.md#variance-and-busts)).
-Only the specific dollar figures and day counts are deliberately left
-out of this doc.
+CGC and BGS have three speed tiers each. PSA has its real service
+levels (see [PSA levels and upcharges](#psa-levels-and-upcharges)).
+The dollar figures and day counts are in
+[19-prototype-values.md](19-prototype-values.md#grading).
+
+## PSA levels and upcharges
+
+PSA prices by the value of the card. Each level has a value cap. The
+figures are PSA's in November 2026: Value Bulk $24.99 (up to $500),
+Regular $79.99 ($1,500), Express $199 ($2,500), Super Express $349
+($5,000), Walk-Through $599 ($10,000), Premium 1 $999 ($25,000),
+Premium 2 $1,999 ($50,000), Premium 3 $2,999 ($100,000), Premium 5
+$4,999 ($250,000), and Premium 10 $9,999 (no cap). Sources disagree on
+Express: $149 before September 29, 2026, and $199 after. PSA paused its
+other Value levels in June 2026, so the game leaves them out.
+
+- **Value Bulk** is for PSA members (the PSA membership upgrade), with
+  20 cards or more in one order.
+- **The days are game days**, about a third of PSA's business days, so
+  a run does not wait months.
+- **Upcharge.** When a card comes back worth more than its level's cap,
+  PSA moves it to the cheapest level that covers its value. The player
+  pays the fee difference. The upcharge goes on the PSA bill (see
+  [Paying PSA](#paying-psa)), and the morning report names each one.
+  The PSA membership discount applies to upcharges too.
+- **The grade sheet** shows each level with its fee, cap, and days. For
+  each card, it shows the upcharge if the card gets a PSA 10 or a PSA
+  9, and the total upcharge if every card gets a PSA 10.
+- An order sent before upcharges has no upcharge.
 
 ## Estimated prices
 

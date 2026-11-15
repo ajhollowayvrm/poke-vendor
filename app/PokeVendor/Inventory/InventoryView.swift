@@ -144,6 +144,12 @@ struct InventoryView: View {
         }
         .onChange(of: tab) { _, _ in selection = [] }
         #if DEBUG
+        // Screenshot aid: `-gradesheet` opens the grade sheet with the 3 most valuable free raw cards.
+        .onAppear {
+            guard ProcessInfo.processInfo.arguments.contains("-gradesheet"), gradeIDs == nil else { return }
+            let top = rawInHand.filter { $0.status == nil }.sorted { $0.market > $1.market }.prefix(3)
+            if !top.isEmpty { gradeIDs = GradeRequest(ids: Set(top.map(\.id))) }
+        }
         // Screenshot aid: `-mastersets` opens the Master sets section.
         .onAppear {
             if ProcessInfo.processInfo.arguments.contains("-mastersets") { section = .masterSets }

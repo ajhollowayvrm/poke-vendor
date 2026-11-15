@@ -215,7 +215,7 @@ struct AdviceCardView: View {
                     Text("raw \(money(raw)) · PSA 10 \(ask.print.gradedPrice("psa10").map(money) ?? "—") · PSA 9 \(ask.print.gradedPrice("psa9").map(money) ?? "—")")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
-                    if let tier = Balance.gradingTiers[.psa]?.first {
+                    if let tier = Optional(GradingTier.psaStandard) {
                         Text("PSA \(tier.name): \(money(tier.fee)), \(tier.days) days").font(.caption2).foregroundStyle(Theme.muted)
                     }
                     if store.hasUpgrade(.gradeEstimate) {

@@ -284,6 +284,8 @@ struct GradeSheet: View {
         // The PSA membership lowers the fee and the turnaround.
         let total = store.gradingFee(tier, company) * Double(cards.count)
         let days = store.gradingDays(tier, company)
+        let block = tierBlock(tier, cards: cards.count)
+        let upcharges = company == .psa ? cards.reduce(0) { $0 + (store.psaUpcharge(tier: tier.name, value: tenValue($1))?.fee ?? 0) } : 0
         NavigationStack {
             Form {
                 Section("Company") {
@@ -296,7 +298,9 @@ struct GradeSheet: View {
                 Section("Service") {
                     Picker("Service", selection: $tierIndex) {
                         ForEach(tiers.indices, id: \.self) { i in
-                            Text("\(tiers[i].name) · \(money(store.gradingFee(tiers[i], company))) · \(store.gradingDays(tiers[i], company)) days").tag(i)
+                            let t = tiers[i]
+                            let cap = t.maxValue.map { " · up to \($0.formatted(.currency(code: "USD").precision(.fractionLength(0))))" } ?? ""
+                            Text("\(t.name) · \(money(store.gradingFee(t, company)))\(cap) · \(store.gradingDays(t, company)) days\(t.membersOnly ? " · members, \(t.minCards)+ cards" : "")").tag(i)
                         }
                     }
                     .pickerStyle(.inline)
@@ -329,6 +333,13 @@ struct GradeSheet: View {
                                 if company == .bgs {
                                     Text("Black Label \(card.print.blackLabelPrice.map(money) ?? "—") est.").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                                 }
+                                // A PSA card worth more than the level's cap after grading costs an upcharge.
+                                if company == .psa, let up = store.psaUpcharge(tier: tier.name, value: tenValue(card)) {
+                                    Text("If PSA 10: +\(money(up.fee)) upcharge (\(up.tier.name))").font(.caption.monospaced()).foregroundStyle(Theme.orange)
+                                }
+                                if company == .psa, let nine = card.print.gradedPrice("psa9"), let up = store.psaUpcharge(tier: tier.name, value: nine) {
+                                    Text("If PSA 9: +\(money(up.fee)) upcharge").font(.caption.monospaced()).foregroundStyle(Theme.orange)
+                                }
                             }
                         }
                     }
@@ -338,6 +349,11 @@ struct GradeSheet: View {
                         Text(company.billsOnReturn ? "Bill when the grades come back" : "Total fee")
                         Spacer()
                         Text(money(total)).font(.body.monospaced().weight(.semibold))
+                    }
+                    if let block { Text(block).font(.caption).foregroundStyle(Theme.orange) }
+                    if upcharges > 0 {
+                        Text("If every card gets a PSA 10, PSA adds \(money(upcharges)) in upcharges. A card worth more than its level's cap after grading moves up to the level that covers it, for the fee difference.")
+                            .font(.caption).foregroundStyle(Theme.orange)
                     }
                     if company.billsOnReturn {
                         // PSA bills when the grades come back (docs/10-grading.md, Paying PSA).
@@ -356,7 +372,8 @@ struct GradeSheet: View {
             }
             .navigationTitle("Grade")
             .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: company) { _, _ in tierIndex = 0 }
+            .onChange(of: company) { _, _ in tierIndex = firstUsable(cards: cards.count) }
+            .onAppear { tierIndex = firstUsable(cards: cards.count) }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -364,15 +381,30 @@ struct GradeSheet: View {
                         store.submit(Set(cards.map(\.id)), to: company, tier: tier)
                         dismiss()
                     }
-                    .disabled(cards.isEmpty || (!company.billsOnReturn && !store.canAfford(total)))
+                    .disabled(cards.isEmpty || block != nil || (!company.billsOnReturn && !store.canAfford(total)))
                 }
             }
         }
     }
 
+    /// The PSA 10 value of a card: what an upcharge would follow if it gets the top grade.
+    private func tenValue(_ card: OwnedCard) -> Double { card.print.gradedPrice("psa10") ?? card.market }
+
+    /// Why the player cannot use this level now, or nil.
+    private func tierBlock(_ tier: GradingTier, cards: Int) -> String? {
+        if tier.membersOnly, !store.hasUpgrade(.psaMembership) { return "\(tier.name) is for PSA members. Buy the PSA membership in Upgrades." }
+        if cards < tier.minCards { return "\(tier.name) needs \(tier.minCards) cards or more. You picked \(cards)." }
+        return nil
+    }
+
+    /// The first level of the company that the player can use.
+    private func firstUsable(cards: Int) -> Int {
+        (Balance.gradingTiers[company] ?? []).firstIndex { tierBlock($0, cards: cards) == nil } ?? 0
+    }
+
     private var companyNote: String {
         switch company {
-        case .psa: "Slowest and most expensive. The highest resale value for the same grade. You pay when the grades come back."
+        case .psa: "The most expensive, and the highest resale value for the same grade. Each level has a value cap: a card that grades above it costs an upcharge. You pay when the grades come back."
         case .bgs: "Mid speed and cost. Prints all four subgrades. All 10s is a Black Label."
         case .cgc: "Fastest and cheapest. Less resale value for the same grade. The best 10s are Pristine."
         }

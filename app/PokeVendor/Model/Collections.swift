@@ -429,7 +429,7 @@ extension GameStore {
     /// What grading at PSA's cheapest tier is worth over the raw card: the average slab value of 40 grade rolls, less
     /// the fee and the raw market. Above 0, the card is worth grading.
     static func gradingWorth(_ print: CardPrint, slug: String, condition: Condition) -> Double {
-        let fee = Balance.gradingTiers[.psa]?.first?.fee ?? 25
+        let fee = GradingTier.psaStandard.fee
         let raw = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: nil, ripID: nil, condition: condition).market
         let rolls = 40
         var total = 0.0

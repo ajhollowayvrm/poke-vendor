@@ -35,7 +35,8 @@ extension HubView {
                 store.startRun()
                 for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 }).prefix(3) { store.addTestCard(print) }
                 let ids = store.data.raw.suffix(3).map(\.id)
-                if let express = Balance.gradingTiers[.psa]?.last, let value = Balance.gradingTiers[.psa]?.first {
+                let tiers = Balance.gradingTiers[.psa] ?? []
+                if let express = tiers.first(where: { $0.name == "Express" }), let value = tiers.first(where: { $0.name == "Regular" }) {
                     store.submit(Set(ids.prefix(2)), to: .psa, tier: express)
                     for i in store.data.raw.indices {
                         if case .atGrader(let c, let t, _, let id) = store.data.raw[i].status {

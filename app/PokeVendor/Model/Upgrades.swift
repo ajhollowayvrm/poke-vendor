@@ -122,7 +122,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .shippingKit: "Shipping costs \(Int(((1 - Balance.shippingKitFactor) * 100).rounded()))% less on every sale that ships."
         case .repricer: "Each day, a TCGplayer listing over the lowest listing drops to it. It never goes under \(Int(Balance.repricerFloor * 100))% of your price."
         case .proSeller: "The TCGplayer fee drops from \(Balance.tcgFeeRate.formatted(.percent.precision(.fractionLength(2)))) to \((Balance.tcgFeeRate - Balance.proSellerFeeCut).formatted(.percent.precision(.fractionLength(2))))."
-        case .psaMembership: "PSA fees are \(Int(((1 - Balance.psaMemberFeeFactor) * 100).rounded()))% lower, and PSA returns grades \(Int(((1 - Balance.psaMemberDaysFactor) * 100).rounded()))% sooner."
+        case .psaMembership: "Opens PSA Value Bulk ($24.99 a card, 20 cards or more, cards up to $500). PSA fees are \(Int(((1 - Balance.psaMemberFeeFactor) * 100).rounded()))% lower, and PSA returns grades \(Int(((1 - Balance.psaMemberDaysFactor) * 100).rounded()))% sooner."
         case .gradeEstimate: "The grade sheet and grading questions show the likely PSA grade range of each raw card."
         case .uvLight: "Your eye catches a fake \(Int(((Balance.uvLightFactor - 1) * 100).rounded()))% more often when you look at something to buy."
         case .cargoVan: "\(Int(((Balance.cargoVanFactor - 1) * 100).rounded()))% more carry space in the binder, the slab case, and the tote."

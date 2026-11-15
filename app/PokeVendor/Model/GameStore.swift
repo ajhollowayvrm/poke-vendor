@@ -1017,7 +1017,7 @@ final class GameStore {
 
     func submit(_ ids: Set<UUID>, to company: GradingCompany, tier: GradingTier) {
         let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil }
-        guard !cards.isEmpty else { return }
+        guard !cards.isEmpty, cards.count >= tier.minCards, !tier.membersOnly || hasUpgrade(.psaMembership) else { return }
         // The PSA membership lowers the fee and the turnaround.
         let fee = gradingFee(tier, company) * Double(cards.count)
         let days = gradingDays(tier, company)
@@ -1263,6 +1263,11 @@ final class GameStore {
                     let before = card.market
                     card.status = returned
                     card.grade = grade
+                    // PSA upcharges a card that grades into more value than its level allows. It goes on the bill.
+                    if billed, let up = psaUpcharge(tier: tier, value: card.market) {
+                        addUpcharge(ledgerID, up.fee)
+                        lines.append("PSA upcharged your \(card.print.name) \(grade.label) (\(money(card.market))) from \(tier) to \(up.tier.name): \(money(up.fee)) more on the bill.")
+                    }
                     card.verified = true
                     noteGradeReturn(ledgerID: ledgerID, company: company.rawValue, card: card, before: before)
                     slabs.append(card)
