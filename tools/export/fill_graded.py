@@ -43,6 +43,9 @@ How it works (docs/10-grading.md, Estimated prices):
   real. The other real prices become estimates, and the math fills them like any other key.
 - CGC and BGS grades use the raw price and the real prices of the print as anchors. An estimated PSA price comes from
   the same raw price, so it is not a second anchor.
+- A 1st Edition price is at least the Unlimited price of the same print and key (run_order). After the fill, a
+  1st Edition estimate rises to the Unlimited price, and then an Unlimited estimate falls to the 1st Edition price.
+  The bounds above win over this order.
 
 The files get two optional fields: `gradedReal` (the keys that hold a real price, as a list) and `marketEstimated`.
 A file with no `gradedReal` is an old file, and the app treats every price in it as real.
@@ -500,6 +503,71 @@ def fill(items, fit):
     return stats
 
 
+# ---------------------------------------------------------------- the two print runs
+
+FIRST_SUFFIX = "-1st-edition"
+
+
+def unlimited_variant(variant):
+    """The variant of the Unlimited print: "Holo (Galaxy, 1st Edition)" -> "Holo (Galaxy)", "Holo (1st Edition)" -> "Holo"."""
+    return variant.replace(", 1st Edition)", ")").replace(" (1st Edition)", "")
+
+
+def run_pairs(items):
+    """Yield (1st Edition item, Unlimited item) for each print of a 1st Edition set file."""
+    unlimited = {(it.set_id, it.p["num"], it.p["variant"]): it for it in items}
+    for it in items:
+        if it.set_id.endswith(FIRST_SUFFIX):
+            u = unlimited.get((it.set_id[:-len(FIRST_SUFFIX)], it.p["num"], unlimited_variant(it.p["variant"])))
+            if u:
+                yield it, u
+
+
+def run_order(items):
+    """The 1st Edition run was far smaller, so a 1st Edition price is at least the Unlimited price of the same print
+    and key. tools/export/rip_set.py removes the real prices that break this order. The fill estimates each file on
+    its own, so this step fixes the estimates: it raises a 1st Edition estimate to the Unlimited price, then lowers an
+    Unlimited estimate to the 1st Edition price. The bounds of the fill (real prices, the slab floor, a grade 10 above
+    its grade 9) win over this order, so a few prints stay below."""
+    stats = collections.Counter()
+    for f, u in run_pairs(items):
+        fp, up = f.p, u.p
+        if fp["market"] < up["market"]:
+            if fp.get("marketEstimated"):
+                fp["market"] = up["market"]
+                stats["1st Edition raw estimates raised"] += 1
+            elif up.get("marketEstimated"):
+                up["market"] = fp["market"]
+                stats["Unlimited raw estimates lowered"] += 1
+        for company in ("psa", "cgc", "bgs"):
+            keys = [k for _, k in LADDERS[company]]
+            top = len(keys) - 1
+            for p, other, raise_ in ((fp, up, True), (up, fp, False)):
+                real = {k: p["graded"][k] for k in p["gradedReal"] if k in keys}
+                g, o = p["graded"], other["graded"]
+                for i, k in enumerate(keys):
+                    if k in real or (g[k] >= o[k] if raise_ else g[k] <= o[k]):
+                        continue
+                    lo, hi = bounds(keys, i, real, company)
+                    v = round(min(max(o[k], lo), hi), 2)
+                    if v != g[k]:
+                        g[k] = v
+                        stats["1st Edition graded estimates raised" if raise_ else
+                              "Unlimited graded estimates lowered"] += 1
+                if keys[top] not in real:
+                    g[keys[top]] = max(g[keys[top]], math.ceil(TOP_PREMIUM * g[keys[top - 1]] * 100) / 100)
+    return stats
+
+
+def run_inversions(items):
+    """The count of 1st Edition prices (raw and graded) below the Unlimited price of the same print and key."""
+    n = 0
+    for f, u in run_pairs(items):
+        n += f.p["market"] < u.p["market"] - 0.005
+        n += sum(f.p["graded"][k] < u.p["graded"][k] - 0.005 for k in ALL_KEYS)
+    return n
+
+
 # ---------------------------------------------------------------- check and report
 
 def swift_floors():
@@ -544,6 +612,8 @@ def check(items):
         elif any(k not in graded for k in real):
             bad["gradedReal key with no price"] += 1
     print(f"{len(items)} prints checked")
+    print(f"NOTE: {run_inversions(items)} 1st Edition prices are below their Unlimited price, where real prices "
+          f"or the bounds of the ladder hold them (run_order)")
     if bad:
         for k, v in bad.items():
             print(f"FAIL {k}: {v}")
@@ -627,6 +697,7 @@ def main():
         report(items, fit)
         return 0
     stats = fill(items, fit)
+    stats.update(run_order(items))
     save(files)
     for k, v in stats.items():
         print(f"{k}: {v}")

@@ -402,6 +402,24 @@ final class GameTests {
             Destamp.migrate(&card)
             check(card.print.image == print.image, "an old Jungle card did not get the patched image")
         }
+        // A 1st Edition raw price is at least its Unlimited raw price. PPT once gave 1st Edition Shining Charizard
+        // the price of one played copy ($19.99), below the Unlimited price ($1300).
+        let twoRuns = ["jungle", "fossil", "team-rocket", "gym-heroes", "gym-challenge", "neo-genesis", "neo-discovery",
+                       "neo-revelation", "neo-destiny"]
+        var below: [String] = []
+        for slug in twoRuns {
+            guard let firstSlug = SetLibrary.firstEdition(of: slug) else { continue }
+            var unlimitedRaw: [String: Double] = [:]
+            for p in SetLibrary.set(slug).prints { unlimitedRaw[p.num + p.variant] = p.baseMarket }
+            for p in SetLibrary.set(firstSlug).prints {
+                let variant = p.variant.replacingOccurrences(of: ", 1st Edition)", with: ")")
+                    .replacingOccurrences(of: " (1st Edition)", with: "")
+                if let u = unlimitedRaw[p.num + variant], let f = p.baseMarket, f < u - 0.005 {
+                    below.append("\(firstSlug) \(p.name)")
+                }
+            }
+        }
+        check(below.isEmpty, "1st Edition raw prices below Unlimited: \(below.prefix(5))")
     }
 
     // MARK: - Seasons and the save (docs/05-pricing-and-market.md)

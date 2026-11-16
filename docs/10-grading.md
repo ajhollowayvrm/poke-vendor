@@ -329,7 +329,14 @@ in steps of 0.5. The real sales data holds 15 of them (PSA 6 to 10, CGC
   so real prices can break this rule, for example a real PSA 9 above a
   real PSA 10. Then the real prices with the most sales stay real, and
   the others become estimates.
-- A card with no raw price gets an estimate too.
+- A card with no raw price gets an estimate too. The raw price is the
+  Near Mint price. When PPT has no Near Mint sales for a print, it gives
+  the price of a played copy (Lightly Played to Damaged). The export
+  tool `tools/export/rip_set.py` does not use that price, so the print
+  gets an estimate from its real graded prices.
+- A 1st Edition price is at least the Unlimited price of the same print,
+  at the same grade and at each lower grade. See
+  [13-sets.md](13-sets.md#1st-edition-and-unlimited).
 
 Each print in a set file has the optional list `gradedReal`: the keys
 with a real price. Every other key is an estimate. A print also has

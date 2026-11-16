@@ -110,9 +110,6 @@ sealed products from them.
   2022 (their cards have no prices in the data), and the POP Series
   (its set file puts nine POP packs in one pack, so it needs a set file
   for each POP pack).
-- **Known data fault:** some card images in the Wizards of the Coast
-  sets show the 1st Edition stamp, but the set files use Unlimited
-  prints and prices.
 - 12 older sets have no sealed product in the catalog, and no loose
   pack price. Their cards still show up as singles.
 
@@ -141,9 +138,25 @@ Neo Discovery, Neo Revelation, and Neo Destiny. A pack holds one run.
 - **In the wild.** Vendors, sellers, and collections draw a card from
   the Unlimited set. 15% of the time it is 1st Edition instead, because
   the 1st Edition run was far smaller.
-- **Graded prices.** The graded sales data does not split the two
-  runs, so both files hold the same real graded prices for a card. The
-  raw prices are split.
+- **Graded prices.** The eBay sales of a card mix the two runs. PPT
+  also lists the sales of each printing (`salesByPrinting`), but often
+  for one printing only, usually Unlimited. A listed printing gets its
+  own sales. The other printing gets the other sales: all the sales
+  minus the listed sales, as a count and a total value for each grade.
+  The two lists do not always cover the same days. Thus a grade gets
+  no price when the average of the other sales is outside the lowest
+  and the highest sale. A 1st Edition slab sells for a median of about
+  1.6x the Unlimited slab.
+- **Order of the runs.** The 1st Edition run was far smaller, so a 1st
+  Edition price is at least the Unlimited price of the same print, at
+  the same grade and at each lower grade of the same company.
+  `rip_set.py` removes a real price that breaks this order: of the two
+  prices, the price with fewer sales goes (on a tie, the 1st Edition
+  price). A 1st Edition raw price below the Unlimited raw price goes
+  too. Then `fill_graded.py` fills the gaps, raises a 1st Edition
+  estimate to the Unlimited price, and lowers an Unlimited estimate to
+  the 1st Edition price. Real prices and the ladder rules win, so about
+  170 of 40,080 graded prices stay a little below Unlimited.
 
 ## Sets done so far
 

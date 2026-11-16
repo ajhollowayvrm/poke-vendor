@@ -18,11 +18,14 @@ slots, the 1st Edition prints with their 1st Edition prices, and the 1st Edition
 Edition scan for these sets, so an Unlimited print whose image has a patch in Resources/destamp.json gets "#destamp" on
 its image URL, and the app lays the patch over the stamp (tools/images/destamp.py).
 
+A card with two runs gets the eBay sales of its own run (run_sales), and the prices of the two runs keep their order:
+1st Edition at or above Unlimited (run_order). A raw price from a played copy is not used (near_mint).
+
 tools/export/catalog.py writes the sealed products.
 
 The rows with no card (Basic Energy, code card) are not exported. The app adds the Basic Energy.
 """
-import collections, glob, json, os, re, sys
+import collections, glob, json, math, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "..")
@@ -182,21 +185,62 @@ GRADES = app_grades()
 _EBAY = None
 
 
-def ebay_sales(pc):
-    """The eBay sales by grade of a PPT card. The newer pull in tools/ppt/cache_ebay wins when it has sales for the card.
-    Without them, the older pull in tools/ppt/cache gives the sales."""
+def ebay_of(pc):
+    """The eBay data of a PPT card. The newer pull in tools/ppt/cache_ebay wins when it has sales for the card.
+    Without them, the older pull in tools/ppt/cache gives the data."""
     global _EBAY
     if _EBAY is None:
         _EBAY = {}
         for f in glob.glob(os.path.join(EBAY_CACHE, "*.json")):
             data = json.load(open(f))
             for c in (data.get("data", []) if isinstance(data, dict) else data):
-                sales = (c.get("ebay") or {}).get("salesByGrade")
-                if c.get("id") and sales:
-                    _EBAY[c["id"]] = sales
-    if pc.get("id") in _EBAY:
-        return _EBAY[pc["id"]]
-    return ((pc.get("ebay") or {}).get("salesByGrade")) or {}
+                if c.get("id") and (c.get("ebay") or {}).get("salesByGrade"):
+                    _EBAY[c["id"]] = c["ebay"]
+    return _EBAY.get(pc.get("id")) or pc.get("ebay") or {}
+
+
+def two_runs(pc):
+    """True when a PPT card has a 1st Edition printing and a printing that is not 1st Edition."""
+    firsts = [J.ppt_print(p)[1] for p in (pc.get("variants") or {})]
+    return any(firsts) and not all(firsts)
+
+
+def ebay_sales(pc, printing=None):
+    """The eBay sales by grade of a PPT card. A card with two print runs gets the sales of the run of `printing`
+    (run_sales). The sales of all the printings mix the two runs, and a 1st Edition slab sells for about 2x an
+    Unlimited slab."""
+    e = ebay_of(pc)
+    if printing and two_runs(pc):
+        return run_sales(e, printing)
+    return e.get("salesByGrade") or {}
+
+
+def run_sales(e, printing):
+    """The sales by grade of one printing. eBay lists the sales of some printings in `salesByPrinting`, often of
+    one printing only. A printing that is not in the list gets the other sales of each grade: the count and the total
+    value of all the sales, minus those of the listed printings. A grade with no other sales has no price. With no
+    list, the sales of all the printings stay.
+
+    The two lists do not always cover the same days. Then the difference is not a set of real sales, and the grade
+    has no price. The check: the average of the other sales must be between the lowest and the highest sale of all
+    the sales."""
+    every = e.get("salesByGrade") or {}
+    listed = e.get("salesByPrinting") or {}
+    if printing in listed:
+        return listed[printing].get("salesByGrade") or {}
+    if not listed:
+        return every
+    out = {}
+    for g, a in every.items():
+        others = [(v.get("salesByGrade") or {}).get(g) or {} for v in listed.values()]
+        count = (a.get("count") or 0) - sum(o.get("count") or 0 for o in others)
+        total = (a.get("totalValue") or 0) - sum(o.get("totalValue") or 0 for o in others)
+        if count < 1 or total <= 0:
+            continue
+        average = total / count
+        if (a.get("minPrice") or 0) <= average <= (a.get("maxPrice") or math.inf):
+            out[g] = {"averagePrice": average, "count": count}
+    return out
 
 
 def ppt_matches(slug, cards):
@@ -239,9 +283,9 @@ def ppt_matches(slug, cards):
     return out
 
 
-def graded(pc):
+def graded(pc, printing=None):
     """Return ({grade key: price}, {grade key: sale count}) for the grades with sales."""
-    return graded_from_sales(ebay_sales(pc))
+    return graded_from_sales(ebay_sales(pc, printing))
 
 
 def graded_from_sales(sales):
@@ -249,16 +293,26 @@ def graded_from_sales(sales):
     prices, counts = {}, {}
     for g in GRADES:
         s = sales.get(g) or {}
-        p = (s.get("smartMarketPrice") or {}).get("price") or s.get("medianPrice")
+        p = (s.get("smartMarketPrice") or {}).get("price") or s.get("medianPrice") or s.get("averagePrice")
         if p:
             prices[g] = round(p, 2)
             counts[g] = s.get("count") or 1
     return prices, counts
 
 
-def price_print(matches, variant):
-    """Return (market price, graded prices, graded sale counts, image URL) for one print of a card."""
+def near_mint(v):
+    """True when the market price of a PPT printing comes from Near Mint sales. PPT uses a played condition (Lightly
+    Played to Damaged) when the printing has no Near Mint sales. A played price is not the price of the card in the
+    app, so the print gets no raw price, and tools/export/fill_graded.py estimates one from its graded prices."""
+    return (v.get("conditionUsed") or "Near Mint").startswith("Near Mint")
+
+
+def price_print(matches, variant, run=None):
+    """Return (market price, graded prices, graded sale counts, image URL) for one print of a card. `run` True or
+    False asks for the 1st Edition or the Unlimited printing of the print, in place of the run of `variant`."""
     kind, first, _, _ = J.list_print(variant)
+    if run is not None:
+        first = run
     pat = J.pattern_of(variant)
     for pc in matches:
         if (J.pattern_of(pc.get("name")) or None) != pat:
@@ -268,9 +322,52 @@ def price_print(matches, variant):
             if pat and pk == "Holo" and kind == "Reverse holo":
                 pk = "Reverse holo"
             if pk == kind and pfirst == first:
-                prices, counts = graded(pc)
-                return v.get("marketPrice"), prices, counts, pc.get("imageCdnUrl800") or pc.get("imageUrl")
+                prices, counts = graded(pc, printing)
+                market = v.get("marketPrice") if near_mint(v) else None
+                return market, prices, counts, pc.get("imageCdnUrl800") or pc.get("imageUrl")
     return None, {}, {}, None
+
+
+def run_order(price, other, first):
+    """Apply the order of the two print runs to the prices of one print. `price` is the result of price_print for
+    this run, and `other` is the result for the other run. The 1st Edition run was far smaller, so a 1st Edition
+    price is never below the Unlimited price of the same print at the same grade or a lower grade (of the same
+    grading company). When two real prices break this order, the price with fewer sales becomes missing, and
+    tools/export/fill_graded.py estimates it. On a tie, and for the raw price (it has no sale count), the 1st Edition
+    price becomes missing."""
+    market, grades, counts, image = price
+    o_market, o_grades, o_counts, _ = other
+    if first and market and o_market and market < o_market:
+        market = None
+
+    def broken(g, p, h, o):
+        """True when this price p at grade key g and the other price o at grade key h break the order."""
+        if company_of(g) != company_of(h):
+            return False
+        if first:
+            return grade_of(h) <= grade_of(g) and p < o
+        return grade_of(h) >= grade_of(g) and p > o
+
+    grades, counts = dict(grades), dict(counts)
+    for g, p in list(grades.items()):
+        mine = counts.get(g, 1)
+        for h, o in o_grades.items():
+            theirs = o_counts.get(h, 1)
+            if broken(g, p, h, o) and (mine < theirs or (mine == theirs and first)):
+                del grades[g]
+                counts.pop(g, None)
+                break
+    return market, grades, counts, image
+
+
+def company_of(key):
+    """The grading company of a grade key: "psa9" -> "psa"."""
+    return re.match(r"[a-z]+", key).group(0)
+
+
+def grade_of(key):
+    """The grade of a grade key: "cgc9_5" -> 9.5."""
+    return float(key[len(company_of(key)):].replace("_", "."))
 
 
 def pack_cost(slug, first=False):
@@ -329,6 +426,7 @@ def export(slug, first=False):
     runs = s["runs"][run:run + 1]
     out_slug, out_name = (f"{slug}-1st-edition", f"{name} 1st Edition") if first else (slug, name)
     patches = {} if first or not os.path.exists(DESTAMP) else json.load(open(DESTAMP))
+    two_runs_set = any("1st Edition" in r for r in s["runs"])
     prints, index, slots = [], {}, []
     has_energy_row = False
     for slot, res in O.final_odds(slug, s, O.era_pool(sets, eras), eras).items():
@@ -354,7 +452,10 @@ def export(slug, first=False):
                     for v in hits:
                         key = (c["num"], v)
                         if key not in index:
-                            market, grades, sales, image = price_print(matches[c["num"]], v)
+                            price = price_print(matches[c["num"]], v)
+                            if two_runs_set:
+                                price = run_order(price, price_print(matches[c["num"]], v, run=not first), first)
+                            market, grades, sales, image = price
                             image = destamped(image, patches)
                             index[key] = len(prints)
                             prints.append({"num": c["num"], "name": c["name"], "rarity": c["rarity"],
