@@ -346,11 +346,22 @@ extension GameStore {
         if let s = series(.ripUntil), s.lastEpisodeDay != data.day { formats.append(.ripUntil) }
         if let s = series(.pnl), s.lastEpisodeDay != data.day {
             let joining = items.filter { !s.items.contains($0.id) }
-            if joining.allSatisfy({ challengeBlock($0.id) == nil }), joining.reduce(0, { $0 + $1.paid }) <= s.cash + 0.001 {
+            if joining.allSatisfy({ challengeBlock($0.id) == nil }), joining.reduce(0, { $0 + joinCost($1.id) }) <= s.cash + 0.001 {
                 formats.append(.pnl)
             }
         }
         return formats
+    }
+
+    /// What an item costs the challenge cash when it joins. An item bought during the challenge costs what the player
+    /// paid. An older item buys in at today's market, so an old cheap buy cannot pad the P&L.
+    func joinCost(_ id: UUID) -> Double {
+        let s = series(.pnl)
+        if let c = card(id) {
+            return c.acquiredDay >= (s?.startDay ?? 0) ? (c.paid ?? c.market) : c.market
+        }
+        guard let item = data.sealed.first(where: { $0.id == id }) else { return 0 }
+        return item.acquiredDay >= (s?.startDay ?? 0) ? item.paid : market(of: item)
     }
 
     /// Readies a recorded rip. For the P&L challenge, the items join it first, so the pulls and the bulk join too.
@@ -381,22 +392,21 @@ extension GameStore {
         else if let item = data.sealed.first(where: { $0.id == id }) { found = (item.paid, item.acquiredDay, item.status, item.pc) }
         else { found = nil }
         guard let found else { return "The item is not in Inventory." }
-        guard let paid = found.paid else { return "A pulled card joins only with its rip." }
-        if found.day < s.startDay { return "Only items bought on or after day \(s.startDay + 1) can join." }
+        // A card pulled before the challenge has no price paid. It joins at market, as other older items do.
+        if found.paid == nil, found.day >= s.startDay { return "A pulled card joins only with its rip." }
         if found.status != nil { return "The item has a status." }
         if found.aside { return "The item is in the PC, a master set, or the showcase." }
-        if paid > s.cash + 0.001 { return "The challenge cash is \(money(s.cash))." }
+        if joinCost(id) > s.cash + 0.001 { return "The challenge cash is \(money(s.cash))." }
         return nil
     }
 
-    /// Adds items to the challenge. Each one takes its amount paid out of the challenge cash. Returns the count.
+    /// Adds items to the challenge. Each one takes its join cost out of the challenge cash (`joinCost`). Returns the count.
     @discardableResult
     func addToChallenge(_ ids: Set<UUID>) -> Int {
         var added = 0
         for id in ids.sorted(by: { $0.uuidString < $1.uuidString }) {
             guard challengeBlock(id) == nil, let i = data.shorts.series.firstIndex(where: { $0.format == .pnl }) else { continue }
-            let paid = card(id)?.paid ?? data.sealed.first { $0.id == id }?.paid ?? 0
-            data.shorts.series[i].cash -= paid
+            data.shorts.series[i].cash -= joinCost(id)
             data.shorts.series[i].items.append(id)
             added += 1
         }

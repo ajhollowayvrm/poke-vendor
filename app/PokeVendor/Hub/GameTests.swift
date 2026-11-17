@@ -33,6 +33,7 @@ final class GameTests {
         timed("seasons", seasonsAndSave)
         timed("opportunities", opportunities)
         timed("boxes", boxes)
+        timed("series", seriesJoin)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -334,6 +335,30 @@ final class GameTests {
         } else {
             check(false, "could not buy from a shelf")
         }
+    }
+
+    // MARK: - Record today's episode (docs/32-short-form-video.md)
+
+    /// An item bought before the P&L challenge joins at today's market. One bought during it joins at its price paid.
+    private func seriesJoin() {
+        fresh()
+        store.startPnL(start: 1_000, goal: 2, days: 14)
+        guard let s = store.series(.pnl), let product = SetLibrary.catalog.first(where: { $0.market > 20 && $0.market < 300 }),
+              let old = store.addTestProduct(product.id), let new = store.addTestProduct(product.id),
+              let i = store.data.sealed.firstIndex(where: { $0.id == old.id }) else {
+            return check(false, "no P&L challenge or product for the join test")
+        }
+        store.data.sealed[i].acquiredDay = s.startDay - 1
+        let market = store.market(of: store.data.sealed[i])
+        check(store.challengeBlock(old.id) == nil, "an older item cannot join the challenge: \(store.challengeBlock(old.id) ?? "")")
+        check(abs(store.joinCost(old.id) - market) < 0.01, "an older item joins at \(money(store.joinCost(old.id))), not its market \(money(market))")
+        check(abs(store.joinCost(new.id) - new.paid) < 0.01, "a new item joins at \(money(store.joinCost(new.id))), not its price \(money(new.paid))")
+        let items = store.data.sealed.filter { $0.id == old.id || $0.id == new.id }
+        check(store.recordableSeries(items).contains(.pnl), "the P&L challenge cannot record a rip of these items")
+        store.prepareRecording(items, for: [.pnl])
+        let cash = store.series(.pnl)?.cash ?? 0
+        check(abs(1_000 - cash - market - new.paid) < 0.01, "the challenge cash is \(money(cash)) after the join")
+        check(store.isChallengeItem(old.id) && store.isChallengeItem(new.id), "the recorded items did not join the challenge")
     }
 
     // MARK: - Collections (docs/33-collections.md)

@@ -120,6 +120,24 @@ The player rips, on film, until a card reaches the target.
   each episode has a 20% chance of a backlash: comments say "this is
   just gambling". It costs authenticity −0.03.
 
+### Record today's episode
+
+The main way to make a daily episode.
+
+1. Each daily series card in the social hub has "Record today's
+   episode" until today's episode is up.
+2. The button opens a picker of the sealed product in Inventory: no
+   status, not in the PC. For the P&L challenge, the picker shows only
+   items that can join, with what each one takes from the challenge
+   cash.
+3. "Record & Rip" starts the normal rip, recorded for that series only.
+   P&L items join the challenge first.
+4. The summary of the last pack has the post button (see Record & Rip
+   below).
+
+The P&L card also has "Post today's episode without a rip", for a day
+with sales and no rip.
+
 ### Record & Rip
 
 The player films a rip on purpose for the running series.
@@ -157,10 +175,13 @@ result each day.
 - **The challenge cash.** The start amount is a book number, not a
   second wallet. The cash stays in the one wallet.
 - **Challenge items.** The player adds items to the challenge from
-  Inventory: select mode has "Challenge". Each item takes its amount
-  paid out of the challenge cash. The item must have no status, and it
-  must be bought on or after the day the challenge started. A pulled card
-  cannot be added on its own.
+  "Record today's episode", or from Inventory select mode ("Challenge").
+  The item must have no status. What it takes out of the challenge cash:
+  - An item bought on or after the day the challenge started: its amount
+    paid.
+  - An older item: today's market. An old cheap buy cannot pad the P&L.
+  - A card pulled during the challenge cannot join on its own. It joins
+    with its rip.
   - The cards from a rip of a challenge product join the challenge. So
     does the bulk group of that rip.
   - A sale of a challenge item, on any channel, puts the money after
@@ -243,6 +264,7 @@ about $1,200. A normal episode of 20,000 views pays about $1.20.
 - **The rip summary** of the last pack has "Post episode" or "Post the
   finale", and on a finale "Post the finale and give the card away".
 - **The show summary** has "Post a show vlog".
+- **Each daily series card** has "Record today's episode".
 - **Inventory select mode** has "Challenge" while a P&L challenge runs.
 - **Inventory select mode and the sealed detail screen** have "Record &
   Rip" when a running series can take the rip.

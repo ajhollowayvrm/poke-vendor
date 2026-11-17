@@ -260,6 +260,7 @@
 		E51648A621E71D0AE6906BDC /* fusion-strike.json in Resources */ = {isa = PBXBuildFile; fileRef = 5430A1321F8CBDA7347D1045 /* fusion-strike.json */; };
 		E52E815BE6C24DE5EBA27591 /* ShortsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */; };
 		E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */ = {isa = PBXBuildFile; fileRef = 47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */; };
+		E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */; };
 		E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */ = {isa = PBXBuildFile; fileRef = B2AC5F4521315B8D910BC433 /* holon-phantoms.json */; };
 		E6E2B17CADD62E764AEF5BD3 /* Opportunities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358CC15CDFF4392C2418EBCB /* Opportunities.swift */; };
 		E773086037F13A9C2D65807E /* DetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544120DEF70C6BCBC2EF918A /* DetailViews.swift */; };
@@ -322,6 +323,7 @@
 		20D2A072C747DEAB8413196A /* Supplies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supplies.swift; sourceTree = "<group>"; };
 		22DCF071A80BA4398E968082 /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
 		2383AC5B43DFCF54E5DC0845 /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
+		25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordEpisodeSheet.swift; sourceTree = "<group>"; };
 		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
 		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
 		28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSealedBuylist.swift; sourceTree = "<group>"; };
@@ -795,6 +797,7 @@
 		7F6F6FB8D7BA41D01B439268 /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */,
 				3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */,
 				820C299F6D8FD690239ED0CC /* SocialViews.swift */,
 			);
@@ -1265,6 +1268,7 @@
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
 				F85DCACE4F481C99EAC7F29B /* PriceCycle.swift in Sources */,
 				90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */,
+				E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */,
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */,
 				3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */,

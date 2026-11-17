@@ -4,7 +4,12 @@ import SwiftUI
 /// (docs/32-short-form-video.md, Screens).
 struct ShortsSection: View {
     @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
     @State private var starting = false
+    /// The series that "Record today's episode" picks items for.
+    @State private var recordFor: SeriesFormat?
+    /// The items to rip, held until the picker sheet is gone, so the rip can open.
+    @State private var toRip: (items: [SealedItem], format: SeriesFormat)?
     @State private var sponsored = false
     @State private var note: String?
     @State private var ending: ShortSeries?
@@ -37,7 +42,15 @@ struct ShortsSection: View {
                     .font(.caption2).foregroundStyle(Theme.muted)
             }
         }
+        #if DEBUG
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-recordsheet"), store.series(.pnl) != nil { recordFor = .pnl } }
+        #endif
         .sheet(isPresented: $starting) { StartSeriesSheet() }
+        .sheet(isPresented: Binding(get: { recordFor != nil }, set: { if !$0 { recordFor = nil } }), onDismiss: startRecordedRip) {
+            if let recordFor {
+                RecordEpisodeSheet(format: recordFor) { toRip = ($0, recordFor) }
+            }
+        }
         .confirmationDialog("End \(ending?.name ?? "the series")?", isPresented: Binding(get: { ending != nil }, set: { if !$0 { ending = nil } }),
                             titleVisibility: .visible) {
             Button("End the series", role: .destructive) {
@@ -65,19 +78,22 @@ struct ShortsSection: View {
             case .ripUntil:
                 Text("\(s.packs) packs · \(money(s.spent)) spent · best \(s.bestName.map { "\($0) \(money(s.bestValue))" } ?? "none yet")")
                     .font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                Text(s.lastEpisodeDay == store.day ? "Today's episode is up."
-                     : "Rip in Normal or Fast mode. The last pack's summary posts the episode.")
-                    .font(.caption).foregroundStyle(s.lastEpisodeDay == store.day ? Theme.green : Theme.muted)
+                if s.lastEpisodeDay == store.day {
+                    Text("Today's episode is up.").font(.caption).foregroundStyle(Theme.green)
+                } else {
+                    recordButton(.ripUntil)
+                }
             case .pnl:
                 let value = store.challengeValue(s)
                 Text("Day \(store.day - s.startDay + 1) of \(s.dayLimit) · \(money(value)) (\(signedMoney(value - s.start))) · goal \(money(s.goal))")
                     .font(.caption.monospaced())
                     .foregroundStyle(value >= s.start ? Theme.green : Theme.orange)
-                Text("Cash \(money(s.cash)) · \(s.items.count) item\(s.items.count == 1 ? "" : "s"). Add items in Inventory: Select, then Challenge.")
+                Text("Cash \(money(s.cash)) · \(s.items.count) item\(s.items.count == 1 ? "" : "s") in the challenge")
                     .font(.caption2).foregroundStyle(Theme.muted)
+                if s.lastEpisodeDay != store.day { recordButton(.pnl) }
                 let finale = store.pnlFinaleReady(s)
                 let block = store.shortBlock(s, long: finale)
-                Button(finale ? "Post the finale" : "Post today's episode") {
+                Button(finale ? "Post the finale" : "Post today's episode without a rip") {
                     report(store.postPnLEpisode(sponsored: sponsored))
                 }
                 .buttonStyle(.bordered)
@@ -94,6 +110,23 @@ struct ShortsSection: View {
         }
         .padding(.vertical, 6)
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+
+    /// Opens the picker: the player chooses sealed product, then the rip records for this series.
+    private func recordButton(_ format: SeriesFormat) -> some View {
+        Button { recordFor = format } label: {
+            Label("Record today's episode", systemImage: "record.circle").frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(.red)
+    }
+
+    /// The picker sheet is gone, so the rip can open. Items join the P&L challenge first.
+    private func startRecordedRip() {
+        guard let pending = toRip else { return }
+        toRip = nil
+        store.prepareRecording(pending.items, for: [pending.format])
+        nav.startRip(pending.items, recording: [pending.format])
     }
 
     /// The shorts that the player can post now: today's vlog and the grading reveals.

@@ -185,6 +185,16 @@ extension HubView {
             }
         }
         // Screenshot aid: `-lookinside <productID>` adds the product and opens its Inventory screen. Tap the box.
+        // Screenshot aid: `-recordsheet` opens the social hub with a P&L challenge and the picker for today's episode.
+        if args.contains("-recordsheet") {
+            store.startRun()
+            store.createAccount("ajrips")
+            store.startPnL(start: 1_000, goal: 2, days: 30)
+            store.startRipSeries(target: 500)
+            for _ in 0..<3 { store.addTestPack() }
+            store.addTestProduct("565630")
+            nav.path = [.social]
+        }
         if let i = args.firstIndex(of: "-lookinside"), i + 1 < args.count {
             store.startRun()
             if let item = store.addTestProduct(args[i + 1]) { nav.path = [.sealed(item.id)] }
