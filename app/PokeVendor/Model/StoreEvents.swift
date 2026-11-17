@@ -182,14 +182,18 @@ extension GameStore {
         switch kind {
         case .tournament:
             let fees = Double(players) * plan.tournamentFee
-            let wanted = max(1, Int((Double(players) * Balance.tournamentPrizePerPlayer).rounded()))
-            let given = givePrizePacks(wanted)
+            // No players, no prizes. One player or more gets at least one pack.
+            let wanted = players == 0 ? 0 : max(1, Int((Double(players) * Balance.tournamentPrizePerPlayer).rounded()))
+            let (given, cost) = givePrizePacks(wanted)
             if fees > 0 { addLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
             record.revenue += fees
+            // The packs left the store at what the player paid for them.
+            record.costs += cost
             line = "\(players) players came to the \(kind.name) at \(s.name). You gave \(given) pack\(given == 1 ? "" : "s") as prizes."
             if fees > 0 { line += " Entry fees: \(money(fees))." }
             if given < wanted { line += " The store had too few loose packs. Fewer players will come next time." }
-            let support = Double(given) / Double(wanted)
+            // With no players, the standing does not move.
+            let support = wanted == 0 ? Balance.eventStandingTarget : Double(given) / Double(wanted)
             let moved = plan.standing + (support - Balance.eventStandingTarget) * Balance.eventStandingStep
             plan.standing = min(max(moved, Balance.eventStandingRange.lowerBound), Balance.eventStandingRange.upperBound)
         case .league:
@@ -208,12 +212,15 @@ extension GameStore {
         return [line]
     }
 
-    /// Gives the cheapest loose packs in the store as prizes. Returns how many it gave.
-    private func givePrizePacks(_ wanted: Int) -> Int {
-        let packs = storeStock.sealed.filter { $0.packs == 1 }.sorted { realMarket(of: $0) < realMarket(of: $1) }
-        let ids = Set(packs.prefix(wanted).map(\.id))
+    /// Gives the cheapest loose packs in the store as prizes. A known fake never goes out as a prize. Returns how
+    /// many it gave and what the player paid for them.
+    private func givePrizePacks(_ wanted: Int) -> (count: Int, cost: Double) {
+        guard wanted > 0 else { return (0, 0) }
+        let packs = storeStock.sealed.filter { $0.packs == 1 && !$0.isKnownFake }.sorted { realMarket(of: $0) < realMarket(of: $1) }
+        let given = Array(packs.prefix(wanted))
+        let ids = Set(given.map(\.id))
         data.sealed.removeAll { ids.contains($0.id) }
-        return ids.count
+        return (given.count, given.reduce(0) { $0 + $1.paid })
     }
 
     // MARK: - Calendar

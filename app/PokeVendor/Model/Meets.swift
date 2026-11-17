@@ -147,13 +147,14 @@ extension GameStore {
         seedContacts()
         let league = kind == .leagueNight
         let shop = league ? leagueShop(day: data.day) : nil
-        let venue = Venue(kind: league ? .leagueNight : .meet,
+        var venue = Venue(kind: league ? .leagueNight : .meet,
                           name: league ? "League night · \(shop?.rawValue ?? "")" : kind.label,
                           detail: "\(kind.place) · \(kind.hoursText)\(browse ? " · browsing" : "")", open: kind.open, close: kind.close,
                           hours: Balance.meetHours, visitorsMean: browse ? 0 : league ? Balance.leagueVisitors : Balance.meetVisitors,
                           sellerShare: Balance.meetSellerShare, regularShare: Balance.meetRegularShare,
-                          hasFloor: browse, hasTable: !browse, approachChance: Balance.meetBrowseApproach,
-                          fakeSource: .stranger, shop: shop, crowd: kind.crowd)
+                          hasFloor: browse, hasTable: !browse, fakeSource: .stranger, shop: shop, crowd: kind.crowd)
+        // Only a player who browses walks around, so only they get stopped (docs/17, Browse a meet).
+        if browse { venue.approachChance = Balance.meetBrowseApproach }
         save()
         return ShowSession(venue: venue, store: self, vendors: browse ? meetBinders(kind, shop: shop) : [],
                            regulars: browse ? [] : meetRegulars(kind))
@@ -166,10 +167,15 @@ extension GameStore {
         for _ in 0..<Int.random(in: kind.browseBinders) {
             var name = VendorKind.randomName(.collector)
             for _ in 0..<20 where used.contains(name) { name = VendorKind.randomName(.collector) }
-            guard used.insert(name).inserted else { continue }
+            // After 20 tries, a repeated name is fine. The binder count stays what the doc says.
+            used.insert(name)
             binders.append(Vendor(name: name, kind: .collector, items: VendorFloor.stock(.collector)))
         }
-        if let shop { binders.insert(Vendor(name: "\(shop.rawValue) case", kind: .gameShop, items: VendorFloor.stock(.gameShop)), at: 0) }
+        // The shop's case is the shop itself: its standing sets the prices and the fake risk.
+        if let shop {
+            binders.insert(Vendor(name: "\(shop.rawValue) case", kind: .gameShop, items: VendorFloor.stock(.gameShop),
+                                  contactID: shopContactID(shop)), at: 0)
+        }
         return binders
     }
 

@@ -1516,15 +1516,16 @@ final class ShowSession {
 
     // MARK: Coin flips
 
-    /// Flips happen at shows and meets. At the player's own store, the price on the shelf is the price.
-    var canFlip: Bool { venue.isShow || venue.kind == .meet }
+    /// Flips happen at shows, meets, and league night. At the player's own store, the price on the shelf is the price.
+    var canFlip: Bool { venue.isShow || venue.kind == .meet || venue.kind == .leagueNight }
 
     /// The full price of a flip with this visitor: their offer when they proposed it, else the player's ask to a
     /// buyer, or the seller's price.
     func flipFull(_ v: Visitor) -> Double? {
         if let price = v.flipPrice { return price }
         switch v.intent {
-        case .buy: return v.item == nil ? nil : askingTotal(v)
+        // A PC item never goes under its PC price, so the player does not flip for one.
+        case .buy: return v.item == nil || v.item?.pc == true || v.extra?.pc == true ? nil : askingTotal(v)
         case .sell: return v.offer
         case .trade: return nil
         }
@@ -1768,12 +1769,14 @@ final class ShowSession {
     }
 
     /// The seller can take an item from the player's table instead of cash, valued at 110% of market.
+    /// What a table item is worth to a seller in place of cash: 110% of market. A PC item counts at its PC price.
+    func tradeInsteadValue(_ item: ShowItem) -> Double { item.pc ? item.dealMarket : item.market * Balance.tradeInstead }
+
     func offerTradeForGoods(_ itemID: UUID) {
         guard var v = current, v.intent == .sell, !v.tradeAsked, let goods = v.goods, let item = table.first(where: { $0.id == itemID }),
               !store.isChallengeItem(item.id) else { return }
         v.tradeAsked = true
-        // A PC item counts at its PC price.
-        let value = item.pc ? item.dealMarket : item.market * Balance.tradeInstead
+        let value = tradeInsteadValue(item)
         if v.type == .closetCleaner, Bool.random() {
             v.line = "I'd rather have cash."
         } else if value < v.limit - 0.001 {

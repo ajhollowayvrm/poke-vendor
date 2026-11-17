@@ -66,6 +66,8 @@ struct Opportunity: Codable, Identifiable, Hashable {
     /// For a sealed buyer: the player's sealed item.
     var sealedID: UUID?
     var showID: UUID?
+    /// For a bulk buyer: how many bulk cards the price is for. The pay follows the bulk the player has at pickup.
+    var cards: Int?
     var answered = false
 }
 
@@ -130,8 +132,7 @@ extension GameStore {
         if bigSealed == nil { kinds.removeAll { $0 == .sealedBuyer } }
         guard let kind = forced ?? kinds.randomElement() else { return nil }
         let day = data.day + notice
-        let names = ["Marcus", "Jen", "Tyler", "Priya", "Dev", "Sam", "Alyssa", "Chris", "Nate", "Olivia"]
-        let who = names.randomElement() ?? "Someone"
+        let who = ShowSession.names.randomElement() ?? "Someone"
         switch kind {
         case .collectionForSale:
             return Opportunity(kind: kind, postedDay: data.day, day: day, title: "\(who) is selling a binder",
@@ -166,7 +167,7 @@ extension GameStore {
             let price = ShowSession.round(Double(bulkCards) * perCard)
             return Opportunity(kind: kind, postedDay: data.day, day: day, title: "A teacher wants your bulk",
                                detail: "A teacher runs a card club and wants all \(bulkCards) of your bulk cards for the kids. They pay \(money(price)) in cash, about \(Int((perCard * 100).rounded())) cents a card. A shop pays less, and only in credit. The pickup takes 1 hour.",
-                               hours: 1, price: price)
+                               hours: 1, price: price, cards: bulkCards)
         case .sealedBuyer:
             guard let item = bigSealed else { return nil }
             let price = ShowSession.round(market(of: item) * Double.random(in: Balance.sealedBuyerShare))
@@ -198,6 +199,13 @@ extension GameStore {
         let o = data.opportunities[i]
         if let block = opportunityBlock(o) { return .failed(block) }
         data.opportunities[i].answered = true
+        let outcome = take(o)
+        // A failed check changes nothing, so the player can try again later in the day.
+        if case .failed = outcome { data.opportunities[i].answered = false }
+        return outcome
+    }
+
+    private func take(_ o: Opportunity) -> OpportunityOutcome {
         switch o.kind {
         case .collectionForSale, .vintageCollection:
             guard let start = slot(for: o.hours) else { return .failed("Not enough time today.") }
@@ -275,16 +283,18 @@ extension GameStore {
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }
             let count = data.bulk.reduce(0) { $0 + $1.cards.count }
             let fakes = data.bulk.reduce(0) { $0 + ($1.fakes?.count ?? 0) }
+            // The offer was for `o.cards` cards. The teacher pays the same rate for the bulk the player has now.
+            let pay = o.cards.map { ShowSession.round(o.price * Double(count) / Double(max(1, $0))) } ?? o.price
             let groups = Dictionary(data.bulk.map { ($0.id, $0.value) }, uniquingKeysWith: { a, _ in a })
             data.bulk.removeAll()
-            addLedger(o.price, .sale, "\(count) bulk cards · a card club")
-            addReceipt(name: "\(count) bulk cards", venue: "A card club", price: o.price, net: o.price, paid: nil,
+            addLedger(pay, .sale, "\(count) bulk cards · a card club")
+            addReceipt(name: "\(count) bulk cards", venue: "A card club", price: pay, net: pay, paid: nil,
                        ids: Array(groups.keys), markets: groups)
             addReputation(2)
-            log("Sold \(count) bulk cards to a card club for \(money(o.price)).", cash: o.price)
+            log("Sold \(count) bulk cards to a card club for \(money(pay)).", cash: pay)
             save()
             // A teacher does not check for fakes. The kids do not know either.
-            return .done("Sold \(count) cards for \(money(o.price)).\(fakes > 0 ? " Some fakes went with them." : " The kids will love them.")")
+            return .done("Sold \(count) cards for \(money(pay)).\(fakes > 0 ? " Some fakes went with them." : " The kids will love them.")")
         case .sealedBuyer:
             guard let id = o.sealedID, let item = data.sealed.first(where: { $0.id == id }), item.status == nil, !item.setAside else {
                 return .failed("You no longer have it.")

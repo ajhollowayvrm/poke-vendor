@@ -228,7 +228,7 @@ struct DealButtons: View {
                     // Offer an item from the table instead of cash, at 110% of its market (docs/30).
                     Menu {
                         ForEach(session.table) { item in
-                            Button("\(item.name) · worth \(money(item.market * Balance.tradeInstead)) to them") { withAnimation { session.offerTradeForGoods(item.id) } }
+                            Button("\(item.name) · worth \(money(session.tradeInsteadValue(item))) to them") { withAnimation { session.offerTradeForGoods(item.id) } }
                         }
                     } label: {
                         Text("Offer a trade instead").frame(maxWidth: .infinity)
@@ -399,8 +399,10 @@ struct VisitorCard: View {
                     }
                 }
                 HStack {
-                    Text(visitor.tradeCash > 0 ? "Plus \(money(visitor.tradeCash)) cash" : "No cash").font(.subheadline.monospaced())
-                        .foregroundStyle(visitor.tradeCash > 0 ? Theme.green : Theme.muted)
+                    // A negative amount is cash that the player adds.
+                    Text(visitor.tradeCash > 0 ? "Plus \(money(visitor.tradeCash)) cash"
+                         : visitor.tradeCash < 0 ? "You add \(money(-visitor.tradeCash)) cash" : "No cash").font(.subheadline.monospaced())
+                        .foregroundStyle(visitor.tradeCash > 0 ? Theme.green : visitor.tradeCash < 0 ? Theme.orange : Theme.muted)
                     Spacer()
                     Text("Total \(money(visitor.tradeValue))").font(.subheadline.monospaced().weight(.semibold))
                         .contentTransition(.numericText())

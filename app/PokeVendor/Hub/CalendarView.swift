@@ -154,7 +154,7 @@ struct ShowDetailView: View {
                         row("Table fee", money(show.size.tableFee) + (show.size.days == 2 ? " for both days" : ""))
                         row("Walk-in entry", money(show.size.entryFee) + " a day")
                         row("Booking closes", show.lastBookingDay < store.day ? "Closed"
-                            : "Day \(show.lastBookingDay + 1) (\(show.lastBookingDay - store.day) days left)")
+                            : "\(GameCalendar.date(show.lastBookingDay).text) (\(show.lastBookingDay - store.day) days left)")
                     }
                     if show.booked {
                         Label("Your table is booked.", systemImage: "checkmark.seal.fill")
@@ -228,8 +228,8 @@ struct ShowDetailView: View {
     private func dates(_ show: CardShow) -> String {
         let days = show.startDay - store.day
         let when = days <= 0 ? "Today" : days == 1 ? "Tomorrow" : "In \(days) days"
-        return show.size.days == 2 ? "\(when) · Days \(show.startDay + 1)–\(show.endDay + 1), Sat and Sun"
-                                   : "\(when) · Day \(show.startDay + 1), Saturday"
+        return show.size.days == 2 ? "\(when) · Sat \(GameCalendar.date(show.startDay).shortText) and Sun \(GameCalendar.date(show.endDay).shortText)"
+                                   : "\(when) · Saturday, \(GameCalendar.date(show.startDay).text)"
     }
 
     private func row(_ label: String, _ value: String) -> some View {

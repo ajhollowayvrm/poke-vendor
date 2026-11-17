@@ -173,14 +173,15 @@ extension HubView {
             }
             if let show = store.startShowDay() { nav.showDay = ShowDaySession(show: show) }
         }
-        // Screenshot aid: `-browse` (or `-browse floor`) opens trade night as a player who only browses.
-        if args.contains("-browse") {
+        // Screenshot aid: `-browse` opens trade night as a player who only browses. `-browsefloor` opens the binders.
+        if args.contains("-browse") || args.contains("-browsefloor") {
             store.startRun()
             while store.weekday != MeetKind.tradeNight.weekday { store.data.day += 1 }
             if let session = store.startMeet(.tradeNight, browse: true) {
-                // `floor` skips the bag and opens the binders.
-                if args.contains("floor") { session.walkFloor() }
+                if args.contains("-browsefloor") { session.walkFloor() }
                 nav.encounter = EncounterSession(session: session)
+            } else {
+                print("-browse: trade night is blocked: \(store.meetBlock(.tradeNight) ?? "unknown")")
             }
         }
         if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {

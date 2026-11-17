@@ -31,6 +31,7 @@ final class GameTests {
         timed("upgrades", upgrades)
         timed("editions", editions)
         timed("seasons", seasonsAndSave)
+        timed("opportunities", opportunities)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -260,6 +261,43 @@ final class GameTests {
         check(store.payGradingBill(bill.id), "the PSA bill did not pay")
         check(abs(before - store.cash - fee) < 0.01, "paying PSA took \(money(before - store.cash)), not \(money(fee))")
         check(store.gradingBills.isEmpty && store.heldCards(bill.id).isEmpty, "paid PSA cards are still held")
+    }
+
+    // MARK: - Opportunities and flips
+
+    /// A failed accept keeps the opportunity, the bulk buyer pays for the bulk at pickup, and a PC item never flips.
+    private func opportunities() {
+        fresh()
+        let gone = Opportunity(kind: .privateBuyer, postedDay: store.day, day: store.day, title: "Test buyer", detail: "",
+                               hours: 0, price: 50, cardID: UUID())
+        store.data.opportunities.append(gone)
+        if case .failed = store.acceptOpportunity(gone.id) {} else { check(false, "a private buyer took a card the player does not have") }
+        check(store.data.opportunities.first { $0.id == gone.id }?.answered == false, "a failed accept used up the opportunity")
+
+        // The offer was $10 for 100 cards. The player has fewer at pickup, so the teacher pays less.
+        for print in prismatic.prefix(12) { store.addTestCard(print) }
+        store.moveToBulk(Set(store.data.raw.map(\.id)))
+        let count = store.data.bulk.reduce(0) { $0 + $1.cards.count }
+        let teacher = Opportunity(kind: .bulkBuyer, postedDay: store.day, day: store.day, title: "Test teacher", detail: "",
+                                  hours: 0, price: 10, cards: 100)
+        store.data.opportunities.append(teacher)
+        let cash = store.cash
+        _ = store.acceptOpportunity(teacher.id)
+        let pay = ShowSession.round(10 * Double(count) / 100)
+        check(count > 0 && abs(store.cash - cash - pay) < 0.01, "the bulk buyer paid \(money(store.cash - cash)) for \(count) cards, not \(money(pay))")
+        check(store.data.bulk.isEmpty, "the bulk buyer left bulk behind")
+
+        // A PC item does not go to a coin flip: a flip could close under the PC price.
+        guard let print = prismatic.first(where: { ($0.market ?? 0) > 5 }) else { return check(false, "no card for the flip test") }
+        store.addTestCard(print)
+        guard let i = store.data.raw.indices.last else { return check(false, "no card for the flip test") }
+        store.data.raw[i].pc = true
+        guard let item = store.showItems((cards: [store.data.raw[i]], sealed: [])).first else { return check(false, "no PC item") }
+        let venue = Venue(kind: .leagueNight, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        check(session.canFlip, "league night has no coin flip")
+        let buyer = Visitor(type: .collector, name: "Test", intent: .buy, item: item, limit: 500, offer: 5, patience: 2, line: "")
+        check(session.flipFull(buyer) == nil, "a PC item can go to a coin flip")
     }
 
     // MARK: - Collections (docs/33-collections.md)
