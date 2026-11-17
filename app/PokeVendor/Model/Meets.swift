@@ -75,6 +75,17 @@ enum MeetKind: String, Codable, CaseIterable, Hashable {
     }
 
     var hoursText: String { "\(GameStore.clock(open)) – \(GameStore.clock(close))" }
+
+    /// How many binders other people have out, for a player who only browses (docs/17-calendar-and-events.md,
+    /// Browse a meet). League night also has the shop's case.
+    var browseBinders: ClosedRange<Int> {
+        switch self {
+        case .tradeNight: 3...5
+        case .parkSwap: 2...4
+        case .tradingCircle: 3...4
+        case .leagueNight: 1...3
+        }
+    }
 }
 
 struct MeetRecord: Codable, Hashable {
@@ -94,6 +105,8 @@ extension Balance {
     static let meetSellerShare = 0.30
     /// The chance that a meet visitor is a regular.
     static let meetRegularShare = 0.6
+    /// The chance that someone comes up to a player who only browses, each time the player looks through a binder.
+    static let meetBrowseApproach = 0.4
 }
 
 @MainActor
@@ -126,8 +139,9 @@ extension GameStore {
 
     func canGoToMeet(_ kind: MeetKind) -> Bool { meetBlock(kind) == nil }
 
-    /// Starts a meet. The clock jumps to the doors, and the meet ends when they close.
-    func startMeet(_ kind: MeetKind) -> ShowSession? {
+    /// Starts a meet. The clock jumps to the doors, and the meet ends when they close. With `browse`, the player has
+    /// no spot: they pack a bag, look through other people's binders, and meet people who sell (docs/17, Browse a meet).
+    func startMeet(_ kind: MeetKind, browse: Bool = false) -> ShowSession? {
         guard canGoToMeet(kind) else { return nil }
         data.hour = max(data.hour, kind.open)
         seedContacts()
@@ -135,12 +149,28 @@ extension GameStore {
         let shop = league ? leagueShop(day: data.day) : nil
         let venue = Venue(kind: league ? .leagueNight : .meet,
                           name: league ? "League night · \(shop?.rawValue ?? "")" : kind.label,
-                          detail: "\(kind.place) · \(kind.hoursText)", open: kind.open, close: kind.close,
-                          hours: Balance.meetHours, visitorsMean: league ? Balance.leagueVisitors : Balance.meetVisitors,
+                          detail: "\(kind.place) · \(kind.hoursText)\(browse ? " · browsing" : "")", open: kind.open, close: kind.close,
+                          hours: Balance.meetHours, visitorsMean: browse ? 0 : league ? Balance.leagueVisitors : Balance.meetVisitors,
                           sellerShare: Balance.meetSellerShare, regularShare: Balance.meetRegularShare,
-                          hasFloor: false, hasTable: true, fakeSource: .stranger, shop: shop, crowd: kind.crowd)
+                          hasFloor: browse, hasTable: !browse, approachChance: Balance.meetBrowseApproach,
+                          fakeSource: .stranger, shop: shop, crowd: kind.crowd)
         save()
-        return ShowSession(venue: venue, store: self, vendors: [], regulars: meetRegulars(kind))
+        return ShowSession(venue: venue, store: self, vendors: browse ? meetBinders(kind, shop: shop) : [],
+                           regulars: browse ? [] : meetRegulars(kind))
+    }
+
+    /// The binders out at a meet: people clearing out or trading. At league night, the shop's case comes first.
+    private func meetBinders(_ kind: MeetKind, shop: LocalStore?) -> [Vendor] {
+        var used: Set<String> = []
+        var binders: [Vendor] = []
+        for _ in 0..<Int.random(in: kind.browseBinders) {
+            var name = VendorKind.randomName(.collector)
+            for _ in 0..<20 where used.contains(name) { name = VendorKind.randomName(.collector) }
+            guard used.insert(name).inserted else { continue }
+            binders.append(Vendor(name: name, kind: .collector, items: VendorFloor.stock(.collector)))
+        }
+        if let shop { binders.insert(Vendor(name: "\(shop.rawValue) case", kind: .gameShop, items: VendorFloor.stock(.gameShop)), at: 0) }
+        return binders
     }
 
     /// The regulars who come to a meet. The same day always gives the same people.

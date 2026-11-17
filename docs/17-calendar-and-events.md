@@ -54,6 +54,25 @@ League night gives two things:
   amount of standing with that shop (see
   [12-acquiring-product.md](12-acquiring-product.md#the-local-game-shop)).
 
+### Browse a meet
+
+The player can go to any meet or to league night without a spot. The
+hub's meet row asks: "Set up a spot and deal" or "Just browse".
+
+- **No spot.** Nothing of the player's is for sale, so no buyers come.
+- **A bag.** The player packs a bag first, the same as a walk-in at a
+  card show (see
+  [29-packing-and-crowds.md](29-packing-and-crowds.md#a-bag-for-walk-ins)).
+  The bag holds the items to trade.
+- **Binders.** Other people have binders out: 3 to 5 at trade night,
+  2 to 4 at the park swap, 3 to 4 at the trading circle, and 1 to 3 at
+  league night. A binder is a collector clearing out. The player can buy
+  and trade. League night also has the shop's case.
+- **People come up.** Each first look through a binder has a 40% chance
+  that someone comes up with a card to sell.
+- **The same visit.** Browsing counts as the visit for the day. League
+  night still gives shop standing.
+
 ## Posted entries
 
 These appear on the calendar **2 to 3 days before** they happen. This

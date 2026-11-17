@@ -13,7 +13,7 @@ struct SetupStage: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(!table ? "Pack your bag" : session.venue.isShow ? "Set up your table" : "Lay out your cards").font(.title3.bold())
                     Text(table ? "Pick what to bring, and set your prices. Buyers haggle, so a markup leaves room to come down."
-                         : "You have no table, so nothing in the bag is for sale. Pack what you want to trade to vendors\(session.hasGradingBooth ? " or grade at the booth" : ""). You cannot come back for more.")
+                         : "You have no table, so nothing in the bag is for sale. Pack what you want to trade\(session.venue.isShow ? " to vendors" : "")\(session.hasGradingBooth ? " or grade at the booth" : ""). You cannot come back for more.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
                     if table {

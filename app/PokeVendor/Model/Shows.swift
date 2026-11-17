@@ -691,8 +691,11 @@ struct Venue: Hashable {
     /// The table rules apply: setup time, the crowd's turnout, buyers who find nothing, and the stale record. Not at
     /// the player's own store.
     var tableRules: Bool { hasTable && kind != .store }
-    /// The bins limit what the player carries: to a table, or in a bag as a walk-in at a show.
-    var limitsLoad: Bool { kind != .store && (hasTable || kind == .show) }
+    /// The bins limit what the player carries: to a table, or in a bag as a walk-in at a show or a meet.
+    var limitsLoad: Bool { kind != .store && (hasTable || kind == .show || kind == .meet || kind == .leagueNight) }
+
+    /// A walk-in at a show, or a player who browses a meet: a bag and the floor, no table.
+    var walkIn: Bool { !hasTable && limitsLoad }
 
     var isShow: Bool { kind == .show }
 }

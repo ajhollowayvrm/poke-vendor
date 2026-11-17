@@ -69,6 +69,8 @@ private struct FloorList: View {
                     Text(session.venue.isShow ? "The floor · \(session.vendors.count) tables" : session.venue.name).font(.title3.bold())
                     Text(session.venue.isShow
                          ? "Each table is a dealer, a shop, or a person. Looking over a table takes about \(Int(Balance.vendorVisitMinutes)) minutes\(session.hasTable ? ", and buyers who come to your table meanwhile leave" : "")."
+                         : session.venue.walkIn
+                         ? "\(session.vendors.count) binders are out. Looking through one takes about \(Int(Balance.vendorVisitMinutes)) minutes. People may come up to you with cards to sell."
                          : "Look over what is out. A look takes about \(Int(Balance.vendorVisitMinutes)) minutes. The seller may come up to you.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)

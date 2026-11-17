@@ -7,6 +7,8 @@ struct HubView: View {
     @State private var haul: CampHaul?
     @State private var streamSetup: StreamSetupRequest?
     @State private var meetupMessage: String?
+    /// The meet the player tapped. A dialog asks: deal at a spot, or only browse.
+    @State private var meetChoice: MeetKind?
 
     /// Opens the stream setup, for a new stream or for today's scheduled one.
     struct StreamSetupRequest: Identifiable {
@@ -418,9 +420,7 @@ struct HubView: View {
             }
             ForEach(store.meetsToday, id: \.self) { kind in
                 let block = store.meetBlock(kind)
-                Button {
-                    if let session = store.startMeet(kind) { nav.encounter = EncounterSession(session: session) }
-                } label: {
+                Button { meetChoice = kind } label: {
                     ChevronRow(icon: kind.icon,
                             title: kind == .leagueNight ? "League night at \(store.leagueShop(day: store.day).rawValue)" : "\(kind.label) tonight",
                             detail: block ?? "\(kind.hoursText) · \(kind.place) · \(kind.crowd.short)",
@@ -431,6 +431,19 @@ struct HubView: View {
             }
             eventRows
         }
+        .confirmationDialog(meetChoice.map { $0 == .leagueNight ? "League night" : $0.label } ?? "",
+                            isPresented: Binding(get: { meetChoice != nil }, set: { if !$0 { meetChoice = nil } }),
+                            titleVisibility: .visible, presenting: meetChoice) { kind in
+            Button("Set up a spot and deal") { goToMeet(kind, browse: false) }
+            Button("Just browse") { goToMeet(kind, browse: true) }
+        } message: { _ in
+            Text("Just browse: no spot. Pack a bag, look through other people's binders, and buy or trade. Nothing of yours is for sale.")
+        }
+    }
+
+    private func goToMeet(_ kind: MeetKind, browse: Bool) {
+        meetChoice = nil
+        if let session = store.startMeet(kind, browse: browse) { nav.encounter = EncounterSession(session: session) }
     }
 
     private var marketAndGoals: some View {

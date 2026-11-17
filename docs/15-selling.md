@@ -258,6 +258,8 @@ main channel (see [02-playstyles.md](02-playstyles.md#the-flipper-meets-and-show
   budgets, league night draws players, trade night draws traders, and
   the trading circle draws serious collectors (see
   [29-packing-and-crowds.md](29-packing-and-crowds.md#crowds)).
+- The player can also browse a meet with no spot: buy and trade only
+  (see [17-calendar-and-events.md](17-calendar-and-events.md#browse-a-meet)).
 - The meet encounter itself, and trading, get their own design later.
 
 ## Auction houses
