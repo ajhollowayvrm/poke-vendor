@@ -444,6 +444,14 @@ final class GameTests {
         check(PriceCycle.startWeek(seed: loaded.marketSeed) == PriceCycle.startWeek, "a save and a load changed the start week")
         check(loaded.raw.count == store.data.raw.count && loaded.sealed.count == store.data.sealed.count
               && loaded.shorts == store.data.shorts, "a save and a load lost items or shorts")
+
+        // Settings > Reset save: a played run goes back to Day 1 with only the starting cash.
+        let seed = store.data.marketSeed
+        store.endDay()
+        store.resetSave()
+        check(store.day == 0 && abs(store.cash - Balance.startingCash) < 0.01 && store.data.raw.isEmpty
+              && store.data.slabs.isEmpty && store.data.sealed.isEmpty && store.report == nil && store.data.marketSeed != seed,
+              "the save reset left day \(store.day), \(money(store.cash)), or old items")
     }
 
     // MARK: - Fourteen days of play

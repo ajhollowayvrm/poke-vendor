@@ -3,8 +3,10 @@ import SwiftUI
 /// Settings: the default rip mode and the stop rule (docs/18-ripping.md, Picking the mode; The stop rule).
 struct SettingsView: View {
     @Environment(GameStore.self) private var store
+    @Environment(AppNav.self) private var nav
     @State private var slug: String?
     @State private var search = ""
+    @State private var resetting = false
     @AppStorage(SoundFX.settingKey) private var soundOn = true
 
     var body: some View {
@@ -62,6 +64,21 @@ struct SettingsView: View {
                     }
                 }
             }
+            Section {
+                Button("Reset save", role: .destructive) { resetting = true }
+            } header: {
+                Text("Save")
+            } footer: {
+                Text("Deletes this run and starts again on Day 1. The rip mode, the stop rule, and the payment rules go back to the defaults. Sounds stay.")
+            }
+        }
+        .confirmationDialog("Reset your save?", isPresented: $resetting, titleVisibility: .visible) {
+            Button("Delete this run and start again", role: .destructive) {
+                store.resetSave()
+                nav.path = []
+            }
+        } message: {
+            Text("Day \(store.day + 1), \(money(store.cash)) cash. You cannot undo this.")
         }
         .scrollContentBackground(.hidden)
         .background(Theme.background.ignoresSafeArea())

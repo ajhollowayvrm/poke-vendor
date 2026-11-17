@@ -522,6 +522,17 @@ final class GameStore {
         save()
     }
 
+    /// Deletes the save and starts a new run from Day 1. Settings calls it after the player confirms.
+    /// The game settings go back to the defaults. The device settings (sounds, folded groups, the rip face-up choice) stay.
+    func resetSave() {
+        report = nil
+        madeIt = nil
+        receipts = []
+        slabsBack = []
+        startRun()
+        saveNow()
+    }
+
     #if DEBUG
     // MARK: - Test tools
 
