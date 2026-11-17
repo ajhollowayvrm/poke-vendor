@@ -36,10 +36,30 @@ can still do free actions until they tap End Day.
 The game counts time in game days, not real calendar days. Each tap on
 End Day moves the game forward by 1 day.
 
-A run starts on a random week of the year. The game uses the week of the
-year only for seasons and for the month on the Calendar (see
-[05-pricing-and-market.md](05-pricing-and-market.md#seasons)). Rent and the
-other costs stay on cycles of 28 days.
+### The calendar
+
+**Status: built** (`Model/GameCalendar.swift`).
+
+A new run starts on **Monday, January 1, 2029**. The game uses the real
+calendar of 2029 and the years after it, with leap years. Day 1 is a
+Monday, so the work week starts on Day 1. The hub and the Calendar show
+the date, for example "Monday, January 1". The day number stays under the
+date.
+
+The date sets these things:
+
+- **Seasons** and the month on the Calendar (see
+  [05-pricing-and-market.md](05-pricing-and-market.md#seasons)).
+- **Rent** and the monthly business costs, on the 1st of each month (see
+  [Rent](#rent)).
+- **The new year**: on January 1, rent rises and the sick days come back.
+
+Store lease rent, store overhead, sales tax, loans, and the other costs
+stay on cycles of 28 days.
+
+A save from before the calendar has no start date. Its Day 1 is the Monday
+of its old random start week in 2029, so its weekdays and seasons stay
+the same.
 
 Every wait that is measured in days moves forward by 1 day on End Day:
 
@@ -189,12 +209,14 @@ the player quits the job or when sales are slow. Rent is a cash-out
 entry in the Wallet ledger.
 
 - **Amount**: $1,200.
-- **Due**: every 4 weeks. The game has weeks but no months, so a
-  4-week cycle keeps the calendar simple.
+- **Due**: on the 1st of each month. The first rent is due on
+  February 1. The storage unit, the bookkeeper, and the home upkeep are
+  due on the same day.
+- **Rise**: +5% on each January 1.
 - **Warning**: the game warns the player 3 days before rent is due.
 
-With the starting job, 4 weeks of pay is $2,560. After rent, $1,360
-is left for trading and other costs.
+With the starting job, a month of pay is about $2,770. After rent, about
+$1,570 is left for trading and other costs.
 
 **If the player cannot pay rent, the game is over.** The run ends. A line of
 credit with overdraft protection pays the gap when it has the credit

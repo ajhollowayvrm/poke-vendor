@@ -382,7 +382,7 @@ extension GameStore {
         if weekday == 4, let job {
             out.append(CalendarEntry(kind: .paycheck, title: "Payday", detail: money(job.weeklyPay)))
         }
-        if day > 0 && day % Balance.rentCycleDays == 0 {
+        if day > 0 && GameCalendar.isFirstOfMonth(day) {
             if rentNow > 0 { out.append(CalendarEntry(kind: .rent, title: "Rent due", detail: money(rentNow))) }
         }
         for show in data.shows where show.covers(day) {

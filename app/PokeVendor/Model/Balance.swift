@@ -4,7 +4,9 @@ import Foundation
 enum Balance {
     // Money and time (docs/16-time-and-day.md)
     static let startingCash = 500.0
+    /// Home rent, due on the 1st of each month (Model/GameCalendar.swift).
     static let rent = 1200.0
+    /// The period of a store lease, and of some debt rules. Home rent does not use it.
     static let rentCycleDays = 28
     static let rentWarningDays = 3
     static let dayStart = 7.0

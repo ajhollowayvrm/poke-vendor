@@ -78,7 +78,7 @@ struct SettingsView: View {
                 nav.path = []
             }
         } message: {
-            Text("Day \(store.day + 1), \(money(store.cash)) cash. You cannot undo this.")
+            Text("Day \(store.day + 1) (\(store.date.text), \(store.date.year)), \(money(store.cash)) cash. The new run starts on Monday, January 1. You cannot undo this.")
         }
         .scrollContentBackground(.hidden)
         .background(Theme.background.ignoresSafeArea())

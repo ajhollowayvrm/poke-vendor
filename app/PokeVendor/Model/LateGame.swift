@@ -16,10 +16,10 @@ extension Balance {
 
 @MainActor
 extension GameStore {
-    /// Rent today. It rises each year, and it stops when the player owns a home.
+    /// Rent today. It rises on each January 1, and it stops when the player owns a home.
     var rentNow: Double {
         guard !hasUpgrade(.ownHome) else { return 0 }
-        return (Balance.rent * pow(1 + Balance.rentYearlyRise, Double(data.day / 364))).rounded()
+        return (Balance.rent * pow(1 + Balance.rentYearlyRise, Double(GameCalendar.yearsSinceStart(data.day)))).rounded()
     }
 
     var storedItems: Int {
@@ -31,9 +31,9 @@ extension GameStore {
         return Balance.storageTiers.last { storedItems >= $0.items }?.cost ?? 0
     }
 
-    /// The costs of a big business, every 4 weeks. Returns the lines for the report.
+    /// The costs of a big business, on the 1st of each month with the rent. Returns the lines for the report.
     func businessCostsEndDay() -> [String] {
-        guard data.day % Balance.rentCycleDays == 0 else { return [] }
+        guard GameCalendar.isFirstOfMonth(data.day) else { return [] }
         var lines: [String] = []
         func charge(_ amount: Double, _ label: String) {
             guard amount >= 0.01 else { return }
@@ -47,7 +47,8 @@ extension GameStore {
         }
         charge(storageCost, "Storage unit")
         let today = data.day
-        let sales = data.ledger.filter { today - $0.day < Balance.rentCycleDays && $0.category == .sale }.reduce(0) { $0 + $1.amount }
+        let month = 1...GameCalendar.daysInPreviousMonth(today)
+        let sales = data.ledger.filter { month.contains(today - $0.day) && $0.category == .sale }.reduce(0) { $0 + $1.amount }
         charge((max(0, sales - Balance.bookkeeperFreeSales) * Balance.bookkeeperShare * 100).rounded() / 100, "Bookkeeper")
         if hasUpgrade(.ownHome) { charge(Balance.ownHomeUpkeep, "Home upkeep") }
         return lines

@@ -13,8 +13,8 @@ at the same time.
 | Day | 7 AM to 11 PM | [16-time-and-day.md](16-time-and-day.md#the-clock) |
 | Work shift | Monday to Friday, 9 AM to 5 PM | [16-time-and-day.md](16-time-and-day.md#schedule) |
 | Paycheck | $640, paid when the player ends a Friday | [16-time-and-day.md](16-time-and-day.md#pay) |
-| Sick days | 5 each 52 weeks | [16-time-and-day.md](16-time-and-day.md#the-job-ladder) |
-| Rent | $1,200 every 28 days, +5% each year, with a warning 3 days before | [16-time-and-day.md](16-time-and-day.md#rent) |
+| Sick days | 5 each year, back on January 1 | [16-time-and-day.md](16-time-and-day.md#the-job-ladder) |
+| Rent | $1,200 on the 1st of each month, +5% on each January 1, with a warning 3 days before | [16-time-and-day.md](16-time-and-day.md#rent) |
 
 ## Buying
 
@@ -573,7 +573,7 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 
 | Value | Number |
 |---|---|
-| Start week | Random, from the market seed |
+| Start date | Monday, January 1, 2029. An old save keeps its random start week |
 | Holiday season | Center week 47.5 (late November), ±5.5 weeks. Sealed sale chance +15%, singles sale chance −5% at the center |
 | Holiday sealed price | Center week 48, ±5 weeks. +5% at the center |
 | After the holidays | Center week 5 (early February), ±6 weeks. Sealed price −10% at the center |
@@ -605,8 +605,8 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Follower goals | 1,000, 10,000, 100,000, 1,000,000 |
 | Reputation goals | The Known, Trusted, Respected, and Elite tiers |
 | Collection goals | $1,000, $10,000, $50,000, $250,000 |
-| Storage unit | Every 28 days. 300 items $150, 800 items $400, 2,000 items $900. 10 bulk cards count as 1 item |
-| Bookkeeper | Every 28 days. 1.5% of the sales above $25,000 in that time |
+| Storage unit | On the 1st of each month. 300 items $150, 800 items $400, 2,000 items $900. 10 bulk cards count as 1 item |
+| Bookkeeper | On the 1st of each month. 1.5% of the sales above $25,000 in the month before |
 | Your own warehouse | $90,000. No storage unit |
 | Buy a home | $350,000. No rent, $600 upkeep every 28 days |
 | Unpaid business cost | Reputation −2 |

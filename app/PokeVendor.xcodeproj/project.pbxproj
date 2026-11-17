@@ -23,6 +23,7 @@
 		0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062B034B3D8890FD6A19F10F /* StoreGrowthViews.swift */; };
 		0C4343AE15D1C4DD4B064E5F /* dragon.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F522C90FE86AD311AB076F5 /* dragon.json */; };
 		0CFAD014F3343BA39A16ABE0 /* SaleProblems.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCC08691AB0384D342F8CF4F /* SaleProblems.swift */; };
+		0DA16800B91CA2E47D1F10BC /* GameCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B8DDD2771C5F7B9863D6CE /* GameCalendar.swift */; };
 		0DEB20EFC77A0CE1EDB51B4E /* ShowDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20845FB5280BA69E0BC46DC /* ShowDayView.swift */; };
 		0EAD72506FECFE0B97BAFCC7 /* dragon-frontiers.json in Resources */ = {isa = PBXBuildFile; fileRef = FB443286D950ABAD944C7A64 /* dragon-frontiers.json */; };
 		0F46ACEE22C0AAA0B36F7E53 /* lost-thunder.json in Resources */ = {isa = PBXBuildFile; fileRef = 4654062AD9C27065757208C9 /* lost-thunder.json */; };
@@ -423,6 +424,7 @@
 		71BFAA4A10360362D9BE2E1C /* base-set-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "base-set-2.json"; sourceTree = "<group>"; };
 		723EE92EBE2DE3D2DF2E53AF /* ShowSummaryStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSummaryStage.swift; sourceTree = "<group>"; };
 		7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreShelfControls.swift; sourceTree = "<group>"; };
+		72B8DDD2771C5F7B9863D6CE /* GameCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCalendar.swift; sourceTree = "<group>"; };
 		72F1BB13FF5067254ABE6CDE /* ShowGoodsDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowGoodsDetail.swift; sourceTree = "<group>"; };
 		754F7D2C37FC137EEECF52E0 /* phantom-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantom-forces.json"; sourceTree = "<group>"; };
 		75CD9E2E1E5DFF0C02373BC3 /* power-keepers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "power-keepers.json"; sourceTree = "<group>"; };
@@ -808,6 +810,7 @@
 				F93E91BC33F28004C994B1EE /* Debt.swift */,
 				531934AE1683B48C6717CC3A /* Demand.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
+				72B8DDD2771C5F7B9863D6CE /* GameCalendar.swift */,
 				38152100E3F21C13B7C61E1B /* GameStore.swift */,
 				4B1D85597836B370B32E25FC /* GarageSales.swift */,
 				FB5203F6759EAD53285517DF /* GradingBills.swift */,
@@ -1213,6 +1216,7 @@
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				7A35C872266C162E6BEC2E3D /* Events.swift in Sources */,
+				0DA16800B91CA2E47D1F10BC /* GameCalendar.swift in Sources */,
 				57856FEC663D96592E925B4F /* GameStore.swift in Sources */,
 				8A7B672CD6647283B94B2B24 /* GameTests.swift in Sources */,
 				4186AB00830515F6A83B0998 /* GarageSales.swift in Sources */,

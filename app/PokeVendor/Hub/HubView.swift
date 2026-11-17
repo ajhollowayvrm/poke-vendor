@@ -95,8 +95,8 @@ struct HubView: View {
     private var dayHeader: some View {
         HStack(alignment: .firstTextBaseline) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("\(store.weekdayName) · Week \(store.week)").font(.title3.bold())
-                Text("Day \(store.day + 1)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Text("\(store.weekdayName), \(store.date.text)").font(.title3.bold())
+                Text("Day \(store.day + 1) · Week \(store.week)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {

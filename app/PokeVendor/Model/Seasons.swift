@@ -1,7 +1,7 @@
 import Foundation
 
-// Seasons (docs/05-pricing-and-market.md, Seasons). A run starts on a random week of the year. The week of the year
-// moves the demand for sealed product and for singles, and the price of sealed product. Each season is a smooth bump,
+// Seasons (docs/05-pricing-and-market.md, Seasons). The calendar date (Model/GameCalendar.swift) gives the week of the
+// year. The week of the year moves the demand for sealed product and for singles, and the price of sealed product. Each season is a smooth bump,
 // so no factor jumps from one day to the next.
 
 /// One seasonal bump: its center week, its half width in weeks, and its size at the center.
@@ -36,17 +36,8 @@ extension Balance {
 }
 
 extension PriceCycle {
-    /// The week of the year (0 to 51) on day 0 of the run. The run's market seed sets it, so an old save gets one too.
-    static var startWeek: Int {
-        if let cached = startWeekCache, cached.seed == seed { return cached.week }
-        let week = startWeek(seed: seed)
-        startWeekCache = (seed, week)
-        return week
-    }
-
-    nonisolated(unsafe) private static var startWeekCache: (seed: UInt64, week: Int)?
-
-    /// The start week for a market seed: a stable number from 0 to 51.
+    /// The old random start week of a save from before the calendar: a stable number from 0 to 51.
+    /// `GameStore.calendarStartOffset` uses it, so the save keeps its weekdays and its season.
     static func startWeek(seed: UInt64) -> Int {
         var h = seed ^ 0x9E37_79B9_7F4A_7C15
         h ^= h >> 30
@@ -60,14 +51,13 @@ extension PriceCycle {
 
     /// The week of the year on a day, with a fraction: 0 is the first day of January, 51.9 is the end of December.
     static func weekOfYear(day: Int? = nil) -> Double {
-        let d = Double(day ?? today)
-        return (Double(startWeek) + d / 7).truncatingRemainder(dividingBy: Balance.weeksPerYear)
+        let d = GameCalendar.date(day ?? today)
+        return Double(d.dayOfYear) / Double(d.daysInYear) * Balance.weeksPerYear
     }
 
     /// The month of a day, for example "November".
     static func monthName(day: Int? = nil) -> String {
-        let month = min(11, Int(weekOfYear(day: day) * 12 / Balance.weeksPerYear))
-        return Balance.monthNames[month]
+        GameCalendar.date(day ?? today).monthName
     }
 
     /// The factor on the chance that an item sells. 1 is no seasonal change.

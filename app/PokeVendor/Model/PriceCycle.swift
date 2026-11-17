@@ -179,6 +179,7 @@ extension GameStore {
         let day = data.day
         let boosts = Set(data.priceBoosts.filter { $0.value >= day }.keys)
         PriceCycle.sync(seed: data.marketSeed, day: day, events: data.marketEvents, boosts: boosts, printChanges: data.printChanges)
+        GameCalendar.sync(startOffset: calendarStartOffset)
     }
 
     var activeMarketEvents: [MarketEvent] {

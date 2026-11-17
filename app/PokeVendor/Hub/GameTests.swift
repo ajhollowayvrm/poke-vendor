@@ -441,9 +441,26 @@ final class GameTests {
               let loaded = try? JSONDecoder().decode(GameData.self, from: saved) else {
             return check(false, "the save did not encode and decode")
         }
-        check(PriceCycle.startWeek(seed: loaded.marketSeed) == PriceCycle.startWeek, "a save and a load changed the start week")
+        check(loaded.calendarStart == store.data.calendarStart, "a save and a load changed the calendar start")
         check(loaded.raw.count == store.data.raw.count && loaded.sealed.count == store.data.sealed.count
               && loaded.shorts == store.data.shorts, "a save and a load lost items or shorts")
+
+        // The calendar: a new run starts on Monday, January 1, 2029. Rent is due on the 1st of each month.
+        store.startRun()
+        let jan1 = GameCalendar.date(0)
+        check(jan1 == GameDate(year: 2029, month: 1, day: 1, dayOfYear: 0, daysInYear: 365) && store.weekdayName == "Monday",
+              "day 0 is \(store.weekdayName), \(jan1.text), \(jan1.year), not Monday, January 1, 2029")
+        check(store.daysUntilRent == 31 && GameCalendar.isFirstOfMonth(31) && GameCalendar.date(31).text == "February 1",
+              "the first rent is not on February 1")
+        let leap = GameCalendar.date(365 * 3 + 31 + 28) // 2032 is a leap year.
+        check(leap.text == "February 29" && leap.year == 2032, "2032 has no February 29")
+        check(PriceCycle.monthName(day: 0) == "January" && PriceCycle.seasonName(day: 14) == "After the holidays"
+              && PriceCycle.seasonName(day: 334) == "Holiday season", "the seasons do not follow the calendar")
+        store.addTestCash(5_000)
+        while store.day < 31 { store.endDay() }
+        let rents = store.data.ledger.filter { $0.category == .rent }
+        check(rents.count == 1 && rents.first?.day == 31, "rent was paid on days \(rents.map(\.day)), not on February 1 (day 31)")
+        check(store.data.gameOver == nil, "the run ended in January: \(store.data.gameOver ?? "")")
 
         // Settings > Reset save: a played run goes back to Day 1 with only the starting cash.
         let seed = store.data.marketSeed

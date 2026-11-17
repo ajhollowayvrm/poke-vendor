@@ -102,6 +102,8 @@ struct GameData: Codable {
     var archivedSales = 0.0
     /// The moving market (docs/05-pricing-and-market.md). The seed gives each run its own waves.
     var marketSeed: UInt64 = 0
+    /// The days from January 1, 2029 to day 0 (Model/GameCalendar.swift). Nil on a save from before the calendar.
+    var calendarStart: Int?
     var marketEvents: [MarketEvent] = []
     /// Sets that leave print or come back for a reprint wave (Model/PrintRuns.swift).
     var printChanges: [PrintChange] = []
@@ -208,6 +210,7 @@ extension GameData {
         debt = v(.debt, debt)
         archivedSales = v(.archivedSales, archivedSales)
         marketSeed = v(.marketSeed, marketSeed)
+        calendarStart = v(.calendarStart, calendarStart)
         marketEvents = v(.marketEvents, marketEvents)
         printChanges = v(.printChanges, printChanges)
         demand = v(.demand, demand)
@@ -282,7 +285,8 @@ final class GameStore {
     var isWorkDay: Bool { weekday < 5 && job != nil }
     var worksToday: Bool { isWorkDay && !data.sickToday && !bookedOffToday && !skippedToday }
     var job: Job? { data.jobIndex.map { Job.ladder[$0] } }
-    var daysUntilRent: Int { Balance.rentCycleDays - data.day % Balance.rentCycleDays }
+    /// Rent is due on the 1st of each month.
+    var daysUntilRent: Int { GameCalendar.daysToNextFirst(after: data.day) }
 
     nonisolated static func clock(_ hour: Double) -> String {
         let h = Int(hour) % 24
@@ -513,9 +517,10 @@ final class GameStore {
     func startRun() {
         data = GameData()
         data.marketSeed = UInt64.random(in: 1...UInt64.max)
+        data.calendarStart = 0
         syncMarket()
         addLedger(Balance.startingCash, .startingCapital, "Starting capital")
-        log("Day 1. You have \(money(Balance.startingCash)) and a job as a retail associate.")
+        log("\(weekdayName), \(date.text). You have \(money(Balance.startingCash)) and a job as a retail associate.")
         scheduleShows()
         scheduleSales()
         seedContacts()
@@ -1116,7 +1121,7 @@ final class GameStore {
         data.pokemonCenterAttempted = false
         if data.day % 7 == 0 { data.weekBought = [] }
         lines += decayStanding()
-        if data.day % 364 == 0 { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
+        if GameCalendar.isNewYear(data.day) { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
 
         lines += advanceSealed()
         lines += advanceCards()
@@ -1148,7 +1153,7 @@ final class GameStore {
             lines.append("You were up until \(GameStore.clock(Balance.dayEnd + data.lateHours)). Start tired, or sleep in.")
         }
 
-        if data.day % Balance.rentCycleDays == 0 {
+        if GameCalendar.isFirstOfMonth(data.day) {
             let rent = rentNow
             if rent <= 0 {
                 // The player owns a home.
@@ -1156,7 +1161,7 @@ final class GameStore {
                 addLedger(-rent, .rent, "Rent")
                 lines.append("Rent paid: \(money(rent)).")
             } else {
-                data.gameOver = "Rent was due on day \(data.day + 1), and you had \(money(data.cash)). You could not pay it."
+                data.gameOver = "Rent was due on \(date.text), \(date.year), and you had \(money(data.cash)). You could not pay it."
                 lines.append("You could not pay rent. The run is over.")
             }
         } else if daysUntilRent == Balance.rentWarningDays, rentNow > 0 {

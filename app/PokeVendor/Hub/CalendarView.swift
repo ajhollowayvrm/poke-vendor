@@ -17,7 +17,7 @@ struct CalendarView: View {
                 ForEach(0..<6, id: \.self) { w in
                     let start = first + w * 7
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("WEEK \(start / 7 + 1) · \(PriceCycle.monthName(day: start).uppercased())")
+                        Text("WEEK \(start / 7 + 1) · \(PriceCycle.monthName(day: max(start, store.day)).uppercased())")
                             .font(.system(size: 11, weight: .semibold))
                             .kerning(0.8)
                             .foregroundStyle(Theme.muted)
@@ -50,7 +50,7 @@ private struct DayRow: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(String(GameStore.weekdays[day % 7].prefix(3))).font(.subheadline.weight(.semibold))
-                Text("Day \(day + 1)").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                Text(GameCalendar.date(day).shortText).font(.caption2.monospaced()).foregroundStyle(Theme.muted)
             }
             .frame(width: 52, alignment: .leading)
             .foregroundStyle(today ? Theme.cyan : Theme.text)

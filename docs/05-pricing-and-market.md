@@ -140,9 +140,10 @@ during the run.
 
 **Status: built** (`Model/Seasons.swift`).
 
-Each run starts on a random week of the year. The run's market seed sets the
-week, so the same run always has the same calendar, and a save from before
-seasons gets a week too. The week of the year moves demand and the price of
+A new run starts on January 1 (see
+[16-time-and-day.md](16-time-and-day.md#the-calendar)). The calendar date
+gives the week of the year. A save from before the calendar keeps its old
+random start week. The week of the year moves demand and the price of
 sealed product.
 
 - **Holiday season** (mid October to the end of December): holiday buyers want
