@@ -43,6 +43,12 @@ struct Product: Codable, Hashable, Identifiable {
         let packs: Int
     }
 
+    /// Assorted packs: `packs` packs, each from one of `slugs` (tools/export/catalog.py, guess_mix). One era only.
+    struct PackPool: Codable, Hashable {
+        let packs: Int
+        let slugs: [String]
+    }
+
     /// A card in the product that is not in a pack, for example a promo.
     struct Promo: Codable, Hashable {
         let name: String
@@ -76,9 +82,13 @@ struct Product: Codable, Hashable, Identifiable {
     let image: String?
     /// Still sold at retail (a Scarlet & Violet product).
     let inPrint: Bool?
+    /// For a product with assorted packs: the packs that it names, and the pools that the other packs come from.
+    /// Nil for a product that lists all its packs. Each copy draws its own packs (`BoxContents`).
+    var known: [PackMix]? = nil
+    var pools: [PackPool]? = nil
 
     enum CodingKeys: String, CodingKey {
-        case id, name, kind, packs, mix, promos, pickOnePromo, baseMarket = "market", msrp, image, inPrint
+        case id, name, kind, packs, mix, promos, pickOnePromo, baseMarket = "market", msrp, image, inPrint, known, pools
     }
 
     var market: Double { PriceCycle.price(baseMarket, marketFactor()) }
@@ -86,6 +96,8 @@ struct Product: Codable, Hashable, Identifiable {
     /// The set of each pack, in order.
     var packSlugs: [String] { mix.flatMap { Array(repeating: $0.slug, count: $0.packs) } }
     var homeSlug: String { mix.first?.slug ?? "prismatic-evolutions" }
+    /// True when the box says only "assorted packs", so each copy holds its own packs.
+    var isAssorted: Bool { !(pools ?? []).isEmpty }
     /// A warehouse-club product. Pokemon Center drops and local shelves do not carry it.
     var isClubExclusive: Bool { name.contains("Costco") || name.contains("Sam's Club") }
     /// Sold only by one store: a warehouse club or the Pokemon Center. Amazon does not carry it.

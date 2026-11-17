@@ -246,8 +246,13 @@ def base_dates(contents):
 
 def guess_mix(it, sets, releases, dates=None):
     """A pack mix for a product whose contents name no set, or only a series. Real products like these hold
-    assorted packs. The guess takes the packs from the newest sets of the named series (or of any series) that were
-    out when the product came out. The same product always gives the same guess. Returns None when no guess fit.
+    assorted packs. Returns (mix, known, pools), or None when no guess fit:
+    - known: {slug: packs} for the packs that the product names;
+    - pools: [{"packs": n, "slugs": [...]}], the sets that the other packs come from, newest first. A pool holds the
+      newest 4 sets of one era that were out when the product came out, so a box never mixes two eras by chance;
+    - mix: the expected mix, the known packs plus one draw from its pool for each other pack. The same product
+      always gives the same mix. The game draws again for each copy (app/PokeVendor/Model/BoxContents.swift).
+    The era of a pool: the named series, else the era of the named packs, else the era of the newest set out.
     "dates" is base_dates(): a product with no release borrows the date of a product with the same base name."""
     packs = it["packs"]
     mix = dict(it.get("mix") or {})
@@ -257,7 +262,7 @@ def guess_mix(it, sets, releases, dates=None):
     if left < 0:
         return None
     if not mix and it.get("slug") in sets:
-        return {it["slug"]: packs}
+        return {it["slug"]: packs}, {it["slug"]: packs}, []
     if left:
         buckets["unknown"] = buckets.get("unknown", 0) + left
     # A product named for a set, for example "Darkness Ablaze 3 Pack Blister", holds packs of that set.
@@ -267,19 +272,31 @@ def guess_mix(it, sets, releases, dates=None):
         known[named] = known.get(named, 0) + buckets.pop("unknown")
     rng = random.Random(int(it["id"]))
     out = dict(known)
+    pools = []
+    known_eras = {sets[k].get("era") for k in known}
     for key, n in buckets.items():
         era = series_era(key) if key != "unknown" else None
+        # With no named series and no date, no guess fits.
         if era is None and date is None:
             return None
-        pool = [s for s in sets if releases.get(s) and (era is None or sets[s].get("era") == era)
-                and (date is None or releases[s] <= date) and not s.startswith("mcdonalds")]
+        # Assorted packs come from the era of the packs that the product names.
+        if era is None and len(known_eras) == 1:
+            era = next(iter(known_eras))
+        out_then = [s for s in sets if releases.get(s) and (date is None or releases[s] <= date)
+                    and not s.startswith("mcdonalds")]
+        if era is None:
+            if not out_then:
+                return None
+            era = sets[max(out_then, key=lambda s: releases[s])].get("era")
+        pool = [s for s in out_then if sets[s].get("era") == era]
         if not pool:
             return None
         pool = sorted(pool, key=lambda s: releases[s], reverse=True)[:4]
+        pools.append({"packs": n, "slugs": pool})
         for _ in range(n):
             s = rng.choice(pool)
             out[s] = out.get(s, 0) + 1
-    return out
+    return out, known, pools
 
 
 ALT_GROUP = "1938"
@@ -421,10 +438,14 @@ def main():
             continue
         # A product with no stated mix, or with only a series named, gets a guessed mix (guess_mix).
         guess = False
+        known, pools = None, []
         if it.get("confidence") not in ("Exact", "Product set") or not mix or sum(mix.values()) != packs \
                 or any(slug not in sets for slug in mix):
-            mix = guess_mix(it, sets, releases, dates)
-            if not mix or any(slug not in sets for slug in mix) or sum(mix.values()) != packs:
+            guessed_mix = guess_mix(it, sets, releases, dates)
+            if not guessed_mix:
+                continue
+            mix, known, pools = guessed_mix
+            if any(slug not in sets for slug in mix) or sum(mix.values()) != packs:
                 continue
             guess = True
         # PPT gives the sealed price and image. TCGCSV fills in when PPT has no price, then PriceCharting.
@@ -443,6 +464,8 @@ def main():
             if not first or any(s not in sets for s in first):
                 continue
             mix = first
+            # The pools name Unlimited sets, so a 1st Edition product keeps its one mix.
+            pools = []
         raw_promos = it.get("promos", [])
         # A single variant, for example "[Glaceon]", holds only the promo that matches its name. The source often
         # lists every promo of the product wave. A "[Set of N]" holds the promos of its variants.
@@ -466,7 +489,9 @@ def main():
         out.append({"id": str(it["id"]), "name": name, "kind": it["kind"], "packs": packs, "inPrint": in_print,
                     "mix": [{"slug": s, "packs": n} for s, n in order],
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,
-                    "market": market, "msrp": msrp, "image": image, "mixGuess": guess})
+                    "market": market, "msrp": msrp, "image": image, "mixGuess": guess,
+                    **({"known": [{"slug": k, "packs": n} for k, n in sorted(known.items())], "pools": pools}
+                       if guess and pools else {})})
     # A "[Set of N]" holds one box of each variant, so it gets the promos of its variants in the catalog, each print once.
     for x in out:
         if x["id"] in researched or not re.search(r"\[Set of \d+\]", x["name"]):

@@ -435,6 +435,7 @@ struct SealedDetailView: View {
                 VStack(spacing: 14) {
                     ProductImage(url: product?.image, setName: SetLibrary.set(item.setSlug).name)
                         .frame(width: 220, height: 220)
+                        .looksInside(item.brokenFrom == nil ? product : nil) { store.packSlugs(of: item) }
                         .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
                         Text(item.name).font(.title3.bold()).multilineTextAlignment(.center)
@@ -452,11 +453,16 @@ struct SealedDetailView: View {
                         Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
                     }
                     DetailBox(title: "Contents") {
-                        let slugs = store.packSlugs(of: item)
-                        let counts = Dictionary(grouping: slugs, by: { $0 }).map { ($0.key, $0.value.count) }
-                            .sorted { $0.1 > $1.1 }
-                        ForEach(counts, id: \.0) { slug, n in
-                            Text("\(n) \(SetLibrary.set(slug).name) booster pack\(n == 1 ? "" : "s")").font(.subheadline)
+                        if item.brokenFrom == nil, let product, product.isAssorted {
+                            // The box does not say which packs it holds. The look-inside view shows the front packs.
+                            Text("\(product.packs) assorted booster packs. Tap the box to look inside.").font(.subheadline)
+                        } else {
+                            let slugs = store.packSlugs(of: item)
+                            let counts = Dictionary(grouping: slugs, by: { $0 }).map { ($0.key, $0.value.count) }
+                                .sorted { $0.1 > $1.1 }
+                            ForEach(counts, id: \.0) { slug, n in
+                                Text("\(n) \(SetLibrary.set(slug).name) booster pack\(n == 1 ? "" : "s")").font(.subheadline)
+                            }
                         }
                         if item.brokenFrom == nil, let product, !product.promos.isEmpty {
                             Text(product.pickOnePromo ? "1 random promo card from:" : "Promo cards:")

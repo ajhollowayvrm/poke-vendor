@@ -214,6 +214,8 @@ struct OfferRow: View {
                 }
             }
             .frame(width: 50, height: 64)
+            // An online listing: the player cannot hold the box, so only the odds show.
+            .looksInside(offer.product) { nil }
             VStack(alignment: .leading, spacing: 3) {
                 Text(offer.title).font(.subheadline.weight(.medium)).lineLimit(2)
                 Text("mkt \(money(offer.market))\(offer.shipping > 0 ? " · ship \(money(offer.shipping))" : "")")

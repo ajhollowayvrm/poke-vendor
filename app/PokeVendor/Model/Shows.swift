@@ -225,13 +225,15 @@ extension GameStore {
     }
 
     @discardableResult
+    /// `contentsKey` names the listing that the player looked inside, so the box holds the packs that they saw.
     func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil,
-                         known: Bool? = nil, credit: Double? = nil) -> SealedItem {
+                         known: Bool? = nil, credit: Double? = nil, contentsKey: String? = nil) -> SealedItem {
         if let credit { addStoreCredit(credit) } else { addLedger(-price, .sealed, "\(product.name) · \(vendor)") }
         var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
                               acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: data.day)
         item.fake = fake
         item.fakeKnown = known
+        item.contents = contentsKey.map { BoxContents.draw(product, key: $0) }
         data.sealed.append(item)
         log("Bought \(product.name) from \(vendor) at \(venue) for \(credit.map { "\(money($0)) in store credit" } ?? money(price)).",
             cash: credit == nil ? -price : nil)
@@ -309,6 +311,7 @@ extension GameStore {
                                        acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: day)
                 owned.fake = item.fake
                 owned.fakeKnown = known
+                owned.contents = BoxContents.draw(product, key: item.id.uuidString)
                 sealed.append(owned)
             case .mystery:
                 break
@@ -1463,7 +1466,8 @@ final class ShowSession {
                 note = "You do not have enough cash."
                 return
             }
-            buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+            buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff,
+                     contentsKey: v.id.uuidString)
             store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
                              market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
             score(.buy, price: v.offer, market: v.goodsMarket, pushed: v.offer < v.firstOffer - 0.001, v)
@@ -1483,7 +1487,8 @@ final class ShowSession {
     func acceptWithCredit() {
         guard canPayCredit, let v = current, v.intent == .sell, let goods = v.goods else { return }
         let credit = creditOffer(v)
-        buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff, credit: credit)
+        buyGoods(goods, price: v.offer, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff, credit: credit,
+                 contentsKey: v.id.uuidString)
         store.recordDeal(v.contactID, what: "Bought \(VendorItem(goods: goods, price: v.offer, market: nil).name)", price: v.offer,
                          market: v.goodsMarket, slug: goodsSlug(goods), scored: true)
         score(.credit, price: credit, market: v.goodsMarket, pushed: v.offer < v.firstOffer - 0.001, v)
@@ -1621,7 +1626,8 @@ final class ShowSession {
             note = "You do not have \(money(price))."
             return
         }
-        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff,
+                 contentsKey: v.id.uuidString)
         store.addReputation(5)
         if let id = v.contactID {
             store.addPoints(id, 4)
@@ -1641,7 +1647,8 @@ final class ShowSession {
         guard let v = current, v.intent == .sell, let goods = v.goods else { return }
         let price = max(1, Self.round(v.offer * 0.5))
         guard store.canAfford(price) else { return }
-        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+        buyGoods(goods, price: price, from: v.name, fake: v.goodsFake, looksOff: v.goodsLooksOff,
+                 contentsKey: v.id.uuidString)
         let name = VendorItem(goods: goods, price: price, market: nil).name
         store.recordScam(seller: v.name, contactID: v.contactID, item: name)
         note = "\(v.name) took \(money(price)) and thanked you."
@@ -1999,7 +2006,8 @@ final class ShowSession {
             note = "You do not have enough cash."
             return
         }
-        buyGoods(item.goods, price: item.price, from: vendor.name, fake: item.fake, looksOff: item.looksOff)
+        buyGoods(item.goods, price: item.price, from: vendor.name, fake: item.fake, looksOff: item.looksOff,
+                 contentsKey: item.id.uuidString)
         store.recordDeal(vendor.contactID, what: "Bought \(item.name)", price: item.price, market: item.market ?? item.price,
                          slug: goodsSlug(item.goods))
         // Mystery packs do not run out. Everything else leaves the table.
@@ -2009,8 +2017,9 @@ final class ShowSession {
     }
 
     /// `fake` is the item's hidden truth, and `looksOff` means the player saw it, so they know what they bought.
+    /// `contentsKey` names the listing that the player looked inside (`BoxContents`).
     func buyGoods(_ goods: VendorGoods, price: Double, from seller: String, fake: FakeTier? = nil, looksOff: Bool = false,
-                          credit: Double? = nil) {
+                          credit: Double? = nil, contentsKey: String? = nil) {
         let name = VendorItem(goods: goods, price: price, market: nil).name
         let known: Bool? = looksOff && fake != nil ? true : nil
         switch goods {
@@ -2026,7 +2035,7 @@ final class ShowSession {
             store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name, credit: credit)
         case .sealed(let product):
             justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name, fake: fake, known: known,
-                                               credit: credit)
+                                               credit: credit, contentsKey: contentsKey)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,

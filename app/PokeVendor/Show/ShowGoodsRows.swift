@@ -9,7 +9,7 @@ struct GoodsRow: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            GoodsImage(item: item).frame(width: 56, height: 78)
+            GoodsImage(item: item, contentsKey: item.id.uuidString).frame(width: 56, height: 78)
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name).font(.subheadline.weight(.semibold)).lineLimit(2)
                 switch item.goods {
@@ -61,11 +61,15 @@ struct GoodsRow: View {
 
 struct GoodsImage: View {
     let item: VendorItem
+    /// The listing that a box belongs to, so a tap shows the packs of that copy (`BoxContents`). Nil shows only what
+    /// the box says.
+    var contentsKey: String? = nil
 
     var body: some View {
         switch item.goods {
-        case .sealed:
+        case .sealed(let product):
             ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
+                .looksInside(product) { contentsKey.map { BoxContents.draw(product, key: $0) } }
         case .mystery(let pack):
             MysteryPackArt(pack: pack)
         case .slab(let print, _, let grade):

@@ -241,6 +241,37 @@ sealed item itself. They sell through the same storefronts as other
 sealed product, and the player finds them on the buy screen (see
 [08-ui-direction.md](08-ui-direction.md)).
 
+### Look inside a box
+
+**Status: built** (`Model/BoxContents.swift`, `Inventory/LookInsideSheet.swift`).
+
+The player can tap a box to pick it up and tilt it. A box is any
+product with 2 packs or more that is not a loose pack.
+
+- **The front 2 packs show.** A blister shows all of its packs.
+- **The other packs are hidden.** What the player knows about them
+  depends on the box:
+  - A box that lists its packs, for example an Elite Trainer Box,
+    holds exactly those packs.
+  - A box that says only "assorted packs", for example most
+    collections and tins, holds the packs that it names. Each other
+    pack comes from one of the newest 4 sets of the box's era that
+    were out when the box came out. The view gives the odds.
+- **One era only.** A Sun & Moon box never holds a Scarlet & Violet
+  pack.
+- **Each copy is different.** Two copies of the same assorted box can
+  hold different packs. A copy keeps its packs from the moment the
+  player first sees it.
+- **Where the tap works:** Inventory, the shelf at a local store, the
+  shop's weekly buy-ins, vendor tables at shows, meets, and sales, and
+  a visitor who sells a box. The packs that the player sees are the
+  packs that they buy.
+- **Online and wholesale:** the player cannot hold the box, so the view
+  shows only what the box says.
+
+The catalog picks the era and the pool (`guess_mix` in
+`tools/export/catalog.py`).
+
 ## Where bought product goes
 
 Every purchase goes to Inventory. The buy flow never offers an "open

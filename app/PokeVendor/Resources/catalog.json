@@ -737,7 +737,24 @@
   "market": 187.84,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/644852_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "prismatic-evolutions",
+    "packs": 9
+   }
+  ],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "593324",
@@ -1064,7 +1081,19 @@
   "market": 21.65,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/656995_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "671274",
@@ -1808,7 +1837,19 @@
   "market": 249,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117275_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "117276",
@@ -1831,7 +1872,19 @@
   "market": 199.98,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117276_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "108638",
@@ -3440,7 +3493,24 @@
   "market": 23.84,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/216863_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "darkness-ablaze",
+    "packs": 1
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "champions-path",
+     "darkness-ablaze",
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "220108",
@@ -3915,7 +3985,24 @@
   "market": 99.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/264258_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "detective-pikachu",
+    "packs": 1
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "97765",
@@ -5797,7 +5884,19 @@
   "market": 654.59,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/99152_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "plasma-storm",
+     "boundaries-crossed",
+     "dragon-vault",
+     "dragons-exalted"
+    ]
+   }
+  ]
  },
  {
   "id": "277329",
@@ -8161,7 +8260,19 @@
   "market": 42.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/497966_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "151",
+     "obsidian-flames",
+     "paldea-evolved",
+     "scarlet-violet"
+    ]
+   }
+  ]
  },
  {
   "id": "549453",
@@ -8249,7 +8360,19 @@
   "market": 34.25,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/497853_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "151",
+     "obsidian-flames",
+     "paldea-evolved",
+     "scarlet-violet"
+    ]
+   }
+  ]
  },
  {
   "id": "273608",
@@ -8295,7 +8418,19 @@
   "market": 29.54,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/497856_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "151",
+     "obsidian-flames",
+     "paldea-evolved",
+     "scarlet-violet"
+    ]
+   }
+  ]
  },
  {
   "id": "200568",
@@ -11623,7 +11758,19 @@
   "market": 29.13,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/263545_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "221744",
@@ -11943,7 +12090,16 @@
   "market": 450.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97735_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "97733",
@@ -20043,7 +20199,19 @@
   "market": 2.02,
   "msrp": 4.49,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/505945_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "151",
+     "obsidian-flames",
+     "paldea-evolved",
+     "scarlet-violet"
+    ]
+   }
+  ]
  },
  {
   "id": "98534",
@@ -26215,7 +26383,28 @@
   "market": 62.55,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/228979_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "sun-moon",
+    "packs": 1
+   },
+   {
+    "slug": "vivid-voltage",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "125740",
@@ -26292,7 +26481,19 @@
   "market": 849,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/189658_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "unbroken-bonds",
+     "detective-pikachu",
+     "team-up",
+     "lost-thunder"
+    ]
+   }
+  ]
  },
  {
   "id": "218320",
@@ -26373,7 +26574,19 @@
   "market": 160.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/155504_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "205384",
@@ -26412,7 +26625,19 @@
   "market": 370,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/205384_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "497177",
@@ -26508,7 +26733,19 @@
   "market": 146.48,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/265251_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "283325",
@@ -26551,7 +26788,19 @@
   "market": 298.33,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/283325_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance",
+     "brilliant-stars"
+    ]
+   }
+  ]
  },
  {
   "id": "285674",
@@ -26601,7 +26850,19 @@
   "market": 372.81,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/285674_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 15,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "539305",
@@ -26883,7 +27144,19 @@
   "market": 349.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/118336_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "523959",
@@ -26937,7 +27210,19 @@
   "market": 399,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117278_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "169636",
@@ -27051,7 +27336,19 @@
   "market": 449.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/126570_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "549454",
@@ -27136,7 +27433,17 @@
   "market": 277.97,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/132238_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "685926",
@@ -27319,7 +27626,19 @@
   "market": 399.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/192230_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "unbroken-bonds",
+     "detective-pikachu",
+     "team-up",
+     "lost-thunder"
+    ]
+   }
+  ]
  },
  {
   "id": "650229",
@@ -27373,7 +27692,19 @@
   "market": 89.47,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/650229_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "575897",
@@ -27544,7 +27875,19 @@
   "market": 79.14,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/262968_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "242809",
@@ -27579,7 +27922,24 @@
   "market": 166.17,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242809_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242807",
@@ -27614,7 +27974,24 @@
   "market": 81.07,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242807_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242808",
@@ -27649,7 +28026,24 @@
   "market": 143.66,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242808_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "244726",
@@ -27774,7 +28168,24 @@
   "market": 175.21,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/244727_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 6
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242810",
@@ -27813,7 +28224,24 @@
   "market": 133.12,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242810_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "245139",
@@ -27863,7 +28291,24 @@
   "market": 296.52,
   "msrp": 59.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245139_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 8
+   }
+  ],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "251217",
@@ -27962,7 +28407,24 @@
   "market": 359.18,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/252416_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 3
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "247470",
@@ -28008,7 +28470,24 @@
   "market": 197.49,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/247470_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 6
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "245140",
@@ -28084,7 +28563,24 @@
   "market": 1200.47,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245140_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 17
+   }
+  ],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "218806",
@@ -28493,7 +28989,19 @@
   "market": 337.45,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/125731_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "91612",
@@ -28528,7 +29036,22 @@
   "market": 3989.0,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/91612_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "flashfire",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "flashfire",
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "148154",
@@ -28589,7 +29112,18 @@
   "market": 1320.0,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148154_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "516576",
@@ -28758,7 +29292,19 @@
   "market": 250,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/186105_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "98614",
@@ -28826,15 +29372,11 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
     "slug": "rebel-clash",
+    "packs": 3
+   },
+   {
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -28855,7 +29397,17 @@
   "market": 102.95,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/214227_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "692541",
@@ -29457,7 +30009,19 @@
   "market": 90.33,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/477286_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "477288",
@@ -29577,7 +30141,19 @@
   "market": 174.5,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/477288_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 14,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "558746",
@@ -29696,7 +30272,19 @@
   "market": 154.28,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/286618_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "450103",
@@ -29727,7 +30315,19 @@
   "market": 399.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/450103_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "246414",
@@ -29766,7 +30366,19 @@
   "market": 167.5,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/246414_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "forbidden-light",
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends"
+    ]
+   }
+  ]
  },
  {
   "id": "164314",
@@ -29816,7 +30428,19 @@
   "market": 239.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/164314_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "forbidden-light",
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends"
+    ]
+   }
+  ]
  },
  {
   "id": "230425",
@@ -29893,7 +30517,17 @@
   "market": 297.95,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/133806_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "604493",
@@ -30034,7 +30668,19 @@
   "market": 109.94,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282002_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "282004",
@@ -30132,7 +30778,19 @@
   "market": 140,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282004_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "264420",
@@ -30167,7 +30825,24 @@
   "market": 475.0,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/264420_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "detective-pikachu",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "185244",
@@ -30190,7 +30865,24 @@
   "market": 372.33,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185244_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "detective-pikachu",
+    "packs": 7
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "unbroken-bonds",
+     "detective-pikachu",
+     "team-up",
+     "lost-thunder"
+    ]
+   }
+  ]
  },
  {
   "id": "175062",
@@ -30382,7 +31074,19 @@
   "market": 278.91,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/125734_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "245876",
@@ -30421,7 +31125,19 @@
   "market": 164.66,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245876_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "246415",
@@ -30460,7 +31176,19 @@
   "market": 176.5,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/246415_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "forbidden-light",
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends"
+    ]
+   }
+  ]
  },
  {
   "id": "164315",
@@ -30506,7 +31234,19 @@
   "market": 289.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/164315_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "forbidden-light",
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends"
+    ]
+   }
+  ]
  },
  {
   "id": "249713",
@@ -30604,7 +31344,19 @@
   "market": 950.96,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/249713_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 18,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "286470",
@@ -30735,7 +31487,19 @@
   "market": 285.14,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/286470_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 9,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "137523",
@@ -30792,7 +31556,17 @@
   "market": 494.83,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/137523_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "220277",
@@ -31064,7 +31838,19 @@
   "market": 300,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/180518_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light"
+    ]
+   }
+  ]
  },
  {
   "id": "284930",
@@ -31125,7 +31911,19 @@
   "market": 83.77,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/284930_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "516647",
@@ -31693,7 +32491,19 @@
   "market": 354.97,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97820_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces",
+     "furious-fists"
+    ]
+   }
+  ]
  },
  {
   "id": "169414",
@@ -31747,7 +32557,19 @@
   "market": 265,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/169414_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "199780",
@@ -31941,15 +32763,7 @@
   "mix": [
    {
     "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
-   },
-   {
-    "slug": "unified-minds",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -31969,7 +32783,16 @@
   "market": 162.73,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/220750_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "220752",
@@ -31979,16 +32802,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "unified-minds",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
     "slug": "sword-shield",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -32008,7 +32823,16 @@
   "market": 166.5,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/220752_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "220751",
@@ -32018,16 +32842,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "cosmic-eclipse",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
     "slug": "sword-shield",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -32047,7 +32863,16 @@
   "market": 193.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/220751_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "228978",
@@ -32214,7 +33039,19 @@
   "market": 90.63,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/220272_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "champions-path",
+     "darkness-ablaze",
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "97794",
@@ -32253,7 +33090,19 @@
   "market": 547.97,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97794_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "phantom-forces",
+     "furious-fists",
+     "flashfire",
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "97729",
@@ -32331,7 +33180,19 @@
   "market": 522.6,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/125733_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "257375",
@@ -32407,7 +33268,19 @@
   "market": 253.68,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/257375_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies"
+    ]
+   }
+  ]
  },
  {
   "id": "256146",
@@ -32453,7 +33326,19 @@
   "market": 144,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/256146_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies"
+    ]
+   }
+  ]
  },
  {
   "id": "546458",
@@ -32553,7 +33438,19 @@
   "market": 46.35,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/594896_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "245878",
@@ -32632,7 +33529,19 @@
   "market": 151.56,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245878_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "553002",
@@ -32778,7 +33687,19 @@
   "market": 299.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/155061_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "526914",
@@ -33339,7 +34260,19 @@
   "market": 52.23,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282721_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "282402",
@@ -33393,7 +34326,19 @@
   "market": 157.97,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282402_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "637417",
@@ -33447,7 +34392,19 @@
   "market": 103.1,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/637417_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance",
+     "brilliant-stars"
+    ]
+   }
+  ]
  },
  {
   "id": "693146",
@@ -33478,7 +34435,19 @@
   "market": 69,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/693146_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "steam-siege",
+     "fates-collide",
+     "generations",
+     "breakpoint"
+    ]
+   }
+  ]
  },
  {
   "id": "107115",
@@ -33572,7 +34541,19 @@
   "market": 714.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/107115_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "247817",
@@ -33611,7 +34592,19 @@
   "market": 100.51,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/247817_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "249619",
@@ -33770,20 +34763,12 @@
   "inPrint": true,
   "mix": [
    {
-    "slug": "phantasmal-flames",
-    "packs": 4
-   },
-   {
-    "slug": "white-flare",
-    "packs": 3
-   },
-   {
-    "slug": "black-bolt",
-    "packs": 2
-   },
-   {
     "slug": "mega-evolution",
-    "packs": 1
+    "packs": 5
+   },
+   {
+    "slug": "phantasmal-flames",
+    "packs": 5
    }
   ],
   "promos": [],
@@ -33791,7 +34776,17 @@
   "market": 100.54,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/653199_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "phantasmal-flames",
+     "mega-evolution"
+    ]
+   }
+  ]
  },
  {
   "id": "240975",
@@ -33830,7 +34825,19 @@
   "market": 53.74,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/240975_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "209655",
@@ -33907,7 +34914,17 @@
   "market": 230,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/133807_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "277568",
@@ -33961,7 +34978,19 @@
   "market": 73.73,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/277568_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance",
+     "brilliant-stars"
+    ]
+   }
+  ]
  },
  {
   "id": "545403",
@@ -34192,7 +35221,19 @@
   "market": 560,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177864_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light"
+    ]
+   }
+  ]
  },
  {
   "id": "181707",
@@ -34246,7 +35287,19 @@
   "market": 370,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/181707_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light"
+    ]
+   }
+  ]
  },
  {
   "id": "226133",
@@ -34358,7 +35411,19 @@
   "market": 240,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/181709_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "97713",
@@ -34393,7 +35458,19 @@
   "market": 999.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97713_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "legendary-treasures",
+     "plasma-blast",
+     "plasma-freeze",
+     "plasma-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "97714",
@@ -34432,7 +35509,19 @@
   "market": 999.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97714_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "legendary-treasures",
+     "plasma-blast",
+     "plasma-freeze",
+     "plasma-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "97715",
@@ -34471,7 +35560,19 @@
   "market": 999.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97715_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "legendary-treasures",
+     "plasma-blast",
+     "plasma-freeze",
+     "plasma-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "125732",
@@ -34506,7 +35607,19 @@
   "market": 349.9,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/125732_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "192083",
@@ -34541,7 +35654,19 @@
   "market": 250,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/192083_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "unbroken-bonds",
+     "detective-pikachu",
+     "team-up",
+     "lost-thunder"
+    ]
+   }
+  ]
  },
  {
   "id": "222989",
@@ -34643,15 +35768,7 @@
   "mix": [
    {
     "slug": "sun-moon",
-    "packs": 2
-   },
-   {
-    "slug": "fates-collide",
-    "packs": 1
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -34671,7 +35788,16 @@
   "market": 199.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131867_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "553001",
@@ -34800,7 +35926,19 @@
   "market": 97.16,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/477284_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "270478",
@@ -34854,7 +35992,19 @@
   "market": 87.98,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/270478_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "532560",
@@ -35285,7 +36435,18 @@
   "market": 90,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/153454_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "97742",
@@ -35366,7 +36527,19 @@
   "market": 185,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/286477_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "256147",
@@ -35420,7 +36593,19 @@
   "market": 123.09,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/256147_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies"
+    ]
+   }
+  ]
  },
  {
   "id": "148381",
@@ -35430,16 +36615,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "steam-siege",
-    "packs": 3
-   },
-   {
-    "slug": "evolutions",
-    "packs": 1
-   },
-   {
     "slug": "sun-moon",
-    "packs": 1
+    "packs": 5
    }
   ],
   "promos": [
@@ -35514,7 +36691,16 @@
   "market": 349,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148381_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "594495",
@@ -35587,7 +36773,19 @@
   "market": 321.58,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/164232_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "179033",
@@ -35637,7 +36835,19 @@
   "market": 345,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/179033_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "626605",
@@ -35751,20 +36961,12 @@
   "inPrint": true,
   "mix": [
    {
-    "slug": "white-flare",
-    "packs": 4
+    "slug": "mega-evolution",
+    "packs": 6
    },
    {
     "slug": "phantasmal-flames",
-    "packs": 3
-   },
-   {
-    "slug": "black-bolt",
-    "packs": 2
-   },
-   {
-    "slug": "mega-evolution",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -35795,7 +36997,17 @@
   "market": 100.23,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/655739_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "phantasmal-flames",
+     "mega-evolution"
+    ]
+   }
+  ]
  },
  {
   "id": "175559",
@@ -35830,7 +37042,19 @@
   "market": 288.55,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175559_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light"
+    ]
+   }
+  ]
  },
  {
   "id": "218328",
@@ -35882,16 +37106,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "fates-collide",
-    "packs": 2
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 1
-   },
-   {
     "slug": "sun-moon",
-    "packs": 1
+    "packs": 4
    }
   ],
   "promos": [
@@ -35911,7 +37127,16 @@
   "market": 139.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131865_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "218321",
@@ -36075,7 +37300,19 @@
   "market": 119.39,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/241093_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "152602",
@@ -36114,7 +37351,19 @@
   "market": 278,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/152602_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows",
+     "guardians-rising"
+    ]
+   }
+  ]
  },
  {
   "id": "99151",
@@ -36214,7 +37463,19 @@
   "market": 699.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117277_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "125563",
@@ -36332,15 +37593,7 @@
   "mix": [
    {
     "slug": "sun-moon",
-    "packs": 3
-   },
-   {
-    "slug": "fates-collide",
-    "packs": 2
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 1
+    "packs": 6
    }
   ],
   "promos": [
@@ -36382,7 +37635,16 @@
   "market": 524.5,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/129896_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "97766",
@@ -36812,7 +38074,19 @@
   "market": 767.28,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177529_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "steam-siege",
+     "fates-collide",
+     "generations",
+     "breakpoint"
+    ]
+   }
+  ]
  },
  {
   "id": "654211",
@@ -36921,7 +38195,19 @@
   "market": 584.5,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/100502_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces"
+    ]
+   }
+  ]
  },
  {
   "id": "656487",
@@ -37029,7 +38315,19 @@
   "market": 349.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/118335_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "107118",
@@ -37079,7 +38377,19 @@
   "market": 729.66,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/107118_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "107119",
@@ -37129,7 +38439,19 @@
   "market": 309.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/107119_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "131693",
@@ -37139,20 +38461,12 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "evolutions",
-    "packs": 2
-   },
-   {
     "slug": "guardians-rising",
-    "packs": 2
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 2
+    "packs": 4
    },
    {
     "slug": "sun-moon",
-    "packs": 2
+    "packs": 4
    }
   ],
   "promos": [
@@ -37216,7 +38530,17 @@
   "market": 1098.79,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131693_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "129897",
@@ -37226,16 +38550,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "evolutions",
-    "packs": 3
-   },
-   {
-    "slug": "fates-collide",
-    "packs": 2
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 1
+    "slug": "sun-moon",
+    "packs": 6
    }
   ],
   "promos": [
@@ -37277,7 +38593,16 @@
   "market": 545.0,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/129897_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "133808",
@@ -37287,20 +38612,12 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "evolutions",
-    "packs": 2
-   },
-   {
     "slug": "guardians-rising",
-    "packs": 2
-   },
-   {
-    "slug": "steam-siege",
-    "packs": 1
+    "packs": 3
    },
    {
     "slug": "sun-moon",
-    "packs": 1
+    "packs": 3
    }
   ],
   "promos": [
@@ -37342,7 +38659,17 @@
   "market": 249.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/133808_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "654212",
@@ -37462,7 +38789,19 @@
   "market": 950,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185246_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "205464",
@@ -37473,11 +38812,7 @@
   "mix": [
    {
     "slug": "sword-shield",
-    "packs": 3
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 2
+    "packs": 5
    }
   ],
   "promos": [
@@ -37508,7 +38843,16 @@
   "market": 300,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/205464_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "286476",
@@ -37554,7 +38898,19 @@
   "market": 120,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/286476_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "125735",
@@ -37668,7 +39024,19 @@
   "market": 188.89,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245877_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "129895",
@@ -37678,12 +39046,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "steam-siege",
-    "packs": 2
-   },
-   {
-    "slug": "evolutions",
-    "packs": 1
+    "slug": "sun-moon",
+    "packs": 3
    }
   ],
   "promos": [
@@ -37703,7 +39067,16 @@
   "market": 198.83,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/129895_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "166410",
@@ -37738,7 +39111,19 @@
   "market": 206.34,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/166410_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows",
+     "guardians-rising"
+    ]
+   }
+  ]
  },
  {
   "id": "475802",
@@ -37802,7 +39187,7 @@
     "packs": 2
    },
    {
-    "slug": "hidden-fates",
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -37823,7 +39208,17 @@
   "market": 69,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/210577_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "475644",
@@ -38052,7 +39447,19 @@
   "market": 75.1,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/262646_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "127179",
@@ -38153,7 +39560,19 @@
   "market": 799.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/127179_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "127180",
@@ -38251,7 +39670,19 @@
   "market": 357.58,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/127180_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "121363",
@@ -38657,7 +40088,19 @@
   "market": 274.39,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/248205_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "576482",
@@ -38865,7 +40308,19 @@
   "market": 133.73,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282000_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "282005",
@@ -38937,7 +40392,28 @@
   "market": 227.01,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282005_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   },
+   {
+    "packs": 6,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "282001",
@@ -38987,7 +40463,19 @@
   "market": 137.1,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282001_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "547129",
@@ -40170,7 +41658,19 @@
   "market": 400,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/198528_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "575185",
@@ -40420,7 +41920,19 @@
   "market": 291.57,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/253396_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "107114",
@@ -40514,7 +42026,19 @@
   "market": 1799.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/107114_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "166409",
@@ -40553,7 +42077,19 @@
   "market": 286.23,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/166409_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows",
+     "guardians-rising"
+    ]
+   }
+  ]
  },
  {
   "id": "527796",
@@ -41067,15 +42603,11 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
-   },
-   {
     "slug": "rebel-clash",
+    "packs": 3
+   },
+   {
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -41096,7 +42628,17 @@
   "market": 119.49,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/210563_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "198521",
@@ -41131,7 +42673,19 @@
   "market": 350,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/198521_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds",
+     "detective-pikachu"
+    ]
+   }
+  ]
  },
  {
   "id": "668537",
@@ -41389,7 +42943,19 @@
   "market": 3125,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148226_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "evolutions",
+     "steam-siege",
+     "fates-collide",
+     "generations"
+    ]
+   }
+  ]
  },
  {
   "id": "97755",
@@ -41463,7 +43029,19 @@
   "market": 499.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97754_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces",
+     "furious-fists"
+    ]
+   }
+  ]
  },
  {
   "id": "656924",
@@ -41551,7 +43129,17 @@
   "market": 337.99,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/133805_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "268713",
@@ -41627,7 +43215,19 @@
   "market": 109.69,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/268713_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "97741",
@@ -41791,7 +43391,19 @@
   "market": 137.84,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/253454_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "100499",
@@ -41830,7 +43442,19 @@
   "market": 1000,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/100499_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces"
+    ]
+   }
+  ]
  },
  {
   "id": "118795",
@@ -41997,7 +43621,19 @@
   "market": 900,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/194597_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "unbroken-bonds",
+     "detective-pikachu",
+     "team-up",
+     "lost-thunder"
+    ]
+   }
+  ]
  },
  {
   "id": "248208",
@@ -42040,7 +43676,19 @@
   "market": 296.51,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/248208_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "516577",
@@ -42111,20 +43759,12 @@
   "inPrint": true,
   "mix": [
    {
-    "slug": "black-bolt",
-    "packs": 6
-   },
-   {
     "slug": "mega-evolution",
-    "packs": 2
+    "packs": 7
    },
    {
     "slug": "phantasmal-flames",
-    "packs": 1
-   },
-   {
-    "slug": "white-flare",
-    "packs": 1
+    "packs": 3
    }
   ],
   "promos": [],
@@ -42132,7 +43772,17 @@
   "market": 90.96,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/653899_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "phantasmal-flames",
+     "mega-evolution"
+    ]
+   }
+  ]
  },
  {
   "id": "131870",
@@ -42142,12 +43792,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "fates-collide",
-    "packs": 2
-   },
-   {
     "slug": "sun-moon",
-    "packs": 2
+    "packs": 4
    }
   ],
   "promos": [
@@ -42167,7 +43813,16 @@
   "market": 249.95,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131870_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "563307",
@@ -42270,7 +43925,19 @@
   "market": 52.39,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/240977_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "286619",
@@ -42324,7 +43991,19 @@
   "market": 129.79,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/286619_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "228825",
@@ -43230,7 +44909,19 @@
   "market": 68,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/152598_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows",
+     "guardians-rising"
+    ]
+   }
+  ]
  },
  {
   "id": "137872",
@@ -43265,7 +44956,17 @@
   "market": 120,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/137872_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "152601",
@@ -43300,7 +45001,19 @@
   "market": 265.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/152601_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows",
+     "guardians-rising"
+    ]
+   }
+  ]
  },
  {
   "id": "231297",
@@ -43346,7 +45059,19 @@
   "market": 44.97,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231297_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "253455",
@@ -43411,7 +45136,19 @@
   "market": 162.42,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/253455_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "226128",
@@ -43464,11 +45201,11 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "sword-shield",
+    "slug": "rebel-clash",
     "packs": 2
    },
    {
-    "slug": "hidden-fates",
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -43489,7 +45226,17 @@
   "market": 175,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/210576_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "175558",
@@ -43980,7 +45727,19 @@
   "market": 571.28,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282401_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 16,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "91598",
@@ -44107,7 +45866,19 @@
   "market": 4725.56,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/91598_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "legendary-treasures",
+     "plasma-blast",
+     "plasma-freeze",
+     "plasma-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "200172",
@@ -44157,7 +45928,19 @@
   "market": 1815,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/200172_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "209532",
@@ -44167,20 +45950,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "unified-minds",
-    "packs": 3
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 2
-   },
-   {
     "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
+    "packs": 8
    }
   ],
   "promos": [
@@ -44266,7 +46037,16 @@
   "market": 1999.98,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/209532_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "209533",
@@ -44277,19 +46057,7 @@
   "mix": [
    {
     "slug": "sword-shield",
-    "packs": 4
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
-    "slug": "unified-minds",
-    "packs": 1
+    "packs": 8
    }
   ],
   "promos": [
@@ -44375,7 +46143,16 @@
   "market": 1849.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/209533_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "131734",
@@ -44410,7 +46187,17 @@
   "market": 185,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131734_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "132237",
@@ -44420,11 +46207,11 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "sun-moon",
+    "slug": "guardians-rising",
     "packs": 2
    },
    {
-    "slug": "evolutions",
+    "slug": "sun-moon",
     "packs": 1
    }
   ],
@@ -44445,7 +46232,17 @@
   "market": 79.33,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/132237_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "625695",
@@ -44571,7 +46368,24 @@
   "market": 321.68,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/656997_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "destined-rivals",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 16,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "148417",
@@ -44639,7 +46453,18 @@
   "market": 210,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148417_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "563857",
@@ -45017,7 +46842,19 @@
   "market": 1099.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/181693_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "206424",
@@ -45157,7 +46994,19 @@
   "market": 356.76,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/218839_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "champions-path",
+     "darkness-ablaze",
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "218840",
@@ -45196,7 +47045,19 @@
   "market": 400.0,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/218840_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "champions-path",
+     "darkness-ablaze",
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "141243",
@@ -45231,7 +47092,18 @@
   "market": 199.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/141243_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "149376",
@@ -45391,7 +47263,17 @@
   "market": 800,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/137524_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "232315",
@@ -45705,7 +47587,28 @@
   "market": 258.33,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/283851_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   },
+   {
+    "packs": 8,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "245880",
@@ -45902,7 +47805,19 @@
   "market": 385.7,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245880_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "287228",
@@ -46032,7 +47947,19 @@
   "market": 599.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/181710_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "231294",
@@ -46125,7 +48052,19 @@
   "market": 85.85,
   "msrp": 39.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/635621_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "98613",
@@ -46206,7 +48145,19 @@
   "market": 71.55,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/280847_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "685927",
@@ -46385,7 +48336,19 @@
   "market": 299.99,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/107109_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "breakthrough",
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis"
+    ]
+   }
+  ]
  },
  {
   "id": "249164",
@@ -46442,7 +48405,17 @@
   "market": 7538.94,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/249164_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "flashfire",
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "245879",
@@ -46529,7 +48502,19 @@
   "market": 124.77,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/245879_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "282003",
@@ -46590,7 +48575,19 @@
   "market": 109.57,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282003_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "121391",
@@ -46629,7 +48626,19 @@
   "market": 345,
   "msrp": 24.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/121391_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "455776",
@@ -47158,7 +49167,24 @@
   "market": 318.46,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242811_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 10
+   }
+  ],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "251199",
@@ -47197,7 +49223,24 @@
   "market": 484.46,
   "msrp": 54.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/251199_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 13
+   }
+  ],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "170277",
@@ -50424,7 +52467,19 @@
   "market": 62.0,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/268069_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "139888",
@@ -50720,7 +52775,19 @@
   "market": 25.84,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231300_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage"
+    ]
+   }
+  ]
  },
  {
   "id": "231299",
@@ -50743,7 +52810,19 @@
   "market": 31.54,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231299_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "231304",
@@ -50766,7 +52845,19 @@
   "market": 24.98,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231304_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "231305",
@@ -50789,7 +52880,19 @@
   "market": 64.07,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231305_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "231301",
@@ -50808,7 +52911,19 @@
   "market": 30.15,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231301_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage"
+    ]
+   }
+  ]
  },
  {
   "id": "231306",
@@ -50831,7 +52946,19 @@
   "market": 70.52,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231306_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "231303",
@@ -50854,7 +52981,19 @@
   "market": 23.66,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231303_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "evolving-skies",
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates"
+    ]
+   }
+  ]
  },
  {
   "id": "231302",
@@ -50877,7 +53016,19 @@
   "market": 23.29,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231302_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "chilling-reign",
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage"
+    ]
+   }
+  ]
  },
  {
   "id": "166413",
@@ -51143,7 +53294,19 @@
   "market": 223.89,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282250_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance",
+     "brilliant-stars"
+    ]
+   }
+  ]
  },
  {
   "id": "505939",
@@ -51503,7 +53666,19 @@
   "market": 135.55,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/639828_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 6,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "282645",
@@ -51538,7 +53713,19 @@
   "market": 99.99,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282645_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance",
+     "brilliant-stars"
+    ]
+   }
+  ]
  },
  {
   "id": "528229",
@@ -51668,7 +53855,19 @@
   "market": 44.99,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/265706_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies"
+    ]
+   }
+  ]
  },
  {
   "id": "692940",
@@ -52230,7 +54429,19 @@
   "market": 71.43,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/275938_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "497380",
@@ -52374,7 +54585,19 @@
   "market": 40.55,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/564274_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "surging-sparks",
+     "stellar-crown",
+     "shrouded-fable",
+     "twilight-masquerade"
+    ]
+   }
+  ]
  },
  {
   "id": "653203",
@@ -52594,7 +54817,19 @@
   "market": 109.82,
   "msrp": null,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/261779_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 7,
+    "slugs": [
+     "astral-radiance",
+     "brilliant-stars",
+     "fusion-strike",
+     "celebrations"
+    ]
+   }
+  ]
  },
  {
   "id": "121393",
@@ -54418,7 +56653,19 @@
   "market": 206.24,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/123440_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "steam-siege",
+     "fates-collide",
+     "generations",
+     "breakpoint"
+    ]
+   }
+  ]
  },
  {
   "id": "123441",
@@ -54457,7 +56704,19 @@
   "market": 217.49,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/123441_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "steam-siege",
+     "fates-collide",
+     "generations",
+     "breakpoint"
+    ]
+   }
+  ]
  },
  {
   "id": "123442",
@@ -54500,7 +56759,19 @@
   "market": 229.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/123442_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "steam-siege",
+     "fates-collide",
+     "generations",
+     "breakpoint"
+    ]
+   }
+  ]
  },
  {
   "id": "242819",
@@ -54523,7 +56794,24 @@
   "market": 59.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242819_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242820",
@@ -54546,7 +56834,24 @@
   "market": 69.69,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242820_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242815",
@@ -54569,7 +56874,24 @@
   "market": 76.17,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242815_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242814",
@@ -54592,7 +56914,24 @@
   "market": 67.08,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242814_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242818",
@@ -54615,7 +56954,24 @@
   "market": 59.88,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242818_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242813",
@@ -54638,7 +56994,24 @@
   "market": 74.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242813_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242816",
@@ -54657,7 +57030,24 @@
   "market": 72.58,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242816_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "242817",
@@ -54680,7 +57070,24 @@
   "market": 55.34,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/242817_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "551456",
@@ -56074,7 +58481,19 @@
   "market": 69.2,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/243562_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "243561",
@@ -56113,7 +58532,19 @@
   "market": 80.58,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/243561_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "243571",
@@ -56178,7 +58609,19 @@
   "market": 248,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/243571_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "243559",
@@ -56213,7 +58656,19 @@
   "market": 70.61,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/243559_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "crown-zenith",
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go"
+    ]
+   }
+  ]
  },
  {
   "id": "199787",
@@ -56252,7 +58707,19 @@
   "market": 154.97,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/199787_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "199789",
@@ -56291,7 +58758,19 @@
   "market": 200,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/199789_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "199788",
@@ -56330,7 +58809,19 @@
   "market": 145.64,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/199788_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "cosmic-eclipse",
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds"
+    ]
+   }
+  ]
  },
  {
   "id": "175555",
@@ -56369,7 +58860,19 @@
   "market": 140.38,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175555_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "175556",
@@ -56408,7 +58911,19 @@
   "market": 177.31,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175556_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "175562",
@@ -56473,7 +58988,19 @@
   "market": 324.99,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175562_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "175557",
@@ -56512,7 +59039,19 @@
   "market": 142.5,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/175557_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "dragon-majesty",
+     "celestial-storm",
+     "forbidden-light",
+     "ultra-prism"
+    ]
+   }
+  ]
  },
  {
   "id": "222985",
@@ -56610,16 +59149,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "hidden-fates",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
-   },
-   {
-    "slug": "unified-minds",
-    "packs": 1
+    "slug": "sword-shield",
+    "packs": 4
    }
   ],
   "promos": [
@@ -56639,7 +59170,16 @@
   "market": 105.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282886_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "282887",
@@ -56649,12 +59189,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "unified-minds",
-    "packs": 3
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
+    "slug": "sword-shield",
+    "packs": 4
    }
   ],
   "promos": [
@@ -56674,7 +59210,16 @@
   "market": 83,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282887_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "206420",
@@ -56684,16 +59229,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "cosmic-eclipse",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 2
-   },
-   {
     "slug": "sword-shield",
-    "packs": 1
+    "packs": 5
    }
   ],
   "promos": [
@@ -56713,7 +59250,16 @@
   "market": 100,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/206420_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "206417",
@@ -56724,19 +59270,7 @@
   "mix": [
    {
     "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
-    "slug": "unified-minds",
-    "packs": 1
+    "packs": 5
    }
   ],
   "promos": [
@@ -56756,7 +59290,16 @@
   "market": 100,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/206417_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "206422",
@@ -56766,12 +59309,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "cosmic-eclipse",
-    "packs": 3
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 2
+    "slug": "sword-shield",
+    "packs": 5
    }
   ],
   "promos": [
@@ -56791,7 +59330,16 @@
   "market": 101.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/206422_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "206423",
@@ -56801,20 +59349,8 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "unified-minds",
-    "packs": 6
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 4
-   },
-   {
     "slug": "sword-shield",
-    "packs": 3
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 2
+    "packs": 15
    }
   ],
   "promos": [
@@ -56856,7 +59392,16 @@
   "market": 299.95,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/206423_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 15,
+    "slugs": [
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "218854",
@@ -57179,7 +59724,19 @@
   "market": 99.19,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/281982_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "281984",
@@ -57218,7 +59775,19 @@
   "market": 151.46,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/281984_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "281981",
@@ -57253,7 +59822,19 @@
   "market": 94.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/281981_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "281993",
@@ -57318,7 +59899,19 @@
   "market": 359.98,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/281993_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 15,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "100497",
@@ -57349,7 +59942,19 @@
   "market": 669.95,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/100497_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces"
+    ]
+   }
+  ]
  },
  {
   "id": "100496",
@@ -57388,7 +59993,19 @@
   "market": 650,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/100496_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces"
+    ]
+   }
+  ]
  },
  {
   "id": "100498",
@@ -57427,7 +60044,19 @@
   "market": 379.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/100498_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash",
+     "phantom-forces"
+    ]
+   }
+  ]
  },
  {
   "id": "131726",
@@ -57462,7 +60091,17 @@
   "market": 115,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131726_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "131725",
@@ -57497,7 +60136,17 @@
   "market": 175,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/131725_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "91607",
@@ -57908,7 +60557,16 @@
   "market": 900,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97726_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "97727",
@@ -57939,7 +60597,16 @@
   "market": 950,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/97727_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "xy"
+    ]
+   }
+  ]
  },
  {
   "id": "129310",
@@ -57970,7 +60637,16 @@
   "market": 159.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/129310_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "129309",
@@ -58001,7 +60677,16 @@
   "market": 190,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/129309_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "287503",
@@ -58311,20 +60996,12 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "cosmic-eclipse",
-    "packs": 4
+    "slug": "rebel-clash",
+    "packs": 5
    },
    {
     "slug": "sword-shield",
-    "packs": 3
-   },
-   {
-    "slug": "rebel-clash",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
+    "packs": 5
    }
   ],
   "promos": [
@@ -58355,7 +61032,17 @@
   "market": 180,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/214232_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 10,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "214230",
@@ -58365,20 +61052,12 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "cosmic-eclipse",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
+    "slug": "sword-shield",
+    "packs": 3
    },
    {
     "slug": "rebel-clash",
-    "packs": 1
-   },
-   {
-    "slug": "sword-shield",
-    "packs": 1
+    "packs": 2
    }
   ],
   "promos": [
@@ -58398,7 +61077,17 @@
   "market": 72.25,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/214230_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "279257",
@@ -58412,7 +61101,7 @@
     "packs": 3
    },
    {
-    "slug": "cosmic-eclipse",
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -58433,7 +61122,17 @@
   "market": 89.98,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/279257_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "214231",
@@ -58443,20 +61142,12 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "hidden-fates",
-    "packs": 2
-   },
-   {
-    "slug": "cosmic-eclipse",
-    "packs": 1
+    "slug": "sword-shield",
+    "packs": 3
    },
    {
     "slug": "rebel-clash",
-    "packs": 1
-   },
-   {
-    "slug": "sword-shield",
-    "packs": 1
+    "packs": 2
    }
   ],
   "promos": [
@@ -58476,7 +61167,17 @@
   "market": 68.11,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/214231_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "279258",
@@ -58486,15 +61187,11 @@
   "inPrint": false,
   "mix": [
    {
-    "slug": "sword-shield",
-    "packs": 2
-   },
-   {
-    "slug": "hidden-fates",
-    "packs": 1
-   },
-   {
     "slug": "rebel-clash",
+    "packs": 3
+   },
+   {
+    "slug": "sword-shield",
     "packs": 1
    }
   ],
@@ -58515,7 +61212,17 @@
   "market": 84.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/279258_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "rebel-clash",
+     "sword-shield"
+    ]
+   }
+  ]
  },
  {
   "id": "685577",
@@ -59227,7 +61934,18 @@
   "market": 123.94,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148418_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "148420",
@@ -59262,7 +61980,18 @@
   "market": 99.9,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148420_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "148419",
@@ -59301,7 +62030,18 @@
   "market": 126.74,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/148419_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "burning-shadows",
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "162046",
@@ -59340,7 +62080,19 @@
   "market": 225,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/162046_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "162045",
@@ -59383,7 +62135,19 @@
   "market": 262,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/162045_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "98615",
@@ -61043,7 +63807,19 @@
   "market": 72.05,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231292_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "271585",
@@ -61406,7 +64182,24 @@
   "market": 128,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/251988_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "251987",
@@ -61441,7 +64234,24 @@
   "market": 122.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/251987_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 4
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "252739",
@@ -61487,7 +64297,24 @@
   "market": 250.58,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/252739_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 8
+   }
+  ],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "251989",
@@ -61526,7 +64353,24 @@
   "market": 173.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/251989_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 6
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "251986",
@@ -61561,7 +64405,24 @@
   "market": 187.73,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/251986_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 6
+   }
+  ],
+  "pools": [
+   {
+    "packs": 2,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "252740",
@@ -61611,7 +64472,24 @@
   "market": 500.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/252740_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "celebrations",
+    "packs": 12
+   }
+  ],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fusion-strike",
+     "celebrations",
+     "evolving-skies",
+     "chilling-reign"
+    ]
+   }
+  ]
  },
  {
   "id": "270729",
@@ -61992,7 +64870,24 @@
   "market": 51.25,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282405_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "lost-origin",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "541175",
@@ -62061,7 +64956,24 @@
   "market": 56.63,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282403_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "lost-origin",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "282404",
@@ -62084,7 +64996,24 @@
   "market": 51.73,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282404_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "lost-origin",
+    "packs": 2
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "616296",
@@ -62188,7 +65117,24 @@
   "market": 110,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/282406_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "lost-origin",
+    "packs": 6
+   }
+  ],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "silver-tempest",
+     "lost-origin",
+     "pokemon-go",
+     "astral-radiance"
+    ]
+   }
+  ]
  },
  {
   "id": "194737",
@@ -62223,7 +65169,19 @@
   "market": 549.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/194737_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds",
+     "detective-pikachu"
+    ]
+   }
+  ]
  },
  {
   "id": "194736",
@@ -62262,7 +65220,19 @@
   "market": 387.66,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/194736_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds",
+     "detective-pikachu"
+    ]
+   }
+  ]
  },
  {
   "id": "194735",
@@ -62301,7 +65271,19 @@
   "market": 883.38,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/194735_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds",
+     "detective-pikachu"
+    ]
+   }
+  ]
  },
  {
   "id": "195611",
@@ -62366,7 +65348,19 @@
   "market": 1899.95,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/195611_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "hidden-fates",
+     "unified-minds",
+     "unbroken-bonds",
+     "detective-pikachu"
+    ]
+   }
+  ]
  },
  {
   "id": "106213",
@@ -62405,7 +65399,19 @@
   "market": 495,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106213_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash"
+    ]
+   }
+  ]
  },
  {
   "id": "106211",
@@ -62448,7 +65454,19 @@
   "market": 624.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/106211_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "ancient-origins",
+     "roaring-skies",
+     "double-crisis",
+     "primal-clash"
+    ]
+   }
+  ]
  },
  {
   "id": "616737",
@@ -62735,7 +65753,19 @@
   "market": 450.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/121394_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "121395",
@@ -62762,7 +65792,19 @@
   "market": 475.97,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/121395_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "121396",
@@ -62781,7 +65823,19 @@
   "market": 499.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/121396_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "fates-collide",
+     "generations",
+     "breakpoint",
+     "breakthrough"
+    ]
+   }
+  ]
  },
  {
   "id": "553023",
@@ -63172,7 +66226,16 @@
   "market": 230.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/267958_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "162044",
@@ -63229,7 +66292,19 @@
   "market": 250,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/162044_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "ultra-prism",
+     "crimson-invasion",
+     "shining-legends",
+     "burning-shadows"
+    ]
+   }
+  ]
  },
  {
   "id": "209531",
@@ -63344,7 +66419,19 @@
   "market": 64.44,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/231293_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 5,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "229748",
@@ -63518,7 +66605,19 @@
   "market": 764.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185256_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "185257",
@@ -63553,7 +66652,19 @@
   "market": 768.33,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185257_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "185258",
@@ -63584,7 +66695,19 @@
   "market": 736.41,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185258_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "185259",
@@ -63649,7 +66772,19 @@
   "market": 2749.95,
   "msrp": 44.97,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/185259_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 12,
+    "slugs": [
+     "team-up",
+     "lost-thunder",
+     "dragon-majesty",
+     "celestial-storm"
+    ]
+   }
+  ]
  },
  {
   "id": "137096",
@@ -63819,7 +66954,19 @@
   "market": 114.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/649200_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "649194",
@@ -63893,7 +67040,19 @@
   "market": 99.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/649199_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "649195",
@@ -63963,7 +67122,19 @@
   "market": 99.99,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/649197_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "white-flare",
+     "black-bolt",
+     "destined-rivals",
+     "journey-together"
+    ]
+   }
+  ]
  },
  {
   "id": "177868",
@@ -63998,7 +67169,17 @@
   "market": 300,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177868_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "177869",
@@ -64033,7 +67214,17 @@
   "market": 300,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177869_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "177870",
@@ -64068,7 +67259,17 @@
   "market": 245,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/177870_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 3,
+    "slugs": [
+     "guardians-rising",
+     "sun-moon"
+    ]
+   }
+  ]
  },
  {
   "id": "117699",
@@ -64107,7 +67308,19 @@
   "market": 450.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117699_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "generations",
+     "breakpoint",
+     "breakthrough",
+     "ancient-origins"
+    ]
+   }
+  ]
  },
  {
   "id": "117698",
@@ -64142,7 +67355,19 @@
   "market": 590.0,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117698_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "generations",
+     "breakpoint",
+     "breakthrough",
+     "ancient-origins"
+    ]
+   }
+  ]
  },
  {
   "id": "117700",
@@ -64181,7 +67406,19 @@
   "market": 397.97,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/117700_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [],
+  "pools": [
+   {
+    "packs": 4,
+    "slugs": [
+     "generations",
+     "breakpoint",
+     "breakthrough",
+     "ancient-origins"
+    ]
+   }
+  ]
  },
  {
   "id": "591146",
@@ -65376,7 +68613,32 @@
   "market": 90.82,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/236378_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "battle-styles",
+    "packs": 2
+   },
+   {
+    "slug": "darkness-ablaze",
+    "packs": 1
+   },
+   {
+    "slug": "sword-shield",
+    "packs": 1
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "238637",
@@ -65504,7 +68766,32 @@
   "market": 106.17,
   "msrp": 9.99,
   "image": "https://tcgplayer-cdn.tcgplayer.com/product/236377_in_800x800.jpg",
-  "mixGuess": true
+  "mixGuess": true,
+  "known": [
+   {
+    "slug": "battle-styles",
+    "packs": 2
+   },
+   {
+    "slug": "darkness-ablaze",
+    "packs": 1
+   },
+   {
+    "slug": "sword-shield",
+    "packs": 1
+   }
+  ],
+  "pools": [
+   {
+    "packs": 1,
+    "slugs": [
+     "battle-styles",
+     "shining-fates",
+     "vivid-voltage",
+     "champions-path"
+    ]
+   }
+  ]
  },
  {
   "id": "238638",

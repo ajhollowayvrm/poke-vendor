@@ -54,6 +54,12 @@ struct StoreOffer: Identifiable, Hashable {
         if case .single = item { return true }
         return false
     }
+
+    /// The sealed product of the listing. Nil for a single.
+    var product: Product? {
+        if case .product(let product, _) = item { return product }
+        return nil
+    }
 }
 
 extension SeededRandom {

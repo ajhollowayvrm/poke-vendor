@@ -146,6 +146,10 @@ struct StoreRunView: View {
                                         .padding(2)
                                         .background(Color.white)
                                         .frame(width: 44, height: 56)
+                                        // The front box on the shelf: the copy that the player buys next.
+                                        .looksInside(item.product) {
+                                            BoxContents.draw(item.product, key: BoxContents.shelfKey(item.id, copy: store.data.shelfBought[item.id] ?? 0))
+                                        }
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(item.product.name).font(.subheadline).lineLimit(2)
                                         Text("\(left) left · mkt \(money(item.product.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
@@ -345,7 +349,7 @@ struct BuyInBox: View {
             ForEach(items) { item in
                 let bought = store.data.weekBought.contains(item.id)
                 HStack(alignment: .top, spacing: 10) {
-                    GoodsImage(item: VendorItem(goods: item.goods, price: item.price, market: item.market))
+                    GoodsImage(item: VendorItem(goods: item.goods, price: item.price, market: item.market), contentsKey: item.id)
                         .frame(width: 44, height: 62)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.name).font(.subheadline).lineLimit(2)

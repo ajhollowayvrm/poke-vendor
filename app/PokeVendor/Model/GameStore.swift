@@ -593,10 +593,11 @@ final class GameStore {
 
     // MARK: - Ripping
 
-    /// The set of each pack in a sealed item, in order.
+    /// The set of each pack in a sealed item, front first. An assorted box holds its own packs (`BoxContents`).
     func packSlugs(of item: SealedItem) -> [String] {
         if item.brokenFrom == nil, let product = SetLibrary.product(item.productID), product.packs == item.packs {
-            return product.packSlugs
+            if let contents = item.contents, contents.count == product.packs { return contents }
+            return BoxContents.draw(product, key: item.id.uuidString)
         }
         return Array(repeating: item.setSlug, count: item.packs)
     }
@@ -770,12 +771,16 @@ final class GameStore {
     @discardableResult
     func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
         guard shelfLeft(item) > 0, pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
+        // The player takes the front box: the copy that the look-inside view showed.
+        let key = BoxContents.shelfKey(item.id, copy: data.shelfBought[item.id] ?? 0)
         data.shelfBought[item.id, default: 0] += 1
         recordDeal(shopContactID(store), what: "Bought \(item.product.name)", price: item.price, market: item.product.market,
                    slug: item.product.homeSlug)
-        data.sealed.append(SealedItem(setSlug: item.product.homeSlug, name: item.product.name, packs: item.product.packs, paid: item.price,
-                                      acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
-                                      acquiredDay: data.day))
+        var bought = SealedItem(setSlug: item.product.homeSlug, name: item.product.name, packs: item.product.packs, paid: item.price,
+                                acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
+                                acquiredDay: data.day)
+        bought.contents = BoxContents.draw(item.product, key: key)
+        data.sealed.append(bought)
         log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
             cash: credit ? nil : -item.price)
         save()
@@ -827,6 +832,7 @@ final class GameStore {
                                     acquired: .now, source: "Bought at \(store.rawValue)", productID: product.id,
                                     acquiredDay: data.day)
             sealed.fake = item.fake
+            sealed.contents = BoxContents.draw(product, key: item.id)
             sealed.fakeKnown = known
             data.sealed.append(sealed)
         case .mystery:

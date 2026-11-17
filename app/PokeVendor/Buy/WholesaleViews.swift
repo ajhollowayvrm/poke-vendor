@@ -33,7 +33,9 @@ struct WholesaleView: View {
                     let top = left.map { max(1, $0) } ?? 10
                     let n = min(cases[offer.id] ?? 1, top)
                     HStack(alignment: .top, spacing: 12) {
+                        // An order ships later, so the player cannot hold the box: only the odds show.
                         ProductImage(url: offer.product.image, setName: offer.product.name).frame(width: 50, height: 64)
+                            .looksInside(offer.product) { nil }
                         VStack(alignment: .leading, spacing: 4) {
                             Text(offer.product.name).font(.subheadline.weight(.medium)).lineLimit(2)
                             Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · MSRP \(money(offer.product.msrp ?? 0)) · mkt \(money(offer.product.market))")

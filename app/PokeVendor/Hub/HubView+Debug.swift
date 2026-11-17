@@ -184,6 +184,11 @@ extension HubView {
                 print("-browse: trade night is blocked: \(store.meetBlock(.tradeNight) ?? "unknown")")
             }
         }
+        // Screenshot aid: `-lookinside <productID>` adds the product and opens its Inventory screen. Tap the box.
+        if let i = args.firstIndex(of: "-lookinside"), i + 1 < args.count {
+            store.startRun()
+            if let item = store.addTestProduct(args[i + 1]) { nav.path = [.sealed(item.id)] }
+        }
         if let i = args.firstIndex(of: "-rip"), i + 1 < args.count {
             store.startRun()
             // `-rip a,b,c` rips several products. `-hitsonly` starts the rip in Hits only.

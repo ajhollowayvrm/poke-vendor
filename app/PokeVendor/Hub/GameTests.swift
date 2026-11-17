@@ -32,6 +32,7 @@ final class GameTests {
         timed("editions", editions)
         timed("seasons", seasonsAndSave)
         timed("opportunities", opportunities)
+        timed("boxes", boxes)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -298,6 +299,41 @@ final class GameTests {
         check(session.canFlip, "league night has no coin flip")
         let buyer = Visitor(type: .collector, name: "Test", intent: .buy, item: item, limit: 500, offer: 5, patience: 2, line: "")
         check(session.flipFull(buyer) == nil, "a PC item can go to a coin flip")
+    }
+
+    // MARK: - Look inside a box (docs/12-acquiring-product.md)
+
+    /// Each copy keeps its packs, an assorted box stays in one era, and a bought box holds the packs that the player saw.
+    private func boxes() {
+        fresh()
+        var unstable: [String] = [], wrongCount: [String] = [], mixedEra: [String] = []
+        for product in SetLibrary.catalog {
+            let packs = BoxContents.draw(product, key: "test")
+            if packs != BoxContents.draw(product, key: "test") { unstable.append(product.name) }
+            if packs.count != product.packs { wrongCount.append(product.name) }
+            for pool in product.pools ?? [] where Set(pool.slugs.compactMap { SetLibrary.info($0)?.era }).count != 1 {
+                mixedEra.append(product.name)
+            }
+        }
+        check(unstable.isEmpty, "one key drew different packs: \(unstable.prefix(3))")
+        check(wrongCount.isEmpty, "a draw has the wrong pack count: \(wrongCount.prefix(3))")
+        check(mixedEra.isEmpty, "an assorted pool mixes eras: \(mixedEra.prefix(3))")
+        guard let product = SetLibrary.catalog.first(where: { $0.isAssorted && $0.packs >= 3 }) else {
+            return check(false, "no assorted product")
+        }
+        // A box from a vendor table.
+        let listing = VendorItem(goods: .sealed(product), price: 1, market: 1)
+        let seen = BoxContents.draw(product, key: listing.id.uuidString)
+        let bought = store.buySealedAtShow(product, price: 1, vendor: "Test", at: "Test", contentsKey: listing.id.uuidString)
+        check(store.packSlugs(of: bought) == seen, "a box from a table does not hold the packs that the player saw")
+        // The front box on a shop shelf.
+        let shelf = ShelfItem(id: "test-shelf", product: product, price: 1, quantity: 2)
+        let front = BoxContents.draw(product, key: BoxContents.shelfKey(shelf.id, copy: 0))
+        if let shop = LocalStore.allCases.first, store.buyShelf(shelf, at: shop, credit: false), let item = store.data.sealed.last {
+            check(store.packSlugs(of: item) == front, "a box from a shelf does not hold the packs that the player saw")
+        } else {
+            check(false, "could not buy from a shelf")
+        }
     }
 
     // MARK: - Collections (docs/33-collections.md)

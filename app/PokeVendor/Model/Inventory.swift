@@ -574,10 +574,13 @@ struct SealedItem: Codable, Identifiable, Hashable {
     var verified: Bool?
     /// The online listing of an item in the player's store. Only used while the status is `.inStore` (docs/22).
     var onlineListing: Listing?
+    /// The packs of an assorted box, front first, when the player saw them before the purchase (`BoxContents`).
+    /// Nil: the packs come from the item's own ID.
+    var contents: [String]?
 
     enum CodingKeys: String, CodingKey {
         case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
-        case fake, fakeKnown, verified, onlineListing
+        case fake, fakeKnown, verified, onlineListing, contents
     }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }

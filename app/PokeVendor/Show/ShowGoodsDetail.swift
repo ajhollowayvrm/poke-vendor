@@ -121,9 +121,10 @@ struct LooksOffLine: View {
 /// The image of something for sale: a card, a slab, sealed product, or a mystery pack.
 struct GoodsThumb: View {
     let goods: VendorGoods
+    var contentsKey: String? = nil
 
     var body: some View {
-        GoodsImage(item: VendorItem(goods: goods, price: 0, market: nil))
+        GoodsImage(item: VendorItem(goods: goods, price: 0, market: nil), contentsKey: contentsKey)
     }
 }
 

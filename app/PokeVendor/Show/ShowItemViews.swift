@@ -23,12 +23,16 @@ struct ItemLine: View {
 }
 
 struct ItemImage: View {
+    @Environment(GameStore.self) private var store
     let item: ShowItem
 
     var body: some View {
         Group {
             if item.kind == .sealed {
+                // The player's own box: its real packs.
+                let owned = store.data.sealed.first { $0.id == item.id && $0.brokenFrom == nil }
                 ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
+                    .looksInside(owned.flatMap { SetLibrary.product($0.productID) }) { owned.map { store.packSlugs(of: $0) } }
             } else {
                 CardOrSlab(image: item.image, name: item.name, grade: item.grade, subgrades: item.subgrades, certID: item.id)
             }

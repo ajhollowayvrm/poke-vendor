@@ -363,7 +363,7 @@ struct VisitorCard: View {
             if let goods = visitor.goods {
                 Text("THEY'RE SELLING").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
                 HStack(alignment: .top, spacing: 12) {
-                    GoodsThumb(goods: goods).frame(width: 64, height: 89)
+                    GoodsThumb(goods: goods, contentsKey: visitor.id.uuidString).frame(width: 64, height: 89)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(VendorItem(goods: goods, price: 0, market: nil).name).font(.subheadline.weight(.semibold))
                         GoodsDetail(goods: goods, tool: tool)

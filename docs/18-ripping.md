@@ -391,6 +391,9 @@ The cards that the player already saw go to a **pile**.
 
 ### Opening a product
 
+An assorted box shows its real packs only when it opens (see
+[12-acquiring-product.md](12-acquiring-product.md#look-inside-a-box)).
+
 A sealed product that is not a loose pack opens in its own step before
 its first pack:
 
