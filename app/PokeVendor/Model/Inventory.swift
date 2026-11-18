@@ -67,7 +67,12 @@ enum SetLibrary {
 
     static func set(_ slug: String) -> SetData {
         if let set = cache[slug] { return set }
-        let set = SetData.load(slug)
+        var set = SetData.load(slug)
+        for i in set.prints.indices {
+            set.prints[i].setSlug = slug
+            let p = set.prints[i]
+            set.prints[i].priceKey = PriceCycle.hash(p.name, p.num, p.variant, slug)
+        }
         cache[slug] = set
         return set
     }

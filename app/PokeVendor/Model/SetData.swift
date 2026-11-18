@@ -18,9 +18,15 @@ struct CardPrint: Codable, Hashable {
     var gradedReal: [String]? = nil
     /// The raw price is an estimate. Nil in an old file.
     var marketEstimated: Bool? = nil
+    /// The set of the print, for the set price effects: era growth, print status, and reprints (Model/PriceCycle.swift).
+    /// `SetLibrary.set` fills it in. Nil for a promo: it gets no set effects.
+    var setSlug: String? = nil
+    /// The print's hash for the price rules (`PriceCycle.hash`), kept so a price read does not hash the name again.
+    /// `SetLibrary.set` fills it in. It is not saved.
+    var priceKey: UInt64? = nil
 
     enum CodingKeys: String, CodingKey {
-        case num, name, rarity, variant, baseMarket = "market", graded, image, gradedReal, marketEstimated
+        case num, name, rarity, variant, baseMarket = "market", graded, image, gradedReal, marketEstimated, setSlug = "set"
     }
 }
 
@@ -144,7 +150,7 @@ struct SetData: Codable {
     let packCost: Double?
     let packImage: String?
     let slots: [PackSlot]
-    let prints: [CardPrint]
+    var prints: [CardPrint]
     let era: String?
     /// The series name on the wrapper, for example "Sword & Shield".
     let series: String?

@@ -34,6 +34,7 @@ final class GameTests {
         timed("opportunities", opportunities)
         timed("boxes", boxes)
         timed("series", seriesJoin)
+        timed("market", market)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -359,6 +360,86 @@ final class GameTests {
         let cash = store.series(.pnl)?.cash ?? 0
         check(abs(1_000 - cash - market - new.paid) < 0.01, "the challenge cash is \(money(cash)) after the join")
         check(store.isChallengeItem(old.id) && store.isChallengeItem(new.id), "the recorded items did not join the challenge")
+    }
+
+    // MARK: - The moving market (docs/05-pricing-and-market.md)
+
+    /// Daily steps, booms and corrections, era growth, and reprints by set and product.
+    private func market() {
+        fresh()
+        // Regimes: the same seed gives the same schedule, and a long run has all three kinds.
+        let regimes = PriceCycle.makeRegimes(seed: 42)
+        check(regimes == PriceCycle.makeRegimes(seed: 42), "one seed gave two regime schedules")
+        let kinds = Set(regimes.filter { $0.start < 3_000 }.map(\.kind))
+        check(kinds.count == 3, "3,000 days of regimes hold only \(kinds)")
+
+        // Daily steps: the share of days with a step is near the tier's chance. A warm walk equals a cold one.
+        for (name, tier) in [("mid", StepTier.mid), ("top", StepTier.top), ("sealed", StepTier.sealed)] {
+            let key = PriceCycle.hash("test-walk-" + name)
+            var moves = 0
+            for d in 1...200 where PriceCycle.walkCold(key, tier: tier, day: d) != PriceCycle.walkCold(key, tier: tier, day: d - 1) * pow(0.5, 1 / Balance.stepHalfLife) {
+                moves += 1
+            }
+            check(abs(Double(moves) / 200 - tier.chance) < 0.1, "\(name) prices stepped on \(moves) of 200 days")
+        }
+        store.data.day = 40
+        store.syncMarket()
+        let key = PriceCycle.hash("test-warm")
+        _ = PriceCycle.walk(key, tier: .mid, day: 40)
+        store.data.day = 41
+        store.syncMarket()
+        let warm = PriceCycle.walk(key, tier: .mid, day: 41)
+        check(abs(warm - PriceCycle.walkCold(key, tier: .mid, day: 41)) < 1e-12, "a warm walk differs from a cold one")
+
+        // A card under $1 stays flat. 2,000 price reads are fast.
+        let prints = SetLibrary.set("prismatic-evolutions").prints + SetLibrary.set("base-set").prints + SetLibrary.set("evolving-skies").prints
+        if let cheap = prints.first(where: { ($0.baseMarket ?? 0) < 1 && ($0.baseMarket ?? 0) > 0 }) {
+            let days = Set((0..<60).map { cheap.marketFactor(day: $0) })
+            check(days.count == 1, "a card under $1 moved")
+        }
+        let start = Date()
+        var total = 0.0
+        for i in 0..<2_000 { total += prints[i % prints.count].market ?? 0 }
+        let ms = Date().timeIntervalSince(start) * 1000
+        check(ms < 400 && total > 0, "2,000 price reads took \(Int(ms)) ms")
+
+        // Era growth: an out-of-print WOTC chase card grows. An in-print Scarlet & Violet card does not.
+        if let old = SetLibrary.set("base-set").prints.first(where: { ($0.baseMarket ?? 0) >= 25 }),
+           let new = SetLibrary.set("prismatic-evolutions").prints.first(where: { ($0.baseMarket ?? 0) >= 25 }) {
+            let k1 = PriceCycle.hash(old.name), k2 = PriceCycle.hash(new.name)
+            check(PriceCycle.ageGrowth(k1, slug: "base-set", base: old.baseMarket ?? 0, day: 728) > 1.15, "a WOTC card did not grow in 2 years")
+            check(PriceCycle.ageGrowth(k2, slug: "prismatic-evolutions", base: new.baseMarket ?? 0, day: 728) == 1, "an in-print card grew")
+        }
+
+        // A reprint wave: only its products come back, the fall comes at the news, and it comes back after the wave.
+        store.data.day = 0
+        store.syncMarket()
+        var wave: PrintChange?
+        for _ in 0..<40 where wave == nil {
+            store.data.printChanges.removeAll()
+            store.syncMarket()
+            _ = store.announcePrintChange(reprint: true)
+            wave = store.data.printChanges.first { $0.inPrint && !$0.endsWave && $0.products != nil }
+        }
+        guard let wave, let ids = wave.products, let id = ids.first,
+              let end = store.data.printChanges.first(where: { $0.endsWave && $0.waveID == wave.id }) else {
+            return check(false, "no product reprint wave")
+        }
+        store.data.day = wave.day
+        store.syncMarket()
+        check(SetLibrary.product(id)?.isInPrint == true, "a reprinted product is not in print during its wave")
+        check(!PriceCycle.inPrint(wave.slug), "a product reprint put the whole set in print")
+        if let other = SetLibrary.catalog.first(where: { $0.homeSlug == wave.slug && !ids.contains($0.id) && $0.mix.count == 1 }) {
+            check(!other.isInPrint, "a product that the wave did not reprint is in print")
+        }
+        let fall = PriceCycle.printJumps(wave.slug, product: id, day: wave.announcedDay + 21)
+        check(fall > 0.64 && fall < 0.86, "a reprinted product fell to \(fall) of its price")
+        let back = PriceCycle.printJumps(wave.slug, product: id, day: end.day + 181)
+        check(abs(back - 1) < 0.001, "a reprinted product came back to \(back) of its price")
+        check(PriceCycle.singlesReprintFactor(wave.slug, day: wave.announcedDay + 21) >= 0.899, "the set's singles fell more than 10%")
+        store.data.printChanges.removeAll()
+        store.data.day = 0
+        store.syncMarket()
     }
 
     // MARK: - Collections (docs/33-collections.md)

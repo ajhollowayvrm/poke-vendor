@@ -16,6 +16,16 @@ struct PrintChange: Codable, Identifiable, Hashable {
     let jump: Double
     /// True when this change ends a reprint wave. It is planned with the wave, so the game does not announce it.
     var endsWave = false
+    /// A reprint of some products of the set: their catalog IDs. Nil for the whole set. Only those products come back
+    /// to stores, and the set stays out of print.
+    var products: [String]? = nil
+    /// The reprint wave that the change belongs to: the ID of its start. Nil in an old save, which uses the old rule.
+    var waveID: UUID? = nil
+    /// For the end of a wave: the days that the price takes to come back.
+    var ramp: Double? = nil
+
+    /// A change to the whole set's status. A product reprint does not change it.
+    var isSetLevel: Bool { products == nil }
 }
 
 extension Balance {
@@ -25,11 +35,23 @@ extension Balance {
     /// A set leaves print after this notice, in days.
     static let printNotice = 14...28
     static let printReprintNotice = 7...21
-    /// The days of a reprint wave.
-    static let printWaveDays = 42...90
-    /// Sealed price moves: out of print, a reprint, and the end of a wave.
+    /// The days of a reprint wave: some products of a set, or the whole set.
+    static let printWaveDays = 60...180
+    static let printProductWaveDays = 7...120
+    /// The share of reprint waves that reprint the whole set. The rest reprint 1 to 3 kinds of product.
+    static let printFullSetShare = 0.3
+    /// Sealed price moves: out of print, and a reprint (docs/05-pricing-and-market.md, Reprints).
     static let printOutJump = 0.10...0.30
-    static let printReprintJump = -0.30 ... -0.15
+    static let printReprintJump = -0.35 ... -0.15
+    /// Other products of a reprinted set fall this share of the reprinted products' fall.
+    static let printReprintOtherShare = 0.3...0.5
+    /// The set's singles fall up to this much in a reprint wave.
+    static let printReprintSinglesMax = 0.10
+    /// Half of a reprint's fall comes on the day of the news. The rest comes over these days.
+    static let printReprintRampDays = 21.0
+    /// After a wave ends, the fall comes back over these days.
+    static let printRecoveryDays = 60.0...180.0
+    /// An old save's end of a wave.
     static let printWaveEndJump = 0.05...0.15
     /// A price move takes this many days to reach its full size.
     static let printRampDays = 30.0
@@ -50,14 +72,35 @@ extension PriceCycle {
         (printChanges[slug] ?? []).filter { $0.day <= day }
     }
 
+    /// The whole set is in print. A product reprint does not change it.
     static func inPrint(_ slug: String, day: Int? = nil) -> Bool {
-        changes(slug, upTo: day ?? today).last?.inPrint ?? defaultInPrint(slug)
+        changes(slug, upTo: day ?? today).last(where: \.isSetLevel)?.inPrint ?? defaultInPrint(slug)
+    }
+
+    /// A product reprint wave of the set holds this product on the day.
+    static func productReprinted(_ productID: String, slug: String, day: Int? = nil) -> Bool {
+        let d = day ?? today
+        let starts = (printChanges[slug] ?? []).filter { !$0.isSetLevel && !$0.endsWave && $0.day <= d && $0.products?.contains(productID) == true }
+        return starts.contains { start in
+            !(printChanges[slug] ?? []).contains { $0.endsWave && $0.waveID == start.id && $0.day <= d }
+        }
+    }
+
+    /// The days out of print of one set, from day 0 to the day. A fast path for the card reads.
+    static func outOfPrintDays(_ slug: String, day: Int) -> Double {
+        if printChanges[slug] == nil { return defaultInPrint(slug) ? 0 : Double(max(0, day)) }
+        return printDays([slug], day: day).outOfPrint
     }
 
     /// The days in print and out of print from day 0 to the day, for a product with these sets. The product is in print
     /// only while every one of its sets is in print.
     static func printDays(_ slugs: Set<String>, day: Int) -> (inPrint: Double, outOfPrint: Double) {
-        let turns = Set(slugs.flatMap { changes($0, upTo: day).map(\.day) }).filter { $0 > 0 }.sorted()
+        // Most sets have no print change: the status from day 0 holds.
+        if slugs.allSatisfy({ printChanges[$0] == nil }) {
+            let span = Double(max(0, day))
+            return slugs.allSatisfy { defaultInPrint($0) } ? (span, 0) : (0, span)
+        }
+        let turns = Set(slugs.flatMap { changes($0, upTo: day).filter(\.isSetLevel).map(\.day) }).filter { $0 > 0 }.sorted()
         var inDays = 0.0, outDays = 0.0
         var from = 0
         for to in turns + [day] where to > from {
@@ -68,18 +111,62 @@ extension PriceCycle {
         return (inDays, outDays)
     }
 
-    /// The sealed price moves from the print changes of a set. Each one ramps up over `printRampDays`.
-    static func printJumps(_ slug: String, day: Int) -> Double {
-        changes(slug, upTo: day).reduce(1.0) { factor, change in
-            factor * (1 + change.jump * min(1, Double(day - change.day) / Balance.printRampDays))
+    /// The sealed price moves from the print changes of a set, for one product.
+    /// - Out of print: the rise ramps up over `printRampDays` from the day it happens.
+    /// - A reprint: the fall starts on the day of the news, half at once and the rest over `printReprintRampDays`.
+    ///   A reprinted product takes the whole fall. Another product of the set takes a share of it.
+    /// - The end of a wave: the fall comes back over the wave's ramp.
+    static func printJumps(_ slug: String, product: String, day: Int) -> Double {
+        var factor = 1.0
+        let all = printChanges[slug] ?? []
+        for change in all {
+            if let waveID = change.waveID {
+                let start = change.endsWave ? all.first { $0.id == waveID } : change
+                guard let start else { continue }
+                let fall = start.jump * share(start, product: product)
+                if change.endsWave {
+                    guard day >= change.day else { continue }
+                    let back = 1 / (1 + fall) - 1
+                    factor *= 1 + back * min(1, Double(day - change.day) / (change.ramp ?? Balance.printRecoveryDays.lowerBound))
+                } else {
+                    guard day >= change.announcedDay else { continue }
+                    factor *= 1 + fall * min(1, 0.5 + 0.5 * Double(day - change.announcedDay) / Balance.printReprintRampDays)
+                }
+            } else {
+                // An out-of-print change, or a wave from an old save.
+                guard change.day <= day else { continue }
+                factor *= 1 + change.jump * min(1, Double(day - change.day) / Balance.printRampDays)
+            }
         }
+        return factor
+    }
+
+    /// The share of a reprint's fall that a product takes: all of it when reprinted, else a stable share.
+    private static func share(_ start: PrintChange, product: String) -> Double {
+        if start.products == nil || start.products?.contains(product) == true { return 1 }
+        let range = Balance.printReprintOtherShare
+        return range.lowerBound + unit(start.id.uuidString + product, salt: 9) * (range.upperBound - range.lowerBound)
+    }
+
+    /// A reprint wave of a set brings its singles down a little, from the news to the end of the wave and its ramp.
+    static func singlesReprintFactor(_ slug: String, day: Int) -> Double {
+        guard let all = printChanges[slug], !all.isEmpty else { return 1 }
+        var factor = 1.0
+        for start in all where start.waveID == start.id && !start.endsWave && day >= start.announcedDay {
+            let fall = -Balance.printReprintSinglesMax * unit(start.id.uuidString, salt: 10)
+            factor *= 1 + fall * min(1, 0.5 + 0.5 * Double(day - start.announcedDay) / Balance.printReprintRampDays)
+            if let end = all.first(where: { $0.endsWave && $0.waveID == start.id }), day >= end.day {
+                factor *= 1 + (1 / (1 + fall) - 1) * min(1, Double(day - end.day) / (end.ramp ?? Balance.printRecoveryDays.lowerBound))
+            }
+        }
+        return factor
     }
 }
 
 extension Product {
-    /// In print today: every set in the pack mix is in print.
+    /// In print today: every set in the pack mix is in print, or a product reprint wave of its set holds it.
     var isInPrint: Bool {
-        Set(mix.map(\.slug)).allSatisfy { PriceCycle.inPrint($0) }
+        Set(mix.map(\.slug)).allSatisfy { PriceCycle.inPrint($0) } || PriceCycle.productReprinted(id, slug: homeSlug)
     }
 }
 
@@ -101,8 +188,9 @@ extension GameStore {
 
     func printTitle(_ c: PrintChange) -> String {
         let name = SetLibrary.info(c.slug)?.name ?? c.slug
-        if c.endsWave { return "The \(name) reprint wave ends. It is out of print again." }
-        if c.inPrint { return "\(name) is reprinted. Its sealed product comes back to store shelves." }
+        let what = c.products.map { Self.reprintedText($0, set: name) }
+        if c.endsWave { return "The \(what ?? name) reprint wave ends. \(what == nil ? "It is" : "They are") out of print again." }
+        if c.inPrint { return what.map { "\($0) are reprinted. They come back to store shelves." } ?? "\(name) is reprinted. Its sealed product comes back to store shelves." }
         return "\(name) goes out of print. Stores sell what they have left."
     }
 
@@ -138,7 +226,7 @@ extension GameStore {
             let name = SetLibrary.info(slug)?.name ?? slug
             return "Print news: \(name) goes out of print in \(change.day - day) days. After that, stores stop selling it, and its sealed prices climb."
         }
-        // A reprint wave: an out-of-print set from Sun & Moon or later.
+        // A reprint wave: an out-of-print set from Sun & Moon or later. Most waves bring back 1 to 3 kinds of product.
         let eras: Set<String> = ["sun-moon", "sword-shield", "scarlet-violet", "mega-evolution"]
         let retail = Set(SetLibrary.catalog.filter { $0.msrp != nil }.map(\.homeSlug))
         let candidates = SetLibrary.index.filter { set in
@@ -146,12 +234,46 @@ extension GameStore {
         }
         guard let set = candidates.randomElement() else { return nil }
         let start = day + Int.random(in: Balance.printReprintNotice)
-        let end = start + Int.random(in: Balance.printWaveDays)
-        data.printChanges.append(PrintChange(slug: set.slug, day: start, announcedDay: day, inPrint: true,
-                                             jump: Double.random(in: Balance.printReprintJump)))
-        data.printChanges.append(PrintChange(slug: set.slug, day: end, announcedDay: day, inPrint: false,
-                                             jump: Double.random(in: Balance.printWaveEndJump), endsWave: true))
+        var products: [String]? = nil
+        if Double.random(in: 0..<1) >= Balance.printFullSetShare {
+            // Retail products of the set, by kind. A wave picks 1 to 3 kinds.
+            let sold = SetLibrary.catalog.filter { $0.homeSlug == set.slug && $0.msrp != nil && !$0.isStoreExclusive && $0.kind != "Booster pack" }
+            let kinds = Array(Set(sold.map(\.kind))).shuffled().prefix(Int.random(in: 1...3))
+            let ids = sold.filter { kinds.contains($0.kind) }.map(\.id)
+            if !ids.isEmpty { products = ids }
+        }
+        let end = start + Int.random(in: products == nil ? Balance.printWaveDays : Balance.printProductWaveDays)
+        let wave = PrintChange(slug: set.slug, day: start, announcedDay: day, inPrint: true,
+                               jump: Double.random(in: Balance.printReprintJump), products: products)
+        var startChange = wave
+        startChange.waveID = wave.id
+        data.printChanges.append(startChange)
+        data.printChanges.append(PrintChange(slug: set.slug, day: end, announcedDay: day, inPrint: false, jump: 0, endsWave: true,
+                                             products: products, waveID: wave.id, ramp: Double.random(in: Balance.printRecoveryDays)))
         syncMarket()
-        return "Print news: \(set.name) gets a reprint wave in \(start - day) days. Its sealed product comes back to stores for some weeks, and its sealed prices fall."
+        if let products {
+            let what = Self.reprintedText(products, set: set.name)
+            return "Print news: \(what) get a reprint in \(start - day) days. They come back to stores for some weeks. Their prices fall now, and the rest of the set dips too."
+        }
+        return "Print news: \(set.name) gets a reprint wave in \(start - day) days. Its sealed product comes back to stores for some weeks, and its prices fall now."
+    }
+
+    /// The products of a reprint, by kind, for the news: for example "Evolving Skies Elite Trainer Boxes and tins".
+    static func reprintedText(_ ids: [String], set: String) -> String {
+        let kinds = Array(Set(ids.compactMap { SetLibrary.product($0)?.kind })).sorted()
+        let names = kinds.map { kind -> String in
+            switch kind {
+            case "Elite Trainer Box": "Elite Trainer Boxes"
+            case "Booster box": "booster boxes"
+            case "Booster bundle": "booster bundles"
+            case "Tin": "tins"
+            case "Blister": "blisters"
+            case "Collection": "collection boxes"
+            case "Build & Battle": "Build & Battle boxes"
+            default: "other products"
+            }
+        }
+        let list = names.count <= 1 ? (names.first ?? "products") : names.dropLast().joined(separator: ", ") + " and " + (names.last ?? "")
+        return "\(set) \(list)"
     }
 }

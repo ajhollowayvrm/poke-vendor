@@ -185,6 +185,25 @@ extension HubView {
             }
         }
         // Screenshot aid: `-lookinside <productID>` adds the product and opens its Inventory screen. Tap the box.
+        // Balance aid: `-marketsim` prints the market and 5 sample prices every 30 days for 3 years, then quits the check.
+        if args.contains("-marketsim") {
+            store.startRun()
+            let samples: [(String, () -> Double)] = [
+                ("Base Charizard", { SetLibrary.set("base-set").prints.first { $0.name == "Charizard" }?.market ?? 0 }),
+                ("ES Umbreon VMAX", { SetLibrary.set("evolving-skies").prints.max { ($0.baseMarket ?? 0) < ($1.baseMarket ?? 0) }?.market ?? 0 }),
+                ("PRE $3 card", { SetLibrary.set("prismatic-evolutions").prints.first { ($0.baseMarket ?? 0) > 2.5 && ($0.baseMarket ?? 0) < 4 }?.market ?? 0 }),
+                ("PRE ETB", { SetLibrary.catalog.first { $0.homeSlug == "prismatic-evolutions" && $0.kind == "Elite Trainer Box" }?.market ?? 0 }),
+                ("ES box", { SetLibrary.catalog.first { $0.homeSlug == "evolving-skies" && $0.kind == "Booster box" }?.market ?? 0 }),
+            ]
+            print("MARKETSIM day regime index " + samples.map(\.0).joined(separator: " | "))
+            for day in stride(from: 0, through: 1_095, by: 30) {
+                store.data.day = day
+                store.syncMarket()
+                let r = PriceCycle.regime()?.kind.label ?? "-"
+                print("MARKETSIM \(day) \(r) \(String(format: "%.2f", PriceCycle.index())) " + samples.map { String(format: "%.2f", $0.1()) }.joined(separator: " | "))
+            }
+            fflush(stdout)
+        }
         // Screenshot aid: `-recordsheet` opens the social hub with a P&L challenge and the picker for today's episode.
         if args.contains("-recordsheet") {
             store.startRun()

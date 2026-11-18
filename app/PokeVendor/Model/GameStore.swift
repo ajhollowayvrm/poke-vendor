@@ -256,6 +256,16 @@ final class GameStore {
     private var pendingSave: Task<Void, Never>?
     private nonisolated static let saveQueue = DispatchQueue(label: "pokevendor.save", qos: .utility)
 
+    private static func fillSetSlug(_ card: inout OwnedCard) {
+        let print = card.print
+        if print.setSlug == nil, SetLibrary.info(card.setSlug) != nil, SetLibrary.set(card.setSlug).prints.contains(where: { $0.num == print.num && $0.name == print.name && $0.variant == print.variant }) {
+            card.print.setSlug = card.setSlug
+        }
+        if let slug = card.print.setSlug {
+            card.print.priceKey = PriceCycle.hash(card.print.name, card.print.num, card.print.variant, slug)
+        }
+    }
+
     init() {
         url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("game.json")
@@ -263,6 +273,9 @@ final class GameStore {
             // Cards from before the stamp patches show the Unlimited image too.
             for i in saved.raw.indices { Destamp.migrate(&saved.raw[i]) }
             for i in saved.slabs.indices { Destamp.migrate(&saved.slabs[i]) }
+            // Cards from before the set price effects learn their set. A promo is not in its set file, so it stays nil.
+            for i in saved.raw.indices { Self.fillSetSlug(&saved.raw[i]) }
+            for i in saved.slabs.indices { Self.fillSetSlug(&saved.slabs[i]) }
             data = saved
         } else {
             data = GameData()

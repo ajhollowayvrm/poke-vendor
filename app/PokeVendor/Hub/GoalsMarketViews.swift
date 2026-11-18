@@ -33,7 +33,14 @@ struct MarketView: View {
                         StatCell(label: "Last 4 weeks", value: marketPercent(store.marketChange),
                                  color: store.marketChange >= 0 ? Theme.green : Theme.orange)
                     }
-                    Text("Prices move in slow waves. Sealed product gains value with age. A card under $1 stays flat.")
+                    if let regime = PriceCycle.regime() {
+                        HStack(spacing: 0) {
+                            StatCell(label: "Now", value: regime.kind.label,
+                                     color: regime.kind == .boom ? Theme.green : regime.kind == .correction ? Theme.orange : Theme.muted)
+                            StatCell(label: "Since", value: "\(store.day - regime.start) days")
+                        }
+                    }
+                    Text("The market goes through booms, corrections, and steady times. Cards of $1 or more move a little most days. Out of print, older sets gain value each year, and the oldest sealed gains the most.")
                         .font(.caption).foregroundStyle(Theme.muted)
                 }
                 DetailBox(title: "Season") {
@@ -68,7 +75,9 @@ struct MarketView: View {
                     ForEach(upcoming) { c in
                         VStack(alignment: .leading, spacing: 2) {
                             Text(store.printTitle(c)).font(.subheadline)
-                            Text("In \(c.day - store.day) day\(c.day - store.day == 1 ? "" : "s") · sealed \(marketPercent(c.jump)) over a month after")
+                            Text(c.inPrint
+                                 ? "On shelves in \(c.day - store.day) day\(c.day - store.day == 1 ? "" : "s") · sealed \(marketPercent(c.jump)) from the news"
+                                 : "In \(c.day - store.day) day\(c.day - store.day == 1 ? "" : "s") · sealed \(marketPercent(c.jump)) over a month after")
                                 .font(.caption.monospaced()).foregroundStyle(c.inPrint ? Theme.orange : Theme.green)
                         }
                     }

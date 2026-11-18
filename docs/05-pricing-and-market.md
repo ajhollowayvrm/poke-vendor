@@ -93,15 +93,86 @@ them. A factor for each day moves a price when the game reads it. All grades of
 a card use the same factor, so a ladder keeps its order and a 10 stays above
 its 9.
 
-- **Whole market**: two slow waves. Each run has its own waves.
-- **One card**: a card under $1 stays flat. A dearer card follows the whole
-  market more and has its own wave. A card of $25 or more gains value with time.
-- **Sealed product**: sealed product follows the whole market less. It gains
-  value with age, and it gains faster out of print.
-- **Market news**: a streamer pull lifts a card name, a reprint brings a card
-  name down, and collectors can chase the sealed product of a set. The End Day
-  report gives the news. The Market screen shows the news and the player's
-  biggest movers.
+Each run has its own market. The run's seed makes it, so a save keeps only the
+day and the news.
+
+### Booms and corrections
+
+The whole market goes through periods:
+
+| Period | Length | Total move |
+| --- | --- | --- |
+| Steady | 120 to 360 days | −3% to +3% a year |
+| Boom | 120 to 300 days | +30% to +80% |
+| Correction | 180 to 360 days | −15% to −35% |
+
+- A run starts steady.
+- What comes next:
+  - After a steady period: a boom 50%, a correction 30%, steady 20%.
+  - After a boom: a correction 60%, steady 40%.
+  - After a correction: steady 70%, a boom 30%.
+- Inside a period, the move is slow at the start and the end.
+- A short wave of 97 days (±7%) rides on top.
+- The End Day report gives a line when a period starts. With the price
+  tracker, the line comes 2 days early.
+- **Cards** follow the market more as they get dearer: 30% of the move
+  for a $1 card, up to 120% for a $1,000 card.
+- **Sealed product** follows 60% of a boom and 20% of a correction. From
+  2021 to 2023, out-of-print sealed held its price while singles fell.
+
+### Daily steps
+
+A card of $1 or more, and every sealed product, can move a little each day.
+Most days nothing changes. A move lasts: it acts as a random walk, with a
+weak pull back to the real price (half-life 120 days).
+
+| Price | Chance of a step each day | Median step | 90th percentile |
+| --- | --- | --- | --- |
+| Under $1 | none | — | — |
+| $1 to $5 | 30% | 3% | 8% |
+| $5 to $50 | 25% | 1% | 4% |
+| $50 to $500 | 15% | 1% | 6% |
+| Over $500 | 10% | 1.5% | 6% |
+| Sealed | 20% | 0.6% | 3% |
+
+- The chances come from 64 days of TCGplayer prices (2025 and 2026). In that
+  data, 67% to 92% of days had no change, and a one-day spike of more than 20%
+  was almost never reversed within a week.
+- The step sizes are tamed, so a month moves a price about 7% (sealed) to
+  16% (cheap cards).
+- Each card also keeps a slow wave of its own (60 to 240 days, up to ±12%).
+
+### Older sets gain value
+
+While its set is out of print, a card of $25 or more gains value each year:
+
+| Era | Card growth a year |
+| --- | --- |
+| WOTC and e-Card | +8% to +15% |
+| EX to XY | +4% to +12% |
+| Sun & Moon and later | +2% to +10% |
+
+Sealed product gains value by era while out of print. In print, it stays
+about flat (0% to +2% a year).
+
+| Era | Sealed growth a year |
+| --- | --- |
+| WOTC and e-Card | +10% to +15% |
+| EX and later | +15% to +25% |
+
+- Real out-of-print sealed gained +18% to +90% a year from 2016 to 2026, but
+  most of that came in two booms. The rates here are tamed, and the booms add
+  the big jumps on top.
+- A Scarlet & Violet or Mega Evolution card starts to grow when its set
+  leaves print.
+
+### Market news
+
+- **Hype**: a streamer pull lifts a card name. Collectors can chase the sealed
+  product of a set. The End Day report gives the news. The Market screen shows
+  the news, the current period, and the player's biggest movers.
+- A reprint is never news about a card name. It is about a set or its
+  products (see [Print runs](#print-runs)).
 - **Character news**: a new product for a character lifts that character's
   cards for 3 to 6 weeks (+10% to +30%). When stores sell out of a
   character's products, sealed product with that character in its name rises
@@ -123,11 +194,26 @@ during the run.
   sponsor offers stop carrying the set. Its sealed product rises 10% to 30% over
   a month, and then it gains value at the out-of-print rate. At least 8 sets
   stay in print.
-- **A reprint wave.** 40% of the changes bring an out-of-print set from Sun &
-  Moon or later back to store shelves, 7 to 21 days after the news. The wave
-  lasts 6 to 13 weeks. Its sealed product falls 15% to 30% over a month. When
-  the wave ends, the set is out of print again, and its sealed product gets back
-  5% to 15%.
+- **A reprint wave.** 40% of the changes bring back an out-of-print set from
+  Sun & Moon or later. The products reach store shelves 7 to 21 days after
+  the news.
+  - **What comes back:** 70% of waves reprint 1 to 3 kinds of the set's
+    products, for example its Elite Trainer Boxes and tins. The rest of the
+    set stays out of print. 30% of waves reprint the whole set.
+  - **How long:** a product wave lasts 7 to 120 days. A whole-set wave lasts
+    60 to 180 days.
+  - **Prices:**
+    - A reprinted product falls 15% to 35%. Half of the fall comes on the day
+      of the news, and the rest over 3 weeks.
+    - The set's other products fall 30% to 50% as much.
+    - The set's singles fall 0% to 10%.
+    - When the wave ends, the full fall comes back over 60 to 180 days.
+  - **Research:** real reprints were often one product type, for example
+    Hidden Fates tins (2020) or the 151 Blooming Waters collection (2025).
+    A reprinted product fell 13% to 35%, at the news. Japanese 151 fell 22% on
+    the day of the news. Other products of the set fell less: the 151 ETB fell
+    27% and its bundle 13%. Chase singles did not fall more than the market,
+    and prices came back in 2 to 7 months.
 - **A product with packs from more than one set** is in print only while every
   one of its sets is in print.
 - **Where the player sees it**: the End Day report, the Print news box on the
