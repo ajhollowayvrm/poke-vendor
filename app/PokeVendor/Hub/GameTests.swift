@@ -412,8 +412,11 @@ final class GameTests {
         // 5. The kid lowball is a hidden act. It is not a scam record.
         reset()
         let scams = store.data.scams.count
-        // The encounter picks a random card and can fail, so try again.
-        if let e = (0..<20).lazy.compactMap({ _ in self.store.makeShopEncounter(.castle, kind: .kidWithHit) }).first {
+        // The encounter picks a random card and can fail, so try again. Do not use a lazy compactMap here:
+        // it calls the closure twice, and a random nil on the second call crashes.
+        var kid: ShopEncounter?
+        for _ in 0..<20 where kid == nil { kid = store.makeShopEncounter(.castle, kind: .kidWithHit) }
+        if let e = kid {
             store.lowballKid(e)
             check(store.data.scams.count == scams && store.data.hiddenActs.filter { $0.kind == .lowballKid }.count == 1,
                   "the kid lowball did not record exactly one act and no scam")
