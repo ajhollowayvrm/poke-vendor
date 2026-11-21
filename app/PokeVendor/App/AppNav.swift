@@ -21,6 +21,7 @@ enum AppRoute: Hashable {
     case job
     case upgrades
     case wholesale
+    case chainSites
     case caseSplits
     case cardStore
     case supplies
@@ -112,6 +113,7 @@ extension View {
             case .job: JobView()
             case .upgrades: UpgradesView()
             case .wholesale: WholesaleView()
+            case .chainSites: ChainSitesView()
             case .caseSplits: CaseSplitsView()
             case .cardStore: CardStoreView()
             case .supplies: SuppliesView()

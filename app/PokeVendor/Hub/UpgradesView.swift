@@ -47,6 +47,8 @@ struct UpgradesView: View {
                     upgradeRow(.betterCar)
                     upgradeRow(.dropDiscord)
                     upgradeRow(.restockBot)
+                    upgradeRow(.checkoutBot)
+                    RestockAlertsBox()
                     upgradeRow(.savedSearch)
                     upgradeRow(.sellerResearch)
                     upgradeRow(.lotAppraisal)

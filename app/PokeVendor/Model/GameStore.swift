@@ -792,12 +792,20 @@ final class GameStore {
         return true
     }
 
-    /// One attempt per Pokemon Center drop (docs/12-acquiring-product.md, Pokemon Center drops).
-    func attemptDrop(_ offer: StoreOffer) -> Bool {
+    /// One attempt per Pokemon Center drop (docs/12-acquiring-product.md, Pokemon Center drops). The checkout bot raises
+    /// the chance, adds scalper heat, and raises the risk that the store cancels the order (proposals 1.5 and 2.6).
+    func attemptDrop(_ offer: StoreOffer, bot: Bool = false) -> Bool {
+        let useBot = bot && hasUpgrade(.checkoutBot)
         guard !data.pokemonCenterAttempted, canAfford(offer.price + offer.shipping) else { return false }
         data.pokemonCenterAttempted = true
-        if Double.random(in: 0..<1) < Balance.pokemonCenterSuccessChance {
-            return buy(offer)
+        if useBot {
+            addHeat(Balance.heatBotUse, at: nil, act: .botCheckout, weight: 0.5, note: "Used a checkout bot on a Pokemon Center drop")
+        }
+        let chance = useBot ? Balance.pokemonCenterBotSuccess : Balance.pokemonCenterSuccessChance
+        if Double.random(in: 0..<1) < chance, buy(offer), let item = data.sealed.last {
+            addDropOrder(item: item, source: "Pokemon Center", bot: useBot, refund: offer.price + offer.shipping,
+                         deliveryDays: offer.deliveryDays)
+            return true
         }
         log("Missed the Pokemon Center drop for \(offer.title).")
         save()
@@ -1207,6 +1215,7 @@ final class GameStore {
         if GameCalendar.isNewYear(data.day) { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
 
         lines += advanceSealed()
+        lines += retailOrdersEndDay()
         lines += advanceCards()
         lines += gradingBillsEndDay()
         lines += lotOrdersEndDay()
@@ -1258,6 +1267,7 @@ final class GameStore {
         if data.gameOver == nil { lines += lossesEndDay() }
         if data.gameOver == nil { lines += storeGrowthDay() }
         if data.gameOver == nil { lines += businessCostsEndDay() }
+        if data.gameOver == nil { lines += alertsEndDay() }
         if data.gameOver == nil { lines += goalsEndDay() }
 
         if isPokemonCenterDropLive {

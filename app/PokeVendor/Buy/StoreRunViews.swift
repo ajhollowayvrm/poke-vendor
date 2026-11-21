@@ -95,6 +95,11 @@ struct StoreRunPlanner: View {
         }
         if level.level >= 4 { out.append(("Card sales stopped", Theme.orange)) }
         if let w = store.data.retail.seenSlot[s.rawValue] { out.append(("Vendor day: \(GameStore.weekdays[w]) (you saw it)", Theme.cyan)) }
+        if store.alertedStores.contains(s) {
+            let slot = store.vendorSlot(s)
+            if slot.weekday == store.weekday { out.append(("Vendor stock today ~\(GameStore.clock(slot.hour))", Theme.cyan)) }
+            else if slot.weekday == (store.weekday + 1) % 7 { out.append(("Vendor stock tomorrow ~\(GameStore.clock(slot.hour))", Theme.cyan)) }
+        }
         return out
     }
 }
@@ -109,6 +114,8 @@ struct StoreRunView: View {
     @State private var index = 0
     @State private var useCredit = false
     @State private var startPoints: [LocalStore: Int] = [:]
+    /// The hours that the player waited for a vendor in this run. Every later arrival moves by this time.
+    @State private var waited = 0.0
     @State private var spent = 0.0
     @State private var bought: [String] = []
     /// Someone who came up to the player at this stop (docs/28-messages-and-encounters.md).
@@ -136,7 +143,7 @@ struct StoreRunView: View {
         .onChange(of: index) { _, _ in rollEncounter() }
     }
 
-    private func arrival(_ i: Int) -> Double { startHour + Double(i) * store.storeStopHours }
+    private func arrival(_ i: Int) -> Double { startHour + Double(i) * store.storeStopHours + waited }
 
     private func stopView(_ s: LocalStore) -> some View {
         let shelf = store.shelf(at: s, hour: arrival(index))
@@ -168,6 +175,13 @@ struct StoreRunView: View {
                         }
                     }
                     if let notice = store.retailNotice { Banner(text: notice, color: Theme.orange) }
+                    if let gap = store.vendorWaitGap(s, arrival: arrival(index)) {
+                        Button("Wait for the vendor · \(formatHours(gap))") {
+                            if let hours = store.waitForVendor(s, arrival: arrival(index)) { waited += hours }
+                        }
+                        .buttonStyle(.bordered)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
                 if s.isGameShop {
                     HStack {
@@ -263,7 +277,13 @@ struct StoreRunView: View {
 
     private func shelfCaption(_ item: ShelfItem, left: Int, allowed: Int, game: Bool) -> String {
         game ? "\(left) left · mkt \(money(item.product.market))"
-             : "\(left) left · limit \(allowed) · mkt \(money(item.product.market))"
+             : "\(left) left · limit \(allowed) · mkt \(money(item.product.market))" + flipText(item)
+    }
+
+    /// The flip margin on eBay, with the expected value readout.
+    private func flipText(_ item: ShelfItem) -> String {
+        guard store.hasUpgrade(.evReadout) else { return "" }
+        return " · flip \(money(store.flipMargin(market: item.product.market, cost: item.price)))"
     }
 
     private func rollEncounter() {

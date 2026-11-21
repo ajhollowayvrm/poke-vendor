@@ -495,10 +495,18 @@ struct SealedDetailView: View {
                                 let ev = store.expectedValue(of: product) * Double(item.caseUnits ?? 1)
                                 StatCell(label: "Open EV", value: money(ev), color: ev >= store.market(of: item) ? Theme.green : Theme.orange)
                             }
+                            if store.hasUpgrade(.evReadout) {
+                                let flip = store.flipMargin(market: store.market(of: item), cost: item.paid)
+                                StatCell(label: "Flip on eBay", value: money(flip), color: flip >= 0 ? Theme.green : Theme.orange)
+                            }
                         }
                         if store.hasUpgrade(.evReadout) {
-                            Text("Open EV: the expected value of the cards inside, from the pull rates and today's prices.")
+                            Text("Open EV: the expected value of the cards inside, from the pull rates and today's prices. Flip on eBay: the market price less what you paid, the eBay fee, and the shipping.")
                                 .font(.caption2).foregroundStyle(Theme.muted)
+                        }
+                        if let order = store.dropOrder(for: item.id) {
+                            Text("\(order.source) can still cancel this order until \(GameCalendar.date(order.rollDay).text).")
+                                .font(.caption).foregroundStyle(Theme.orange)
                         }
                     }
                     if let product, let units = item.caseUnits { caseOpenBox(item, product: product, units: units) }

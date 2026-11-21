@@ -103,6 +103,7 @@
 		512687D15CB634EBCB49407A /* battle-styles.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */; };
 		51B39009255482C3B2DB9E7D /* emerging-powers.json in Resources */ = {isa = PBXBuildFile; fileRef = 678B02909309694DEE98F244 /* emerging-powers.json */; };
 		51B49AA4701423DA8AE58344 /* shrouded-fable.json in Resources */ = {isa = PBXBuildFile; fileRef = 3739377E784083CCC3233A37 /* shrouded-fable.json */; };
+		52596B73E475216F5AE6ECA4 /* ChainSitesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65469CAC827C7749BFFC7033 /* ChainSitesView.swift */; };
 		52BE2F985E530697282DA300 /* ShowTableStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E089FF0AE88998077693F /* ShowTableStage.swift */; };
 		54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3284779D32F44C664EE1950F /* Consignment.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
@@ -424,6 +425,7 @@
 		634BF1320448E09607C34E92 /* diamond-and-pearl.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "diamond-and-pearl.json"; sourceTree = "<group>"; };
 		642F08591A3569F0A27BA0D1 /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
 		649C90774494AA3AF98125AC /* legendary-collection.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legendary-collection.json"; sourceTree = "<group>"; };
+		65469CAC827C7749BFFC7033 /* ChainSitesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSitesView.swift; sourceTree = "<group>"; };
 		66B77CF9FA79C477304765CF /* generations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = generations.json; sourceTree = "<group>"; };
 		6748344097107575A0EA8B89 /* Plug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plug.swift; sourceTree = "<group>"; };
 		678B02909309694DEE98F244 /* emerging-powers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "emerging-powers.json"; sourceTree = "<group>"; };
@@ -994,6 +996,7 @@
 			isa = PBXGroup;
 			children = (
 				781DF97D530EE9737F37D11A /* BuyViews.swift */,
+				65469CAC827C7749BFFC7033 /* ChainSitesView.swift */,
 				D7653D159E767B267752F265 /* StoreRunViews.swift */,
 				CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */,
 				C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */,
@@ -1251,6 +1254,7 @@
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
 				3B1B4327CBD56622839E5A5C /* CaseOpenSheet.swift in Sources */,
 				2C508A8D9AEF8E80B5B1731B /* Cases.swift in Sources */,
+				52596B73E475216F5AE6ECA4 /* ChainSitesView.swift in Sources */,
 				3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */,
 				195C11923ACA6B27DE48E506 /* CollectionBuyViews.swift in Sources */,
 				B13E1AE5766E1D27A21A8FB9 /* CollectionViews.swift in Sources */,

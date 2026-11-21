@@ -112,7 +112,8 @@ struct CampView: View {
                                     Text(item.product.name).font(.subheadline.weight(.semibold)).lineLimit(2)
                                     if item.hot { HotTag() }
                                 }
-                                Text("MSRP \(money(item.price)) · mkt \(money(item.product.market)) · \(left) left · limit \(allowed)")
+                                Text("MSRP \(money(item.price)) · mkt \(money(item.product.market)) · \(left) left · limit \(allowed)"
+                                     + (store.hasUpgrade(.evReadout) ? " · flip \(money(store.flipMargin(market: item.product.market, cost: item.price)))" : ""))
                                     .font(.caption.monospaced())
                                     .foregroundStyle(Theme.muted)
                             }

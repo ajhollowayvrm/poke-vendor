@@ -56,11 +56,19 @@ extension GameStore {
     var restocksToday: [Restock] { postedRestocks.filter { $0.day == data.day } }
 
     func restockEntries(day: Int) -> [CalendarEntry] {
-        LocalStore.allCases.filter(\.isBigStore).compactMap { store in
+        var out = LocalStore.allCases.filter(\.isBigStore).compactMap { store -> CalendarEntry? in
             let d = restockDay(store, cycle: day / Balance.restockCycleDays)
             guard d == day, d - data.day <= Balance.restockNotice else { return nil }
             return CalendarEntry(kind: .restock, title: "\(store.rawValue) restock", detail: "Doors at \(GameStore.clock(Balance.campStart)) · camp for \(formatHours(Balance.campHours))")
         }
+        // The vendor days that a restock alert covers: today and tomorrow.
+        if day == data.day || day == data.day + 1 {
+            for store in alertedStores where vendorSlot(store).weekday == day % 7 {
+                out.append(CalendarEntry(kind: .restock, title: "\(store.rawValue) vendor stock",
+                                         detail: "About \(GameStore.clock(vendorSlot(store).hour)) · from your alert"))
+            }
+        }
+        return out
     }
 
     func campedToday(_ store: LocalStore) -> Bool { data.campedDays.contains("\(store.rawValue)-\(data.day)") }

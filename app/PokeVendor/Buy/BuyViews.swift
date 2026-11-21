@@ -25,6 +25,7 @@ struct BuyView: View {
                         ForEach(Storefront.allCases, id: \.self) { s in
                             channelRow(title: s.rawValue, detail: status(s)) { nav.path.append(.store(s)) }
                         }
+                        channelRow(title: "Big-store sites", detail: sitesDetail) { nav.path.append(.chainSites) }
                         channelRow(title: "Supplies", detail: store.suppliesSummary) { nav.path.append(.supplies) }
                         // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
                         if store.wholesaleOpen {
@@ -66,6 +67,17 @@ struct BuyView: View {
         }
         .buttonStyle(.plain)
         .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
+    }
+
+    /// The live state of the Walmart drawing and the Target.com drop.
+    private var sitesDetail: String {
+        let drawing: String
+        if let offer = store.walmartDrawing {
+            drawing = store.entry(for: offer) != nil ? "Walmart drawing: entered" : "Walmart drawing open"
+        } else {
+            drawing = "Walmart drawing: next Monday"
+        }
+        return drawing + " · " + (store.targetDrop(day: store.day) != nil ? "Target.com drop today" : "No Target.com drop")
     }
 
     private func status(_ s: Storefront) -> String {
@@ -134,6 +146,9 @@ struct StoreView: View {
         .confirmationDialog(confirm?.title ?? "", isPresented: Binding(isPresent: $confirm),
                             titleVisibility: .visible, presenting: confirm) { offer in
             Button(buttonTitle(offer)) { purchase(offer) }
+            if store_ == .pokemonCenter, store.hasUpgrade(.checkoutBot) {
+                Button("Try with the bot · \(money(offer.price + offer.shipping))") { purchase(offer, bot: true) }
+            }
         } message: { offer in
             Text(confirmText(offer))
         }
@@ -141,7 +156,7 @@ struct StoreView: View {
 
     private var header: String {
         switch store_ {
-        case .pokemonCenter: "MSRP · drops only · one attempt at \(Int(Balance.pokemonCenterSuccessChance * 100))% · 5-day delivery"
+        case .pokemonCenter: "MSRP · drops only · one attempt at \(Int(Balance.pokemonCenterSuccessChance * 100))% · 5-day delivery · orders can be cancelled"
         case .amazon: "At or over market, sometimes far over · 2-day delivery"
         case .reseller: "Always in stock at 2x market or more · 3-day delivery"
         case .ebay: "Individual sellers · check the seller rating · 4-day delivery"
@@ -172,14 +187,14 @@ struct StoreView: View {
         return parts.joined(separator: " ")
     }
 
-    private func purchase(_ offer: StoreOffer) {
+    private func purchase(_ offer: StoreOffer, bot: Bool = false) {
         let total = offer.price + offer.shipping
         guard store.canAfford(total) else {
             message = "You need \(money(total)). You have \(money(store.cash))."
             return
         }
         if store_ == .pokemonCenter {
-            message = store.attemptDrop(offer) ? "You got it! It arrives in \(offer.deliveryDays) days." : "Missed. The drop sold out before your checkout went through."
+            message = store.attemptDrop(offer, bot: bot) ? "You got it! It arrives in \(offer.deliveryDays) days." : "Missed. The drop sold out before your checkout went through."
             return
         }
         let later = (offer.pickupDay ?? store.day) > store.day
@@ -233,7 +248,7 @@ struct OfferRow: View {
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
                 Text(money(offer.price)).font(.subheadline.monospaced().weight(.semibold))
-                Button(bought ? "Bought" : offer.store == .pokemonCenter ? "Try" : "Buy", action: onBuy)
+                Button(bought ? "Bought" : offer.store == .pokemonCenter || offer.id.hasPrefix("tgt-") ? "Try" : "Buy", action: onBuy)
                     .primaryButton()
                     .controlSize(.small)
                     .disabled(bought || locked)

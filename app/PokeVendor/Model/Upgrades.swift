@@ -11,6 +11,8 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case dropDiscord
     /// A restock alert bot: a better chance at a camped restock (docs/12).
     case restockBot
+    /// A checkout bot: better online drop odds, more cancellations, and scalper heat (Model/Flippers.swift).
+    case checkoutBot
     /// Checks every card for a fake, for free (docs/14).
     case authTool
     /// Reveal tools for the corners, the edges, and the surface (docs/10).
@@ -52,6 +54,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .betterCar: "A better car"
         case .dropDiscord: "Drop alert Discord"
         case .restockBot: "Restock alert bot"
+        case .checkoutBot: "Checkout bot"
         case .authTool: "Authentication tool"
         case .cornerLoupe: "Corner loupe"
         case .edgeLight: "Edge light"
@@ -97,6 +100,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .betterCar: "Store run stops take 30 minutes instead of 40. A far garage sale takes 6 hours instead of 8."
         case .dropDiscord: "The morning report tells you the day before a Pokemon Center drop."
         case .restockBot: "Adds 25% to your chance of getting product when you camp a restock."
+        case .checkoutBot: "Doubles your Pokemon Center odds to 60% and gives two Target.com attempts. Stores cancel 35% of bot orders, and each use leaves a trace."
         case .authTool: "Reads Real or Fake on every card you own, for free. A professional counterfeit still slips past it 1 time in 10."
         case .cornerLoupe: "Shows the corner subgrade on every raw card."
         case .edgeLight: "Shows the edge subgrade on every raw card."
@@ -144,6 +148,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .betterCar: "car"
         case .dropDiscord: "bell.badge"
         case .restockBot: "antenna.radiowaves.left.and.right"
+        case .checkoutBot: "cpu"
         case .authTool: "checkmark.shield"
         case .cornerLoupe: "magnifyingglass"
         case .edgeLight: "light.max"
@@ -196,7 +201,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
 
 extension Balance {
     static let upgradeCosts: [Upgrade: Double] = [
-        .evReadout: 120, .betterCar: 900, .dropDiscord: 60, .restockBot: 150, .authTool: 350,
+        .evReadout: 120, .betterCar: 900, .dropDiscord: 60, .restockBot: 150, .checkoutBot: 400, .authTool: 350,
         .cornerLoupe: 60, .edgeLight: 90, .surfaceLamp: 140, .studioLights: 250, .cameraKit: 600,
         .salesAnalytics: 150, .contactBook: 200, .bigContactBook: 600, .cardReader: Balance.cardReaderCost,
         .lockedCase: 220, .showcaseCase: Balance.showcaseCost, .vendorBinder: 40, .slabCase: 90, .foldingCart: 120, .dehumidifier: 120, .fireSafe: 400,
@@ -208,6 +213,8 @@ extension Balance {
     /// Contact book room: no upgrade, the contact book, and the big contact book.
     static let contactBookSizes = [4, 8, 15]
     static let restockBotBonus = 0.25
+    /// The Pokemon Center success chance with the checkout bot.
+    static let pokemonCenterBotSuccess = 0.60
     static let betterCarStopHours = 30.0 / 60.0
     static let betterCarFarSaleHours = 6.0
     /// Content quality with no lights, with lights, and with the camera kit.

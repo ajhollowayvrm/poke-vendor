@@ -2,7 +2,7 @@ import Foundation
 
 #if DEBUG
 /// The retail tuning run (docs/proposals/sealed-product, Part A 7.2). Plays real End Days with a scripted player and
-/// prints one line a week. Later phases add the online lines (phase 3) and more columns through `extraColumns`.
+/// prints one line a week. Later phases add more columns through `extraColumns`.
 @MainActor
 final class RetailSim {
     private let store: GameStore
@@ -28,8 +28,9 @@ final class RetailSim {
         if flipper {
             store.data.jobIndex = nil
             store.data.upgrades.append(Upgrade.restockBot.rawValue)
-            // Phase 3: add the checkout bot upgrade and `subscribeAlerts(.allChains, store: nil)` here.
+            store.data.upgrades.append(Upgrade.checkoutBot.rawValue)
             _ = store.joinClub()
+            store.subscribeAlerts(.allChains, store: nil)
         }
         print("RETAILSIM day p strict heat(g/max) bans units(shelf/camp/online) fill(1h/17h) hot dumps incidents "
               + extraColumns.map(\.name).joined(separator: " "))
@@ -83,7 +84,7 @@ final class RetailSim {
 
     /// Honest: a store run to two chains after work on weekdays and three on Saturday, one unit of each hot item.
     /// Camps the first posted restock in each 28-day window, calling in sick when it falls on a work day, and then
-    /// runs the stores the same day. Phase 3 adds the online lines (drawing, Pokemon Center, Target.com).
+    /// runs the stores the same day. It also plays the online lines: the drawing, the Pokemon Center, and Target.com.
     private func playHonest(_ w: inout Week) {
         if store.day / 28 != lastCampWindow, let restock = store.restocksNow.first {
             lastCampWindow = store.day / 28
@@ -98,10 +99,11 @@ final class RetailSim {
         // After work on a weekday, mid-morning on Saturday.
         store.data.hour = max(store.data.hour, store.weekday == 5 ? 10 : 17)
         if !stops.isEmpty { w.shelfUnits += runStops(stops, perItem: 1) }
+        onlineCommon(&w, bot: false)
     }
 
     /// Flipper: each vendor stop at its vendor hour, every unit the limit allows, a repeat visit 1 hour later at
-    /// Walmart and Barnes & Noble, and every posted camp. Phase 3 adds the bot on every online drop.
+    /// Walmart and Barnes & Noble, every posted camp, and the bot on every online drop.
     private func playFlipper(_ w: inout Week) {
         let due = LocalStore.allCases.filter { !$0.isGameShop && store.vendorSlot($0).weekday == store.weekday }
             .sorted { store.vendorSlot($0).hour < store.vendorSlot($1).hour }
@@ -113,7 +115,23 @@ final class RetailSim {
                 w.shelfUnits += runStops([s], perItem: 99)
             }
         }
+        onlineCommon(&w, bot: true)
         w.campUnits += campAll()
+    }
+
+    /// The online lines of both players: enters the Walmart drawing and the level 3 chain drawings, claims every win,
+    /// tries each Pokemon Center drop, and tries each Target.com drop. The flipper uses the checkout bot.
+    private func onlineCommon(_ w: inout Week, bot: Bool) {
+        if let offer = store.walmartDrawing { store.enterDrawing(offer) }
+        for offer in store.chainDrawings { store.enterDrawing(offer) }
+        for win in store.data.retail.drawingWins where store.claimDrawingWin(win.id) { w.onlineUnits += 1 }
+        if store.isPokemonCenterDropLive, let o = Market.offers(for: .pokemonCenter, day: store.day).first,
+           store.attemptDrop(o, bot: bot) { w.onlineUnits += 1 }
+        if let o = store.targetDrop(day: store.day) {
+            for _ in 0..<Balance.targetBotAttempts where store.targetAttemptsLeft > 0 && !store.data.boughtToday.contains(o.id) {
+                if store.attemptTargetDrop(o, bot: bot) { w.onlineUnits += 1 } else if !bot { break }
+            }
+        }
     }
 
     /// One store run through the real API. Returns the units bought.

@@ -86,6 +86,8 @@ struct RetailState: Codable, Hashable {
     /// Integration 1.2 and 4.1 keep their state here.
     var gougeDay = -1
     var ripHereWeek: [String: Int] = [:]
+    /// The alert fee that the player paid this month. A new start or a dearer tier charges only the part above it.
+    var alertPaid = 0.0
     /// The day of the last limit-hit heat at each chain. That heat counts once for each chain each day.
     var limitHeatDay: [String: Int] = [:]
 }
@@ -131,6 +133,7 @@ extension RetailState {
         followerTierMark = v(.followerTierMark, followerTierMark)
         gougeDay = v(.gougeDay, gougeDay)
         ripHereWeek = v(.ripHereWeek, ripHereWeek)
+        alertPaid = v(.alertPaid, alertPaid)
         limitHeatDay = v(.limitHeatDay, limitHeatDay)
     }
 }
@@ -167,6 +170,8 @@ extension Balance {
     static let clubBatchSize = 12
     static let clubPricePerPack = 3.75
     static let clubHotPerDay = 1
+    /// The most hours that a player can wait at a stop for the vendor.
+    static let vendorWaitMax = 2.0
 }
 
 extension Balance {
@@ -270,7 +275,7 @@ extension Market {
 
     /// The products that a big-store batch can hold: the tests that never change, run once. A shelf read then only
     /// tests the print status. Store exclusives (Pokemon Center and club items) never enter a big-store batch.
-    private static let bigStorePool = SetLibrary.catalog.filter {
+    static let bigStorePool = SetLibrary.catalog.filter {
         $0.msrp != nil && $0.packs <= 11 && Balance.bigStoreKinds.contains($0.kind) && !$0.isStoreExclusive
     }
     private static let clubPool = SetLibrary.catalog.filter(\.isClubExclusive)
@@ -494,7 +499,7 @@ extension GameStore {
 
     /// Rival lines for the hot batch items that a rival emptied before this moment: the drain took at least one
     /// unit, nothing is left, and the player did not take the last unit. One receipt roll for each line.
-    func writeVisitLines(_ store: LocalStore, hour: Double) {
+    func writeVisitLines(_ store: LocalStore, hour: Double, receipts: Bool = true) {
         let key = store.rawValue
         let marker = "-\(key)-"
         let items = shelf(at: store, hour: hour)
@@ -512,7 +517,43 @@ extension GameStore {
         data.retail = retail
         guard let first = cleared.first else { return }
         rememberRival(rival.id, .rivalTookShelf, note: "\(rival.name) cleared the \(first) at \(key)", byPlayer: false)
+        guard receipts else { return }
         for name in cleared { noteShelfReceipt(rival.id, note: "\(rival.name) cleared the \(name) at \(key)") }
+    }
+
+    /// The hours to wait at a stop for the vendor: the stop is on the vendor day, before the vendor hour, within
+    /// `vendorWaitMax` hours, and the player knows the slot (seen it, or an alert covers the chain). Nil otherwise.
+    func vendorWaitGap(_ store: LocalStore, arrival: Double) -> Double? {
+        let slot = vendorSlot(store)
+        let gap = slot.hour - arrival
+        let known = data.retail.seenSlot[store.rawValue] == slot.weekday || alertedStores.contains(store)
+        guard !store.isGameShop, known, data.day % 7 == slot.weekday, gap > 0, gap <= Balance.vendorWaitMax else { return nil }
+        return gap
+    }
+
+    /// Waits in the store until the vendor comes. A hostile rival in the aisle takes one unit of a hot item first.
+    /// The wait is in the same visit, so it gets no second receipt roll. Returns the hours waited, or nil.
+    func waitForVendor(_ store: LocalStore, arrival: Double) -> Double? {
+        guard let gap = vendorWaitGap(store, arrival: arrival), spendHours(gap) else { return nil }
+        let today = data.day
+        let key = store.rawValue
+        let slot = vendorSlot(store)
+        var retail = data.retail
+        retail.seenSlot[key] = slot.weekday
+        var taken: (rival: Rival, product: String)?
+        if let rival = rivalAt(store), rival.hostility >= Balance.rivalAisleHostility,
+           let item = Market.batch(store, vendorDay: today, seed: data.marketSeed).first(where: \.hot) {
+            retail.rivalTaken[item.id, default: BatchBuy(vendorDay: today, count: 0)].count += 1
+            taken = (rival, item.product.name)
+        }
+        data.retail = retail
+        if let taken {
+            rememberRival(taken.rival.id, .rivalTookShelf, note: "\(taken.rival.name) grabbed a \(taken.product) off the vendor's cart",
+                          byPlayer: false)
+        }
+        writeVisitLines(store, hour: slot.hour, receipts: false)
+        save()
+        return gap
     }
 
     /// Counts a big-store or club buy toward the limits, the batch, the heat, and the rivals (D-1).

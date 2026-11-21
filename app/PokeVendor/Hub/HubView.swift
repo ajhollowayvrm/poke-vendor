@@ -206,7 +206,20 @@ struct HubView: View {
             .buttonStyle(.plain)
             .disabled(block != nil)
         }
-        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty {
+        ForEach(store.data.retail.drawingWins) { win in
+            let name = SetLibrary.product(win.productID)?.name ?? "a product"
+            Button {
+                store.claimDrawingWin(win.id)
+            } label: {
+                ChevronRow(icon: "ticket", title: "Claim your drawing win: \(name)",
+                           detail: "Pay \(money(win.price)) · until \(GameCalendar.date(win.claimUntil).text)",
+                           accent: store.canAfford(win.price))
+            }
+            .buttonStyle(.plain)
+            .disabled(!store.canAfford(win.price))
+        }
+        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty,
+           store.data.retail.drawingWins.isEmpty {
             Text(nextEventText)
                 .font(.caption2)
                 .foregroundStyle(Theme.muted)

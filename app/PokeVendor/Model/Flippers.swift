@@ -192,6 +192,12 @@ extension GameStore {
         recordHiddenAct(.storeBan, weight: 1.5, note: "Refused card sales at \(key)", witnesses: 3)
     }
 
+    /// What a flip on eBay nets: the market price, less the cost, the eBay fee, and the shipping.
+    func flipMargin(market: Double, cost: Double) -> Double {
+        let c = saleCosts(price: market, channel: .ebay, sealed: true, insured: false)
+        return market - cost - c.fees - c.shipping
+    }
+
     /// The hint at a chain, from its heat. The number stays hidden.
     func heatHint(_ store: LocalStore) -> String? {
         let heat = data.retail.storeHeat[store.rawValue] ?? 0

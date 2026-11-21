@@ -38,6 +38,7 @@ final class GameTests {
         timed("sealed", sealedFoundation)
         timed("cases", cases)
         timed("retail", retail)
+        timed("online", online)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -1057,6 +1058,7 @@ final class GameTests {
         r.followerTierMark = 2
         r.gougeDay = 6
         r.ripHereWeek = ["Cardboard Castle": 3]
+        r.alertPaid = 8
         r.limitHeatDay = ["Target": 4]
         store.data.retail = r
         store.data.flipperPressure = 0.73
@@ -1064,6 +1066,219 @@ final class GameTests {
             return check(false, "the retail fields did not encode and decode")
         }
         check(loaded.retail == r && loaded.rivals == store.data.rivals && loaded.flipperPressure == 0.73, "a save and a load lost a retail field")
+    }
+
+    /// One End Day, the way the player plays it.
+    private func nextDay() {
+        store.report = nil
+        if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }
+        store.endDay()
+    }
+
+    /// Sealed product phase 3: cancellations, drawings and claims, the checkout bot, Target.com gating, alerts, and
+    /// waiting for the vendor (docs/proposals/sealed-product, Part A 7.1: T4, T5, T12).
+    private func online() {
+        fresh()
+        guard let product = SetLibrary.catalog.first(where: { $0.isInPrint && $0.msrp != nil && !$0.isStoreExclusive }) else {
+            return check(false, "the online test has no product")
+        }
+        func transit(_ days: Int, paid: Double = 50) -> SealedItem {
+            SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: paid, acquired: .now,
+                       source: "Test order", productID: product.id, status: .arriving(daysLeft: days, from: "Target.com"),
+                       acquiredDay: store.day)
+        }
+
+        // T4: a cancelled order refunds once, takes the item back, and records the bot act once.
+        let order = transit(3)
+        store.data.sealed.append(order)
+        store.data.retail.dropOrders.append(DropOrder(itemID: order.id, source: "Target.com", name: product.name, rollDay: store.day + 2,
+                                                      chance: 1, refund: 50, bot: true))
+        let scratch = transit(3)
+        for _ in 0..<20 { store.addDropOrder(item: scratch, source: "Test", bot: false, refund: 1, deliveryDays: 3) }
+        let late = store.data.retail.dropOrders.filter { $0.itemID == scratch.id && ($0.rollDay > store.day + 2 || $0.rollDay < store.day + 1) }
+        check(late.isEmpty, "an order roll day fell outside the days before the delivery")
+        store.data.retail.dropOrders.removeAll { $0.itemID == scratch.id }
+        check(store.dropOrder(for: order.id) != nil, "the order was not on the cancel list")
+
+        // T5: a drawing win charges nothing until the claim. A short claim takes nothing. A claim takes the price once.
+        let entry = DrawingEntry(chain: .walmart, productID: product.id, drawDay: store.day, price: 40)
+        var cash = store.cash
+        _ = store.resolveDrawing(entry, won: false)
+        check(store.cash == cash && store.data.retail.drawingWins.isEmpty, "a lost drawing changed the cash or added a win")
+        _ = store.resolveDrawing(entry, won: true)
+        check(store.cash == cash && store.data.retail.drawingWins.count == 1, "a drawing win took cash or did not join the claim list")
+        guard let win = store.data.retail.drawingWins.first else { return }
+        store.data.cash = 5
+        let held = store.data.sealed.count
+        check(!store.claimDrawingWin(win.id) && store.data.sealed.count == held && store.data.retail.drawingWins.count == 1,
+              "a claim with short cash took the win")
+        store.data.cash = 1_000
+        cash = store.cash
+        check(store.claimDrawingWin(win.id) && abs(cash - store.cash - 40) < 0.001 && store.data.sealed.count == held + 1
+              && store.data.retail.drawingWins.isEmpty, "a claim did not take exactly the price and add one item")
+        check(store.data.sealed.last.map({ if case .arriving = $0.status { true } else { false } }) == true, "a claimed win did not arrive")
+        cash = store.cash
+        check(!store.claimDrawingWin(win.id) && store.cash == cash, "one win charged twice")
+        let claimedLines = store.data.ledger.filter { $0.label.contains(product.name) && $0.label.contains("drawing") }.count
+        // A win that nobody claims lapses at no cost.
+        _ = store.resolveDrawing(entry, won: true)
+        // The weekly drawing: one entry for each drawing, kept after a second tap.
+        if let offer = store.walmartDrawing {
+            store.enterDrawing(offer)
+            store.enterDrawing(offer)
+            check(store.data.retail.drawings.count == 1 && store.entry(for: offer) != nil, "a drawing took two entries")
+        } else {
+            check(false, "no Walmart drawing on day 0")
+        }
+        // Level 3 chains draw their hot items. The claim of a chain win arrives the next day.
+        for s in LocalStore.allCases where !s.isGameShop { store.data.retail.strictness[s.rawValue] = ChainStrictness(level: 3, lastChange: 0) }
+        let chains = store.chainDrawings
+        check(!chains.isEmpty, "level 3 chains offered no drawing")
+        store.data.retail.strictness = [:]
+        check(store.chainDrawings.isEmpty, "a drawing stayed open at a chain with no strictness")
+
+        // The weekly entry would draw during these days and could add a win by chance. Remove it, so the lapse check is stable.
+        store.data.retail.drawings = []
+        // Three End Days: the cancel rolls on day 2, and the unclaimed win lapses after the claim days.
+        for _ in 0...Balance.drawingClaimDays { nextDay() }
+        check(!store.data.sealed.contains { $0.id == order.id }, "a cancelled order stayed in the inventory")
+        let refunds = store.data.ledger.filter { $0.label.hasPrefix("Order cancelled") }
+        check(refunds.count == 1 && abs((refunds.first?.amount ?? 0) - 50) < 0.001, "the order refund was not exactly one entry of 50")
+        check(store.data.hiddenActs.filter { $0.kind == .botOrderCancelled }.count == 1, "a cancelled bot order did not record one act")
+        check(store.data.retail.drawingWins.isEmpty && store.data.ledger.filter { $0.label.contains(product.name) && $0.label.contains("drawing") }.count == claimedLines,
+              "an unclaimed win stayed on the list or charged")
+        check(store.data.retail.dropOrders.filter { $0.itemID == order.id }.isEmpty, "a rolled order stayed on the list")
+        nextDay()
+        check(store.data.ledger.filter { $0.label.hasPrefix("Order cancelled") }.count == 1, "a cancelled order refunded twice")
+
+        // The checkout bot: the bot is ignored without the upgrade. With it, a use adds exactly the bot heat and one act.
+        fresh()
+        guard let drop = Market.offers(for: .pokemonCenter, day: store.day).first else { return check(false, "no Pokemon Center offer") }
+        store.addTestCash(5_000)
+        var heat = store.data.scalperHeat
+        _ = store.attemptDrop(drop, bot: true)
+        check(store.data.scalperHeat == heat && !store.data.hiddenActs.contains { $0.kind == .botCheckout }, "the bot worked with no upgrade")
+        store.data.upgrades.append(Upgrade.checkoutBot.rawValue)
+        store.data.pokemonCenterAttempted = false
+        heat = store.data.scalperHeat
+        let botWon = store.attemptDrop(drop, bot: true)
+        check(abs(store.data.scalperHeat - heat - Balance.heatBotUse) < 0.001
+              && store.data.hiddenActs.filter({ $0.kind == .botCheckout }).count == 1, "a bot use did not add exactly the bot heat and one act")
+        if botWon, let item = store.data.sealed.last, let o = store.dropOrder(for: item.id) {
+            check(o.bot && o.chance == Balance.dropCancelBotChance, "a bot order did not carry the bot cancel chance")
+        }
+
+        // T12: Target.com gating. One attempt without the bot. With the bot owned, a second attempt needs the bot.
+        fresh()
+        func target(_ n: String) -> StoreOffer {
+            StoreOffer(id: "tgt-test-\(n)", store: .amazon, item: .product(product, product.homeSlug), price: 20, shipping: 0,
+                       deliveryDays: Balance.targetDeliveryDays, note: "Target.com · limit 1")
+        }
+        _ = store.attemptTargetDrop(target("a"), bot: false)
+        check(store.data.retail.targetAttempts == 1, "the first Target.com attempt did not count")
+        cash = store.cash
+        check(!store.attemptTargetDrop(target("b"), bot: false) && store.cash == cash && store.data.retail.targetAttempts == 1,
+              "a second Target.com attempt ran with no bot")
+        store.data.upgrades.append(Upgrade.checkoutBot.rawValue)
+        store.data.retail.targetAttempts = 0
+        store.data.retail.targetAttemptDay = store.day
+        _ = store.attemptTargetDrop(target("c"), bot: false)
+        cash = store.cash
+        check(!store.attemptTargetDrop(target("d"), bot: false) && store.cash == cash, "a second attempt ran with the bot owned but not used")
+        heat = store.data.scalperHeat
+        _ = store.attemptTargetDrop(target("e"), bot: true)
+        check(store.data.retail.targetAttempts == 2 && abs(store.data.scalperHeat - heat - Balance.heatBotUse) < 0.001,
+              "a Target.com bot attempt did not count or add the bot heat")
+        check(store.targetAttemptsLeft == 0, "the bot gave more than two Target.com attempts")
+
+        // Alerts: the first month is charged now. A dearer tier charges the gap. A cheaper tier charges nothing.
+        fresh()
+        cash = store.cash
+        check(store.subscribeAlerts(.oneChain, store: .walmart) && abs(cash - store.cash - Balance.alertFeeOneChain) < 0.001
+              && store.alertedStores == [.walmart], "a one-chain alert did not charge the fee and cover the chain")
+        cash = store.cash
+        check(store.subscribeAlerts(.allChains, store: nil)
+              && abs(cash - store.cash - (Balance.alertFeeAllChains - Balance.alertFeeOneChain)) < 0.001, "a dearer tier did not charge the gap")
+        cash = store.cash
+        check(store.subscribeAlerts(.oneChain, store: .target) && store.cash == cash && store.alertedStores == [.target],
+              "a cheaper tier charged money")
+        check(store.subscribeAlerts(.none, store: nil) && store.alertedStores.isEmpty, "the alerts did not stop")
+        // A stop and a new start in the same month charge nothing again.
+        cash = store.cash
+        check(store.subscribeAlerts(.allChains, store: nil) && store.cash == cash && store.alertedStores.count > 1,
+              "a new start in the same month charged again")
+        check(store.subscribeAlerts(.none, store: nil), "the alerts did not stop a second time")
+        // The fee on the 1st: once, even when End Day code runs twice. A late-month start waits for the 1st.
+        store.data.day = 25
+        cash = store.cash
+        check(store.subscribeAlerts(.allChains, store: nil) && store.cash == cash && store.alertedStores.isEmpty
+              && store.data.retail.alertStartDay == 31, "a late-month alert charged early or started early")
+        store.data.day = 31
+        cash = store.cash
+        _ = store.alertsEndDay()
+        check(abs(cash - store.cash - Balance.alertFeeAllChains) < 0.001, "the fee on the 1st was not the tier fee")
+        cash = store.cash
+        _ = store.alertsEndDay()
+        check(store.cash == cash, "the fee on the 1st charged twice")
+        let calendar = store.restockEntries(day: store.day).filter { $0.title.hasSuffix("vendor stock") }
+        check(calendar.count == LocalStore.allCases.filter { $0.isBigStore && store.vendorSlot($0).weekday == store.day % 7 }.count,
+              "the calendar did not list the alert vendor days")
+
+        // A real online order that the store cancels: the refund comes once, and the item leaves.
+        func cancelled(_ source: String, make: (Int) -> Bool) {
+            fresh()
+            var made = false
+            for i in 0..<300 where !made {
+                store.data.boughtToday = []
+                store.data.pokemonCenterAttempted = false
+                store.data.retail.targetAttempts = 0
+                made = make(i)
+            }
+            guard made, let item = store.data.sealed.last, let k = store.data.retail.dropOrders.firstIndex(where: { $0.itemID == item.id }) else {
+                return check(false, "no \(source) order to cancel")
+            }
+            let refund = store.data.retail.dropOrders[k].refund
+            store.data.retail.dropOrders[k].chance = 1
+            let roll = store.data.retail.dropOrders[k].rollDay
+            let id = item.id
+            while store.day < roll { nextDay() }
+            let entries = store.data.ledger.filter { $0.label.hasPrefix("Order cancelled") && $0.label.hasSuffix(source) }
+            check(!store.data.sealed.contains { $0.id == id } && entries.count == 1 && abs((entries.first?.amount ?? 0) - refund) < 0.001,
+                  "a \(source) order did not cancel with one refund and no item")
+        }
+        cancelled("Target.com") { i in
+            let o = StoreOffer(id: "tgt-real-\(i)", store: .amazon, item: .product(product, product.homeSlug), price: 20, shipping: 0,
+                               deliveryDays: Balance.targetDeliveryDays, note: "Target.com · limit 1")
+            return store.attemptTargetDrop(o, bot: false)
+        }
+        cancelled("Pokemon Center") { i in
+            guard let base = Market.offers(for: .pokemonCenter, day: store.day).first else { return false }
+            let o = StoreOffer(id: "pc-real-\(i)", store: .pokemonCenter, item: base.item, price: base.price, shipping: base.shipping,
+                               deliveryDays: base.deliveryDays, note: base.note)
+            store.addTestCash(500)
+            return store.attemptDrop(o)
+        }
+
+        // Wait for the vendor: only with a known slot, on the vendor day, and within the wait limit.
+        fresh()
+        let slot = store.vendorSlot(.walmart)
+        var d = 7
+        while d % 7 != slot.weekday { d += 1 }
+        store.data.day = d
+        store.syncMarket()
+        store.data.hour = 18
+        check(store.vendorWaitGap(.walmart, arrival: slot.hour - 1) == nil, "a wait showed for a vendor day the player never saw")
+        store.data.retail.seenSlot["Walmart"] = slot.weekday
+        check(store.vendorWaitGap(.walmart, arrival: slot.hour - 1) == 1, "a known vendor day gave no wait")
+        check(store.vendorWaitGap(.walmart, arrival: slot.hour - 3) == nil && store.vendorWaitGap(.walmart, arrival: slot.hour) == nil,
+              "a wait ignored its limits")
+        for i in store.data.rivals.indices { store.data.rivals[i].hostility = 1 }
+        let hour = store.data.hour
+        let waited = store.waitForVendor(.walmart, arrival: slot.hour - 1)
+        check(waited == 1 && abs(store.data.hour - (hour + 1)) < 0.001, "waiting did not spend its hours")
+        if store.rivalAt(.walmart) != nil, Market.batch(.walmart, vendorDay: d, seed: store.data.marketSeed).contains(where: \.hot) {
+            check(store.data.retail.rivalTaken.values.reduce(0) { $0 + $1.count } == 1, "a hostile rival took no unit from the vendor")
+        }
     }
 
     /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.
@@ -1124,6 +1339,17 @@ final class GameTests {
         store.data.retail.strictness["Target"] = ChainStrictness(level: 1, lastChange: -89)
         store.data.retail.seenEvents = [UUID()]
         for rival in store.data.rivals { store.rememberRival(rival.id, .other, note: "test", byPlayer: false) }
+        // T10 (phase 3): online state that is not empty, so the cancel, drawing, and alert code runs on full arrays.
+        let onlineProduct = SetLibrary.catalog.first { $0.isInPrint && $0.msrp != nil && !$0.isStoreExclusive }
+        let onlineOrder = SealedItem(setSlug: onlineProduct?.homeSlug ?? "", name: "Test order", packs: 1, paid: 30, acquired: .now,
+                                     source: "Test order", productID: onlineProduct?.id, status: .arriving(daysLeft: 6, from: "Pokemon Center"),
+                                     acquiredDay: 0)
+        store.data.sealed.append(onlineOrder)
+        store.data.retail.dropOrders.append(DropOrder(itemID: onlineOrder.id, source: "Pokemon Center", name: "Test order", rollDay: 3,
+                                                      chance: 1, refund: 30, bot: true))
+        store.data.retail.drawings.append(DrawingEntry(chain: .walmart, productID: onlineProduct?.id ?? "", drawDay: 2, price: 10))
+        store.data.retail.drawingWins.append(DrawingWin(chain: .walmart, productID: onlineProduct?.id ?? "", price: 10, claimUntil: 1))
+        store.data.retail.alertTier = .allChains
         var shows = 0
         for day in 0..<14 {
             if day == 1, let start = store.startStoreRun([.walmart]),
@@ -1148,6 +1374,9 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        check(!store.data.sealed.contains { $0.id == onlineOrder.id } && store.data.ledger.filter { $0.label.hasPrefix("Order cancelled") }.count == 1
+              && store.data.retail.drawings.isEmpty && store.data.retail.drawingWins.isEmpty && store.data.retail.dropOrders.isEmpty,
+              "the online orders, drawings, or wins did not settle in 14 days")
         // T6: the pressure stays in its range, and the old retail entries are pruned.
         check(Balance.pressureRange.contains(store.data.flipperPressure) && !store.data.retail.pressureLog.keys.contains { $0 < store.day - Balance.pressureLogDays },
               "the flipper pressure left its range or the pressure log kept an old day")
