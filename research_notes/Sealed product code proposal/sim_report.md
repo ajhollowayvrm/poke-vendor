@@ -356,3 +356,94 @@ Side effects to know:
 - The strategies are fixed rules, not an optimizer. A real player can mix them.
 - The unshipped-order scam (review B, M5) and the store break-in are not modeled.
 - The club numbers are a low bound (S6).
+
+## 9. Revision 2 results
+
+Date: 2026-11-20. Input: revision 2 of the four proposal files and `r2_decisions.md` (D-1 to D-17). The script now has a third config, `--config r2`. It models revision 2 as written.
+
+### 9.1 What changed in the model
+
+| Decision | How the script models it |
+|---|---|
+| D-1 | No heat for a hot buy at the limit. +1 heat and a `shelfBuyout` act only when the player's buy empties the item and the player bought 2 or more of it in the visit. Weight `min(2, 1 + 0.25 × (units − 2))`, 5 witnesses. Each buyout adds +0.03 to the chain's incident chance, which decays by 0.9 a day (Part A 1.3). Strictness is now computed for each player, because the player's buyouts change it. |
+| D-2 | Weights from Part C 1.4: `limitEvasion` 1.0, `botCheckout` 0.5, `storeBan` 1.5 with 3 witnesses, `botOrderCancelled` 0.5. |
+| D-3 | Hot allocation: 1 case a week for each product (+1 at Elite). Back-door check: a rolling 28-day window of sales, the threshold `max(6, 50% of hot units delivered)`, at most one act each 28 days, judged sales do not count again, records kept 56 days. Shelf, counter, vending, and Rip & Ship sales are retail. eBay is off-shelf. A unit sells 1 to 14 days after delivery. |
+| D-5 | Analyzed by hand (9.4), because no strategy delays shipping. |
+| D-6 | The palm refund is the order price plus the card's market value. |
+| D-7 | A caught palm, a public fake post, and a reveal-day act (plug seizure) open past the cap. With 3 open, any other act adds its start heat to the open callout of the same type, or to the hottest one. |
+| D-10 | A rival line only when the drain took stock and the player did not empty the item. Receipt chance 0.05. |
+| D-11 | Every strategy claims its drawing wins, so no change in numbers. |
+| D-13 | All 17 values. Store exclusives stay out of batches. Club items with no MSRP enter the club pool, with the club floor price as MSRP for the hot test. |
+| D-14 | Store break-in: base 0.0005, value scale $25,000, cap 0.006, 2 to 6 items, $400 repair. Store stock rider: 0.6% of store sealed value each 28 days, claim at 80% less $25. The shop strategies have no cameras. |
+| Part A | "Wait for the vendor": when the player knows the slot and the vendor comes within 2 hours, the player waits. A hostile rival (hostility 0.5 or more) takes one hot unit first. |
+| Part B | The fill table (`fillBase` 0.05) and the plug cap of 5 cases. A seizure records `plugSeized` with a reveal day and retires the purchase act. |
+| Part C | 1 receipt for each rival in 30 days. Player-callout gains scale with the rival's credibility. Counter and deny cannot both run. "Make it right" no longer waives the record. A public fake post has no reputation cost at fade (`repPaid`). A palm that comes out through the log and peaks at 80 bans Whatnot for 56 days. Kid gift: $5 or more, story chance 0.15. |
+
+### 9.2 Strategy changes in this run
+
+All three columns below were run again with the same strategies, so the comparison is fair.
+
+- **Honest collector** now has no job: one store run a week, on a random day, at a random hour from 9:00 to 18:00.
+- **Honest with a job** (new): works Monday to Friday, 9:00 to 17:00. Store runs on Saturday and Sunday only, at a random hour from 9:00 to 18:00, to 3 random big chains. This is close to the old "honest" strategy of sections 2 to 7.
+- **Farmer**: under revision 2 the farmer denies false callouts. Counter then deny is blocked, and deny is the better farm (free, +1 reputation, a receipt).
+- The other strategies are the same as in section 2.
+
+Sections 9.3 to 9.5 use 2,000 runs × 365 days for each config.
+
+### 9.3 Comparison: revision 1, the sim's tuned run, and revision 2
+
+"Worse" flags a metric where revision 2 is worse than the tuned run.
+
+| Metric | Rev 1 as written | Tuned | Rev 2 | Flag |
+|---|---|---|---|---|
+| Honest: hot units a week (shelf) | 0.76 (0.19) | 1.08 (0.51) | 1.17 (0.60) | |
+| Honest: true callouts a year | 2.78 | 0.45 | 0.00 | |
+| Honest: false callouts a year | 7.71 | 6.04 | 6.28 (every 8.3 weeks) | |
+| Honest: store bans a year | 0 | 0 | 0 | |
+| Honest with job: hot units a week (shelf) | 0.57 (0.00) | 1.32 (0.75) | 1.52 (0.95) | |
+| Honest with job: runs with a store ban | 0% | 9% | 0% | |
+| Honest with job: make-right cash a year | $0 | $56 | $0 | |
+| Honest + camp: true callouts a year | 8.27 | 0.91 | 0.29 | |
+| Honest + camp: make-right cash a year | $570 | $74 | $21 | |
+| Flipper: hot units a week | 18.08 | 14.69 | 18.96 | **Worse** |
+| Flipper: profit a year (upper bound) | $51,900 | $32,700 | $37,800 | **Worse** |
+| Flipper: store bans a year | 29.6 | 26.2 | 1.7 | **Worse** |
+| Flipper: first ban (day) | 23 | 21 | 96 [22, 253] | **Worse** |
+| Flipper: true callouts a year (merged acts) | 75.3 (0) | 67.4 (0) | 42.2 (26.9) | |
+| Flipper: net reputation / followers a year | −289 / 0 | −259 / 0 | −185 / −156 | |
+| Shop owner: hot cases a week | 12.31 | 2.43 | 2.43 | |
+| Shop owner: hot margin a year (upper bound) | $602,000 | $118,000 | $120,000 | Flag (not changed) |
+| Shop owner, 70% R&S: account closed | 61% | 0% | 0% | |
+| Shop owner: break-ins a year (loss) | 2.52 ($109,000) | 1.03 ($17,100) | 0.20 ($2,650) | |
+| Shop owner: rider cost / rider payout a year | n/a | n/a | $414 / $2,054 | **New** |
+| Cheater: account closed | 61% | 46% | 39% | **Worse** |
+| Cheater: first warning (day) | 145 | 153 | 143 | |
+| Cheater: palms caught / cards kept a year | 4.9 / $591 | 5.0 / $573 | 4.7 / $540 | |
+| Cheater: Whatnot ban days a year | 277 | 277 | 283 | |
+| Cheater: plug return | +5% | +6% | +7% | |
+| Cheater: net reputation / followers a year | −618 / −219 | −557 / −227 | −540 / −378 | |
+| Farmer: net reputation / followers a year | +255 / +6,670 | +66 / +1,071 | +45 / +534 | |
+| Palm on a $5 pack, made right | +$54 | −$4 | −$4 | |
+| Plug fake chance for each hot case | 6.0% | 4.1% | 4.1% | |
+| Strictness level 3+ days a year (each chain) | 0.1 | about 5 | about 6.7 | |
+
+Unchanged in revision 2: pressure (26% Few, 54% Busy, 20% Swarming, under 0.3% of days at a clamp), the dump and the 45% cap, the Rip & Ship fees, and the hot share of the pool (93.9%).
+
+Rip & Ship still beats eBay by $4.55 for each sale. Plug EV is +$67 to +$212 for each $1,000, against +$240 to +$353 for the secondary wholesaler. The plug stays a strict loss against the legal routes, as designed. Fill rate: 0.27 [0.18, 0.37] for a new account, 0.43 [0.34, 0.53] for a tenured one.
+
+### 9.4 Not shipping (D-5), by hand
+
+A player sells a product on Rip & Ship at price P and does not ship. On day 7 the chargeback takes P from cash. The player keeps the product, which is worth about its market M. Against an honest sale, the scam gains M − P and loses the fees. The Buy Now band for hot product is 0.95 to 1.20 × M, so M − P is at most 5% of M. Each scam also gives a strike (2 in 60 days ban Whatnot for 4 weeks) and a weight-2.0 act. The scam does not pay. D-5 works.
+
+### 9.5 Problems that remain (ranked)
+
+| Rank | Problem | Evidence | Recommended value |
+|---|---|---|---|
+| 1 | D-1 frees the flipper. A hot buy at a limit of 1 adds no heat, so heat comes only from repeat visits, bots, and rare buyouts. Bans fall from 26.2 to 1.7 a year. | Flipper 18.96 units a week, $37,800 a year, first ban on day 96. | Keep D-1 for the act. Add heat with no act on every hot buy at the limit: `heatLimitBuy` 0.7 applies to any hot buy at the limit, and the `shelfBuyout` act stays as D-1 says. Test (200 runs): flipper 13.5 bans a year, 16.0 units a week, $33,200 a year. Honest, honest with job, and honest + camp: 0 bans. |
+| 2 | The store stock rider is underpriced. It pays about 5 times its cost. Every store owner would buy it, and the break-in then costs almost nothing. | Rider cost $414 a year, payout $2,054 a year. Most runs have no break-in, so the mean comes from rare large losses. | `storeRiderRate` 0.006 → 0.03 each 28 days (payout about equal to cost; the 2 to 6 most valuable items of a small store are most of its stock). |
+| 3 | The back-door check closes the cheater's account less often than before. One act each 28 days and the judged flag slow the warnings. | Closed in 39% of runs (tuned 46%, rev 1 61%). | `backDoorNoticeChance` 0.15 → 0.25. Test (400 runs): closed in 76%, first warning on day 120. Honest shop owners (50% and 70% Rip & Ship): 0 warnings. |
+| 4 | The shop owner's hot margin stays about $120,000 a year (upper bound). D-13 did not adopt the 0.6 floor. | 2.43 hot cases a week at 50% of market. | `storeWholesaleMarketFloor` 0.5 → 0.6 for hot product ($77,000 a year in the section 6.3 test). AJ's choice. |
+| 5 | Almost every product is still hot (93.9%). D-1 and D-10 remove the harm to honest players, but "hot" does not mean scarce. | Data: in-print catalog prices are 2.5 to 3.7 × MSRP. | No value change. A data fix (in-print sealed near MSRP) is outside the proposal. |
+| 6 | Strictness level 1 holds about 90 to 112 days a year at each chain. The flipper's buyouts add about 20 days. | Own strictness, level 1+: honest about 90, flipper about 112. | No change needed. If AJ wants less, `incidentChance` 0.05 → 0.04. |
+
+No new scam pays. The honest player, the honest player with a job, and the honest shop owner have no store bans, no back-door warnings, and no true callouts from normal play. The farm is small: +45 reputation and +534 followers a year.

@@ -69,7 +69,7 @@ Declined: improvement I4 (a hard deal with a kid becomes a kids callout). The re
 | `ScamRecord`: 35% found, 3 to 20 days later, −30 reputation, −30 contact points. | `M/Relationships.swift` L147-153, L370-375, L556-564 |
 | `promote(...)` is the only place that makes a new contact after the seed roster. | `M/Relationships.swift` L345-353 |
 | A sold fake that comes out costs −40 reputation and −20 contact points. A public post then costs 5% followers and 0.1 authenticity. | `M/Counterfeits.swift` L320-363, L107-113 |
-| `recordBadSale` has 19 call sites. | grep `recordBadSale(` |
+| `recordBadSale` has 18 call sites. | grep `recordBadSale(` |
 | The kid lowball at a game shop calls `recordScam`. | `M/ShopEncounters.swift` L138-147 |
 | The gambling backlash on the Rip until I hit series. | `M/Shorts.swift` L318-322 |
 | `giveAway(_:)` removes an item and books what the player paid in `openedPaid`. It has one call site. | `M/LiveStream.swift` L459-471, L225 |
@@ -305,6 +305,7 @@ Put this in `M/Callouts.swift`, in `@MainActor extension GameStore`.
     }
 
     /// Makes an act come out in `days` days. Part B calls it when its own system finds the act.
+    /// No caller in revision 2. Kept for the debug menu.
     func exposeHiddenAct(_ id: UUID, inDays days: Int = 1) {
         guard let i = data.hiddenActs.firstIndex(where: { $0.id == id }), !data.hiddenActs[i].exposed else { return }
         let day = data.day + max(0, days)
@@ -332,11 +333,11 @@ Every caller passes these values. `weight` is the size of the act. It is not the
 | `sellResealed` | C, `recordBadSale`, known resealed product, buyer did not find it (3.3) | `max(0.5, min(2, price / 100))` | 0 | `contactID`, `refund: price` |
 | `palmedHit` | B, `notePalm`, the camera did not catch it | 1.5 | peak stream viewers | `refund: order.price + card market` (D-6), `sourceID: order.id` |
 | `unshippedOrder` | B, `ripShipEndDay`, the first night past the ship deadline | 1.0 | 0 | `contactID: buyerContactID`, `refund: order.price` (the goodwill basis, 6.2), `sourceID: order.id` |
-| `unshippedOrder` after the day-7 chargeback (D-5) | B, `refundRipShipOrder(.late)` | 2.0 | 0 | Same arguments. Part B first calls `retireHiddenAct(lateActID, force: true)`. It records the weight-2.0 act only when that call returns `false` (the late act had not come out). An exposed late act keeps its open callout. |
+| `unshippedOrder` after the day-7 chargeback (D-5) | B, `refundRipShipOrder(_, reason: .chargeback)` | 2.0 | 0 | Same arguments. Part B first calls `retireHiddenAct(lateActID, force: true)`. It records the weight-2.0 act only when that call returns `false` (the late act had not come out). An exposed late act keeps its open callout. |
 | `lowballKid` | C, `lowballKid(_:)` (3.3) | `max(0.5, min(2, market / 50))` | 3 | `contactID: shop`, `refund: fair price gap` |
 | `counterfeitSold` | C, `recordBadSale`, known fake card, buyer did not find it (3.3) | `max(0.5, min(2, price / 100))` | 0 | `contactID`, `refund: price` |
 
-Part B's order code calls `retireHiddenAct(act, force: true)` when an order ships or is refunded (D-4). Both `shipRipShipOrders` and `refundRipShipOrder` change their current calls (Part B L1818, L1859) to `force: true`.
+Part B's order code calls `retireHiddenAct(act, force: true)` when an order ships or is refunded (D-4). Both `shipRipShipOrders` and `refundRipShipOrder` change their current calls (Part B 5.5 and 5.6) to `force: true`.
 
 ### 1.5 Phase 0 stubs (D-9)
 
@@ -351,7 +352,7 @@ Phase 0 builds the parts of this section that other parts call, so that phases 2
 | `recordHiddenAct`, `retireHiddenAct(_:force:)`, `exposeHiddenAct` (1.3) | Final. They are short. |
 | `startCallout(...)` (2.3) | Append only: build the `Callout`, append it to `data.callouts.open`, return the line. No cap merge, no `rememberRival`. Phase 6 replaces the body. |
 | `noteRivalReceipt(_:note:)` (7.1) | Final. It is 5 lines. |
-| The `Balance` constants that these use: `calloutMaxOpen`, the six `calloutHeat*` values, `calloutGoodwill*`, `rivalReceiptGapDays` | Final |
+| The `Balance` constants that these use: `calloutMaxOpen`, the six `calloutHeat*` values, `calloutGoodwill*`, `rivalReceiptGapDays`, `rivalCredFloor`, `rivalCredWeekly` | Final |
 
 Everything else in this file is phase 6. In phase 0, nothing calls `calloutsEndDay()`, so stored acts wait in the log. They roll from phase 6 on. That is safe: an old act at most comes out in the first week of phase 6 testing.
 
@@ -687,6 +688,8 @@ extension GameStore {
     }
 ```
 
+An `unshippedOrder` or `palmedHit` act always opens its own callout, past the cap, because Part B settles it through the callout's `sourceID` (D-4, D-5, D-6). This extends the D-7 forced list (revision 3).
+
 The merge branch always returns a line, so a caller treats the act as exposed. `nil` comes back only when the cap is full and no open callout exists, which cannot happen.
 
 ## 3. True callouts from hidden acts (6.2)
@@ -765,7 +768,7 @@ This is the first step inside `calloutsEndDay()` (section 8).
         let pay = a.kind == .unshippedOrder ? lateGoodwill(a.refund) : a.refund
         return startCallout(type, truth: true, receipts: Double.random(in: 0..<1) < a.kind.receipts,
                             heat: type.startHeat * min(1.5, max(0.75, a.weight)), accuser: accuser, text: text,
-                            force: a.revealDay != nil, actID: a.id, actKind: a.kind, sourceID: a.sourceID,
+                            force: a.revealDay != nil || a.kind == .unshippedOrder || a.kind == .palmedHit, actID: a.id, actKind: a.kind, sourceID: a.sourceID,
                             contactID: a.contactID, refund: pay)
     }
 
@@ -832,7 +835,7 @@ Pass `sealed: true` at the call sites that sell a `SealedItem`:
 | `M/Meetups.swift` L169 | `sealed: m.sealed` |
 | `M/GameStore.swift` L1476 (online listing sale) | `sealed:` true when the listed item is a `SealedItem` |
 
-The other 9 call sites sell cards. They keep the default.
+The other 7 call sites sell cards. They keep the default.
 
 **The public post about a sold fake (review M1).** At `M/Counterfeits.swift` L347-356, replace the inline follower and authenticity loss with a callout. Keep the refund, the −40 reputation, and the contact and shop costs at L337-346.
 
@@ -975,7 +978,7 @@ In `M/Callouts.swift`:
 ```swift
     /// The bad branch of the weekly random story (docs/30): a callout from one named rival, or nothing.
     func randomRivalStory() -> String? {
-        guard let r = rivalPool().randomElement() else { return nil }
+        guard openCallouts.count < Balance.calloutMaxOpen, let r = rivalPool().randomElement() else { return nil }
         return rivalCallout(r)
     }
 ```
@@ -1740,7 +1743,7 @@ DEBUG helpers in `M/Callouts.swift`:
 | 6 | `forcePublicScam = true`. Append a `BadSale(item: "Test", channel: "eBay", price: 100, known: true, refunds: true, dayFound: store.day)` and call `counterfeitsEndDay()`. Check: reputation fell by exactly 40, followers did not change, one new callout has `repPaid == true`. `testSettle` it: `repApplied == 0`. Reset `forcePublicScam = nil`. | Double penalty (fake post, M1) |
 | 7 | `recordBadSale(item: "Test box", channel: "eBay", price: 80, fake: .convincing, known: true, refunds: true, sealed: true)` 20 times. Every call adds either one `BadSale` or one `.sellResealed` act, never both. | Double penalty (resealed, M2) |
 | 8 | Kid gift: `addTestCard` with market from $5 to $30, `showItems`, a league night `ShowSession` as in `opportunities()` (L298-299), `testSeat` a `.kid` buyer `Visitor` for it. `giveToKid()`. Check: the card left `data.raw`, cash did not move, `openedPaid` rose by its `paid ?? 0`, and `canGiveToKid` is false for a second kid. | Items |
-| 9 | Late order (needs phase 5): append a ripped `RipShipOrder` the way Part B's "late order" test builds one. Record its act with `revealDay: store.day` and call `calloutsEndDay()`. Then `refundRipShipOrder(id, reason: .late)`. Then make it right. Check: exactly one ledger refund entry for the order (the Whatnot one), and the make-it-right entry equals `lateGoodwill(price)`. | B3, D-4 money |
+| 9 | Late order (needs phase 5): append a ripped `RipShipOrder` the way Part B's "late order" test builds one. Record its act with `revealDay: store.day` and call `calloutsEndDay()`. Then `refundRipShipOrder(id, reason: .chargeback)`. Then make it right. Check: exactly one ledger refund entry for the order (the Whatnot one), and the make-it-right entry equals `lateGoodwill(price)`. | B3, D-4 money |
 
 Extend existing groups:
 
@@ -1841,3 +1844,7 @@ Run `-test` after each build step. Use `-retailsim <days>` (D-16) for rates, not
 5. Set the palm act and the `settlePalm` callout refund to `order.price + card market` (D-6). Pass `force: true`, `actKind: .palmedHit`, and `sourceID` in `settlePalm`.
 6. On a plug seizure, record `plugSeized` with `revealDay: data.day + 2` and retire the order's `plugPurchase` act. Do not call `exposeHiddenAct` for it.
 7. Remove `save()` from `banFromWhatnot`.
+
+### `-retailsim` column
+
+Phase 6: in `RetailSim.init`, append the `callouts` column (open callouts, true and false this week; Part A 7.2).

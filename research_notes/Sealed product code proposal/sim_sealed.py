@@ -8,10 +8,11 @@ and Part C (hidden acts, callouts, replies). Where 00-integration.md sets a valu
 Run (from any folder):
     python3 -I sim_sealed.py --runs 2000 --json base.json                 # the proposal as written
     python3 -I sim_sealed.py --runs 2000 --config tuned --json tuned.json  # with the recommended values
+    python3 -I sim_sealed.py --runs 2000 --config r2 --json r2.json        # revision 2 of the proposal
     python3 -I sim_sealed.py --runs 500 --config elite --only shop,cheater  # player reputation 700 (Elite)
 Options:
     --days N          days per run (default 365)
-    --only a,b        strategies: honest, honest_camp, flipper, shop, shop_rs70, cheater, farmer
+    --only a,b        strategies: honest, honest_job, honest_camp, flipper, shop, shop_rs70, cheater, farmer
     --set name=JSON   change one value after --config, for example --set storeBanDays=14
     --repo PATH       the PokeVendor repo (default /Users/ajholloway/personal/PokeVendor)
 The output is one JSON object: means with 10th and 90th percentiles. See sim_report.md for the meaning.
@@ -129,10 +130,15 @@ BASE = dict(
     rsCountsRetail=False,          # Part B 3.6: a Rip & Ship sale counts as "elsewhere" in the back-door check
     hotAllocationGrows=True,       # wholesaleCap: hot product grows to allocationMax cases like other product
     palmRefundIncludesCard=False,  # Part B 5.6: "make it right" on a palm pays the order price only
+    r2=False,                      # revision 2 rules (r2_decisions.md D-1 to D-14)
+    heatHotLimitBuy=0.0,           # test only: heat with no act on every hot buy at the limit (not in the proposal)
+    # Store break-in (integration 4.2). Revision 1 values; R2 overrides them.
+    storeBreakInBase=0.002, storeBreakInValueScale=10000.0, storeBreakInMax=0.02, storeBreakInMaxItems=6,
+    storeBreakInRepair=400.0, storeRiderRate=0.006, policyCoverage=0.8, policyDeductible=25.0,
 )
 
 # Recommended values (report section "Recommended value changes").
-TUNED_OVERRIDES = dict(
+TUNED_OVERRIDES = dict(  # noqa: the sim's own recommendations after revision 1
     vendorHours=[8.0, 10.0, 13.0, 16.0],
     vendorWeekdays=(1, 5),
     hotDrainBase=0.2, hotDrainPressure=0.6,
@@ -151,6 +157,20 @@ TUNED_OVERRIDES = dict(
     fakeRatePlug=0.055,
 )
 
+# Revision 2 as written (r2_decisions.md, 00-integration.md revision 2, part file constants tables).
+R2_OVERRIDES = dict(TUNED_OVERRIDES)
+R2_OVERRIDES.update(
+    r2=True,
+    rsCountsRetail=True, hotAllocationGrows=False, palmRefundIncludesCard=True,
+    buyoutActNeedsMany=True,
+    kidGiftStory=0.15, kidGiftMinValue=5.0,
+    backDoorWindowDays=28, backDoorMinUnits=6, backDoorMinShare=0.5, hotRecordKeepDays=56,
+    incidentBoostPerBuyout=0.03, incidentBoostKeep=0.9, vendorWaitMax=2.0, rivalAisleHostility=0.5,
+    rivalReceiptGapDays=30, plugMaxCases=5,
+    storeBreakInBase=0.0005, storeBreakInValueScale=25000.0, storeBreakInMax=0.006,
+    lateShipGoodwillShare=0.10, lateShipGoodwillMin=5.0,
+)
+
 CHAINS = ['target', 'walmart', 'bestbuy', 'gamestop', 'barnes', 'club']
 BIG = ['target', 'walmart', 'bestbuy', 'gamestop', 'barnes']
 BIG_KINDS = {'Booster pack', 'Blister', 'Tin', 'Booster bundle', 'Elite Trainer Box', 'Collection'}
@@ -164,32 +184,41 @@ WHOLESALE_KINDS = {'Booster box', 'Elite Trainer Box', 'Booster bundle', 'Booste
 # ----------------------------------------------------------------------------------------------------------------
 
 PRODUCTS = []          # tuples (name, kind, packs, msrp, market, slug, pcExcl, clubExcl)
+NOMSRP = []            # True: a club item with no catalog MSRP (revision 2 club floor)
 POOLS = {}
 HIT_VALUES = []
 
 
 def load_data(repo):
-    global PRODUCTS, POOLS, HIT_VALUES
+    global PRODUCTS, POOLS, HIT_VALUES, NOMSRP
+    NOMSRP = []
     res = os.path.join(repo, 'app', 'PokeVendor', 'Resources')
     cat = json.load(open(os.path.join(res, 'catalog.json')))
     prods = []
     for p in cat:
-        if not p.get('inPrint') or not p.get('msrp'):
-            continue
         name = p['name']
         club = 'Costco' in name or "Sam's Club" in name
+        if not p.get('inPrint'):
+            continue
+        if not p.get('msrp'):
+            if not club:
+                continue
+            # Revision 2: a club item with no MSRP uses its club floor price (packs x 3.75) for the hot test.
+            p = dict(p, msrp=max(1, p.get('packs', 1)) * 3.75, _nomsrp=True)
         pc = 'Pokemon Center' in name or 'Pokémon Center' in name
         prods.append((name, p['kind'], p.get('packs', 1), float(p['msrp']), float(p['market']),
                       p['mix'][0]['slug'] if p.get('mix') else '', pc, club))
+        NOMSRP.append(bool(p.get('_nomsrp')))
     PRODUCTS = prods
     idx = range(len(prods))
     POOLS = {
-        'batch_all': [i for i in idx if prods[i][1] in BIG_KINDS and prods[i][2] <= 11 and not prods[i][7]],
+        'batch_all': [i for i in idx if not NOMSRP[i] and prods[i][1] in BIG_KINDS and prods[i][2] <= 11 and not prods[i][7]],
         'batch_noexcl': [i for i in idx if prods[i][1] in BIG_KINDS and prods[i][2] <= 11 and not prods[i][7]
                          and not prods[i][6]],
-        'club': [i for i in idx if prods[i][7]],
+        'club': [i for i in idx if prods[i][7] and not NOMSRP[i]],
+        'club_r2': [i for i in idx if prods[i][7]],
         'camp': [i for i in idx if prods[i][1] in CAMP_KINDS and not (prods[i][6] or prods[i][7])],
-        'pc': [i for i in idx if prods[i][1] in PC_KINDS and not prods[i][7]],
+        'pc': [i for i in idx if prods[i][1] in PC_KINDS and not prods[i][7] and not NOMSRP[i]],
         'target': [i for i in idx if prods[i][1] in TARGET_KINDS and not (prods[i][6] or prods[i][7])],
         'walmartDraw': [i for i in idx if prods[i][1] in BIG_KINDS and not (prods[i][6] or prods[i][7])],
         'wholesale': [i for i in idx if prods[i][1] in WHOLESALE_KINDS and not (prods[i][6] or prods[i][7])],
@@ -516,6 +545,47 @@ class Player:
         self.records = []
         self.follower_mark = follower_tier(self.followers)
         self.whatnot_banned_until = -1
+        # revision 2 state
+        self.strict = {c: dict(level=0, last=0, until=None) for c in CHAINS}
+        self.own_levels = {c: [0] * (days + 2) for c in CHAINS}
+        self.boost = {c: 0.0 for c in CHAINS}
+        self.receipt_day = {}            # rival index -> last receipt day (30-day gap)
+        self.seen_slot = set()           # chains whose vendor weekday the player saw
+        self.rival_taken = {}            # batch item id -> units a rival took in the aisle
+        self.emptied = set()             # batch item ids that the player emptied
+        self.m.update(buyouts=0, merged=0, forced=0, waits=0, palm_log_bans=0)
+
+    def level(self, chain, d):
+        if self.cfg['r2']:
+            return self.own_levels[chain][d]
+        return self.mkt['levels'][chain][d]
+
+    def strict_end_day(self, t):
+        """Revision 2: strictness is per run and reads the player's buyout boost (Part A 1.3)."""
+        cfg, P, slots = self.cfg, self.mkt['P'], self.mkt['slots']
+        for c in CHAINS:
+            s = self.strict[c]
+            if s['level'] == 4 and s['until'] is not None and t > s['until']:
+                s['level'] = 3; s['last'] = t; s['until'] = None
+            elif 0 < s['level'] < 4 and t - s['last'] >= cfg['strictnessDecayDays']:
+                s['level'] -= 1; s['last'] = t
+            if (t - 1) % 7 == slots[c][0] and s['level'] < 4 and \
+                    self.rng.random() < cfg['incidentChance'] * P[t] + self.boost[c]:
+                s['level'] += 1; s['last'] = t
+                if s['level'] == 4:
+                    s['until'] = t + cfg['closureDays']
+            self.own_levels[c][t] = s['level']
+            self.boost[c] *= cfg['incidentBoostKeep']
+
+    def note_receipt(self, ri, d):
+        """A receipt against rival ri. Revision 2: at most 1 for each rival in 30 days (Part C 7.1)."""
+        if self.cfg['r2']:
+            last = self.receipt_day.get(ri)
+            if last is not None and d - last < self.cfg['rivalReceiptGapDays']:
+                return
+            self.receipt_day[ri] = d
+        self.receipts.append((ri, d))
+        self.m['receipts'] += 1
 
     # --- reputation helpers
     def add_rep(self, n):
@@ -551,13 +621,25 @@ class Player:
     def open_player(self):
         return [c for c in self.open if c['target'] == 'player']
 
-    def start_callout(self, ctype, truth, receipts, heat, accuser, t, refund=0.0, act=None):
-        if len(self.open_player()) >= self.cfg['calloutMaxOpen']:
-            return None
+    def start_callout(self, ctype, truth, receipts, heat, accuser, t, refund=0.0, act=None, force=False,
+                      kind=None, rep_paid=False):
         start = min(100.0, heat)
+        op = self.open_player()
+        if self.cfg['r2'] and force:
+            self.m['forced'] += 1
+        elif len(op) >= self.cfg['calloutMaxOpen']:
+            if not self.cfg['r2']:
+                return None
+            # Revision 2 (D-7): the heat joins the open callout of the same type, or the hottest one.
+            pick = next((c for c in op if c['type'] == ctype), None) or max(op, key=lambda c: c['heat'])
+            pick['heat'] = min(100.0, pick['heat'] + start)
+            pick['peak'] = max(pick['peak'], pick['heat'])
+            self.m['merged'] += 1
+            return pick
         c = dict(type=ctype, truth=truth, receipts=receipts, heat=start, peak=start, start=t, accuser=accuser,
                  reply=None, replyDay=None, fallFrom=None, fallEnd=None, madeRight=False, caught=False,
-                 refund=refund if refund > 0 else self.goodwill(start), target='player', act=act)
+                 refund=refund if refund > 0 else self.goodwill(start), target='player', act=act,
+                 kind=kind or (act['kind'] if act else None), rep_paid=rep_paid)
         self.open.append(c)
         if truth:
             self.m['callouts_true'] += 1
@@ -603,7 +685,8 @@ class Player:
             else:
                 acc = ('person',)
             heat0 = cfg['calloutHeat'][ctype] * min(1.5, max(0.75, a['weight']))
-            if self.start_callout(ctype, True, self.rng.random() < rec, heat0, acc, t, a['refund'], a) is not None:
+            if self.start_callout(ctype, True, self.rng.random() < rec, heat0, acc, t, a['refund'], a,
+                                  force=a['reveal'] is not None) is not None:
                 a['exposed'] = True
         keep, maxd, minw = cfg['hiddenActKeepDays'], cfg['hiddenActMaxDays'], cfg['hiddenActMinWeight']
         self.acts = [a for a in self.acts if not (
@@ -712,14 +795,19 @@ class Player:
                 rep = cfg['storyBadRep']
             if c['madeRight']:
                 rep = (rep + 1) // 2
+            if c.get('rep_paid'):
+                rep = 0
         if rep > 0:
             self.add_rep(-rep)
         if c['truth']:
-            if c['peak'] >= cfg['calloutRecordPeak'] and not c['madeRight']:
+            if c['peak'] >= cfg['calloutRecordPeak'] and (cfg['r2'] or not c['madeRight']):
                 self.records.append(t + cfg['calloutRecordDays'])
                 self.m['records'] += 1
             if c['type'] == 'productIntegrity' and c['peak'] >= cfg['calloutBanPeak']:
                 self.whatnot_ban(t, self.rng.randint(*cfg['calloutBanDays']))
+            if cfg['r2'] and c.get('kind') == 'palmedHit' and c['act'] is not None and c['peak'] >= cfg['calloutBanPeak']:
+                self.whatnot_ban(t, cfg['palmBanDays'])
+                self.m['palm_log_bans'] += 1
 
     def whatnot_ban(self, t, days):
         end = t + days
@@ -737,6 +825,8 @@ class Player:
                 choice = pol['true']
             else:
                 choice = pol['false']
+                if cfg['r2'] and choice == 'counterDeny':
+                    choice = 'deny'       # revision 2 blocks counter + deny; deny is the better farm (free, +1, receipt)
             cheap = (not c['truth'] and self.account) or (c['truth'] and c['refund'] <= 100)
             if cheap:
                 self.m['callouts_cheap'] += 1
@@ -757,8 +847,8 @@ class Player:
                     c['reply'] = 'counter'; c['replyDay'] = d
                     c['peak'] = max(c['peak'], c['heat'])
                     self.m['counters'] += 1
-                if choice == 'counter':
-                    continue
+                if choice == 'counter' or cfg['r2']:
+                    continue          # revision 2: counter and deny cannot both run (D-13)
                 choice = 'deny'
             if choice == 'deny':
                 if c['truth']:
@@ -772,8 +862,7 @@ class Player:
                     self.add_rep(cfg['calloutDenyFalseRep'])
                     self.lose_cred(c['accuser'], cfg['rivalCredDenied'])
                     if c['accuser'][0] == 'rival':
-                        self.receipts.append((c['accuser'][1], d))
-                        self.m['receipts'] += 1
+                        self.note_receipt(c['accuser'][1], d)
                 c['reply'] = 'deny'; c['replyDay'] = d
                 c['peak'] = max(c['peak'], c['heat'])
             # 'silent': nothing
@@ -791,8 +880,10 @@ class Player:
                 continue
             self.receipts.remove(rec[0])
             self.player_callout_day[i] = d
-            self.add_rep(cfg['playerCalloutRep'])
-            self.add_fol(max(cfg['playerCalloutFollowerMin'], int(self.followers * cfg['playerCalloutFollowerShare'])))
+            base = max(cfg['playerCalloutFollowerMin'], int(self.followers * cfg['playerCalloutFollowerShare']))
+            scale = r['cred'] if cfg['r2'] else 1.0
+            self.add_rep(int(round(cfg['playerCalloutRep'] * scale)))
+            self.add_fol(int(round(base * scale)))
             r['cred'] = max(cfg['rivalCredFloor'], r['cred'] - cfg['playerCalloutCred'])
             r['h'] = min(1.0, r['h'] + cfg['playerCalloutHostility'])
             self.m['player_callouts'] += 1
@@ -804,7 +895,7 @@ class Player:
         if d % 7 != 5 or self.rng.random() >= cfg['kidPerShowDay']:
             return
         self.m['kid_gifts'] += 1
-        self.cash_spent += cfg['kidGiftCost']
+        self.cash_spent += max(cfg['kidGiftCost'], cfg.get('kidGiftMinValue', 0.0))
         if self.rng.random() < cfg['kidGiftStory']:
             self.stories.append((d + self.rng.randint(1, 10), self.rng.random() < cfg['storyViral']))
 
@@ -845,11 +936,11 @@ class Player:
             self.follower_mark = tier
 
     # --- retail (Part A)
-    def add_heat(self, amount, chain, kind, d, record=True):
+    def add_heat(self, amount, chain, kind, d, record=True, weight=None, witnesses=0):
         cfg = self.cfg
         self.heat += amount
         if record:
-            self.record_act(kind, amount, d)
+            self.record_act(kind, amount if weight is None else weight, d, witnesses=witnesses)
         if chain is None:
             return
         h = self.store_heat[chain] + amount
@@ -861,7 +952,10 @@ class Player:
         self.m['bans'] += 1
         if self.m['first_ban'] is None:
             self.m['first_ban'] = d
-        self.record_act('storeBan', cfg['heatStoreBanWeight'], d)
+        if cfg['r2']:
+            self.record_act('storeBan', 1.5, d, witnesses=3)
+        else:
+            self.record_act('storeBan', cfg['heatStoreBanWeight'], d)
 
     def heat_end_day(self, t):
         k = self.cfg['heatKeep']
@@ -890,7 +984,7 @@ class Player:
             return []
         r = random.Random(seed * 1_000_003 + CHAINS.index(chain) * 7919 + vd * 31)
         if chain == 'club':
-            options = POOLS['club']
+            options = POOLS['club_r2'] if cfg['r2'] else POOLS['club']
         else:
             options = POOLS['batch_noexcl'] if cfg['batchExcludeStoreExclusive'] else POOLS['batch_all']
         picks = []
@@ -932,7 +1026,7 @@ class Player:
 
     def limit_left(self, chain, p, hot, d, visit):
         cfg = self.cfg
-        level = self.mkt['levels'][chain][d]
+        level = self.level(chain, d)
         if level >= 4 or self.banned_until[chain] >= d:
             return 0
         if level >= 3 and hot:
@@ -963,9 +1057,10 @@ class Player:
         dl['visits'][chain] += 1
         dl['vb'][chain] = 0
         dl['vh'][chain] = 0
+        dl['vp'] = {k: v for k, v in dl.get('vp', {}).items() if k[0] != chain}
         return dl['visits'][chain]
 
-    def note_purchase(self, chain, p, hot, d, visit, batch_item=None):
+    def note_purchase(self, chain, p, hot, d, visit, batch_item=None, emptied=False):
         cfg, dl = self.cfg, self.daily
         if batch_item is not None:
             self.batch_bought[batch_item['id']] = self.batch_bought.get(batch_item['id'], 0) + 1
@@ -977,8 +1072,25 @@ class Player:
             dl['club_hot'] = True
         first = dl['vb'][chain] == 1
         dl['sku'][(chain, p)] = dl['sku'].get((chain, p), 0) + 1
+        vp = dl.setdefault('vp', {})
+        vp[(chain, p)] = vp.get((chain, p), 0) + 1
         if visit > 1 and first:
-            self.add_heat(cfg['heatRepeatVisit'], chain, 'limitEvasion', d)
+            self.add_heat(cfg['heatRepeatVisit'], chain, 'limitEvasion', d, weight=1.0 if cfg['r2'] else None)
+        if cfg['r2']:
+            # D-1: heat and shelfBuyout only when this buy empties the item and the player took 2 or more units.
+            units = vp[(chain, p)]
+            if hot and emptied:
+                if batch_item is not None:
+                    self.emptied.add(batch_item['id'])
+                if units >= 2:
+                    self.add_heat(cfg['heatLimitBuy'], chain, 'shelfBuyout', d,
+                                  weight=min(2.0, 1 + 0.25 * (units - 2)), witnesses=5)
+                    self.boost[chain] += cfg['incidentBoostPerBuyout']
+                    self.m['buyouts'] += 1
+                    return
+            if hot and cfg['heatHotLimitBuy'] > 0 and self.limit_left(chain, p, hot, d, visit) == 0:
+                self.add_heat(cfg['heatHotLimitBuy'], chain, 'shelfBuyout', d, record=False)
+            return
         if hot and self.limit_left(chain, p, hot, d, visit) == 0:
             kind, normal, hcap = cfg['baseLimit'][chain]
             took_many = dl['sku'].get((chain, p), 0) >= 2 or (kind == 'visit' and hcap >= 2 and dl['vh'][chain] >= hcap)
@@ -995,10 +1107,13 @@ class Player:
 
     def store_visit(self, chain, d, hour, seed, max_per_product):
         cfg = self.cfg
-        level = self.mkt['levels'][chain][d]
+        level = self.level(chain, d)
         visit = self.begin_visit(chain)
         if level >= 4:
             return 0
+        wd, sh = self.mkt['slots'][chain]
+        if d % 7 == wd and hour >= sh:
+            self.seen_slot.add(chain)
         vd = self.batch_day(chain, d, hour)
         items = self.batch(chain, vd, seed)
         slot_h = self.mkt['slots'][chain][1]
@@ -1009,18 +1124,22 @@ class Player:
                 continue
             share = self.drain(it['hot'], vd, slot_h, d, hour)
             qty = int(round(it['q0'] * share))
-            left = qty - self.batch_bought.get(it['id'], 0)
+            left = qty - self.batch_bought.get(it['id'], 0) - (self.rival_taken.get(it['id'], 0) if cfg['r2'] else 0)
             if left <= 0:
                 ri = self.rival_at.get(chain)
-                if it['hot'] and ri is not None and self.rng.random() < cfg['rivalReceiptLineChance']:
-                    self.receipts.append((ri, d))
-                    self.m['receipts'] += 1
+                if cfg['r2']:
+                    # D-10: a line only when a rival took the stock and the player did not empty the item.
+                    line = it['hot'] and qty < it['q0'] and it['id'] not in self.emptied
+                else:
+                    line = it['hot']
+                if line and ri is not None and self.rng.random() < cfg['rivalReceiptLineChance']:
+                    self.note_receipt(ri, d)
                 continue
             if not it['hot']:
                 continue         # every strategy here buys hot product only
             bought_here = 0
             while left > 0 and bought_here < max_per_product and self.limit_left(chain, it['p'], True, d, visit) > 0:
-                self.note_purchase(chain, it['p'], True, d, visit, it)
+                self.note_purchase(chain, it['p'], True, d, visit, it, emptied=(left == 1))
                 self.take_unit(it['p'], it['price'], d, 'club' if chain == 'club' else 'shelf')
                 left -= 1; bought_here += 1; got += 1
             if left == 0 and vd == d:
@@ -1030,9 +1149,27 @@ class Player:
                     r['h'] = min(1.0, r['h'] + cfg['rivalTookShelfHostility'])
         return got
 
+    def vendor_wait(self, chain, d, arrival, seed):
+        """Revision 2 (A-S2): wait at a stop for the vendor when the slot is known and at most 2 hours ahead.
+        A hostile rival in the aisle takes one hot unit first. Returns the new arrival hour."""
+        cfg = self.cfg
+        if not cfg['r2'] or chain not in self.seen_slot:
+            return arrival
+        wd, sh = self.mkt['slots'][chain]
+        gap = sh - arrival
+        if d % 7 != wd or gap <= 0 or gap > cfg['vendorWaitMax']:
+            return arrival
+        self.m['waits'] += 1
+        ri = self.rival_at.get(chain)
+        if ri is not None and self.rivals[ri]['h'] >= cfg['rivalAisleHostility']:
+            hot = [it for it in self.batch(chain, d, seed) if it['hot']]
+            if hot:
+                self.rival_taken[hot[0]['id']] = self.rival_taken.get(hot[0]['id'], 0) + 1
+        return sh
+
     def camp(self, chain, d, max_per_product):
         cfg, mkt = self.cfg, self.mkt
-        if self.banned_until[chain] >= d or mkt['levels'][chain][d] >= 4:
+        if self.banned_until[chain] >= d or self.level(chain, d) >= 4:
             return 0
         visit = self.begin_visit(chain)
         bot = cfg['restockBotBonus'] if self.strat.get('restockBot') else 0.0
@@ -1041,12 +1178,12 @@ class Player:
         rival_line = ri is not None and self.rng.random() < cfg['rivalCampChance']
         if self.rng.random() >= chance:
             if rival_line and self.rng.random() < cfg['rivalReceiptLineChance']:
-                self.receipts.append((ri, d)); self.m['receipts'] += 1
+                self.note_receipt(ri, d)
             return 0
         if rival_line:
             r = self.rivals[ri]
             r['h'] = min(1.0, r['h'] + cfg['rivalBeatInLineHostility'])
-        level = mkt['levels'][chain][d]
+        level = self.level(chain, d)
         kind, normal, hcap = cfg['baseLimit'][chain]
         got = 0
         picks = []
@@ -1069,7 +1206,7 @@ class Player:
             qty = min(self.rng.randint(*cfg['campQuantity']), max(1, cap))
             n = 0
             while n < qty and n < max_per_product and self.limit_left(chain, p, True, d, visit) > 0:
-                self.note_purchase(chain, p, True, d, visit)
+                self.note_purchase(chain, p, True, d, visit, emptied=(n == qty - 1))
                 self.take_unit(p, PRODUCTS[p][3] * mkt['STEP'][d], d, 'camp')
                 n += 1; got += 1
         return got
@@ -1080,7 +1217,7 @@ class Player:
             return
         p = self.rng.choice(POOLS['pc'])
         if bot:
-            self.add_heat(cfg['heatBotUse'], None, 'botCheckout', d)
+            self.add_heat(cfg['heatBotUse'], None, 'botCheckout', d, weight=0.5 if cfg['r2'] else None)
         if self.rng.random() < (cfg['pcBotSuccess'] if bot else cfg['pcSuccess']):
             price = PRODUCTS[p][3] * mkt['STEP'][d]
             self.take_unit(p, price, d, 'pc')
@@ -1098,7 +1235,7 @@ class Player:
         attempts = 2 if bot else 1
         for _ in range(attempts):
             if bot:
-                self.add_heat(cfg['heatBotUse'], None, 'botCheckout', d)
+                self.add_heat(cfg['heatBotUse'], None, 'botCheckout', d, weight=0.5 if cfg['r2'] else None)
             if self.rng.random() < cfg['targetDropSuccess']:
                 self.take_unit(p, PRODUCTS[p][3] * mkt['STEP'][d], d, 'target')
                 self.drop_orders.append((d + self.rng.randint(1, 3), cfg['dropCancelBotChance'] if bot else cfg['dropCancelChance'], bot, len(self.held) - 1))
@@ -1115,7 +1252,7 @@ class Player:
                     self.m['units'] -= 1
                     self.m['units_cancelled'] += 1
                     if o[2]:
-                        self.record_act('botOrderCancelled', self.cfg['heatBotCancelWeight'], t)
+                        self.record_act('botOrderCancelled', 0.5 if self.cfg['r2'] else self.cfg['heatBotCancelWeight'], t)
             else:
                 keep.append(o)
         self.drop_orders = keep
@@ -1136,7 +1273,7 @@ class Player:
         for c in CHAINS:
             if c == 'club' and not self.club_member:
                 continue
-            if mkt['levels'][c][d] == 3 and d % 7 == mkt['slots'][c][0]:
+            if self.level(c, d) == 3 and d % 7 == mkt['slots'][c][0]:
                 items = [it for it in self.batch(c, d, seed) if it['hot']]
                 if items and self.rng.random() < cfg['drawingWinChance']:
                     self.take_unit(items[0]['p'], items[0]['price'], d, 'draw')
@@ -1172,7 +1309,11 @@ class Shop:
                       rs_packs=0, streams=0, palms=0, palm_value=0.0, palm_caught=0, palm_refunds=0.0,
                       plug_orders=0, plug_spent=0.0, plug_return=0.0, plug_vanish=0, plug_seized=0,
                       plug_fake_cases=0, plug_rep_hits=0, wholesale_spent=0.0, wholesale_units=0, elite_cases=0,
-                      hot_units_week=[], gouges=0, fake_found=0, hot_value=0.0)
+                      hot_units_week=[], gouges=0, fake_found=0, hot_value=0.0,
+                      breakins=0, breakin_loss=0.0, breakin_repair=0.0, rider_cost=0.0, rider_payout=0.0,
+                      store_value_sum=0.0, store_value_days=0, last_bd_act=-999)
+        self.store_items = []        # (value, leaves on day): hot stock on the shelf and in the back room
+        self.last_bd_act = -999
         self.week_hot_cases = 0
         self.week_hot_units = 0
         # plug
@@ -1295,7 +1436,19 @@ class Shop:
             # where the units go: shelf (retail) share, Rip & Ship share, eBay (back door) share
             shelf = self.pol['shelf']; rs = self.pol['rs']
             n_shelf = int(round(units * shelf)); n_rs = int(round(units * rs)); n_other = units - n_shelf - n_rs
-            if hobby:
+            if n_shelf:
+                full, rest = divmod(n_shelf, size)
+                for _ in range(full):
+                    self.store_items.append((size * M, delivered + self.rng.randint(1, 14)))
+                if rest:
+                    self.store_items.append((rest * M, delivered + self.rng.randint(1, 14)))
+            if hobby and cfg['r2']:
+                # D-3: outcome and sale day for each share; R&S, shelf, vending, and the counter are retail.
+                for n, outcome in ((n_shelf, 'retail'), (n_rs, 'retail'), (n_other, 'off')):
+                    if n:
+                        self.hot_records.append(dict(units=n, delivered=delivered, outcome=outcome,
+                                                     day=delivered + self.rng.randint(1, 14), judged=False))
+            elif hobby:
                 n_ret = n_shelf + (n_rs if cfg['rsCountsRetail'] else 0)
                 if n_ret:
                     self.hot_records.append([n_ret, delivered, 'retail'])
@@ -1314,7 +1467,9 @@ class Shop:
         if self.applied is not None and self.approved is None and t >= self.applied + cfg['distributorReviewDays']:
             self.approved = t
             self.rep = cfg['repStartPoints']
-        if t % 7 == 0 and self.hobby(t):
+        if t >= self.open_day:
+            self.break_in(t)
+        if t % 7 == 0 and (self.hobby(t) or (cfg['r2'] and self.hot_records)):
             self.back_door_check(t)
             if self.pol.get('plug') and any(o['day'] >= t - cfg['plugRepLearnWindowDays'] for o in self.plug_orders):
                 if self.rng.random() < cfg['plugRepLearnChance']:
@@ -1322,8 +1477,75 @@ class Shop:
         if self.pol.get('plug'):
             self.plug_end_day(t)
 
+    def back_door_check_r2(self, t):
+        """Revision 2 (Part B 3.6): a rolling 28-day window of sales, a threshold of max(6, 50% of delivered)."""
+        cfg, pl = self.cfg, self.pl
+        keep = t - cfg['hotRecordKeepDays']
+        self.hot_records = [r for r in self.hot_records if max(r['day'], r['delivered']) > keep]
+        if not self.hot_records:
+            return
+        frm = t - cfg['backDoorWindowDays']
+        delivered = sum(r['units'] for r in self.hot_records if r['delivered'] > frm)
+        retail = sum(r['units'] for r in self.hot_records if frm < r['day'] <= t and not r['judged'] and r['outcome'] == 'retail')
+        off = sum(r['units'] for r in self.hot_records if frm < r['day'] <= t and not r['judged'] and r['outcome'] == 'off')
+        sold = retail + off
+        need = max(cfg['backDoorMinUnits'], math.ceil(delivered * cfg['backDoorMinShare']))
+        if sold < need or sold == 0:
+            return
+        share = retail / sold
+        if share >= cfg['backDoorShelfShare']:
+            return
+        if t - self.last_bd_act >= cfg['backDoorWindowDays']:
+            self.last_bd_act = t
+            pl.record_act('backDoorAllocation', max(0.6, min(1.5, 1.5 * (1 - share))), t)
+            self.m['bd_acts'] += 1
+        if self.rng.random() >= cfg['backDoorNoticeChance']:
+            return
+        for r in self.hot_records:
+            if frm < r['day'] <= t:
+                r['judged'] = True
+        self.warn(t)
+
+    def warn(self, t):
+        cfg = self.cfg
+        self.warnings = [w for w in self.warnings if w >= t - cfg['backDoorWarningWindowDays']] + [t]
+        self.m['bd_warnings'] += 1
+        if self.m['bd_first_warning'] is None:
+            self.m['bd_first_warning'] = t
+        if len(self.warnings) >= 3:
+            self.closed_until = t + cfg['accountCloseDays']; self.warnings = []; self.frozen_until = -1
+            self.m['bd_closed'] += 1
+            if self.m['bd_first_close'] is None:
+                self.m['bd_first_close'] = t
+        elif len(self.warnings) == 2:
+            self.frozen_until = t + cfg['hotFreezeDays']; self.m['bd_freezes'] += 1
+        self.add_rep_points(-cfg['backDoorRepCost'])
+
+    def break_in(self, t):
+        """Integration 4.2: a night break-in scaled by stored sealed value; the D-14 store stock rider."""
+        cfg = self.cfg
+        self.store_items = [x for x in self.store_items if x[1] > t]
+        value = sum(x[0] for x in self.store_items)
+        self.m['store_value_sum'] += value; self.m['store_value_days'] += 1
+        if t % 28 == 0:
+            self.m['rider_cost'] += cfg['storeRiderRate'] * value
+        if not self.store_items:
+            return
+        chance = min(cfg['storeBreakInMax'], cfg['storeBreakInBase'] * (1 + value / cfg['storeBreakInValueScale']))
+        if self.rng.random() >= chance:
+            return
+        items = sorted(self.store_items, key=lambda x: -x[0])
+        taken = items[:self.rng.randint(2, cfg['storeBreakInMaxItems'])]
+        loss = sum(x[0] for x in taken)
+        for x in taken:
+            self.store_items.remove(x)
+        self.m['breakins'] += 1; self.m['breakin_loss'] += loss; self.m['breakin_repair'] += cfg['storeBreakInRepair']
+        self.m['rider_payout'] += max(0.0, loss * cfg['policyCoverage'] - cfg['policyDeductible'])
+
     def back_door_check(self, t):
         cfg, pl = self.cfg, self.pl
+        if cfg['r2']:
+            return self.back_door_check_r2(t)
         due = [r for r in self.hot_records if r[1] + cfg['backDoorWindowDays'] <= t]
         if not due:
             return
@@ -1408,7 +1630,8 @@ class Shop:
                             pl.add_rep(-cfg['palmFoundReputation'])
                             pl.whatnot_ban(d, cfg['palmBanDays'])
                             refund = price + (v if cfg['palmRefundIncludesCard'] else 0)
-                            pl.start_callout('fairness', True, True, cfg['palmCalloutHeat'], ('person',), d + 1, refund)
+                            pl.start_callout('fairness', True, True, cfg['palmCalloutHeat'], ('person',), d + 1, refund,
+                                             force=True, kind='palmedHit')
                             return    # banned: the stream ends for the sim
                         else:
                             pl.record_act('palmedHit', 1.5, d, witnesses=viewers,
@@ -1460,9 +1683,15 @@ class Shop:
                 delay = self.rng.randint(*cfg['plugSeizeDays'])
                 seized_frac = max(0.0, 1 - delay / 14)          # sells evenly over 14 days
                 self.m['plug_seized'] += 1
-                if o['act'] is not None:
-                    o['act']['reveal'] = t + delay + 2
-                pl.record_act('plugSeized', 1.0, t)
+                if cfg['r2']:
+                    # Part C 1.4: plugSeized with revealDay +2; the purchase act retires (one seizure, one callout).
+                    if o['act'] is not None and not o['act']['exposed'] and o['act'] in pl.acts:
+                        pl.acts.remove(o['act'])
+                    pl.record_act('plugSeized', 1.0, t + delay, reveal=t + delay + 2)
+                else:
+                    if o['act'] is not None:
+                        o['act']['reveal'] = t + delay + 2
+                    pl.record_act('plugSeized', 1.0, t)
             self.m['plug_return'] += good_units * (1 - seized_frac) * ebay_net(M)
         if vanished:
             self.plug_open = False; self.plug_gone = t
@@ -1477,7 +1706,8 @@ class Shop:
             self.m['fake_found'] += 1
             pl.add_rep(-40)
             if self.rng.random() < 0.3 + 0.1 * pl.notoriety():
-                pl.start_callout('productIntegrity', True, True, 60, ('person',), t, 0.0)
+                pl.start_callout('productIntegrity', True, True, 60, ('person',), t, 0.0,
+                                 force=cfg['r2'], rep_paid=cfg['r2'])
             # refunded: no money from the sale
         else:
             self.m['plug_return'] += net
@@ -1497,6 +1727,8 @@ class Shop:
         unit = max(msrp * cfg['plugMsrpShare'], M * cfg['plugMarketFloor'])
         case = unit * size
         cases = max(1, int(self.pol.get('plug_budget', 2500) // case))
+        if cfg['r2']:
+            cases = min(cases, cfg['plugMaxCases'])
         total = case * cases
         if total > cfg['plugMaxOrder']:
             return
@@ -1516,6 +1748,8 @@ class Shop:
 
 STRATS = [
     dict(id=1, key='honest', name='Honest collector', reply=dict(true='makeRight', false='deny')),
+    dict(id=8, key='honest_job', name='Honest with a job (store runs on days off only)',
+         reply=dict(true='makeRight', false='deny')),
     dict(id=2, key='honest_camp', name='Honest collector + 1 camp a month', reply=dict(true='makeRight', false='deny')),
     dict(id=3, key='flipper', name='Aggressive flipper', reply=dict(true='silent', false='deny'), restockBot=True),
     dict(id=4, key='shop', name='Shop owner', reply=dict(true='makeRight', false='deny'),
@@ -1564,13 +1798,22 @@ def run_one(args):
             # online: everyone enters the free drawing; drops
             pl.walmart_drawing(d)
             pl.chain_drawings(d, seed)
-            if strat['key'] in ('honest', 'honest_camp', 'farmer'):
+            if strat['key'] in ('honest', 'honest_camp', 'farmer', 'honest_job'):
                 pl.pc_drop(d, bot=False)
                 pl.target_drop(d, bot=False)
-                if d % 7 == 5:
-                    hour = pl.rng.uniform(10, 18)
-                    for k, c in enumerate(pl.rng.sample(BIG, 3)):
-                        pl.store_visit(c, d, hour + k * 0.667, seed, 1)
+                if strat['key'] == 'honest_job':
+                    # Works Monday to Friday 9 to 17. Store runs on days off (Saturday, Sunday), each day,
+                    # at a random hour from 9 to 18, to 3 random big chains.
+                    run_today = d % 7 in (5, 6)
+                else:
+                    # No job. One store run a week on a random day of the week, at a random hour from 9 to 18.
+                    run_today = d % 7 == (seed * 7 + d // 7 * 3) % 7
+                if run_today:
+                    arr = pl.rng.uniform(9, 18)
+                    for c in pl.rng.sample(BIG, 3):
+                        arr = pl.vendor_wait(c, d, arr, seed)
+                        pl.store_visit(c, d, arr, seed, 1)
+                        arr += 0.667
                 if strat['key'] == 'honest_camp' and d >= camp_due and d in mkt['restock']:
                     pl.camp(mkt['restock'][d][0], d, 1)
                     camp_due = d + 28
@@ -1594,6 +1837,8 @@ def run_one(args):
                 shop.day(d)
             # ---------- End Day into t ----------
             t = d + 1
+            if cfg['r2']:
+                pl.strict_end_day(t)
             pl.heat_end_day(t)
             pl.drop_cancels(t)
             pl.stories_step(t)
@@ -1622,6 +1867,8 @@ def run_one(args):
             f = 1 - cfg['flipperSaleCut'] * max(0, mkt['P'][sd] - pmin) / (pmax - pmin)
             pl.m['sale_factor_sum'] += f; pl.m['sale_factor_n'] += 1
         res = dict(pl.m)
+        res['own_strict1'] = sum(1 for c in CHAINS for d2 in range(days) if pl.own_levels[c][d2] >= 1) / len(CHAINS)
+        res['own_strict3'] = sum(1 for c in CHAINS for d2 in range(days) if pl.own_levels[c][d2] >= 3) / len(CHAINS)
         res['end_rep'] = pl.rep; res['end_followers'] = pl.followers
         if shop is not None:
             res['shop'] = shop.m
@@ -1843,6 +2090,8 @@ def aggregate(results, cfg, days):
         S['open_days'] = summ([x['open_days'] for x in rs])
         S['sponsor_block_days'] = summ([x['sponsor_block_days'] for x in rs])
         S['max_open_3'] = sum(1 for x in rs if x['max_open'] >= 3) / len(rs)
+        for f in ('buyouts', 'merged', 'forced', 'waits', 'palm_log_bans', 'own_strict1', 'own_strict3'):
+            S[f] = summ([x.get(f, 0) for x in rs])
         S['sale_factor'] = summ([x['sale_factor_sum'] / x['sale_factor_n'] for x in rs if x['sale_factor_n']])
         acts = {}
         for x in rs:
@@ -1886,6 +2135,11 @@ def aggregate(results, cfg, days):
             S['gouges'] = summ([x['gouges'] for x in sh])
             S['elite_cases'] = summ([x['elite_cases'] for x in sh])
             S['wholesale_spent'] = summ([x['wholesale_spent'] for x in sh])
+            S['breakins'] = summ([x['breakins'] for x in sh])
+            S['breakin_loss'] = summ([x['breakin_loss'] + x['breakin_repair'] for x in sh])
+            S['rider_cost'] = summ([x['rider_cost'] for x in sh])
+            S['rider_payout'] = summ([x['rider_payout'] for x in sh])
+            S['store_value'] = summ([x['store_value_sum'] / max(1, x['store_value_days']) for x in sh])
             S['hot_value'] = summ([x['hot_value'] for x in sh])
             S['wholesale_margin'] = summ([x['hot_value'] - x['wholesale_spent'] for x in sh])
         A[k] = S
@@ -1918,6 +2172,8 @@ def main():
     cfg = dict(BASE)
     if config == 'tuned':
         cfg.update(TUNED_OVERRIDES)
+    elif config == 'r2':
+        cfg.update(R2_OVERRIDES)
     elif config == 'elite':
         cfg['startRep'] = 700
     cfg.update(sets)

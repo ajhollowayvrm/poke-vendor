@@ -132,7 +132,7 @@ Run `-test` after each phase.
 
 ### 0.4 Phase 0 stubs (D-9)
 
-Other parts call three Part B functions before phase 5. Phase 0 adds them to `M/RipShip.swift` with these bodies, together with the empty `RipShipState` and `PlugState` (sections 4.1 and 5.1 give their final fields):
+Other parts call three Part B functions before phase 5. Phase 0 adds them to `M/RipShip.swift` with these bodies, together with `RipShipState` with at least `bannedUntil` and `banReason` and its tolerant decoder, and an empty `PlugState` (sections 4.1 and 5.1 give their final fields):
 
 ```swift
 @MainActor
@@ -155,7 +155,7 @@ extension GameStore {
 enum RipShipRefund { case notOpened, resealed, chargeback, seized }
 ```
 
-Phase 5 replaces the stub body with 5.5.
+Phase 5 replaces the stub bodies with 5.5 (`refundRipShipOrder`, `returnPalmedCards`) and 5.6 (`banFromWhatnot`).
 
 ## 1. Shared foundations
 
@@ -1394,7 +1394,7 @@ The `for i in indices where ...` loops read `data` in the `where` clause, not in
 extension Balance {
     static let backDoorWindowDays = 28
     static let backDoorShelfShare = 0.40
-    static let backDoorNoticeChance = 0.15
+    static let backDoorNoticeChance = 0.25
     /// The check needs at least this many sold units, and at least half of the hot units delivered in the window.
     static let backDoorMinUnits = 6
     static let backDoorMinShare = 0.5
@@ -1842,8 +1842,10 @@ The `isHot` filter uses Part A's hot test (integration 1.4). The price rule `max
         if !listed.isEmpty { lines.append("Your listing\(listed.count == 1 ? "" : "s") for \(listed.map(\.name).joined(separator: ", ")) ended.") }
         // One seizure gives one callout: the seizure act comes out on a fixed day, and the purchase act leaves the log.
         let reveal = data.day + 2
-        for o in orders {
-            recordHiddenAct(.plugSeized, weight: 1.0, note: "Police seized plug stock: \(o.productName)", revealDay: reveal, sourceID: o.id)
+        if let first = orders.first {
+            recordHiddenAct(.plugSeized, weight: min(2, Double(orders.count)),
+                            note: "Police seized plug stock: \(orders.map(\.productName).joined(separator: ", "))",
+                            revealDay: reveal, sourceID: first.id)
         }
         for act in purchaseActs { retireHiddenAct(act) }
         return lines
@@ -2376,10 +2378,10 @@ extension Balance {
 **"Make it right" for an order (D-4, D-6).** Part C owns the reply and pays its money (Part C 6.2). Part B gives it two calls and no money path of its own:
 
 - A late order that is still open: Part C calls `shipRipShipOrders([order])`. It ships the order now, costs 10 minutes, and retires the act with `force: true`. Part C pays `lateGoodwill(order.price)`: 10% of the price, at least $5.
-- A palm: Part C pays `c.refund`, which Part B set to the order price plus the palmed card's market (5.8). Then Part C calls `returnPalmedCards(order)`:
+- A palm: Part C pays `palmRefundDue(order)` (5.8). Then Part C calls `returnPalmedCards(order)`:
 
 ```swift
-    /// Part C "make it right" on a palm (D-6). Part C paid the order price and the card's market already.
+    /// Part C "make it right" on a palm (D-6). Part C reads `palmRefundDue` first and pays after this call.
     /// Every palmed card that the player still holds leaves inventory for the buyer. The order closes: it ships now
     /// with the cards, and it counts as refunded, so no later path can pay its price again.
     func returnPalmedCards(_ orderID: UUID) {
@@ -2392,6 +2394,10 @@ extension Balance {
         data.ripShip.orders[k].cards += kept
         data.ripShip.orders[k].palmedCardIDs = []
         if !order.shipped { data.ripShip.orders[k].shipped = true; data.ripShip.orders[k].shippedDay = today }
+        if !order.refunded {   // the palm make-right pays the price back, so the gross falls too (B-m9)
+            let soldDay = order.soldDay
+            data.ripShip.grossByDay[soldDay] = max(0, (data.ripShip.grossByDay[soldDay] ?? 0) - order.price)
+        }
         data.ripShip.orders[k].refunded = true
         for act in [order.lateActID, order.palmActID].compactMap({ $0 }) { retireHiddenAct(act, force: true) }
         log("You sent \(order.buyer) \(kept.count) palmed card\(kept.count == 1 ? "" : "s").")
@@ -2838,7 +2844,7 @@ Integration section 2 sets the order. Part B's steps:
 | 11 | `ripShipEndDay()`, after `streamsEndDay()` (L1161) | Before Part C's `calloutsEndDay()` (step 15), so the night's `unshippedOrder` acts are in the log. Whether a new act can roll the same night is Part C's rule D7 (C-m4). |
 | 13 | `distributorEndDay()`, then `plugEndDay()`, after `splitsEndDay()` (L1162) | After `advanceSealed`, so the check sees today's deliveries. Before rent and taxes. Plug items arrive with status nil, so `advanceSealed` does not touch them. |
 
-The second `syncMarket()` (L1170) runs after these steps. Case prices read `PriceCycle.today`, so a price read in a step uses the market of the new day after the first `syncMarket()` (L1132).
+The second `syncMarket()` (L1170) runs after these steps. Case prices read `PriceCycle.today`, so a price read in a step uses the market of the new day after the first `syncMarket()` (L1134).
 
 ### 6.2 Where the exclusivity rule matters
 
@@ -2944,7 +2950,7 @@ Each constant lives in `extension Balance` in the file named, the same way the c
 | Hot cases a week, each product | `allocationBase` (1), +1 at Elite | `M/WholesaleAccount.swift` (`wholesaleCap`) | D-3, report 4.5 |
 | `backDoorWindowDays` | 28 | `M/Distributor.swift` | D-3 |
 | `backDoorShelfShare` | 0.40 | `M/Distributor.swift` | Report 4.6 |
-| `backDoorNoticeChance` | 0.15 | `M/Distributor.swift` | Report 4.6 |
+| `backDoorNoticeChance` | 0.25 (revision 3, second simulation run) | `M/Distributor.swift` | Report 4.6 |
 | `backDoorMinUnits` | 6 | `M/Distributor.swift` | D-3 |
 | `backDoorMinShare` | 0.5 | `M/Distributor.swift` | D-3 |
 | `backDoorRepCost` | 15 | `M/Distributor.swift` | Report 4.6 |
@@ -2952,7 +2958,7 @@ Each constant lives in `extension Balance` in the file named, the same way the c
 | `hotFreezeDays` | 28 | `M/Distributor.swift` | Report 4.6 |
 | `accountCloseDays` | 84 | `M/Distributor.swift` | Report 4.6 |
 | `hotRecordKeepDays` | 56 | `M/Distributor.swift` | Design |
-| Part A: `wholesaleMissingChance`, `missingShipmentRefundDays` | 0.01, 14 | `M/Wholesale.swift`, Part A | D-12 |
+| Part A: `wholesaleMissingChance`, `missingShipmentRefundDays` | 0.01, 14 | `M/RetailOnline.swift`, Part A | D-12 |
 | Existing: `storeWholesaleDiscount` 0.58, `allocationBase` 1, `allocationStep` 6000, `allocationMax` 5, `hotProductRatio` 1.2, `wholesaleDiscount` 0.72, `wholesaleMinOrder` 250, `wholesaleCasesPerWeek` 2, `wholesaleShortChance` 0.12, `storeWholesaleMarketFloor` 0.5 | unchanged | `M/WholesaleAccount.swift`, `M/Wholesale.swift` | Existing. D-13 did not adopt the 0.6 floor. |
 
 ### 8.3 Plug
@@ -3166,13 +3172,9 @@ A machine takes units only (`vendableSealed` excludes cases). A machine sale of 
 
 **Part B API that Part C uses:** `RipShipOrder.shipped` and `.refunded`; `shipRipShipOrders(_:) -> String?` (10 minutes, retires the act); `returnPalmedCards(_:)`; `refundRipShipOrder(_:reason:)`; `banFromWhatnot(days:reason:)` with no `save()`; `Balance.ripShipShipMinutes`. All of them are phase 0 stubs or final code by phase 5.
 
-**Contract changes that others must make.**
+**Contract changes that others must make.** None. Every change that revision 2 asked of Parts A and C and of the integration file is now in those files (Part A 3.3, Part C 5.2 and 6.2, integration 1.5, 1.7, 4.2).
 
-1. **Part C: the palm refund after a chargeback.** D-4 says the order price is never paid twice. If a palmed order is also cancelled on day 7, the buyer already got the price back. Part C's "make it right" on a palm must then pay only the card's market. Part B adds `func palmRefundDue(_ orderID: UUID) -> Double` (`order.refunded ? order.palmedValue : order.price + order.palmedValue`). Part C should pay that, not the fixed `c.refund`.
-2. **Part C: a palm that comes out later (C-m17).** A caught palm bans Whatnot for 8 weeks. A palm found later through the log has no ban. Part C's `settle` should call `banFromWhatnot(days: Balance.palmBanDays, reason:)` when a true `.fairness` callout with `actKind == .palmedHit` peaks at 80 or more.
-3. **Part A: the missing-shipment names (D-12).** Part A's file still says `registerMissingShipment(name:refund:dueIn:)` and `missingRefundDays`. D-12 sets `registerMissingShipment(name:refund:learnIn:)` and `missingShipmentRefundDays`. Part B uses the D-12 names.
-4. **Part A: fields and functions that Part B reads.** `data.flipperPressure` (fill rate, plug offer count), `data.rivals` with `kind == .creator` (Rip & Ship buyer share), `Product.retailMSRP()` and `Product.isHot()` (integration 1.4). Part B reads them and never writes them.
-5. **Integration file.** Section 1.5 still says `dueIn: Balance.missingRefundDays`; it should match D-12. Section 1.7 says "make it right" calls `refundRipShipOrder`; Part C revision 2 and D-4 replace that with `shipRipShipOrders` and `returnPalmedCards`. Section 4.2 calls `isInStore` unqualified; it is `static`, so it must be `Self.isInStore` (review m21).
+**`-retailsim` column.** Phase 4: in `RetailSim.init`, append the `fill` column (Part A 7.2).
 
 ## 12. Decisions
 

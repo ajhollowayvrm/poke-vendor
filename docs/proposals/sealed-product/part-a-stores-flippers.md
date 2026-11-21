@@ -92,7 +92,7 @@ Create these files. Then run `xcodegen generate` in `app/`.
 | `M/Retail.swift` | `RetailState`, `PurchaseLimit`, `LimitRule`, `ChainStrictness`, `BatchBuy`; vendor slots, batches, the drain, limits, visits, strictness, the club store, the GameStop markup; `Product.retailMSRP(day:)`, `Product.isHot(day:)`, `Product.inPrint(on:)` |
 | `M/RetailOnline.swift` | `DrawingEntry`, `DrawingWin`, `DrawingOffer`, `DropOrder`, `AlertTier`, `MissingShipment`; drawings, Target.com drops, order cancellations, alerts, missing shipments; `retailOrdersEndDay()`, `alertsEndDay()` |
 | `M/Flippers.swift` | Flipper pressure, the flipper dump, scalper heat, the online sale factor, the flip margin, the MSRP step, the winter scale; `flippersEndDay()` |
-| `M/Rivals.swift` | `RivalKey`, `Rival`, `RivalMemory`; seeding, the API for Parts B and C, rival lines, `rivalsEndDay()` |
+| `M/Rivals.swift` | `Rival`, `RivalMemory` (`RivalKey` is Part C's, `M/Callouts.swift`); seeding, the API for Parts B and C, rival lines, `rivalsEndDay()` |
 | `app/PokeVendor/Buy/ChainSitesView.swift` | `ChainSitesView`: the Walmart drawing, chain drawings, the Target.com drop |
 | `app/PokeVendor/Hub/FlipperViews.swift` | `FlipperMarketBox`, `RivalsBox`, `RestockAlertsBox`, `HotTag` |
 | `app/PokeVendor/Hub/RetailSim.swift` (Debug only) | `RetailSim`, the `-retailsim` tuning run (section 7.2) |
@@ -740,7 +740,7 @@ extension GameStore {
 
     /// Rival lines for the hot batch items that a rival emptied before this moment: the drain took at least one
     /// unit, nothing is left, and the player did not take the last unit. One receipt roll for each line.
-    func writeVisitLines(_ store: LocalStore, hour: Double) {
+    func writeVisitLines(_ store: LocalStore, hour: Double, receipts: Bool = true) {
         let key = store.rawValue
         let marker = "-\(key)-"
         let items = shelf(at: store, hour: hour)        // read before any write
@@ -758,6 +758,7 @@ extension GameStore {
         data.retail = retail
         guard let first = cleared.first else { return }
         rememberRival(rival.id, .rivalTookShelf, note: "\(rival.name) cleared the \(first) at \(key)", byPlayer: false)
+        guard receipts else { return }
         for name in cleared { noteShelfReceipt(rival.id, note: "\(rival.name) cleared the \(name) at \(key)") }
     }
 ```
@@ -794,7 +795,7 @@ Call sites:
             rememberRival(rival.id, .rivalTookShelf, note: "\(rival.name) grabbed a \(item.product.name) off the vendor's cart",
                           byPlayer: false)
         }
-        writeVisitLines(store, hour: vendorSlot(store).hour)
+        writeVisitLines(store, hour: vendorSlot(store).hour, receipts: false)   // no second receipt roll in one visit
         save()
         return gap
     }
@@ -856,6 +857,9 @@ Exclusivity: the `default:` value of the dictionary subscript is evaluated durin
             addHeat(Balance.heatLimitBuy, at: store, act: .shelfBuyout, weight: min(2, 1 + 0.25 * Double(units - 2)),
                     witnesses: 5, note: "Took the last \(units) \(item.product.name) at \(key)")
             data.retail.incidentBoost[key, default: 0] += Balance.incidentBoostPerBuyout
+        } else if item.hot && limitLeft(item, at: store) == 0 {
+            // Revision 3 (sim): a hot buy that reaches the chain limit adds a little heat, but it is not a secret.
+            addHeat(Balance.heatLimitHit, at: store, act: nil)
         }
         if emptied, item.batchDay == today, let rival = rivalAt(store) {
             rememberRival(rival.id, .playerTookShelf, note: "You took the last \(item.product.name) at \(key)",
@@ -864,7 +868,7 @@ Exclusivity: the `default:` value of the dictionary subscript is evaluated durin
     }
 ```
 
-A single hot box at a limit-1 chain never records `shelfBuyout` and adds no heat (D-1). Walmart's 5-a-visit limit and a camp haul of 2 or more can empty an item with 2 or more units, which is "taking a full display".
+A single hot box at a limit-1 chain never records `shelfBuyout`. It adds `heatLimitHit` (0.7) and no act (revision 3). Walmart's 5-a-visit limit and a camp haul of 2 or more can empty an item with 2 or more units, which is "taking a full display".
 
 **Camp haul cap.** File: `M/Camping.swift` L76-104.
 
@@ -1772,7 +1776,7 @@ extension GameStore {
 
 Exclusivity: each `firstIndex(where:)` is a read with a closure that reads only the local `id`. The write comes after. Never call these functions, or `noteRivalReceipt`, from inside a closure on `data.rivals`.
 
-Phase 0 needs Part C's `noteRivalReceipt(_ id: UUID, note: String)` as a no-op stub (D-9). The revised Part C file (section 7.1) takes the rival's `UUID`, because a game shop can never give a receipt. If Part C changes the parameter to `RivalKey`, the two call sites in this file become `noteRivalReceipt(.rival(id), note:)`.
+Phase 0 needs Part C's `noteRivalReceipt(_ id: UUID, note: String)` as a no-op stub (D-9). The revised Part C file (section 7.1) takes the rival's `UUID`, because a game shop can never give a receipt.
 
 **Daily behavior.** File: `M/Rivals.swift`. Integration step 16, after Part C's `calloutsEndDay()`.
 
@@ -1946,9 +1950,10 @@ A buyer then pays at most 95% of the player's ask for an in-print sealed item th
 ```swift
     /// Adds heat for a shady retail act, and records the act with its own weight (D-2). `store` nil is a bot act
     /// online: global heat only. `storeBanHeat` at one chain gets the player refused there for `storeBanDays`.
-    func addHeat(_ amount: Double, at store: LocalStore?, act: HiddenActKind, weight: Double, witnesses: Int = 0, note: String) {
+    func addHeat(_ amount: Double, at store: LocalStore?, act: HiddenActKind?, weight: Double = 0, witnesses: Int = 0, note: String = "") {
         data.scalperHeat += amount
-        recordHiddenAct(act, weight: weight, note: note, witnesses: witnesses)
+        // A hot buy at the limit adds heat with no act (revision 3). Every other source records its act.
+        if let act { recordHiddenAct(act, weight: weight, note: note, witnesses: witnesses) }
         guard let store else { return }
         let key = store.rawValue
         let today = data.day
@@ -2002,7 +2007,7 @@ A buyer then pays at most 95% of the player's ask for an in-print sealed item th
 
 Exclusivity: every closure runs on the local `retail` and reads only `day` or the element. Safe.
 
-**Sources of heat (D-1).** A buy that empties a hot item with 2 or more units of it in the visit: +1. The first buy on a repeat visit: +2. Each checkout bot use: +3. A single hot buy at the limit adds no heat. Bans and cancelled bot orders add no heat, but they record acts.
+**Sources of heat (D-1).** A buy that empties a hot item with 2 or more units of it in the visit: +1. The first buy on a repeat visit: +2. Each checkout bot use: +3. A hot buy that reaches the chain limit adds `heatLimitHit` (0.7) with no hidden act (revision 3, from the second simulation run). Bans and cancelled bot orders add no heat, but they record acts.
 
 With the D-13 values the sim gives the honest player 0.12 bans a year (one ban in 9% of runs), and the aggressive flipper 26 bans a year of 21 days each (sim section 7). With the D-1 rule an honest player rarely takes 2 units of one hot item, so the honest ban rate is lower than that sim number. Check it with `-retailsim` after phase 2.
 
@@ -2554,6 +2559,7 @@ Every constant lives in an `extension Balance` in the named file, as the code do
 | `rivalBuyKeepDays` | 120 | Rivals.swift | 2.3 (C-I3) |
 | `rivalReceiptGapDays`, `rivalCredFloor`, `rivalCredWeekly` | 30, 0.25, 0.05 | **Part C** `M/Callouts.swift` (read here) | 2.3 |
 | `heatLimitBuy` | 1 (only on a `shelfBuyout`, D-1) | Flippers.swift | 2.4 |
+| `heatLimitHit` | 0.7 (a hot buy that reaches the limit, no act; revision 3) | Flippers.swift | 2.4 |
 | `heatRepeatVisit` | 2 | Flippers.swift | 2.4 |
 | `heatBotUse` | 3 | Flippers.swift | 2.4, 2.6 |
 | `heatKeep` | 0.95 a day | Flippers.swift | 2.4 |
@@ -2916,7 +2922,7 @@ Write all doc text in STE.
 1. `HiddenActKind` with the 14 cases, including `shelfBuyout`, `limitEvasion`, `botCheckout`, `storeBan`, `botOrderCancelled`.
 2. `recordHiddenAct(_:weight:note:witnesses:...)` with `@discardableResult`. Part A passes the section 0.6 weights and witnesses.
 3. `RivalKey` (D-8), and the constants `rivalCredFloor`, `rivalCredWeekly`, `rivalReceiptGapDays`. Part A reads them and does not define them.
-4. `noteRivalReceipt(_ id: UUID, note: String)`, which keeps the 30-day gap. **Check:** the coordinator's note names `noteRivalReceipt(_ key: RivalKey, note:)`, but the revised Part C file (section 7.1) takes a `UUID`. Part A follows the Part C file. If Part C moves to `RivalKey`, the two Part A call sites (`noteShelfReceipt`, `rivalTableReceipts`) pass `.rival(id)`.
+4. `noteRivalReceipt(_ id: UUID, note: String)`, which keeps the 30-day gap.
 5. Part C regains only game-shop credibility. Part A regains named rivals.
 
 ### What Part B must provide
@@ -2926,26 +2932,15 @@ Write all doc text in STE.
 3. `FakeSource.plug` and `fakeRatePlug` (0.055, D-13) by phase 4. The rival's show table uses them.
 4. A case item keeps the `productID` of its unit product (integration 1.6), so `bannedAtShow` works.
 
-### What the integration file must change
-
-| Integration item | Change |
-|---|---|
-| 1.3, last line: "30% chance" | 0.05 (`rivalReceiptChance`, D-10, D-13), from the model at the visit start. |
-| 1.5, step 2: `dueIn: Balance.missingRefundDays` | `learnIn: <delivery days of the order>` (D-12). The refund delay is `missingShipmentRefundDays` inside the function. |
-| 4.1: `StandingLevel(points:) >= .regular` | `standing.points >= 30` (D-15). `StandingLevel` is not `Comparable`. |
-| 4.2: `isInStore($0.status)` | `Self.isInStore($0.status)`. It is `static` (`M/CardStore.swift` L324). |
-| 7, phases 2 and 6: "run `-marketsim`" | Run `-retailsim` (section 7.2), also after phase 4 (D-16). |
-| 7, phase 7: "the MSRP step; the winter scale" | Phase 1 (the read side) and phase 2 (the End Day side). `flippersEndDay` calls both. |
-
 ---
 
 ## 11. Build phases for Part A
 
 | Phase | Part A work |
 |---|---|
-| 0 | `RetailState` (all fields, tolerant decoder), the four `GameData` fields, `Rival`, `RivalMemory`, `rival`, `rivalAt`, `rememberRival`, `adjustRivalHostility`, `changeRivalCredibility`, `seedRivals()` (called in `init` and `startRun`), and `noteShelfReceipt`. Needs Part C's stubs for `RivalKey`, the credibility constants, and `noteRivalReceipt`. |
+| 0 | `RetailState` (all fields, tolerant decoder), the field types `DrawingEntry` (1.4), `DropOrder` (1.5), `AlertTier` (1.8), and `MissingShipment` (3.3), with no functions, the four `GameData` fields, `Rival`, `RivalMemory`, `rival`, `rivalAt`, `rememberRival`, `adjustRivalHostility`, `changeRivalCredibility`, `seedRivals()` (called in `init` and `startRun`), and `noteShelfReceipt`. Needs Part C's stubs for `RivalKey`, the credibility constants, and `noteRivalReceipt`. |
 | 1 | `Market.retail` nonisolated; `Product.inPrint(on:)`, `marketPrice(day:)`, `retailMSRP(day:)`, `isHot(day:)`; the `GameStore.isHot` wrapper; `PriceCycle.msrpStepDay`, `winterScales`, their `sync` parameters, `msrpFactor`, and `msrpLift` (inert until a step is set). `retailMSRP` needs `msrpFactor`. |
-| 2 | Vendor slots, batches, drain, `shelf(at:hour:)` (1.1); limits, `arrive`, rival lines, `notePurchase`, camp cap (1.2); pressure (2.1); dump (2.2); heat, hints, bans (2.4); strictness (1.3); GameStop markup (1.6); club (1.7); the MSRP step announcement (3.4) and the winter scale (3.5), because `flippersEndDay` calls both; `RetailSim` and the `-retailsim` argument. Run `-test`, then `-retailsim 365` for each player. |
+| 2 | Vendor slots, batches, drain, `shelf(at:hour:)` (1.1); limits, `arrive`, rival lines, `notePurchase`, camp cap (1.2); pressure (2.1); dump (2.2); heat, hints, bans (2.4); strictness (1.3); GameStop markup (1.6); club (1.7); the MSRP step announcement (3.4) and the winter scale (3.5), because `flippersEndDay` calls both; `RetailSim` and the `-retailsim` argument, without `onlineCommon` and without the `checkoutBot` and `subscribeAlerts` lines in `run`. Run `-test`, then `-retailsim 365` for each player. |
 | 3 | Drawings and claims (1.4); cancellations (1.5); checkout bot and Target.com (2.6); alerts (1.8); "Wait for the vendor" (1.2), because `vendorWaitGap` reads `alertedStores`; flip-margin line (2.5). |
 | 4 | Missing shipments (3.3), with Part B's order code. Part B adds the `fill` column to `RetailSim`. Run `-retailsim`. |
 | 6 | `rivalsEndDay`, the camp and show rivals, the rival table (C-I3), `RivalsBox`. Part C adds the `callouts` column. Run `-retailsim`. |
