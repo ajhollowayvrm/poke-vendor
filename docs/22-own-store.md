@@ -127,6 +127,13 @@ Status box.
   and a bigger space add room. Consigned cards use card slots.
 - PC items, master set cards, listed items, and known fakes cannot go
   into the store.
+- A sealed case never goes on the customer shelf. With the back room
+  fixture, a case can go into the back room (see [Fixtures](#fixtures)).
+  Without it, the player opens the case first (see
+  [12-acquiring-product.md](12-acquiring-product.md#cases)).
+- A case in the back room counts as stock for a store break-in and for
+  the store stock rider (see
+  [24-theft-and-insurance.md](24-theft-and-insurance.md)).
 - An unknown fake can go into the store. If it sells, it is a bad sale
   with no platform refund (see
   [14-counterfeit-risk.md](14-counterfeit-risk.md#consequences)).
@@ -222,9 +229,10 @@ when the store closes.
 | Second display case | $500 | Room for 60 more cards and slabs |
 | Sealed wall | $400 | Room for 60 more sealed items |
 | Play tables | $700 | Two events: a Friday tournament and a weekend Pokemon League (see [Events](#events)). Someone must staff the store |
-| Security cameras | $350 | Stops shoplifting |
+| Security cameras | $350 | Stops shoplifting, and cuts the chance of a night break-in by 60% |
 | Lighted sign | $300 | ×1.15 customers every day |
 | Point-of-sale system | $900 | The clerk sells as well as the player: customers buy as often as with the player, not 85% as often |
+| Back room | $600 | Room for 12 sealed cases off the shelf. Each night, a product with 1 unit or fewer on the shelf is restocked: first from loose back-room units, then by opening a case of it. The store opens a case when the free shelf room is at least the smaller of the case size and a quarter of the sealed slots. The units that fit go on the shelf. The rest wait in the back room as loose stock. |
 
 ## Events
 
@@ -403,27 +411,41 @@ closes, the box comes home with the other stock.
 
 ## Wholesale
 
-A distributor opens an account for a store. When the build-out is
-done, wholesale opens even below reputation Respected (see
-[12-acquiring-product.md](12-acquiring-product.md)).
-Case splits still need Respected.
+When the build-out is done, the secondary wholesaler opens even below
+reputation Respected (see
+[12-acquiring-product.md](12-acquiring-product.md#distributor--wholesale-two-tiers)).
+Case splits still need Respected. The secondary wholesaler sells at 72% of
+the retail MSRP, with a $250 minimum, 1 case of each product, and 2
+cases a week.
 
-A store account buys sealed product at 58% of MSRP. A player with no
-store pays 72%. The distributor allocates hot product to a store
-account:
+A store can also apply for a hobby distributor account. The application
+needs the lease, the finished build-out, and the seller's permit. The
+decision comes 14 days later. A store account buys sealed product at 58%
+of the retail MSRP. The distributor allocates hot product to the account:
 
 - Each week, the account can buy a limited number of cases of each
-  product. The limit is 1 case, plus 1 case for each $6,000 that the
-  player spent with the distributor over the whole run, up to 5. A
-  product that is not hot has 1 more case.
+  product. A hot product has 1 case. Any other product has 1 case, plus 1
+  case for each $6,000 that the player spent with the distributor over
+  the whole run, up to 5, plus 1 more case.
 - A product is hot when its market price is 1.2 times its MSRP or
-  more.
+  more. A request for a hot case fills only in part. The fill chance
+  depends on the flipper pressure and on the rep.
+- Elite gets one hot case a week that skips the fill roll.
 - A store account has no minimum order. The allocation replaces it.
+- The account has a rep, a supplier contact. The rep rises with spend and
+  store events. The player can push the rep for more allocation.
+- **The back-door rule.** The distributor wants hot product to reach
+  customers, not resellers. The rep checks each week. A store that sends
+  hot product to resellers gets warnings, then a 4-week freeze on hot
+  product, then a 12-week closure.
 - The wholesale screen shows the allocation for each product, the
-  cases left this week, and the total spent.
+  cases left this week, the total spent, and the rep. The store screen
+  shows the shelf share: the share of hot units that reached customers.
 
 The order history is in the save data. It counts from the first order,
-also before the store.
+also before the store. A save from before the application keeps its
+account for a store that is already open. Orders arrive as sealed
+cases.
 
 ## Accessories
 

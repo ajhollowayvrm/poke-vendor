@@ -83,6 +83,8 @@ is the same as real listings, which go up midweek for the weekend.
 | Garage sale | Friday to Sunday | 7 AM – 1 PM | 3 to 6 each week |
 | Estate sale | Thursday to Saturday, one sale runs all 3 days | 8 AM – 3 PM each day | 0 to 2 each week |
 | Store restock day | Usually a weekday | Starts at 8 AM | Each big retail store posts one about every 2 weeks |
+| Card machine restock | Any day, 2 days ahead | An hour from 10 AM to 4 PM | A grocery machine and a pharmacy machine, each about every 10 days |
+| Vendor stock (alert) | The vendor day of an alerted chain | The vendor hour | Only for a player with a restock alert (see [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#restock-alerts)) |
 
 Camping targets a posted restock day (see
 [12-acquiring-product.md](12-acquiring-product.md#camp-a-store-drop-event-time-cost)).
@@ -151,6 +153,10 @@ planning. A scheduled live stream appears when the player schedules it.
   viewers. A missed scheduled stream costs followers and authenticity
   (see
   [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
+- **The distributor decision day**: 14 days after the player applies for a
+  hobby distributor account (see [12-acquiring-product.md](12-acquiring-product.md)).
+- **The Rip & Ship ship deadline**: 2 days after the rip, for each open
+  order (see [06-social-media.md](06-social-media.md#rip--ship)).
 - **Rent due**: every 4 weeks, with a warning 3 days before (see
   [16-time-and-day.md](16-time-and-day.md#rent)).
 - **Tax due**: sales tax every 4 weeks, and estimated income tax every
@@ -164,7 +170,9 @@ These have no notice.
 | Entry | How often | Details |
 | --- | --- | --- |
 | Pokemon Center drop | About 3 every 4 weeks | A random day. The drop stays open for that day (see [12-acquiring-product.md](12-acquiring-product.md#pokemon-center-drops)). |
-| Stock on a store run | On arrival only | The player learns what a store has only when they arrive (see [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)). |
+| Stock on a store run | On arrival only | The player learns what a store has only when they arrive, unless a restock alert covers the chain (see [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)). |
+| Target.com drop | Usually Friday | One hot product at MSRP. The player gets 1 attempt a day, or 2 with the checkout bot (see [12-acquiring-product.md](12-acquiring-product.md#big-store-sites)). |
+| Drawing result | The morning after the draw | The Walmart drawing is on Wednesday. A chain at strictness level 3 draws on its vendor day. |
 | Surprise opportunity | 1 to 2 every 4 weeks | An alert banner on the home hub, with 0 to 1 day of notice (see [08-ui-direction.md](08-ui-direction.md)). |
 
 ## Store events
@@ -180,7 +188,10 @@ open days only (see [22-own-store.md](22-own-store.md#events)).
 ## A typical week with the day job
 
 - **Weekday mornings (7 to 9 AM)**: a short window. Free actions, or a
-  quick store stop before work.
+  quick store stop before work. Vendor days fall from Tuesday to
+  Saturday, at 8, 10, 13, or 16. The work shift runs from 9 AM to 5 PM,
+  so only a vendor at 8 AM fits a work day. A vendor at another hour
+  needs a day off, or a Saturday.
 - **Weekday evenings (5 to 11 PM)**: Wednesday trade night, Thursday
   league night, store runs, live streams, and Facebook Marketplace
   meetups.

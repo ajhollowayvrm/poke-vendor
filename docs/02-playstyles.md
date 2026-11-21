@@ -19,7 +19,10 @@ all four. Each has its own skill, risk, and reward profile.
 - **Skill**: reading the room, fast math on trade value, knowing which cards
   move quickly versus sit.
 - **Risk**: cash-flow crunch (money tied up in slow inventory), other
-  flippers undercutting your prices.
+  flippers undercutting your prices. A rival flipper takes a table
+  near yours at a show and lists the same sealed product for less. Online,
+  flippers cut the sale chance of hot sealed product. See
+  [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md).
 - **Reward**: fast, repeatable small margins. Builds capital steadily rather
   than in spikes.
 

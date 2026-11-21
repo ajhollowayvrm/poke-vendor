@@ -53,10 +53,19 @@ The player carries stock in three bins. Each bin has its own limit.
 | A booster bundle | 6 | 2 |
 | An Elite Trainer Box | 9 | 3 |
 | A booster box | 36 | 7 |
-| A case of booster boxes | 216 | 37 |
 
 The rule is: 1 pack is 1 space. More packs are 1 space plus 1 for each
 6 packs, rounded up.
+
+**A sealed case** packs tighter. It takes 1 space plus 1 for each 8
+packs, rounded up:
+
+| Case | Packs | Space |
+| --- | --- | --- |
+| A case of 6 booster boxes | 216 | 28 |
+| A case of 10 Elite Trainer Boxes | 90 | 13 |
+| A case of 25 booster bundles | 150 | 20 |
+| A sleeved booster case of 144 packs | 144 | 19 |
 
 ## Setup time
 
@@ -300,6 +309,7 @@ Run `-test` after a change to this system.
 | Slab box, no upgrade / slab case | 3 / 20 slabs |
 | Tote, no upgrade / folding cart | 8 / 30 spaces |
 | Vendor binder, slab case, folding cart | $40, $90, $120 |
+| A sealed case | 1 space + 1 for each 8 packs, rounded up |
 | Setup time | 10 minutes + 1 for each 5 raw cards + 0.5 for each slab + 1 for each sealed space |
 | Setup time on day 2 of a regional show | 50% |
 | Buyer budget | Spend cap × 50% to 150% |

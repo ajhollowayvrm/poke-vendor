@@ -118,7 +118,10 @@ The player rips, on film, until a card reaches the target.
   value of the card.
 - **The gambling backlash.** After $1,000 spent in a series with no hit,
   each episode has a 20% chance of a backlash: comments say "this is
-  just gambling". It costs authenticity −0.03.
+  just gambling". It costs authenticity −0.03. It also adds drama bait
+  of 0.15 (at most 0.5), which raises the chance that a rival creator
+  posts a callout about the player (see [35-callouts.md](35-callouts.md)).
+  The bait halves each week.
 
 ### Record today's episode
 
@@ -297,7 +300,8 @@ about $1,200. A normal episode of 20,000 views pays about $1.20.
   [06-social-media.md](06-social-media.md)).
 - **Trade-up challenges.** The stashes and trades can carry this format
   later.
-- **Pack battles** against another creator.
+- **Pack battles** against another creator. A rival creator uses drama
+  bait only for callouts.
 - **Group breaks.** The docs exclude them (see
   [12-acquiring-product.md](12-acquiring-product.md)).
 

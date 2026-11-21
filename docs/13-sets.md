@@ -61,7 +61,7 @@ The game has 133 English sets: every English booster expansion from
 Base Set to the current Mega Evolution sets (Delta Reign and 30th
 Celebration included), plus the McDonald's Collection 2021 and 2022. `tools/export/rip_set.py` exports each set
 file to `app/PokeVendor/Resources/Sets/`, `tools/export/set_index.py`
-writes the list of sets, and `tools/export/catalog.py` writes 1,836
+writes the list of sets, and `tools/export/catalog.py` writes 1,853
 sealed products from them.
 
 - **Prices:** PPT's sealed price first. When PPT has none, the TCGCSV

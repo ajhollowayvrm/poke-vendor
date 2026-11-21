@@ -394,6 +394,11 @@ The cards that the player already saw go to a **pile**.
 An assorted box shows its real packs only when it opens (see
 [12-acquiring-product.md](12-acquiring-product.md#look-inside-a-box)).
 
+A sealed case opens into its units before any rip (see
+[12-acquiring-product.md](12-acquiring-product.md#cases)). A rip queue
+never holds a case, and the rip screen opens the units of a case one
+after the other.
+
 A sealed product that is not a loose pack opens in its own step before
 its first pack:
 
@@ -492,6 +497,25 @@ opened.
 A rip on a live stream allows only the Normal and Fast speeds, because
 the viewers want to see the reveal (see
 [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
+
+### Rip & Ship
+
+A Rip & Ship rip opens a product that one viewer bought (see
+[06-social-media.md](06-social-media.md#rip--ship)). One buyer buys one
+whole product. It is not a group break.
+
+- The cards belong to the buyer. They carry the order and never become
+  the player's.
+- A rip that stops early ships the unopened packs.
+- A whole-case rip runs at 0.75 minutes for each pack, and it unboxes the
+  case once. A normal rip takes about 3 minutes for each pack.
+- A resealed product stops the rip on camera. Whatnot refunds the buyer.
+- **Palm it** shows only on a big hit in a Rip & Ship rip. It is a scam: the
+  card stays with the player, and the buyer gets a bulk card. The camera
+  catches it half of the time. A catch costs 40 reputation, an 8-week
+  Whatnot ban, and a callout. A miss is a hidden act.
+- The buyer meter shows the worth of the cards against the price. It is green
+  above the price.
 
 ## Open topics
 

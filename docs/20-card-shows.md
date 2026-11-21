@@ -14,6 +14,12 @@ balancing. They are in `Balance` and in `ShowSize`
 The calendar shows card shows up to 6 weeks ahead. Shows are on
 Saturdays.
 
+1 show in 6 bans in-print sealed product. The calendar marks it "no
+in-print sealed". At that show, floor vendors bring no in-print sealed
+product, sellers bring none, and the player cannot bring any to the
+table. Older sealed product is allowed. A case of an in-print product is
+banned too.
+
 | Size | Days | How often | Table fee | Walk-in entry | Buyers at a table | Booking closes |
 | --- | --- | --- | --- | --- | --- | --- |
 | Local show | 1 (Saturday) | About half of the Saturdays that have no regional show | $40 | $5 a day | About 20 visitors a day | 1 day before |
@@ -79,6 +85,17 @@ comes wants to sell.
   [10-grading.md](10-grading.md#condition-grades)), so the buyer's top
   price follows it. An off-center card takes more off. The buyer says
   what they see, for example "There's some wear on the corners."
+- **A rival at a nearby table.** A rival flipper can take a table near the
+  player's table (see [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#rivals)).
+  A buyer pays at most 95% of the player's ask for in-print sealed that
+  the rival also lists. The buyer says where the rival's table is.
+- **Give it to them.** For a kid buyer, the player can give the item for
+  free, once a day. The item must be worth $5 to $30. It must not be a
+  known fake. A gift can become a good story (see
+  [35-callouts.md](35-callouts.md#the-kid-gift)).
+- **A callout in the crowd.** When the hottest open callout is at heat 50
+  or more, 1 buyer in 8 who does not sell mentions the thread. That buyer
+  has 1 less patience (see [35-callouts.md](35-callouts.md#the-record)).
 - The buyer's top price is hidden. The first offer is 72% to 90% of it.
 - A counter inside the fair band never uses patience. A reply tells how
   far apart the two sides are. The player can make one final offer.
@@ -147,6 +164,11 @@ because this is where most vintage turns up.
 - **Table count:** a local show has 13 tables: 2 vintage dealers and
   1 sealed dealer. A regional show has 33 tables: 8 vintage dealers and
   3 sealed dealers.
+- **The rival's table.** A rival flipper who follows the player adds a
+  table of 3 to 5 hot in-print sealed products at 95% of market. Some of
+  the stock is resealed, at the plug fake rate. A resealed product that
+  the player buys here, and later finds, gives a receipt against that
+  rival (see [35-callouts.md](35-callouts.md#receipts)).
 - **Sellers at the table** bring sealed product 40% of the time. Of
   that, 35% is vintage and 30% is older.
 - **Stock:** a dealer has 15 to 30 items. Each table has two

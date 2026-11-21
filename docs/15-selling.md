@@ -180,7 +180,15 @@ stream time-cost action in
   [06-social-media.md](06-social-media.md#live-streams-time-cost-action)).
 - More followers bring more viewers, more bidders, and higher prices.
 - A small audience means low bids. An auction can end below value.
-- Whatnot takes platform fees.
+- Whatnot takes platform fees. There are two fee models:
+  - **A normal Whatnot sale:** 10.9% plus $0.30. The player pays the
+    shipping.
+  - **Rip & Ship** (see [06-social-media.md](06-social-media.md#rip--ship)):
+    8% commission, which steps down to 6.5% with the Rip & Ship sales of
+    the last 28 days. The player also pays 2.9% of the sale plus the buyer's
+    shipping, $0.30, and $0.50 for supplies. The buyer pays the label.
+- A product or a unit with the "case fresh" tag sells 5% more often (see
+  [12-acquiring-product.md](12-acquiring-product.md#cases)).
 
 ## Social media
 

@@ -17,7 +17,7 @@ gets the opposite. This doc joins three things that the game has now:
 
 - **Reputation**: the global track, from Unknown to Elite (see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#reputation-tiers)).
-  It is designed but not built.
+  It is built.
 - **Game shop standing**: 0 to 100 with each game shop (see
   [12-acquiring-product.md](12-acquiring-product.md#standing-levels)).
   It is built, and it changes the buylist price.
@@ -42,7 +42,9 @@ A **contact** is a person or a business that the game remembers. Each
 contact has:
 
 - A **name** and a **kind**: game shop, vintage dealer, modern dealer,
-  collector, trader, or regular buyer.
+  collector, trader, or regular buyer. Two supplier kinds also exist: the
+  distributor rep and the plug. They never go in the contact book. They
+  never come to the store counter or a meet. They never give reputation.
 - A **relationship** from 0 to 100, and a **level** from it.
 - **Interests**: what they collect or look for, for example "Eevee
   line", "Base Set holos", or "sealed Sword & Shield". They buy these
@@ -149,6 +151,9 @@ the deal, or tell them what it is worth and pay fair.
   chance that the seller finds out later. Then the player loses
   reputation, and the story can reach social media (see
   [06-social-media.md](06-social-media.md#consequences)).
+- **A kid lowball** is a hidden act that can become a kids callout (see
+  [35-callouts.md](35-callouts.md)). The player tells a kid that a card is
+  not worth much, and buys it cheap.
 
 ## Reputation
 
@@ -170,20 +175,27 @@ Reputation is a points total. It sets the five tiers from
   sale of $20 or more with no fake and no overstated condition (+1),
   paying fair to a naive seller (+5), each contact who reaches Regular
   (+5), Trusted (+10), and Friend (+20), and good word from social
-  media.
+  media. A deny of a false callout gives +1. A callout of a rival with
+  proof gives +1, scaled by the rival's credibility.
 - **What lowers it:** a bad deal story (−4, or −12 when it goes viral),
   a scam that comes out (−30), selling a fake (−40),
-  a missed booked show day (−5), and backlash from social media.
+  a missed booked show day (−5), and backlash from social media. A
+  callout that fades costs −4 at a peak of 30 to 69, and −12 at 70 or
+  more. A deny that falls apart costs −8.
 - **What it does with strangers:** a stranger's first offer, patience,
   and deal chance start better at a higher tier. More sellers come to
   the player's show table at a higher tier, because they hear that the
   player pays fair.
+- **The record.** A true callout that peaked at heat 50 or more leaves a
+  record for 90 days. Each active record lowers the starting points of a
+  new contact by 5, at most 3 records. "Make it right" does not remove it
+  (see [35-callouts.md](35-callouts.md#the-record)).
 - The tier unlocks in doc 04 stay as they are (trading circles, first
   look, wholesale, case splits, private consignment).
 
 ## Where the player sees it
 
-- **The hub's Reputation tile** (now "Not built yet") opens a
+- **The hub's Reputation tile** opens a
   **Contacts** screen: the reputation tier and points, the want list,
   and each contact with their level, interests, the last deal, and where
   they turn up.

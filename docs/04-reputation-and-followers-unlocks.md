@@ -21,14 +21,16 @@ follower count, moves this track.
 | 0 | Unknown | Public show tables and open meets only. Starting point. |
 | 1 | Known | Invite-only trading circles start including you. |
 | 2 | Trusted | First look at new vendor stock before it hits the public table. Better table location at limited-badge shows. |
-| 3 | Respected | Distributor/wholesale access at true wholesale pricing (see [12-acquiring-product.md](12-acquiring-product.md)). Invitations into case splits. Other traders start proactively bringing you pulls they know you want. |
-| 4 | Elite | Priority case allocation on the rarest splits. Private consignment offers — someone's whole vintage collection, offered directly before it ever reaches a public sale. |
+| 3 | Respected | Secondary wholesaler access at 72% of retail MSRP (see [12-acquiring-product.md](12-acquiring-product.md)). Invitations into case splits. Other traders start proactively bringing you pulls they know you want. |
+| 4 | Elite | Priority case allocation on the rarest splits, and at the distributor: one hot case a week that skips the fill roll. Private consignment offers — someone's whole vintage collection, offered directly before it ever reaches a public sale. |
 
-The player's own store also opens wholesale, from the day its
-build-out is done. A store account has a lower price, 58% of MSRP, and
-a weekly allocation for each product that grows with the order history
-(see [22-own-store.md](22-own-store.md#wholesale)). A player at
-Respected with no store keeps the 72% price with no limit.
+The player's own store also opens the secondary wholesaler, from the
+day its build-out is done. After a 14-day application, the store can
+open a hobby distributor account. The account has a lower price, 58% of
+MSRP, and a weekly allocation for each product that grows with the order
+history (see [22-own-store.md](22-own-store.md#wholesale)). A player at
+Respected with no store keeps the 72% price, a $250 minimum, 1 case of
+each product, and 2 cases a week.
 
 This resolves the open question in
 [12-acquiring-product.md](12-acquiring-product.md#open-topics): wholesale
@@ -68,13 +70,15 @@ scandal-hit account can lose sponsorship access it already had.
 - **Reputation** rises through fair dealing: completed trades, accurate
   grading calls, delivering as promised. It falls through backlash that
   spills over from the social media system (see
-  [06-social-media.md](06-social-media.md#consequences)), or through
-  scams. The exact reputation-point value of each action is not yet set
+  [06-social-media.md](06-social-media.md#consequences)), through
+  callouts that fade (see [35-callouts.md](35-callouts.md)), or through
+  scams. A good reply to a callout can raise it. The exact reputation-point value of each action is not yet set
   — a balancing task, not a research task, same as the archetype-formula
   coefficients in
   [11-card-archetypes-and-scaling.md](11-card-archetypes-and-scaling.md#open-topics).
 - **Followers** rise and fall entirely through the existing social media
-  reach/decay formulas — nothing new to design here.
+  reach/decay formulas. A counter-callout adds 0.5% of followers, and a
+  viral callout that fades takes away 1%.
 
 ## Status
 

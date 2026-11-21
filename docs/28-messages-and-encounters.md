@@ -38,7 +38,8 @@ notoriety. A buyer pays 2% more for each point.
   check it first, so it carries the stranger risk of a fake (see
   [14-counterfeit-risk.md](14-counterfeit-risk.md)).
 - **The hub** shows a banner for unread messages, and a Messages row
-  under Plans for today.
+  under Plans for today. A callout shows as a hub banner, not as a
+  message.
 
 ## Encounters at a game shop
 
@@ -48,7 +49,7 @@ player. The chance is 30%, plus 4% for each point of notoriety, up to
 
 | Encounter | What happens |
 | --- | --- |
-| A kid with a hit | A kid asks what their card is worth. **Tell them the value**: +2 reputation and +3 standing at the shop. **Offer fair** (85% of market): the player buys it, +3 reputation and +2 standing. **Say it's not worth much** (30% of market): a scam that the kid can find out about later, like a naive seller at a show. |
+| A kid with a hit | A kid asks what their card is worth. **Tell them the value**: +2 reputation and +3 standing at the shop. **Offer fair** (85% of market): the player buys it, +3 reputation and +2 standing. **Say it's not worth much** (30% of market): a hidden act that can become a kids callout later (see [35-callouts.md](35-callouts.md)). |
 | A buyer | A player at the shop wants one of the player's cards, for 95% to 115% of market, in cash. With follower tier 1, they say that they follow the player. |
 | A seller | A regular sells a card from their binder, or (35% of the time) an old sealed product from a closet, for 60% to 85% of market. It can be a fake. |
 | The owner's hold | At standing Regular, the owner holds a sealed product for the player at 85% of market. +2 standing. |

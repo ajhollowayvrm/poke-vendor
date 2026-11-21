@@ -178,6 +178,42 @@ about flat (0% to +2% a year).
   character's products, sealed product with that character in its name rises
   for 4 to 8 weeks (+20% to +50%).
 - **Follower tier 4**: a post about a card lifts that card name for a week.
+- **Flipper dump**: when flipper pressure is 0.6 or more, a reprint or a
+  correction can start a dump. The hot in-print sealed products of the
+  set fall 10% to 20% over 14 to 28 days, and then recover over 120 days.
+  A correction dump hits the 2 sets with the most hot in-print products.
+- **The MSRP step**: once in a run, after day 90, the Pokemon Company
+  raises the retail price of in-print sealed by 12.5%. The game gives 28
+  days of notice. The market price of in-print sealed rises by 60% of the
+  step, over 30 days.
+
+### Flipper pressure
+
+Flipper pressure is one number from 0.1 to 0.9. A run starts at 0.5. It
+shows how many flippers chase hot sealed product. It changes once a day.
+
+| Input | Change |
+| --- | --- |
+| Sealed hype news, or a character sell-out | +0.15 each |
+| A boom | +0.002 each day |
+| A correction | −0.003 each day |
+| The holiday season starts | +0.10 |
+| The after-holiday season starts | −0.10 |
+| A reprint that reaches shelves | −0.25 each |
+| The pull toward 0.5 | 1% of the gap each day |
+
+Pressure has four effects:
+
+- **The shelf drain.** A hot batch item at a big store drains faster.
+- **Store incidents.** The chance of an incident on a vendor day grows with
+  pressure. Incidents raise a chain's strictness level.
+- **Camp success.** The chance is multiplied by `1.2 − 0.6 × pressure`.
+- **The online sale chance.** Hot in-print sealed on eBay and TCGplayer
+  sells up to 20% less often at pressure 0.9.
+
+The End Day report gives a line when the pressure moves 0.1 or more in
+a day. [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md)
+has the full rules.
 
 ### Print runs
 
@@ -221,6 +257,9 @@ during the run.
   "In print" or "Out of print" line on a sealed item's detail screen.
 - At most 2 announced changes wait at a time. A reprint wave plans its own end,
   and that end does not count.
+- **Flippers.** A reprint that reaches shelves lowers the flipper pressure
+  by 0.25. At pressure 0.6 or more, it also starts a flipper dump. A reprint
+  and a dump together never cut a price by more than 45%.
 
 ### Seasons
 
@@ -240,6 +279,10 @@ sealed product.
   This is the best time to buy sealed product.
 - **Summer slump** (mid June to early September): everything sells up to 5%
   less often.
+- **A deeper dip.** When flipper pressure is 0.6 or more on the first day of
+  the after-holiday dip, flippers sit on holiday stock, and the dip is 50%
+  deeper (up to 15%). The game sets the size on that first day and keeps
+  it for the whole dip.
 - **Singles keep their price.** A season changes only how often a single sells.
 - **Where the demand factor applies**: online listings, eBay auctions (the
   no-sale chance never falls below 5%), lots (a lot with sealed product uses

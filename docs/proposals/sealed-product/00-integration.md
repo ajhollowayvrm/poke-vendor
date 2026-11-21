@@ -1,8 +1,33 @@
 # Sealed product code proposal: integration and build order
 
-Status: proposal. Nothing in this folder is built. AJ approved every proposal in `reports/Sealed product and flipper play.md` on 2026-11-20, including 1.2 (the camp haul cap), 4.2 (the 14-day application), and 5.6 (palm the hit).
+Status: built. Phases 0 to 8 are done. AJ approved every proposal in `reports/Sealed product and flipper play.md` on 2026-11-20, including 1.2 (the camp haul cap), 4.2 (the 14-day application), and 5.6 (palm the hit).
 
-Code base: commit `503ff3c`. `M` = `app/PokeVendor/Model`. Line numbers are from that commit.
+- **The last code commit** is `9399a3f` (phase 7: show bans, card machines, the opened-at-MSRP offer, and break-ins). Phase 8 changes only docs and one test.
+- **Where the docs live now.** The two new docs are `docs/34-flippers-and-retail-limits.md` and `docs/35-callouts.md`. The edits are in `docs/02`, `04`, `05`, `06`, `08`, `09`, `12`, `13`, `14`, `15`, `17`, `18`, `19`, `20`, `21`, `22`, `24`, `26`, `28`, `29`, `30`, `31`, `32`, and `00-overview.md`. Those docs describe the built code. This folder is the design record of the plan. Where a part file and a doc disagree, the doc and the code win (see "Build deviations").
+
+Code base of the plan: commit `503ff3c`. `M` = `app/PokeVendor/Model`. Line numbers are from that commit.
+
+## Build deviations
+
+The build differs from the plan in these places. The part files keep the plan text. The code and the docs hold the built value.
+
+| Area | Plan | Build |
+|---|---|---|
+| `heatLimitHit` | 0.7 (Part A). Section 1 of this file says 1.5 | 1.5, at most once for each chain each day. It records no hidden act. |
+| Gouge (1.2) | A sale at 1.5 times market or more, at any venue where the player sets the price | A posting of hot in-print sealed at 1.25 times market or more (a price within $0.50 of the line counts). It works at the own store and the show table. The post is enough: no sale is needed. At most once a day. An online listing is not a gouge. |
+| Callout merge | A full cap merges the heat into an open callout | The heat merges only into an open callout that is true and not yet answered with a deny or a make-it-right. With no such callout, the act opens its own callout past the cap. A claim with no act is dropped. |
+| Back room | A case opens when its units fit in the free shelf room | A case opens when the free shelf room is at least the smaller of the case size and a quarter of the sealed slots. The units that fit go on the shelf. The rest wait in the back room as loose stock. Loose stock restocks first. |
+| Store stock rider | The rider cost joins the premium | Turning the rider on charges the rest of the cycle at once. The premium uses the peak store value of the cycle. A shoplifting claim covers sealed product only. |
+| Card machine wait | The wait uses the free-slot rule | The wait follows the work-hour rule: it cannot overlap a work shift. The wait starts at the later of the player's time and one hour before the restock. |
+| Drawing win | A win waits 2 days (D-11) | Same. The game charges at "Pay and claim", not at the draw. |
+| Rip & Ship booking | A sale like any other sale | Same. `addLedger` and `addReceipt` book it at the sale, so the sale counts as retail for the back-door check. |
+| Elite case | One hot case a week that skips the fill roll | The game keeps the Elite case for one product (`eliteProductID`). It adds 1 to the allocation of that product for the week. |
+| Distributor `migrated` | `grandfatherDistributor` approves a store that is built on load | A `migrated` flag makes it run once. It applies only to a store that is already open, with no application. A new build sets the flag at once, so a restart never approves a store that did not apply. |
+| `cases.py` | A row stays at a price ratio of 0.4 to 2.5 | Same: the real rows stay up to 2.5 times the price of the units. |
+| Products with no case | Art bundles, half boxes, club items, master cartons | Also every "Set of N" product, Fun Packs, and enhanced boxes (unless a real case row exists). |
+| Vendor hours | Doc 17: "two slots after work" | The hours are 8, 10, 13, and 16. The work shift ends at 5 PM, so no vendor hour falls after work. Only an 8 AM vendor fits a work day. |
+| Car break-in and cases | A sealed case does not fit in the thief's bag (Part B 10.5) | Same. Built in phase 8: `rollCarBreakIn` skips cases. |
+| Docs for the stream (Part B section 7) | Replace "No stream action rips a product that a viewer bought" in doc 06 | That sentence was not in doc 06. Doc 06 has the new Rip & Ship section instead. |
 
 ## How to read this folder
 
@@ -381,6 +406,8 @@ Each phase ends with `-test`. Build Debug, install it on the booted simulator, t
 ## 8. Cleanup items
 
 These come from `research_notes/Sealed product and flipper play/current_game_systems.md`. Do them in phase 8. Phase 1 already fixes the code items.
+
+**Phase 8 closed every item.** The `Wholesale.swift` comment already read the $250 constant (phase 4). Holds are built (the owner's hold and the saved items), so D/19 now says so. D/19 holds the code values for the game shop and the moving market (the factor limits are 0.3 to 6, not 0.4 to 3). D/13 says 1,853 products, the count in `catalog.json`.
 
 | Item | Fix |
 |---|---|

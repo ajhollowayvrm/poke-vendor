@@ -22,8 +22,12 @@ at the same time.
 | --- | --- |
 | Amazon | Each product is in stock on 45% of days. The price is 100% to 125% of market, or 140% to 190% of market on 30% of days |
 | Hyped Reseller | Every product, every day, at 200% to 260% of market |
-| Pokemon Center | A drop is live on 15% of days. The attempt succeeds at 30% (from [12-acquiring-product.md](12-acquiring-product.md#pokemon-center-drops)) |
-| eBay | 8 listings each day: 4 sealed at 80% to 105% of market, 4 singles worth $3 or more at 75% to 105% of market. 20% ship from another country, with 10-day delivery and a lower price |
+| Pokemon Center | A drop is live on 15% of days. The attempt succeeds at 30%, or 60% with the checkout bot (from [12-acquiring-product.md](12-acquiring-product.md#pokemon-center-drops)) |
+| Order cancellation | An order from the Pokemon Center or Target.com cancels at 5%, or 35% when the player used the checkout bot. The roll comes 1 to 3 days after the purchase, and never later than the day before arrival. The refund is the full price |
+| Walmart drawing | Draw at the End Day of Wednesday. A win chance of 8%. A win waits 2 days for "Pay and claim". Delivery 4 days. A strict chain's drawing pickup takes 1 day |
+| Target.com drop | A drop chance of 50% on Friday and 8% on other days. An attempt succeeds at 20%. 1 attempt a day, or 2 with the checkout bot. Delivery 3 days |
+| Restock alerts | $8 a month for one chain, $25 for every chain. A new alert with more than 7 days to the 1st starts now. Otherwise it starts on the 1st |
+| eBay | 8 listings each day: 4 sealed at 80% to 105% of market, 4 singles worth $3 or more at 75% to 105% of market. 20% ship from another country, with 10-day delivery and a price 12% lower |
 | Facebook Marketplace | 5 sealed listings each day at 55% to 95% of market. Half are pickups that cost 1 hour today, and half ship |
 | Delivery time | From [12-acquiring-product.md](12-acquiring-product.md#where-bought-product-goes) |
 
@@ -63,14 +67,46 @@ a sleeved pack, a 1st Edition pack, a blister, or a bundle.
 | --- | --- |
 | Local stores | Target, Walmart, Best Buy, GameStop, Barnes & Noble, and two game shops: Cardboard Castle and Top Deck Games |
 | Time for each stop | 40 minutes (from [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)) |
-| Stock chance | 12% for a big store, 45% for a game shop, new each day |
-| Shelf | 1 to 2 products at a big store, at the estimated MSRP. 1 to 3 products at a game shop, at 90% to 105% of market. Loose packs come 2 to 8 at a time, other products 1 to 2 |
+| Stock chance | A game shop has stock on 92% of days. A big store and the club get a batch on their vendor day (see below) |
+| Shelf | A big store shows its vendor batch. A game shop shows 5 to 9 products. 80% are in print at 92% to 105% of market, and 20% are older sealed at 100% to 120%. Loose packs come 3 to 12 at a time, other products 1 to 3 (older product 1) |
 | Bulk | The shop pays 50% of the bulk's market value, in store credit only |
 | Display case | 6 singles worth $5 or more, at 110% of market. The case changes each week |
 | Buylist and standing | From [12-acquiring-product.md](12-acquiring-product.md#standing-levels) |
 
 In this build, the display case on a shop's own screen needs no store
-run. Holds are not built. Consignment and league night are built.
+run. Holds, consignment, and league night are built. At standing
+Regular, the owner holds a sealed product at 85% of market (see
+[28-messages-and-encounters.md](28-messages-and-encounters.md)).
+
+### Big stores: vendor days, limits, and heat
+
+| Value | Prototype value |
+| --- | --- |
+| Vendor slot | One weekday from Tuesday to Saturday, and one hour of 8, 10, 13, or 16, for each store and run |
+| Open hours | 8 AM to 10 PM. The drain runs only inside them |
+| Batch units | Walmart 30, Target 24, Best Buy 12, GameStop 10, Barnes & Noble 6, club 12. Each product has at least 2 units |
+| Batch products | Walmart 4 to 6, Target 3 to 5, Best Buy, GameStop, and the club 2 to 4, Barnes & Noble 1 to 3 |
+| Hot product | Market of 1.2 times the retail price or more |
+| Drain | A hot item loses `0.2 + 0.6 × pressure` of its stock each open hour. Other items lose 0.05 |
+| Vendor wait | At most 2 hours, with a known slot. A rival of hostility 0.5 or more takes 1 hot unit |
+| Rival receipt | 5% on each "rival took the stock" line |
+| Pressure log | The last 8 days of pressure, for the drain |
+| Base limit | Walmart 5 a visit. Target, Best Buy, GameStop: 2 of each item a day, 1 for a hot item. Barnes & Noble 2 a visit, 1 for a hot item. Club: 2 of each item a day, 1 hot item a day |
+| Strictness | Level 1 one of each item a day. Level 2 one checkout a day. Level 3 hot product by drawing. Level 4 no card sales for 21 days, then level 3 |
+| Incident | On a vendor day: 5% × pressure, plus 0.03 for each buyout of the player. The boost keeps 90% a day. A level falls after 90 days |
+| Heat | A hot buy at the limit 1.5 (once for each chain a day). A buyout 1.0. A repeat visit 2.0. A bot use 3.0 (global). Heat keeps 95% a day |
+| Heat hints | At 60% and 85% of the ban heat |
+| Ban | Heat 10 at one chain. 21 days. The heat falls to half |
+| GameStop markup | 1.35 to 1.6 × MSRP on hot product |
+| Club | $65 for 364 days, a warning 7 days before it ends. The price is the MSRP, never under $3.75 a pack |
+| Card machine | Every 10 days, posted 2 days ahead, at 10 AM to 4 PM. A 2-hour wait. A success chance of 70%. 1 to 3 products, at most 2 of each. Products: packs, bundles, ETBs, tins, blisters |
+| Show ban | 1 show in 6 bans in-print sealed |
+| Opened-at-MSRP offer | At standing Regular, once a week for each game shop. The product is hot, in print, at MSRP |
+| Rivals | 3 flippers and 2 creators. Base hostility 0.15 to 0.35, pulling back 2% a day. +0.08 for a buyout at the rival's chain, +0.05 for a camp win, +0.10 for a creator when the follower tier rises. The rival keeps 3 meetings |
+| Rival at a camp | 50% at a store of the rival |
+| Rival at a show | A flipper of hostility 0.35 or more. Chance 25% + 30% × hostility. A table of 3 to 5 hot sealed products at 95% of market. Buyers pay at most 5% under the player's ask on the same product |
+| Rival's table purchase | Stays on the watch list for 120 days |
+| Gouge | A post of hot in-print sealed at 1.25 × market or more. A price within $0.50 of the line counts. Once a day |
 
 ## Selling
 
@@ -306,7 +342,7 @@ Other values:
 | Tips | Viewers × 0.004 × (0.5 + interest) tips a minute, $1 to $5 each. A big hit adds 3 to 8 tips |
 | Auction | 8 minutes, starts at 50% of market. Bidders are 3% of the viewers, each with a ceiling of market × (0.55 + 0.55 × viewers / 200) × 0.85 to 1.2 |
 | Buy Now | 15 minutes. The chance a minute is viewers × 0.002, falling as the price goes above market |
-| Whatnot fees | 10.9% + $0.30, and the player ships |
+| Whatnot fees | 10.9% + $0.30, and the player ships. Rip & Ship has its own fees (see Rip & Ship above) |
 | Giveaway | Followers +5% of the viewers, authenticity +0.03, viewers ×1.2 |
 | End | Followers +10% of the peak viewers × (0.5 + authenticity). Burnout +0.12 |
 | Missed scheduled stream | Followers −2%, authenticity −0.10 |
@@ -319,20 +355,20 @@ Other values:
 | Garage sales | 3 to 6 a week, Fri–Sun 7 AM–1 PM, posted 2 to 3 days ahead. 3 hours, 8 when far (30%). 6 to 20 good cards × quality 0.6–1.6, ×0.75 each hour after the doors. 15% bust. Prices 25–70% of market. The host comes up 40% of the time |
 | Estate sales | 0 to 2 a week, Thu–Sat 8 AM–3 PM, 4 hours. Cards ×1.0/0.6/0.35 and prices ×1.0/0.75/0.5 by day. Prices 60–100% of market |
 | Hidden sales | 60% of weeks add one. A follower tip (tier 1) reveals it 50% of the days it is 1 to 3 days out |
-| Camping | 6 hours from 8 AM. 60% at the door, ×0.75 each hour late, +25% with the restock bot. 2 to 4 products, 2 to 6 each, at MSRP. A restock every 14 days per store, posted 3 days ahead |
+| Camping | 6 hours from 8 AM. 60% at the door, ×0.75 each hour late, +25% with the restock bot, × `1.2 − 0.6 × pressure`. 2 to 4 products, 2 to 6 each, at most the chain limit of each, at MSRP. A restock every 14 days per store, posted 3 days ahead |
 | Opportunities | 1.5 every 28 days, 0 or 1 day of notice. A collection at 70% of market, a closeout at 60%, a private buyer at 120–150%, a free table, an estate tip, a vintage collection at Elite |
 
 ## Counterfeits
 
 | Value | Prototype value |
 | --- | --- |
-| Fake rates | Reseller 4%, eBay 8%, Facebook 10%, garage sale 12%, estate sale 8%, stranger 5%, Familiar contact 2%, Regular and up 0.5%, shop case 1%. Sealed ×0.5. Vintage ×3, older ×1.5. Hyped sealed ×1.5 |
+| Fake rates | Reseller 4%, eBay 8%, Facebook 10%, garage sale 12%, estate sale 8%, stranger 5%, Familiar contact 2%, Regular and up 0.5%, shop case 1%, plug 5.5%. Sealed ×0.5. Vintage ×3, older ×1.5. Hyped sealed ×1.5. A case has one roll |
 | Tiers | Bootleg 50%, convincing 35%, professional 15% |
 | A look by eye | Catches 90% / 15% / 0% by tier, × the tired factor |
 | Paid check | $8, 3 days |
 | Authentication tool | $350. Misses a professional counterfeit 10% of the time |
 | Buyer finds out | 90% / 60% / 25% by tier, +30% when the player knew, 2 to 10 days later |
-| Cost | Reputation −40, the contact −20, the shop −20 standing. TCGplayer, eBay, and Whatnot refund the buyer. Public 30% + 10% per reputation tier and follower tier: followers −5%, authenticity −0.10 |
+| Cost | Reputation −40, the contact −20, the shop −20 standing. TCGplayer, eBay, and Whatnot refund the buyer. Public 30% + 10% per reputation tier and follower tier: a product integrity callout that starts at heat 60 (75 when the player knew) and opens past the cap |
 | At the table | A buyer who catches a fake walks: reputation −10, the contact −10 |
 | Shop buylist | Catches 95% / 70% / 40% by tier |
 
@@ -357,11 +393,75 @@ Other values:
 
 | Value | Prototype value |
 | --- | --- |
-| Wholesale | 72% of MSRP or 62% of market, the higher price. $250 minimum, 5-day delivery. 1 case of each product and 2 cases a week. 12% of orders ship 60% to 90% of the boxes and refund the rest. Cases of 6 boxes, 10 ETBs, 12 bundles, 36 packs |
-| Wholesale, store account | 58% of MSRP or 50% of market, the higher price. No minimum. A weekly allocation of each product: 1 case, +1 for each $6,000 spent with the distributor, up to 5. +1 case for a product that is not hot (market under 1.2 × MSRP) |
+| Wholesale (secondary wholesaler) | 72% of the retail MSRP or 62% of market, the higher price. $250 minimum, 5-day delivery. 1 case of each product and 2 cases a week. 12% of orders ship 60% to 90% of the units and refund the rest. 1% of orders go missing, and the refund comes 14 days after the notice |
+| Wholesale, store account | 58% of the retail MSRP or 50% of market, the higher price. No minimum. A weekly allocation of each product: 1 case, +1 for each $6,000 spent with the distributor, up to 5. +1 case for a product that is not hot (market under 1.2 × MSRP). A hot product stays at 1 case. Elite adds 1 hot case |
 | Case splits | 85% of market a box (80% from a Friend vendor). Respected: 1 invite a week, 2 boxes. Elite: 2 a week, half the case. Closes in 3 days, arrives 4 days later |
 | Consignment | From Regular. The shop takes 20%, 12% at Trusted. 28 days. A card at market sells 60% of the time. +2 standing a sale |
 | Facebook selling | An offer 8% of days at 65–95% of the price. Half meet today, half in 1 to 3 days. 20% do not show. 1 hour, cash, no fees |
+
+### Cases
+
+| Value | Prototype value |
+| --- | --- |
+| Units in a case | Booster box 6, ETB 10, booster bundle 25, booster pack 144, blister 24, Build & Battle Box 10, collection 6, tin 6 |
+| By name | Ultra-Premium 4, Tech Sticker 12, Knock Out 24, Pokemon Center ETB 4, mini tin 10, 1-pack blister 16 |
+| No case | Art bundles and every "Set of N" product, Fun Packs, half boxes, enhanced boxes (a real case row only), bundles that do not hold 6 packs, club items, master cartons |
+| Case price | A real case price when the price refresh has one. A row stays when its price is 0.4 to 2.5 times the price of its units. Otherwise units × unit market × the factor below |
+| Case factor: booster box | 0.95 in print, 1.05 out of print under 2 years, 1.15 out of print 2 years or more |
+| Case factor: ETB | 1.05, 1.15, 1.25 |
+| Case factor: booster bundle | 0.95, 1.05, 1.10 |
+| Case factor: other | 1.00, 1.05, 1.10 |
+| Out of print "old" | 730 days or more, or an older era |
+| Case fresh | A sale chance of 1.05 × |
+| Open confirmation | A premium loss over $50 |
+| Stranger case | A dealer at a show 20%. An eBay or Facebook day 10%. Ask 85% to 105% (eBay) or 70% to 95% (Facebook) of the case price. No case over $15,000 |
+| Tape check | Shows the tell of a fake case 50% of the time. 10% of stranger listings say "loaded" |
+| Back room | $600. 12 cases. A product restocks at 1 unit or fewer on the shelf |
+
+### Distributor
+
+| Value | Prototype value |
+| --- | --- |
+| Application | 14 days |
+| Rep | Starts at 20 points. +1 for each $1,000 spent, at most 3 a week. +1 for a week with a store event. Names: Dana Ruiz, Mark Osei, Leah Brandt, Tom Achebe, Rachel Kim |
+| Push for allocation | −5 rep points. +25% fill for one product for a week. Once in 28 days |
+| Fill rate of a hot case | `0.05 + 0.35 × (1 − pressure) + 0.20 × rep ÷ 100`, at most 90% |
+| Back-door check | Each week. A 28-day window. At least 6 sold units and half of the delivered units. Acts when under 40% reached customers. Notice 25%. −15 rep points |
+| Back-door penalties | 2 warnings in 84 days: hot product frozen 28 days. 3 warnings: closed 84 days |
+| Hot record | Kept 56 days |
+| Plug found by the rep | 10% a week for 28 days after a plug order. −20 rep points |
+
+### Plug
+
+| Value | Prototype value |
+| --- | --- |
+| Appears | 10% a day, from day 14, at follower tier 1 or reputation Known. A new plug 28 days after a vanish |
+| Names | Vince, J-Money Sealed, Kev (wholesale), BoxPlug_TX, Rico |
+| Offers | 3 a week, 1 when pressure is under 0.3 |
+| Price | 85% of the retail MSRP, never under 65% of market |
+| Order | At most 5 cases and $20,000. Delivery 5 to 10 days |
+| Vanish | 6% + 1 point for each $1,000 over $2,000, at most 16%. −1 point for each clean order, down to 3% |
+| Short order | 10%. 60% to 90% of the units ship |
+| Seizure | 2% of delivered orders, 3 to 14 days later |
+
+### Rip & Ship
+
+| Value | Prototype value |
+| --- | --- |
+| Commission | 8% under $15,000 of Rip & Ship sales in 28 days. 7.5% from $15,000, 7% from $50,000, 6.75% from $150,000, 6.5% from $500,000 |
+| Other fees | Processing 2.9% of (sale + buyer shipping) + $0.30. Supplies $0.50. The buyer pays shipping: $4.47 up to 3 packs, $9.85 up to 36 packs, $15.50 above |
+| Buy Now ceiling | 95% to 120% of market for a hot product, 90% to 105% for other product |
+| Buy chance | A viewer buys with 0.0024 a minute. A product over $500 scales by viewers ÷ 100 |
+| Rival creators | Each takes 5% of the buyers, down to 80% left |
+| Repeat buyer | 50% of buyers. ±5% by the last result |
+| The wait | 10 minutes. Impatience 3% |
+| Case rip | 0.75 minutes a pack |
+| Clip | 3% of the viewers become followers |
+| Ship | Within 2 days. 10 minutes an order. +2 contact points. Chargeback on day 7 |
+| Strikes | 2 in 60 days: a 28-day ban. 3 in 120 days: Rip & Ship ends |
+| Not opened, resealed | Authenticity −0.02, −0.05 |
+| Palm the hit | Caught 50%. Reputation −40. Ban 56 days. Callout heat 90. Late order act weight 2.0 after a chargeback |
+| Kept | An order stays in the save 28 days after it ends |
 
 ## Upgrades
 
@@ -371,6 +471,7 @@ Other values:
 | A better car (30-minute stops, far sales 6 hours) | $900 |
 | Drop alert Discord | $60 |
 | Restock alert bot | $150 |
+| Checkout bot | $400 |
 | Authentication tool | $350 |
 | Corner loupe, edge light, raking lamp | $60, $90, $140 |
 | Studio lights, camera kit | $250, $600 |
@@ -399,7 +500,8 @@ Other values:
 | Room | 40 cards and 40 sealed. +60 with each fixture |
 | Clerk | $120 a day open. A customer buys 85% as often as with the player, and the clerk sells no second item |
 | At the counter | 60% of the day's customers come to the counter. 32% of them sell |
-| Fixtures | Second display case $500, sealed wall $400, play tables $700 (both events), security cameras $350, lighted sign $300 (×1.15 customers) |
+| Fixtures | Second display case $500, sealed wall $400, play tables $700 (both events), security cameras $350, lighted sign $300 (×1.15 customers), back room $600 (12 cases) |
+| Back room restock | At 1 unit or fewer on the shelf. A case opens when the free shelf room is at least the smaller of the case size and a quarter of the sealed slots |
 | Friday tournament | 8 to 16 players, +10% a reputation tier. Fee $5, $10 (default), $15, or $20: attendance 150% less 5% a dollar. Prizes: 0.7 loose packs a player. +0.5 customers a player |
 | Pokemon League | Saturday or Sunday morning. 6 to 14 players, +5% a reputation tier. Fee free (default), $2, or $5: attendance 100% less 6% a dollar. A promo card a player at $0.75. +0.8 customers a player, small-budget |
 | Event standing | 0.5 to 1.5, starts at 1.0. Moves by (prize support − 0.6) × 0.25 after each tournament. Multiplies tournament players |
@@ -471,6 +573,8 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | Fire safe | $400. No home damage |
 | Insurance premium | 1.5% of the insured value every 28 days. Minimum $10 |
 | Insurance claim | 80% of the loss, less a $25 deductible |
+| Store stock rider | 3% of the sealed value in the store each 28 days, at the highest value of the cycle, with the $10 minimum. Turning it on charges the rest of the cycle |
+| Store break-in | 0.05% a night × (1 + sealed value ÷ $25,000), at most 0.6%. ×0.4 with cameras. 2 to 6 of the most valuable sealed items. Door repair $400 |
 
 | Credit expiry | 56 days after the store gives it. Warning 7 days before. The oldest credit is used first |
 | Sealed buylist | Off, or 60%, 70%, 80% of market in cash. Daily budget $100, $250 (default), $500, or $1,000. Walk-in sellers: 6% of the clerk-hour customers at 70%, scaled by rate ÷ 70%. A seller wants 55% to 85% of market at least. Product of $15 or more |
@@ -483,7 +587,7 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | --- | --- |
 | Binder | 40 raw cards. Vendor binder ($40): 160 |
 | Slab box | 3 slabs. Slab case ($90): 20 |
-| Tote | 8 spaces. Folding cart ($120): 30. Sealed: 1 pack is 1 space, more is 1 + 1 for each 6 packs |
+| Tote | 8 spaces. Folding cart ($120): 30. Sealed: 1 pack is 1 space, more is 1 + 1 for each 6 packs. A sealed case: 1 + 1 for each 8 packs |
 | Setup time | 10 minutes + 0.2 for each raw card + 0.5 for each slab + 1 for each sealed space. Day 2 of a regional show: 50%, after a day 1 setup |
 | Spend cap | Park swap $60, league night $80, trade night $150, local show $400, no cap at the trading circle, the regional show, and the store. Budget: cap × 50% to 150% |
 | Trade share | A share of the visitors who do not sell: park swap 35%, trade night 40%, trading circle 25%, league night 20%, others 23%. The store counter: a flat 18% of all visitors |
@@ -561,13 +665,21 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 
 | Value | Number |
 |---|---|
-| Whole market | ±18% over 420 days, plus ±7% over 97 days |
+| Periods | Steady 120 to 360 days, −3% to +3% a year. Boom 120 to 300 days, +30% to +80%. Correction 180 to 360 days, −15% to −35%. A run starts steady |
+| What follows | After steady: boom 50%, correction 30%, steady 20%. After a boom: correction 60%, steady 40%. After a correction: steady 70%, boom 30% |
+| Short wave | ±7% over 97 days |
 | Card under $1 | Flat, except for news |
-| Card of $1 or more | Its share of the whole market grows with price, full at about $60 and up. Its own wave is up to ±20% over 60 to 240 days |
-| Card of $25 or more | +0% to +8% a year |
-| Sealed product | 60% of the whole market. In print +0% to +3% a year, out of print +5% to +15% a year |
-| Factor limits | 0.4 to 3 times the real price |
-| Market news | 6% each day, at most 3 at once. Hype +25% to +70%, 14 to 35 days. Reprint −15% to −35%, 30 to 70 days. Sealed hype +20% to +50%, 21 to 45 days |
+| Card of $1 or more | Follows the market more as it gets dearer: 30% of the move at $1, up to 120% at $1,000. Its own wave is 60 to 240 days, up to ±12% |
+| Daily steps | A chance each day of 30% ($1 to $5), 25% ($5 to $50), 15% ($50 to $500), 10% (over $500), and 20% (sealed). Pull back to the real price with a half-life of 120 days |
+| Card of $25 or more | Gains value a year while its set is out of print: WOTC and e-Card +8% to +15%, EX to XY +4% to +12%, Sun & Moon and later +2% to +10% |
+| Sealed product | Follows 60% of a boom and 20% of a correction. In print +0% to +2% a year. Out of print by era: WOTC and e-Card +10% to +15%, EX and later +15% to +25% |
+| Factor limits | 0.3 to 6 times the real price |
+| Market news | 6% each day, at most 3 at once. Hype +25% to +70%. Sealed hype +20% to +50%, 21 to 45 days. Character product +10% to +30%. Character sell-out +20% to +50% |
+| Print change | About once in 25 days. 14 to 28 days of notice. At most 2 announced. At least 8 sets stay in print |
+| Flipper dump | From pressure 0.6. A fall of 10% to 20% over 14 to 28 days, then 120 days of recovery. A reprint and a dump together never cut more than 45%. A correction hits 2 sets |
+| MSRP step | +12.5% of the retail price. A chance of 1 in 300 a day after day 90. 28 days of notice. 60% of the step reaches the market price, over 30 days |
+| Flipper pressure | Start 0.5, range 0.1 to 0.9. Sealed hype or sell-out +0.15. Boom +0.002 a day. Correction −0.003 a day. Holiday season +0.10. After-holiday season −0.10. Reprint −0.25. A pull of 1% of the gap a day. A report line at a move of 0.1 |
+| Online sale chance | Hot in-print sealed on eBay and TCGplayer: −20% at pressure 0.9, scaled from 0.1 |
 
 ## Seasons
 
@@ -578,6 +690,7 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Holiday sealed price | Center week 48, ±5 weeks. +5% at the center |
 | After the holidays | Center week 5 (early February), ±6 weeks. Sealed price −10% at the center |
 | Summer slump | Center week 30 (late July), ±6 weeks. Every sale chance −5% at the center |
+| Deeper winter dip | At pressure 0.6 or more on the first day of the dip: ×1.5 (−15% at the center). Set once for the whole dip |
 | Store customers | The mean of the sealed and the singles sale chance factors |
 | Shape | A raised cosine: the full size at the center, 0 at the edges |
 
@@ -596,6 +709,42 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Same subject in 14 days | Quality × 0.35 |
 | Posts that gain followers | The first 3 of a day |
 | Gain of one post | At most 25 or 1.5% of followers, the higher number. A viral post: 4 times that |
+
+## Callouts
+
+| Value | Number |
+|---|---|
+| Start heat | Kids 70, product integrity 60, fair openings 60, forbidden 50, greed 40, baseless drama 40 |
+| Start heat of a true callout | The type heat × the act weight, from 0.75 to 1.5 |
+| Daily fade | −15% of the heat. A new callout keeps its heat for one night |
+| End | Heat under 5, or 45 days |
+| Open cap | 3 callouts about the player. Forced callouts open past it |
+| Hidden act weight | 0.1 to 3 |
+| Discovery | Base chance × weight × witness factor × (1 + 0.1 × notoriety). Witness factor `1 + log10(1 + witnesses) / 2`, at most 3. A greed act × `(0.5 + pressure) × (1 + min(1, heat ÷ 10))`. At most 50% a day |
+| Act life | Out of the log when the weight is under 0.05 or after 90 days. An act that came out stays 120 days |
+| Rival breaks the story | 1 in 3 |
+| Deny, true callout | Heat × 1.5. The denial falls apart at 50% with proof and 20% without: reputation −8 |
+| Deny, false callout | Ends in 2 days. Reputation +1. The rival loses 0.25 credibility |
+| Make it right | Ends in 1 day. Cost: the refund of the act, or $2 for each heat point ($25 to $250). A late Rip & Ship order: 10% of the price, at least $5 |
+| Counter-callout | Heat +30. Followers +0.5%. Authenticity −0.05. Rival credibility −0.1 (true) or −0.3 (false). Rival hostility +0.2. A game shop: −10 standing |
+| Rival answer | The chance of the rival's hostility, the next night. Heat +20 |
+| Receipts | A true callout with no proof at heat 30 or more: 15% a night. Heat +10 |
+| End cost | Peak 30 to 69: reputation −4. Peak 70 or more: reputation −12, followers −1%, authenticity −0.1. Half the reputation after "make it right" |
+| Contact cost | −15 points with the harmed contact |
+| Record | Peak 50 or more, on a true callout. 90 days. −5 points for a new contact, at most 3 records |
+| Whatnot ban | Peak 80 or more, on a product integrity callout or a palm from the log. 28 to 56 days (56 for a palm) |
+| No account | A false rival callout starts at half the heat |
+| Sponsor block | No new offer at heat 60 or more |
+| Crowd line | At heat 50 or more, 12.5% of buyers who do not sell. 1 less patience |
+| Response post | Burnout +5%. No followers |
+| Weekly rival roll | `(0.008 + 0.06 × hostility) × credibility`. × 0.25 when a rival posted in the last 14 days. 4 in 10 use a real act |
+| Rival credibility | 0.25 to 1. +0.05 a week |
+| Game shop rival | Hostility `0.2 + 0.5 × (1 − standing ÷ 100)`. Only with a store lease |
+| Drama bait | +0.15 for a gambling backlash, at most 0.5. Halves each week |
+| Player callout | +1 reputation and followers +0.5% (at least 10), both × credibility. Rival credibility −0.3. Once in 28 days. Without proof: authenticity −0.05, rival credibility +0.1 |
+| Receipt limit | 1 for each rival in 30 days. A receipt stays 60 days |
+| Kid gift | $5 to $30. Once a day. A story chance of 15%, 1 in 5 viral |
+| Good story | Open callout heat −10, or −25 when viral |
 
 ## Goals and costs that grow
 

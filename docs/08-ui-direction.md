@@ -246,6 +246,13 @@ here, and the rip-or-hold decision happens here.
   machines, and the rip queue do not offer it. The portfolio header
   counts these items, because they are still assets. See
   [The PC](#the-pc) and [Master sets](#master-sets).
+- **A case has its own row and its own stack.** A case is one sealed item
+  with its own price (see
+  [12-acquiring-product.md](12-acquiring-product.md#cases)). A tap on a
+  case opens the case opening sheet: the carton opens, the units show on
+  a grid, and a summary lists them. The sheet uses no flash: the grid
+  rises, with rings near the tiles. A case that loses more than $50 of
+  premium asks for confirmation.
 - **A sealed row shows the sealed market price and the amount paid.**
   It does not show the expected value of opening the product. An
   upgrade adds the expected value to each sealed row (see
@@ -538,6 +545,13 @@ The stream rules are in
   talk to chat.
 - **A rip on the stream** opens a panel that picks the product and the
   speed. Sift shows, but it is off, with the reason.
+- **Rip & Ship** shows a panel for an order that waits for its rip: the
+  buyer, the price, the fees, and the wait. The rip screen then shows the
+  buyer meter, the unit tracker of a whole case, and the palm count. The
+  ship queue lists the orders that the player must ship, with the deadline
+  of each. The summary shows what the order paid and what the buyer got.
+  A callout shows as a card on the hub, with a reply sheet (see
+  [35-callouts.md](35-callouts.md)).
 - **An auction** shows the timer, the top bid and the bidder, the bid
   count, the price against the market price, and the bids. The highest
   bid at the end of the timer wins. The other actions stay available.

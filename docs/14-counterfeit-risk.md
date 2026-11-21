@@ -35,7 +35,20 @@ storefront label alone.
 - **Distributor/wholesale, case splits** (reputation-gated, see
   [04-reputation-and-followers-unlocks.md](04-reputation-and-followers-unlocks.md#reputation-tiers)):
   none. Part of what reputation is buying is trust in the supply chain
-  itself.
+  itself. A wholesale or split case, and every unit that comes out of
+  it, stays at zero risk.
+- **Stranger cases** (a sealed dealer at a show, eBay, Facebook): one roll
+  for the whole case, at the source rate. If the roll says fake, every
+  unit of the case is resealed. The tape and label check on a case shows
+  the tell of a fake half of the time. A professional reseal shows nothing
+  (see [12-acquiring-product.md](12-acquiring-product.md#cases)).
+- **The plug** (see [12-acquiring-product.md](12-acquiring-product.md#the-plug)):
+  a base rate of 5.5%. The sealed and hype factors bring it to about 4% for
+  a hot case. One roll covers the whole case. Stock that the police seize
+  from the plug is gone, and the player has no refund.
+- **A rival's table at a show** (see
+  [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#shows)):
+  some of the rival's sealed stock is resealed, at the plug rate.
 
 ### Singles
 
@@ -113,6 +126,13 @@ Not one fake fidelity level — mirrors the grader-variance design in
   On TCGPlayer and eBay, the platform also refunds the buyer, so the
   player loses the sale. The refund does not prevent the public scam
   accusation. See [15-selling.md](15-selling.md#bad-sales-and-scam-accusations).
+  A public post about a sold fake is a product integrity callout (see
+  [35-callouts.md](35-callouts.md)). The follower loss is 1% at a viral
+  fade, not 5%.
+- **Knowingly sold a fake or a resealed product, and the buyer did not
+  find it**: the sale is a hidden act. A third party can still find it,
+  and it can come out later as a callout. A buyer who finds the fake
+  costs reputation at once, and records no act.
 
 ## Open topics
 

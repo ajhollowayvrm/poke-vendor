@@ -150,8 +150,15 @@ A notable deal can come back days later as a story.
   views." "Marcus posted that you lowballed him at Riverside Card Show."
 - **Random stories** that no deal caused: a 3% chance each week. A good
   one gives +3 ("A regular vouched for you in a local Discord"). From
-  reputation tier 2, a bad one can come too: −3 ("A rival vendor says
-  your prices are inflated"). A random story is never viral.
+  reputation tier 2, the bad branch can come too. It is now a callout
+  from one named rival, or nothing (see [35-callouts.md](35-callouts.md)).
+  A random good story is never viral.
+- **The kid gift story.** A free gift to a kid at a show has a 15% chance
+  to become a good story, and 1 in 5 of those is viral. The values are
+  the same as for a good story above.
+- **Good stories cool callouts.** A good story lowers the heat of every
+  open callout about the player by 10. A viral good story lowers it by
+  25.
 - The game keeps the stories in a queue, the same way that it keeps a
   scam that comes out later.
 
@@ -276,7 +283,6 @@ each story in the queue comes out on its day.
 | Idea | Why not now |
 | --- | --- |
 | Score direct messages and Facebook offers | They have their own systems. |
-| Answer a bad story with a post | It needs a new post type in the social system. |
 | Bundles of three or more items | Two is enough to test the idea. |
 
 ## Values
@@ -292,7 +298,9 @@ each story in the queue comes out on its day.
 | Story chance | Generous 8%, hard 12%, lost flip 4%, +2% for each notoriety step, ×2 at $200 or more |
 | Story delay | 1 to 10 days |
 | Story effects | Good +3 / +20 followers. Viral good +10 / +2% (100 or more). Bad −4. Viral bad −12 / −1%, authenticity −0.1. 1 in 5 is viral |
-| Random story | 3% a week. Good +3. Bad −3, from tier 2 |
+| Random story | 3% a week. Good +3. From tier 2, the bad branch is a callout from one named rival, or nothing |
+| Kid gift story | 15% for each gift. 1 in 5 is viral |
+| Good story and callouts | Open callout heat −10, or −25 when viral |
 | Offer trade | 110% value, at most 150% of the goods. A closet cleaner says no 50% of the time |
 | Final offer | Within 10% of market of the limit. Meets it 60% (30% for a flipper or a dealer) |
 | Trader binder | 3 to 5 cards, more with familiarity. Shown after the ask |

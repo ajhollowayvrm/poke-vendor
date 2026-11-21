@@ -778,6 +778,10 @@ final class GameTests {
         check(kinds.count == 3, "3,000 days of regimes hold only \(kinds)")
 
         // Daily steps: the share of days with a step is near the tier's chance. A warm walk equals a cold one.
+        // The walk mixes in the market seed, so this check uses a fixed seed. Then it puts the run's seed back.
+        let runSeed = store.data.marketSeed
+        store.data.marketSeed = 4_242
+        store.syncMarket()
         for (name, tier) in [("mid", StepTier.mid), ("top", StepTier.top), ("sealed", StepTier.sealed)] {
             let key = PriceCycle.hash("test-walk-" + name)
             var moves = 0
@@ -786,6 +790,8 @@ final class GameTests {
             }
             check(abs(Double(moves) / 200 - tier.chance) < 0.1, "\(name) prices stepped on \(moves) of 200 days")
         }
+        store.data.marketSeed = runSeed
+        store.syncMarket()
         store.data.day = 40
         store.syncMarket()
         let key = PriceCycle.hash("test-warm")

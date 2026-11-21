@@ -52,7 +52,7 @@ See [14-counterfeit-risk.md](14-counterfeit-risk.md).
 | Upgrade | Cost | What it does |
 | --- | --- | --- |
 | Vendor kit | $200 | A table cover, display cases, and card stands. The player needs it to book a table at a card show. |
-| Expected value readout | $120 | Every sealed row and detail screen shows the expected value of opening it. |
+| Expected value readout | $120 | Every sealed row and detail screen shows the expected value of opening it, and a flip line: what the product nets on eBay after the cost, the eBay fee, and shipping. The store run and the opportunity screens show the flip line too. |
 | Sales analytics | $150 | The sell and consign screens show what the player paid and the profit after fees. |
 | Card reader | $80 | Card payments at shows, meets, and the store counter. See [25-payment-methods.md](25-payment-methods.md). |
 | Vendor binder | $40 | Carry 160 raw cards to a table instead of 40. |
@@ -83,6 +83,7 @@ See [15-selling.md](15-selling.md).
 | A better car | $900 | Store run stops take 30 minutes instead of 40. A far garage sale takes 6 hours instead of 8. |
 | Drop alert Discord | $60 | The morning report tells the player the day before a Pokemon Center drop. |
 | Restock alert bot | $150 | 25% more chance of getting product at a camped restock. |
+| Checkout bot | $400 | Pokemon Center drop odds rise from 30% to 60%, and Target.com gives a second attempt each day. Each use adds scalper heat. Stores cancel 35% of bot orders, and a cancelled bot order is a hidden act. See [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md). |
 | Saved eBay searches | $80 | 6 collection lots instead of 4, and new lots every day instead of every 3 days. |
 | Seller research | $150 | Each eBay lot shows whether the seller also sells singles from their lots, a sign of a searched lot. |
 | Lot appraisal app | $250 | Each eBay lot shows a range for its worth to a dealer, from what the listing shows. |
@@ -141,6 +142,7 @@ See [16-time-and-day.md](16-time-and-day.md#costs-that-grow).
 | --- | --- |
 | Your store | Second display case $500, sealed wall $400, play tables $700, security cameras $350, lighted sign $300, point-of-sale system $900 (the clerk sells as well as the player), bigger unit $2,500, large unit $4,500. See [22-own-store.md](22-own-store.md). |
 | Each vending machine | Card reader $300, camera $250, remote stock data $150. See [31-vending-machines.md](31-vending-machines.md). |
+| Restock alerts | A monthly fee, not an upgrade: $8 for one chain, $25 for every chain. The alert tells the player the evening before a vendor day. See [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#restock-alerts). |
 
 Collection insurance is a premium every 4 weeks, so it is not an
 upgrade. The Upgrades screen links to it in the Wallet.

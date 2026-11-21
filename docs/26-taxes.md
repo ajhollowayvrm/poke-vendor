@@ -52,8 +52,9 @@ requirement on the store screen (see
 - The permit costs $50, one time. The player gets it from the tax box in
   the Wallet.
 - A player who already has a store has the permit.
-- The permit is not a requirement for the card show table or for
-  wholesale.
+- The permit is not a requirement for the card show table or the
+  secondary wholesaler. A hobby distributor account requires it (see
+  [12-acquiring-product.md](12-acquiring-product.md#distributor--wholesale-two-tiers)).
 
 ## Estimated income tax
 
@@ -66,8 +67,14 @@ The net profit of a quarter is the sum of these ledger entries:
 - Income: sales, live-stream tips, and sponsorships. A refund is
   negative income.
 - Cost: sealed product, singles, grading and authentication fees, show
-  fees, wholesale, store rent, store overhead, wages, store events, and
-  the interest and fees of a business loan.
+  fees, wholesale, store rent, store overhead, wages, store events, the
+  club membership, the restock alert fee, and the interest and fees of a
+  business loan.
+- A refund of a cancelled order or a missing shipment is a positive entry
+  in the category of the cost. It lowers that cost.
+- A plug order has no invoice. The ledger files it as "Gray market".
+  Income tax never counts it as a cost, and it counts no refund of it
+  either.
 
 The paycheck, the home rent, the upgrades, the store build-out and
 deposit, and the tax payments are not in the sum. Loan cash, principal
