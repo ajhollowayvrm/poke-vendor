@@ -510,7 +510,7 @@ extension GameStore {
         let sealed = stock.sealed.map { item in
             ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
                      image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
-                     fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs, isCase: item.isCase, pc: item.pc)
+                     fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs, productID: item.productID, isCase: item.isCase, pc: item.pc)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
@@ -536,8 +536,10 @@ struct ShowItem: Identifiable, Hashable {
     /// The grade of a slab, and the subgrades a BGS label prints.
     var grade: SlabGrade? = nil
     var subgrades: [Double]? = nil
-    /// The pack count of sealed product: it sets the carry space (docs/29-packing-and-crowds.md).
+    /// The pack count of sealed product. A case uses it for the units in the case.
     var packs = 0
+    /// The catalog product of sealed product: its name and kind set the carry space (docs/29-packing-and-crowds.md).
+    var productID: String? = nil
     /// A sealed case. It packs tighter than loose boxes (Model/Packing.swift).
     var isCase = false
     /// In the player's PC. Every deal on it carries the PC premium.

@@ -43,6 +43,7 @@ final class GameTests {
         timed("online", online)
         timed("ripship", ripShip)
         timed("sealedUpgrades", sealedUpgrades)
+        timed("sealedSizes", sealedSizes)
         timed("phase7", phase7)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
@@ -1649,10 +1650,10 @@ final class GameTests {
         _ = store.checkCase(owned)
         check(store.data.sealed.first { $0.id == owned }?.caseChecked == true && store.checkCase(owned) == nil, "a case was checked twice")
 
-        // Carry space: a case packs at 1 plus 1 for each 8 packs.
+        // Carry space: a case takes 80% of the space of its units (sealedSizes checks the real products).
         let caseItem = ShowItem(id: UUID(), kind: .sealed, name: "c", detail: "", market: 1, image: nil, condition: nil, graded: false,
-                                setSlug: etb.homeSlug, packs: etb.packs * 10, isCase: true)
-        check(CarryBin.space(caseItem) == 1 + Int((Double(etb.packs * 10) / 8).rounded(.up)), "a case takes the wrong carry space")
+                                setSlug: etb.homeSlug, packs: etb.packs * 10, productID: etb.id, isCase: true)
+        check(CarryBin.space(caseItem) == 40, "a case of 10 Elite Trainer Boxes takes the wrong carry space")
     }
 
     /// Sealed product phase 2: limits, the vendor batch and its drain, heat and bans, the club, the dump cap, and the
@@ -2921,6 +2922,45 @@ final class GameTests {
         }
     }
 
+    /// Carry space from the real product sizes (docs/29-packing-and-crowds.md, The size of sealed product).
+    private func sealedSizes() {
+        func show(_ id: String, packs: Int? = nil, isCase: Bool = false) -> ShowItem? {
+            guard let p = SetLibrary.product(id) else { return nil }
+            return ShowItem(id: UUID(), kind: .sealed, name: p.name, detail: "", market: 1, image: nil, condition: nil, graded: false,
+                            setSlug: p.homeSlug, packs: packs ?? p.packs, productID: p.id, isCase: isCase)
+        }
+        let loose: [(String, String, Int)] = [
+            ("593294", "booster pack", 1), ("98947", "3-pack blister", 2), ("600518", "booster bundle", 2),
+            ("593355", "Elite Trainer Box", 5), ("265519", "booster box", 3), ("98615", "tin before XY", 3),
+            ("671250", "modern tin", 4), ("522699", "mini tin", 1), ("668530", "Mini Tins 5-Pack", 5),
+            ("636740", "2-Pack Trainer Box and Booster Bundle", 7), ("610741", "Elite Trainer Box and Tin", 9),
+            ("287503", "Tin + Tin 2-pack", 8), ("636312", "3-Pack ETB + Tins", 13), ("107610", "Base Set 2 Booster Box", 3),
+            ("505945", "Mini Booster Pack in a bundle name", 1), ("232313", "3 Pack Hanger Box", 2), ("662302", "4 Mini Tins + Promo Cards", 4), ("502005", "Ultra-Premium Collection", 7),
+            ("244414", "Elite Trainer Box [Set of 2]", 10), ("593324", "Pokemon Center Elite Trainer Box", 5),
+        ]
+        for (id, label, space) in loose {
+            guard let item = show(id) else { check(false, "no catalog product \(id) for the \(label) size test"); continue }
+            check(CarryBin.space(item) == space, "the \(label) takes \(CarryBin.space(item)) spaces, not \(space)")
+        }
+        if let box = show("265519"), let etb = show("593355") {
+            check(CarryBin.space(box) < CarryBin.space(etb), "a booster box takes as much space as an Elite Trainer Box")
+        } else {
+            check(false, "no booster box or Elite Trainer Box for the size order test")
+        }
+        // Cases: (unit product, packs of the whole case, space, space with the hand truck).
+        let cases: [(String, Int, Int, Int)] = [("265519", 216, 15, 11), ("593355", 90, 40, 30), ("600518", 150, 40, 30), ("593294", 144, 15, 11)]
+        for (id, packs, plain, truck) in cases {
+            guard let item = show(id, packs: packs, isCase: true) else { check(false, "no catalog product \(id) for the case size test"); continue }
+            check(CarryBin.space(item) == plain && CarryBin.space(item, handTruck: true) == truck,
+                  "a case of \(id) takes \(CarryBin.space(item)) and \(CarryBin.space(item, handTruck: true)) spaces, not \(plain) and \(truck)")
+        }
+        check(Balance.sealedSpace(name: "Hidden Fates Tin [Set of 3]", kind: "Tin", packs: 12, setSlug: "black-white") == 9
+              && Balance.sealedSpace(name: "Hidden Fates Tin [Set of 3]", kind: "Tin", packs: 12, setSlug: "sword-shield") == 12,
+              "a Set of 3 tins takes the wrong carry space by era")
+        check(Balance.sealedSpace(name: "Pok\u{E9}mon Center ELITE TRAINER BOX", kind: nil, packs: 9, setSlug: "") == 5
+              && Balance.sealedSpace(name: "Pok\u{E9} Ball Tin", kind: "Tin", packs: 3, setSlug: "") == 3, "the name match missed an accent or a capital letter")
+    }
+
     /// The eight sealed product upgrades and the two store fixtures (docs/09-upgrades.md): one small check for each.
     private func sealedUpgrades() {
         fresh()
@@ -2935,17 +2975,16 @@ final class GameTests {
         check(Upgrade.handTruck.requires == .foldingCart && Upgrade.overheadCamera.requires == .cameraKit
               && Upgrade.reprintRadar.requires == .priceTracker && Upgrade.machineMap.requires == nil, "a sealed upgrade has the wrong prerequisite")
 
-        // 1. Hand truck: a case takes 1 space plus 1 for each 12 packs. It needs the folding cart and costs $180.
+        // 1. Hand truck: a case takes 60% of the space of its units, not 80%. It needs the folding cart and costs $180.
         let caseItem = ShowItem(id: UUID(), kind: .sealed, name: "c", detail: "", market: 1, image: nil, condition: nil, graded: false,
-                                setSlug: etb.homeSlug, packs: etb.packs * 10, isCase: true)
+                                setSlug: etb.homeSlug, packs: etb.packs * 10, productID: etb.id, isCase: true)
         let wide = store.carrySpace(caseItem)
         check(!store.canBuyUpgrade(.handTruck), "the hand truck sold without the folding cart")
         own(.foldingCart)
         let cash = store.cash
         store.buyUpgrade(.handTruck)
         check(store.hasUpgrade(.handTruck) && abs(cash - store.cash - 180) < 0.005, "the hand truck did not cost exactly $180")
-        check(wide == 1 + Int((Double(etb.packs * 10) / 8).rounded(.up))
-              && store.carrySpace(caseItem) == 1 + Int((Double(etb.packs * 10) / 12).rounded(.up)) && store.carrySpace(caseItem) < wide,
+        check(wide == 40 && store.carrySpace(caseItem) == 30 && store.carrySpace(caseItem) < wide,
               "the hand truck did not change the case carry space")
 
         // 2. Seal inspection kit: the check works on any sealed product, finds a tell twice as often, and runs once.

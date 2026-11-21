@@ -109,20 +109,200 @@ enum CarryBin: CaseIterable {
 
     static func of(_ item: ShowItem) -> CarryBin { item.kind == .sealed ? .tote : item.graded ? .slabBox : .binder }
 
-    /// The space one item takes in its bin. Sealed product: 1 pack is 1 space, more is 1 plus 1 for each 6 packs.
-    /// A sealed case packs tighter: 1 plus 1 for each 8 packs (docs/29-packing-and-crowds.md, Cases).
-    static func space(_ item: ShowItem, casePacksPerSpace: Int = Balance.casePacksPerSpace) -> Int {
+    /// The space one item takes in its bin. A loose sealed item takes `max(1, round(sqrt(volume / 8 in³)))`, from its real
+    /// volume (docs/29-packing-and-crowds.md, The size of sealed product). A sealed case takes a share of the space of its units.
+    static func space(_ item: ShowItem, handTruck: Bool = false) -> Int {
         guard item.kind == .sealed else { return 1 }
-        if item.isCase { return 1 + Int((Double(item.packs) / Double(casePacksPerSpace)).rounded(.up)) }
-        return item.packs <= 1 ? 1 : 1 + Int((Double(item.packs) / 6).rounded(.up))
+        let unit = unitProfile(item)
+        guard item.isCase else { return unit.space }
+        let share = handTruck ? Balance.handTruckCaseShare : Balance.caseShare
+        // A sleeved booster case holds loose packs. It counts as displays of 24 packs, each the size of a booster box.
+        let units = unit.isPack ? Double(item.packs) / Double(Balance.packsPerDisplay) : Double(max(1, item.packs / max(1, unit.packs)))
+        let each = unit.isPack ? Balance.space(volume: Balance.boosterBoxVolume) : unit.space
+        return max(1, Int((units * Double(each) * share - 1e-9).rounded(.up)))
+    }
+
+    private struct UnitProfile {
+        let space: Int
+        let packs: Int
+        let isPack: Bool
+    }
+
+    /// The space of each product is fixed, so each product ID matches its name once.
+    nonisolated(unsafe) private static var profiles: [String: UnitProfile] = [:]
+
+    private static func unitProfile(_ item: ShowItem) -> UnitProfile {
+        if let id = item.productID, let known = profiles[id] { return known }
+        let product = SetLibrary.product(item.productID)
+        let slug = product?.homeSlug ?? item.setSlug
+        let kind = product?.kind
+        let packs = product?.packs ?? item.packs
+        let profile = UnitProfile(space: Balance.sealedSpace(name: product?.name ?? item.name, kind: kind, packs: packs, setSlug: slug),
+                                  packs: packs, isPack: kind == "Booster pack")
+        if let id = item.productID { profiles[id] = profile }
+        return profile
     }
 }
 
 extension Balance {
-    /// A sealed case takes 1 space plus 1 for each this many packs.
-    static let casePacksPerSpace = 8
-    /// With the hand truck, a sealed case takes 1 space plus 1 for each this many packs.
-    static let handTruckPacksPerSpace = 12
+    /// A loose sealed item takes round(sqrt(volume / this)) spaces, at least 1. The volume is in cubic inches.
+    static let sealedVolumePerSpace = 8.0
+    /// A sealed case takes this share of the space of its units. With the hand truck, it takes the second share.
+    static let caseShare = 0.8
+    static let handTruckCaseShare = 0.6
+    /// A sleeved booster case holds loose packs. This many packs count as one booster box display.
+    static let packsPerDisplay = 24
+    static let boosterBoxVolume = 72.0
+
+    static func space(volume: Double) -> Int { max(1, Int((volume / sealedVolumePerSpace).squareRoot().rounded())) }
+
+    /// Real volumes (in³) by name, from research_notes/Sealed product sizes.md. Names are lowercase with no accents.
+    /// The first match wins. The last rows are estimates that give the fallback spaces of the notes.
+    static let sealedVolumeByName: [(keys: [String], volume: Double)] = [
+        (["super-premium", "super premium"], 707),
+        (["ultra-premium", "ultra premium"], 425),
+        (["half booster box"], 40),
+        (["enhanced booster box", "booster box"], 72),
+        (["elite trainer box plus", "etb plus"], 203),
+        (["elite trainer box"], 171),
+        (["build & battle stadium"], 117),
+        (["build & battle box", "prerelease kit"], 27),
+        (["booster bundle"], 28),
+        (["mini tin"], 17.6),
+        (["stacking tin", "poke ball tin"], 78),
+        (["collector chest", "collectors chest", "collector's chest"], 197),
+        (["binder collection"], 201),
+        (["premium collection", "premium figure collection"], 192),
+        (["poster collection"], 135),
+        (["checklane", "single pack blister", "pack blister"], 26),
+        (["hanger box"], 32),
+        (["tech sticker collection"], 32),
+        (["challenge box"], 200),
+        (["pin collection"], 128),
+        (["holiday calendar"], 392),
+        (["trainer's toolkit"], 288),
+        (["first partner pack", "showcase"], 32),
+    ]
+    /// Real volumes (in³) by catalog kind, when no name matches.
+    static let sealedVolumeByKind: [String: Double] = [
+        "Booster pack": 2.4, "Blister": 32, "Booster bundle": 28, "Build & Battle": 27, "Booster box": 72,
+        "Elite Trainer Box": 171, "Collection": 175, "Other": 32,
+    ]
+    /// A blister of one pack, a half booster box (24 packs or less), and the standard tin by era.
+    static let singleBlisterVolume = 26.0
+    static let smallBoxVolume = 40.0
+    static let tinVolumeBeforeXY = 80.0
+    static let tinVolumeFromXY = 121.0
+    /// The eras before XY. A tin from one of them is smaller. An item with no known era counts as XY or later.
+    static let tinSmallEras: Set<String> = ["wizards-of-the-coast", "e-card", "ex", "diamond-pearl-platinum", "heartgold-soulsilver", "black-white"]
+
+    /// The unit products of a club or retail bundle, as they appear in a lowercase name. A tin is the standard tin.
+    /// Small extras (a Poke Ball, a Surprise Box, promo cards, pins) are not here, so they add nothing.
+    private static let componentRegex = try! NSRegularExpression(
+        pattern: #"\b(elite trainer box|trainer box|etb|booster bundle|mini tins?|poke ball tins?|poster collection|binder collection|binder|premium collection|ex box|booster box|tins?)\b"#)
+    private static let leadPackRegex = try! NSRegularExpression(pattern: #"\b(\d{1,2})[- ]pack\s+$"#)
+    private static let leadNumberRegex = try! NSRegularExpression(pattern: #"\b(\d{1,2})\s+$"#)
+    private static let trailCountRegex = try! NSRegularExpression(pattern: #"^\s*(\d{1,2})[- ]pack"#)
+    private static let totalCountRegex = try! NSRegularExpression(pattern: #"\b(\d{1,2})[- ]pack:"#)
+    /// The count that a plural unit has when the name gives no number.
+    static let pluralBundleCount = 2
+
+    private static func firstInt(_ regex: NSRegularExpression, in text: String) -> Int? {
+        let ns = text as NSString
+        guard let m = regex.firstMatch(in: text, range: NSRange(location: 0, length: ns.length)) else { return nil }
+        return Int(ns.substring(with: m.range(at: 1)))
+    }
+
+    private static func componentVolume(_ word: String, setSlug: String) -> Double {
+        if word.hasPrefix("mini tin") { return 17.6 }
+        if word.hasPrefix("poke ball tin") { return 78 }
+        if word.hasSuffix("tin") || word.hasSuffix("tins") { return tinVolume(setSlug: setSlug) }
+        if word.hasPrefix("booster bundle") { return 28 }
+        if word.hasPrefix("booster box") { return 72 }
+        if word.hasPrefix("poster") { return 135 }
+        if word.hasPrefix("binder") { return 201 }
+        if word.hasPrefix("premium") { return 192 }
+        if word.hasPrefix("ex box") { return 175 }
+        return 171
+    }
+
+    private static func tinVolume(setSlug: String) -> Double {
+        tinSmallEras.contains(SetLibrary.info(setSlug)?.era ?? "") ? tinVolumeBeforeXY : tinVolumeFromXY
+    }
+
+    /// A name that holds several products: a joiner ("+", "and", "&") between two units, or a count next to a unit. The
+    /// space is the sum of each unit space times its count. "3 Pack Blister" is booster packs, so it is not here.
+    /// Nil: the name is not a bundle, and the single-item rule applies.
+    private static func bundleSpace(_ text: String, setSlug: String) -> Int? {
+        let ns = text as NSString
+        let hits = componentRegex.matches(in: text, range: NSRange(location: 0, length: ns.length))
+        guard !hits.isEmpty else { return nil }
+        var total = firstInt(totalCountRegex, in: text)
+        var words: [String] = []
+        var counts: [Int?] = []
+        var leads: [Int?] = []
+        var joined = false
+        for (i, hit) in hits.enumerated() {
+            let word = ns.substring(with: hit.range)
+            let end = hit.range.location + hit.range.length
+            let before = ns.substring(to: hit.range.location)
+            let lead = firstInt(leadPackRegex, in: before)
+            var count: Int? = nil
+            // A bare number counts only mini tins ("4 Mini Tins"), so "Base Set 2 Booster Box" is one box. A count after a
+            // mini tin ("Mini Tins 5-Pack") counts the tins. After another tin it counts the whole pack.
+            if word.hasPrefix("mini tin") {
+                count = firstInt(leadNumberRegex, in: before) ?? firstInt(trailCountRegex, in: ns.substring(from: end))
+            }
+            words.append(word)
+            counts.append(count)
+            leads.append(lead)
+            if i + 1 < hits.count {
+                let between = ns.substring(with: NSRange(location: end, length: hits[i + 1].range.location - end))
+                if between.contains(" + ") || between.contains(" and ") || between.contains(" & ") { joined = true }
+            }
+        }
+        // "N-Pack" before one unit multiplies it ("8-Pack Mini Tins"). With several units joined, N is the total of products.
+        for i in counts.indices where leads[i] != nil {
+            if joined { total = total ?? leads[i] } else if counts[i] == nil { counts[i] = leads[i] }
+        }
+        guard joined || counts.contains(where: { ($0 ?? 1) > 1 }) else { return nil }
+        let named = zip(words, counts).reduce(0) { $0 + ($1.1 ?? ($1.0.hasSuffix("s") ? 0 : 1)) }
+        var sum = 0
+        for (word, count) in zip(words, counts) {
+            let plural = word.hasSuffix("s")
+            let units = count ?? (plural ? (total.map { max(1, $0 - named) } ?? pluralBundleCount) : 1)
+            sum += space(volume: componentVolume(word, setSlug: setSlug)) * units
+        }
+        return sum
+    }
+
+    /// The space of one sealed product, or of all its units for a "[Set of N]" product.
+    static func sealedSpace(name: String, kind: String?, packs: Int, setSlug: String) -> Int {
+        let folded = name.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil).lowercased()
+        var count = 1
+        if let open = folded.range(of: "[set of "),
+           let n = Int(folded[open.upperBound...].prefix { $0.isNumber }), n > 1 {
+            count = n
+        }
+        // One loose pack is 1 space, whatever its name says ("Mini Booster Pack" in a bundle name).
+        if kind == "Booster pack", max(1, packs / count) == 1 { return count }
+        if count == 1, let bundle = bundleSpace(folded, setSlug: setSlug) { return bundle }
+        if let named = sealedVolumeByName.first(where: { row in row.keys.contains { folded.contains($0) } }) {
+            return space(volume: named.volume) * count
+        }
+        let unitPacks = max(1, packs / count)
+        let volume: Double
+        switch kind {
+        case "Tin": volume = tinVolume(setSlug: setSlug)
+        case "Blister": volume = unitPacks <= 1 ? singleBlisterVolume : sealedVolumeByKind["Blister"] ?? 32
+        case "Booster box": volume = unitPacks <= 24 ? smallBoxVolume : sealedVolumeByKind["Booster box"] ?? 72
+        default: volume = kind.flatMap { sealedVolumeByKind[$0] } ?? sealedVolumeByKind["Other"] ?? 32
+        }
+        return space(volume: volume) * count
+    }
+}
+
+extension Balance {
     static let binderSpace = [40, 160]
     static let slabBoxSpace = [3, 20]
     static let toteSpace = [8, 30]
@@ -164,7 +344,7 @@ extension GameStore {
 
     /// The space one item takes in its bin, with the hand truck.
     func carrySpace(_ item: ShowItem) -> Int {
-        CarryBin.space(item, casePacksPerSpace: hasUpgrade(.handTruck) ? Balance.handTruckPacksPerSpace : Balance.casePacksPerSpace)
+        CarryBin.space(item, handTruck: hasUpgrade(.handTruck))
     }
 
     /// The days before today when the item sat on a table, in the last 21 days.

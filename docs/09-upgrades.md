@@ -59,7 +59,7 @@ See [14-counterfeit-risk.md](14-counterfeit-risk.md).
 | Vendor binder | $40 | Carry 160 raw cards to a table instead of 40. |
 | Slab case | $90 | Carry 20 slabs instead of 3. |
 | Folding cart | $120 | Carry 30 spaces of sealed product instead of 8. |
-| Hand truck | $180 | A sealed case takes 1 space plus 1 for each 12 packs, not each 8. A case of 10 Elite Trainer Boxes takes 9 spaces, not 13. Needs the folding cart. |
+| Hand truck | $180 | A sealed case takes 60% of the space of its units, not 80%. A case of 10 Elite Trainer Boxes takes 30 spaces, not 40. Needs the folding cart. |
 | Cargo van | $6,500 | 50% more carry space in each bin. Needs the better car. |
 | Premium booth | $3,000 | A better spot at a booked show table: 20% more visitors. |
 | Showcase case | $750 | Opens the Showcase section: a lit case for 6 cards of $1,000 or more. See [20-card-shows.md](20-card-shows.md#the-showcase). |

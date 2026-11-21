@@ -44,31 +44,94 @@ The player carries stock in three bins. Each bin has its own limit.
 | Slab box | Slabs, 1 space each | 3 | Slab case, $90 | 20 |
 | Tote | Sealed product, by size | 8 | Folding cart, $120 | 30 |
 
-**The size of sealed product** comes from its pack count:
+**The size of sealed product** comes from its real size. The game stores
+the volume of each kind in cubic inches (in³). A loose sealed item takes
+`max(1, round(sqrt(volume / 8 in³)))` spaces. The square root keeps a
+pack small and a big collection under control. The 8 is
+`Balance.sealedVolumePerSpace`, so the scale can change.
 
-| Product | Packs | Space |
+| Product | Volume (in³) | Space |
 | --- | --- | --- |
-| A booster pack | 1 | 1 |
-| A 3-pack blister | 3 | 2 |
-| A booster bundle | 6 | 2 |
-| An Elite Trainer Box | 9 | 3 |
-| A booster box | 36 | 7 |
+| A booster pack | 2.4 | 1 |
+| A mini tin | 17.6 | 1 |
+| A blister | 26, other multi-pack blisters 32 | 2 |
+| A hanger box | 32 | 2 |
+| A booster bundle | 28 | 2 |
+| A Build & Battle box, a prerelease kit | 27 | 2 |
+| A half booster box | 40 | 2 |
+| A booster box (every era) | 72 | 3 |
+| A stacking tin, a Poke Ball tin | 78 | 3 |
+| A standard tin before XY | 80 | 3 |
+| A standard tin from XY on | 121 | 4 |
+| A Build & Battle Stadium | 117 | 4 |
+| A poster collection | 135 | 4 |
+| An Elite Trainer Box, a Pokemon Center Elite Trainer Box | 171 | 5 |
+| An Elite Trainer Box Plus | 203 | 5 |
+| A small ex, V, or GX collection box | 175 | 5 |
+| A premium collection, a binder collection, a collector chest | 192 to 201 | 5 |
+| An Ultra-Premium Collection | 425 | 7 |
+| A Super-Premium Collection | 707 | 9 |
 
-The rule is: 1 pack is 1 space. More packs are 1 space plus 1 for each
-6 packs, rounded up.
+A booster box is smaller than an Elite Trainer Box. The real box is 72
+in³. The real Elite Trainer Box is 171 in³. The sizes come from
+`research_notes/Sealed product sizes.md`.
 
-**A sealed case** packs tighter. It takes 1 space plus 1 for each 8
-packs, rounded up:
+**Bundles of several products.** A club or retail pack can hold more than
+one product. The game checks this after `[Set of N]` and before the name rules. A name
+is a bundle when a joiner ("+", "and", "&") stands between two units, or a
+count stands next to a unit ("8-Pack Mini Tins", "4 Mini Tins", "Mini
+Tins 5-Pack"). The units are Elite Trainer Box (or Trainer Box), Booster
+Bundle, Mini Tin, Tin, Poke Ball Tin, Poster Collection, Binder
+Collection, Premium Collection, ex Box, and Booster Box. The space is the
+sum of each unit space times its count. A Poke Ball, a Surprise Box,
+promo cards, and pins add nothing. A count next to one unit multiplies
+it ("8-Pack Mini Tins"). A leading "N-Pack" before units with a joiner is
+the total number of products: each singular unit counts 1, and a plural
+unit takes the rest. "2-Pack Trainer Box and Booster Bundle" is 1 ETB and
+1 bundle (7 spaces). "3-Pack: ETB + Tins" is 1 ETB and 2 tins. A plural unit with
+no count is 2. "3 Pack Blister" counts booster packs, so it is one
+blister. A name with no unit match uses the rules below.
+
+**Outliers by name.** The game reads the name of the product before its
+kind. It ignores capital letters and accents ("Poké" matches "poke").
+The first match wins, in this order:
+
+1. `[Set of N]`: the space of one unit, times N. The game does not take
+   the root of the total.
+2. Super-Premium, Ultra-Premium, Half Booster Box, Booster Box.
+3. Elite Trainer Box Plus, Elite Trainer Box, Build & Battle Stadium.
+4. Build & Battle Box, Prerelease Kit, Booster Bundle, Mini Tin.
+5. Stacking Tin, Poke Ball Tin, Collector Chest, Binder Collection.
+6. Premium Collection, Poster Collection, Checklane or Pack Blister,
+   Hanger Box.
+7. Tech Sticker Collection, Challenge Box, Pin Collection, Holiday
+   Calendar, Trainer's Toolkit, First Partner Pack, Showcase. These
+   sizes are estimates: 2, 5, 4, 7, 6, 2, and 2 spaces.
+
+A loose booster pack (kind "Booster pack", 1 pack) is always 1 space, even
+when its name holds other keywords. A product with no name match uses the volume of its catalog kind. A
+blister of 1 pack is 26 in³. A booster box of 24 packs or fewer is 40
+in³. The kind "Other" is 32 in³ (2 spaces).
+
+**The tin era rule.** A standard tin is smaller before XY (80 in³, 3
+spaces) than from XY on (121 in³, 4 spaces). The game reads the era of
+the set in the first pack of the product. A product with no known era
+counts as XY or later.
+
+**A sealed case** takes 80% of the space of its units, rounded up. The
+units are loose, so a case packs tighter than its units on a table.
+With the hand truck, a case takes 60%. A sleeved booster case holds
+loose packs. Every 24 packs count as one booster box.
 
 | Case | Packs | Space | With the hand truck |
 | --- | --- | --- | --- |
-| A case of 6 booster boxes | 216 | 28 | 19 |
-| A case of 10 Elite Trainer Boxes | 90 | 13 | 9 |
-| A case of 25 booster bundles | 150 | 20 | 14 |
-| A sleeved booster case of 144 packs | 144 | 19 | 13 |
+| A case of 6 booster boxes (6 × 3 × 0.8) | 216 | 15 | 11 |
+| A case of 10 Elite Trainer Boxes (10 × 5 × 0.8) | 90 | 40 | 30 |
+| A case of 25 booster bundles (25 × 2 × 0.8) | 150 | 40 | 30 |
+| A sleeved booster case of 144 packs (6 × 3 × 0.8) | 144 | 15 | 11 |
 
-The hand truck ($180, needs the folding cart) changes the rule for a
-sealed case to 1 space plus 1 for each 12 packs, rounded up.
+The hand truck ($180, needs the folding cart) changes the share of a
+sealed case from 80% to 60%.
 
 ## Setup time
 
@@ -235,8 +298,9 @@ limit what goes on the table. What the player buys or gets in a trade
 goes home in their hands.
 
 **Can the player bring an item that is bigger than its bin?** No. A
-case of booster boxes needs 37 spaces, and the folding cart holds 30.
-A case stays home. The player sells a case online or to a dealer.
+case of 10 Elite Trainer Boxes needs 40 spaces, and the folding cart
+holds 30. With the hand truck it needs 30. A case that does not fit
+stays home. The player sells a case online or to a dealer.
 
 **What about a walk-in at a show, and the surprise opportunities?**
 A walk-in packs a bag (see [A bag for walk-ins](#a-bag-for-walk-ins)).
@@ -312,7 +376,8 @@ Run `-test` after a change to this system.
 | Slab box, no upgrade / slab case | 3 / 20 slabs |
 | Tote, no upgrade / folding cart | 8 / 30 spaces |
 | Vendor binder, slab case, folding cart | $40, $90, $120 |
-| A sealed case | 1 space + 1 for each 8 packs, rounded up. With the hand truck ($180): 1 for each 12 packs |
+| Sealed product, one item | round(sqrt(volume ÷ 8 in³)), at least 1. See the size table |
+| A sealed case | 80% of the space of its units, rounded up. With the hand truck ($180): 60% |
 | Setup time | 10 minutes + 1 for each 5 raw cards + 0.5 for each slab + 1 for each sealed space |
 | Setup time on day 2 of a regional show | 50% |
 | Buyer budget | Spend cap × 50% to 150% |

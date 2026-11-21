@@ -478,7 +478,7 @@ Other values:
 | Studio lights, camera kit | $250, $600 |
 | Card reader | $80 |
 | Vendor binder, slab case, folding cart | $40, $90, $120 |
-| Hand truck (needs the folding cart) | $180. A case: 1 space for each 12 packs, not 8 |
+| Hand truck (needs the folding cart) | $180. A case: 60% of the space of its units, not 80% |
 | Seal inspection kit | $160. The tape check works on any sealed product, 2 × the catch |
 | Route planner app | $120 |
 | Machine map app | $60. A machine restock posts 4 days ahead |
@@ -596,7 +596,7 @@ See [25-payment-methods.md](25-payment-methods.md). The code is in `Model/Paymen
 | --- | --- |
 | Binder | 40 raw cards. Vendor binder ($40): 160 |
 | Slab box | 3 slabs. Slab case ($90): 20 |
-| Tote | 8 spaces. Folding cart ($120): 30. Sealed: 1 pack is 1 space, more is 1 + 1 for each 6 packs. A sealed case: 1 + 1 for each 8 packs |
+| Tote | 8 spaces. Folding cart ($120): 30. Sealed: round(sqrt(real volume ÷ 8 in³)), at least 1. A booster pack is 1, a booster box 3, an Elite Trainer Box 5, an Ultra-Premium Collection 7. A sealed case: 80% of the space of its units, rounded up |
 | Setup time | 10 minutes + 0.2 for each raw card + 0.5 for each slab + 1 for each sealed space. Day 2 of a regional show: 50%, after a day 1 setup |
 | Spend cap | Park swap $60, league night $80, trade night $150, local show $400, no cap at the trading circle, the regional show, and the store. Budget: cap × 50% to 150% |
 | Trade share | A share of the visitors who do not sell: park swap 35%, trade night 40%, trading circle 25%, league night 20%, others 23%. The store counter: a flat 18% of all visitors |
