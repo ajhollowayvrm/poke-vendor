@@ -552,6 +552,27 @@ extension GameStore {
         for name in cleared { noteShelfReceipt(rival.id, note: "\(rival.name) cleared the \(name) at \(key)") }
     }
 
+    /// The player knows the vendor day of a chain: seen it, or an alert covers it.
+    func vendorKnown(_ store: LocalStore) -> Bool {
+        !store.isGameShop && (data.retail.seenSlot[store.rawValue] != nil || alertedStores.contains(store))
+    }
+
+    /// The stops in the order of a store run. Without the route planner, the order the player chose. With it, the chains
+    /// whose vendor is not today go first. Then come the chains whose vendor comes today, by vendor hour, so they arrive as
+    /// late as possible, after a vendor hour that the player knows. Last come the unknown chains. Each group keeps the
+    /// order the player chose, except the chains with a vendor today.
+    func plannedRoute(_ stops: [LocalStore]) -> [LocalStore] {
+        guard hasUpgrade(.routePlanner) else { return stops }
+        let today = data.day % 7
+        let indexed = Array(stops.enumerated())
+        let known = indexed.filter { vendorKnown($0.element) }
+        let early = known.filter { vendorSlot($0.element).weekday == today }
+            .sorted { (vendorSlot($0.element).hour, $0.offset) < (vendorSlot($1.element).hour, $1.offset) }
+        let later = known.filter { vendorSlot($0.element).weekday != today }
+        let unknown = indexed.filter { !vendorKnown($0.element) }
+        return (later + early + unknown).map(\.element)
+    }
+
     /// The hours to wait at a stop for the vendor: the stop is on the vendor day, before the vendor hour, within
     /// `vendorWaitMax` hours, and the player knows the slot (seen it, or an alert covers the chain). Nil otherwise.
     func vendorWaitGap(_ store: LocalStore, arrival: Double) -> Double? {

@@ -281,7 +281,9 @@ extension GameStore {
                             note: "Police seized plug stock: \(orders.map(\.productName).joined(separator: ", "))",
                             revealDay: reveal, sourceID: first.id)
         }
-        for act in purchaseActs { retireHiddenAct(act) }
+        for act in purchaseActs {
+            retireHiddenAct(act, force: true, reason: "The police seizure is now the story. The plug talk is dying down.")
+        }
         return lines
     }
 

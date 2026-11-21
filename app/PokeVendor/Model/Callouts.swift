@@ -393,6 +393,10 @@ extension Balance {
     static let calloutDenyCaughtRep = 8
     static let calloutDenyFalseRep = 1
     static let calloutDenyFalseDays = 2
+    /// With the purchase records app, a denied false product integrity or forbidden product callout falls in this many
+    /// days, and the rival loses this multiple of the credibility.
+    static let purchaseRecordsFalseDays = 1
+    static let purchaseRecordsCredFactor = 1.5
     static let calloutMakeRightDays = 1
     /// The cost of "make it right" when no act sets a refund: dollars for each heat point, lowest, highest.
     static let calloutGoodwillPerHeat = 2.0
@@ -496,7 +500,8 @@ extension GameStore {
     /// Removes an act when its source is settled. Without `force`, an exposed act stays. With `force`, an exposed act
     /// goes too, and its open callout loses half its heat. Returns true when the act had already come out.
     @discardableResult
-    func retireHiddenAct(_ id: UUID, force: Bool = false) -> Bool {
+    func retireHiddenAct(_ id: UUID, force: Bool = false,
+                         reason: String = "The buyer's problem is settled. The talk is dying down.") -> Bool {
         guard let i = data.hiddenActs.firstIndex(where: { $0.id == id }) else { return false }
         let exposed = data.hiddenActs[i].exposed
         guard !exposed || force else { return true }
@@ -505,7 +510,7 @@ extension GameStore {
         var c = data.callouts.open[k]
         c.heat /= 2
         c.sourceSettled = true
-        c.reason = "The buyer's problem is settled. The talk is dying down."
+        c.reason = reason
         data.callouts.open[k] = c
         return true
     }
@@ -942,8 +947,8 @@ extension GameStore {
             return nil
         case .makeRight:
             if c.actKind == .unshippedOrder, !c.sourceSettled, let id = c.sourceID, ripShipOrderOpen(id),
-               slot(for: Balance.ripShipShipMinutes / 60) == nil {
-                return "You need 10 minutes today to ship the order."
+               slot(for: ripShipShipMinutes / 60) == nil {
+                return "You need \(Int(ripShipShipMinutes)) minutes today to ship the order."
             }
             let cost = makeRightCost(c)
             return canAfford(cost) ? nil : "You need \(money(cost))."
@@ -996,14 +1001,18 @@ extension GameStore {
                     out = "You denied it. The heat went up."
                 }
             } else {
+                // The purchase records prove a false claim about a product: a faster fall and a bigger loss for the rival.
+                let records = hasUpgrade(.purchaseRecords) && (c.type == .productIntegrity || c.type == .forbidden)
+                let fallDays = records ? Balance.purchaseRecordsFalseDays : Balance.calloutDenyFalseDays
                 c.fallFrom = c.heat
-                c.fallEndDay = today + Balance.calloutDenyFalseDays
+                c.fallEndDay = today + fallDays
                 c.reason = "You showed it was false."
                 addReputation(Balance.calloutDenyFalseRep)
                 if case .rival(let key) = c.accuser {
-                    loseCredibility(key, Balance.rivalCredDenied, receipt: "\(who) lied about you on day \(today + 1).")
+                    loseCredibility(key, Balance.rivalCredDenied * (records ? Balance.purchaseRecordsCredFactor : 1),
+                                    receipt: "\(who) lied about you on day \(today + 1).")
                 }
-                out = "You showed the claim was false. \(denyProof(c)) Reputation +\(Balance.calloutDenyFalseRep). It ends in \(Balance.calloutDenyFalseDays) days."
+                out = "You showed the claim was false. \(denyProof(c)) Reputation +\(Balance.calloutDenyFalseRep). It ends in \(fallDays) day\(fallDays == 1 ? "" : "s")."
             }
         case .makeRight:
             if c.counterGain > 0 {

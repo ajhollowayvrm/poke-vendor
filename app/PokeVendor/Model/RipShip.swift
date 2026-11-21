@@ -142,6 +142,12 @@ extension Balance {
     static let ripShipKeepDays = 28
 
     static let palmFoundChance = 0.5
+    /// With the shipping station: shipping takes this share of the time, and each order saves this much in supplies.
+    static let shippingStationTimeFactor = 0.5
+    static let shippingStationSuppliesCut = 0.25
+    /// With the overhead camera: buyers pay up to this multiple of the normal price, and the camera catches this share of palms.
+    static let overheadCameraPriceFactor = 1.05
+    static let palmFoundCameraChance = 0.75
     static let palmFoundReputation = 40
     static let palmBanDays = 56
     static let palmCalloutHeat = 90.0
@@ -163,8 +169,17 @@ extension GameStore {
         func cents(_ x: Double) -> Double { (x * 100).rounded() / 100 }
         return RipShipFees(commission: cents(price * ripShipCommissionRate),
                            processing: cents((price + shipping) * Balance.ripShipProcessingRate),
-                           flat: Balance.ripShipProcessingFlat, supplies: Balance.ripShipSupplies)
+                           flat: Balance.ripShipProcessingFlat,
+                           supplies: Balance.ripShipSupplies - (hasUpgrade(.shippingStation) ? Balance.shippingStationSuppliesCut : 0))
     }
+
+    /// The minutes that shipping one order takes: half with the shipping station.
+    var ripShipShipMinutes: Double {
+        Balance.ripShipShipMinutes * (hasUpgrade(.shippingStation) ? Balance.shippingStationTimeFactor : 1)
+    }
+
+    /// The share of the camera that catches a palmed hit: more with the overhead camera.
+    var palmFoundChance: Double { hasUpgrade(.overheadCamera) ? Balance.palmFoundCameraChance : Balance.palmFoundChance }
 
     // MARK: - The sale
 
@@ -409,13 +424,13 @@ extension GameStore {
     /// The Whatnot strikes of the last 120 days.
     var recentStrikes: Int { data.ripShip.strikes.filter { $0 > data.day - Balance.whatnotStrikeCloseWindow }.count }
 
-    /// Ships orders. A free action that costs 10 minutes for each order. Returns a message when it cannot ship.
+    /// Ships orders. A free action that costs 10 minutes for each order (5 with the shipping station). Returns a message when it cannot ship.
     @discardableResult
     func shipRipShipOrders(_ ids: [UUID]) -> String? {
         let set = Set(ids)
         let open = data.ripShip.orders.filter { set.contains($0.id) && $0.state == .ripped && $0.open }
         guard !open.isEmpty else { return nil }
-        guard spendHours(Double(open.count) * Balance.ripShipShipMinutes / 60) else { return "Not enough time today." }
+        guard spendHours(Double(open.count) * ripShipShipMinutes / 60) else { return "Not enough time today." }
         let today = data.day
         for order in open {
             guard let k = data.ripShip.orders.firstIndex(where: { $0.id == order.id }) else { continue }
@@ -481,9 +496,9 @@ extension GameStore {
     func notePalm(orderID: UUID, ripID: UUID, print: CardPrint, value: Double) {
         guard let k = data.ripShip.orders.firstIndex(where: { $0.id == orderID }) else { return }
         #if DEBUG
-        let caught = GameStore.forcePalmCaught ?? (Double.random(in: 0..<1) < Balance.palmFoundChance)
+        let caught = GameStore.forcePalmCaught ?? (Double.random(in: 0..<1) < palmFoundChance)
         #else
-        let caught = Double.random(in: 0..<1) < Balance.palmFoundChance
+        let caught = Double.random(in: 0..<1) < palmFoundChance
         #endif
         // The hit is in Raw with the order status. Take it off the order: it stays with the player.
         let palmed = Set(data.ripShip.orders[k].palmedCardIDs)

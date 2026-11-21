@@ -87,20 +87,25 @@ extension Balance {
     static let strangerCaseMax = 15_000.0
     /// The tape and label check shows the tell of a fake case this often. It never removes the risk.
     static let caseCheckCatch = 0.5
+    /// With the seal inspection kit, the check works on any sealed product and shows a tell this many times as often.
+    static let sealInspectionFactor = 2.0
     /// The share of stranger case listings that say "this case is loaded". It is never true.
     static let caseRumorChance = 0.10
     /// The back room holds this many cases. The store opens a case when its product has this many units or fewer on the shelf.
     static let backRoomCases = 12
+    /// With the back room shelving, the back room holds this many cases.
+    static let backRoomShelvingCases = 24
     static let backRoomRestockAt = 1
 }
 
 extension Counterfeit {
     /// The tape and label check on a case. A fake shows its tell half of the time. The same case always reads the same.
-    static func caseCheckCatches(_ tier: FakeTier?, key: String) -> Bool {
+    static func caseCheckCatches(_ tier: FakeTier?, key: String, kit: Bool = false) -> Bool {
         guard tier != nil else { return false }
         var hash: UInt64 = 1469598103934665603
         for b in key.utf8 { hash = (hash ^ UInt64(b)) &* 1099511628211 }
-        return Double(hash % 10_000) / 10_000 < Balance.caseCheckCatch
+        let catches = kit ? min(1, Balance.caseCheckCatch * Balance.sealInspectionFactor) : Balance.caseCheckCatch
+        return Double(hash % 10_000) / 10_000 < catches
     }
 
     /// What the check shows. A professional reseal shows nothing, so the risk stays real.
@@ -113,9 +118,9 @@ extension Counterfeit {
     }
 
     /// The line that the tape check shows. Nil when the check finds no tell.
-    static func caseCheckLine(_ tier: FakeTier?, key: String) -> String? {
+    static func caseCheckLine(_ tier: FakeTier?, key: String, kit: Bool = false) -> String? {
         // A professional reseal shows nothing, so it reads the same as a real case.
-        guard let tier, tier != .professional, caseCheckCatches(tier, key: key) else { return nil }
+        guard let tier, tier != .professional, caseCheckCatches(tier, key: key, kit: kit) else { return nil }
         return caseTells(tier)
     }
 }
@@ -207,17 +212,26 @@ extension GameStore {
         return realMarket(of: item) - product.market * Double(units)
     }
 
-    /// The tape and label check on an owned case. It runs once. A free action.
+    /// The tape and label check on an owned case, or on any sealed product with the seal inspection kit. It runs once.
+    /// A free action.
     @discardableResult
     func checkCase(_ id: UUID) -> String? {
-        guard let i = data.sealed.firstIndex(where: { $0.id == id }), data.sealed[i].isCase, data.sealed[i].caseChecked != true else { return nil }
+        let kit = hasUpgrade(.sealInspectionKit)
+        guard let i = data.sealed.firstIndex(where: { $0.id == id }), data.sealed[i].isCase || kit,
+              data.sealed[i].caseChecked != true else { return nil }
         data.sealed[i].caseChecked = true
-        let line = Counterfeit.caseCheckLine(data.sealed[i].fake, key: id.uuidString)
+        data.sealed[i].checkedWithKit = kit ? true : nil
+        let line = Counterfeit.caseCheckLine(data.sealed[i].fake, key: id.uuidString, kit: kit)
         save()
         return line
     }
 
     // MARK: - The back room
+
+    /// The cases the back room holds: more with the back room shelving.
+    var backRoomCapacity: Int {
+        data.cardStore?.has(.backRoomShelving) == true ? Balance.backRoomShelvingCases : Balance.backRoomCases
+    }
 
     /// The cases in the back room.
     var backRoomCases: [SealedItem] { data.sealed.filter { $0.isCase && Self.isInStore($0.status) } }

@@ -512,7 +512,8 @@ whole product. It is not a group break.
 - A resealed product stops the rip on camera. Whatnot refunds the buyer.
 - **Palm it** shows only on a big hit in a Rip & Ship rip. It is a scam: the
   card stays with the player, and the buyer gets a bulk card. The camera
-  catches it half of the time. A catch costs 40 reputation, an 8-week
+  catches it half of the time (3 times in 4 with the overhead camera). A
+  catch costs 40 reputation, an 8-week
   Whatnot ban, and a callout. A miss is a hidden act.
 - The buyer meter shows the worth of the cards against the price. It is green
   above the price.

@@ -971,7 +971,7 @@ final class ShowSession {
     func usage(_ items: [ShowItem], load: Set<UUID>? = nil) -> [CarryBin: Int] {
         let ids = load ?? bring
         var used: [CarryBin: Int] = [:]
-        for item in items where ids.contains(item.id) { used[CarryBin.of(item), default: 0] += CarryBin.space(item) }
+        for item in items where ids.contains(item.id) { used[CarryBin.of(item), default: 0] += store.carrySpace(item) }
         return used
     }
 
@@ -979,7 +979,7 @@ final class ShowSession {
     func fits(_ item: ShowItem, usage: [CarryBin: Int], load: Set<UUID>? = nil) -> Bool {
         guard venue.limitsLoad, !(load ?? bring).contains(item.id) else { return true }
         let bin = CarryBin.of(item)
-        return usage[bin, default: 0] + CarryBin.space(item) <= store.capacity(bin)
+        return usage[bin, default: 0] + store.carrySpace(item) <= store.capacity(bin)
     }
 
     /// Adds items from the dearest down, while they fit. `from` limits the items to look at.
@@ -989,7 +989,7 @@ final class ShowSession {
         var used = usage(all, load: load)
         for item in items where !load.contains(item.id) && fits(item, usage: used, load: load) {
             load.insert(item.id)
-            used[CarryBin.of(item), default: 0] += CarryBin.space(item)
+            used[CarryBin.of(item), default: 0] += store.carrySpace(item)
         }
         return load
     }
@@ -1033,7 +1033,7 @@ final class ShowSession {
             switch CarryBin.of(item) {
             case .binder: total += Balance.setupMinutesPerRaw
             case .slabBox: total += Balance.setupMinutesPerSlab
-            case .tote: total += Balance.setupMinutesPerSealedSpace * Double(CarryBin.space(item))
+            case .tote: total += Balance.setupMinutesPerSealedSpace * Double(store.carrySpace(item))
             }
         }
         // The table stayed up overnight only when the player set it up on day 1.
@@ -1318,12 +1318,20 @@ final class ShowSession {
         // A PC item never goes under its PC price, so the buyer opens there.
         if item.pc { offer = ask }
         let pair = extra.map { "I'd take both, the \(item.name) and the \($0.name). " } ?? ""
-        var v = Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: item, limit: min(top, ask),
+        var v = Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: item, limit: buyLimit(top: top, ask: ask, item: item),
                         offer: offer, patience: type == .flipper ? 1 : 2,
                         line: (extra == nil ? line : pair) + (offer >= ask ? "I'll take \(extra == nil ? "it" : "them") at your price."
                                                                              : "Would you take \(money(offer))\(extra == nil ? "" : " for the pair")?"))
         v.extra = extra
         return v
+    }
+
+    /// The most that a buyer pays: their top, or the ask. At the player's store, acrylic cases make a sealed price look
+    /// lower to the buyer, so they reach a little further. The player still gets the full price.
+    func buyLimit(top: Double, ask: Double, item: ShowItem) -> Double {
+        guard venue.kind == .store else { return min(top, ask) }
+        let seen = store.priceSeen(sealed: item.kind == .sealed, price: 1)
+        return min(top / seen, ask)
     }
 
     /// The player's asking price for what the buyer wants: one item, or the bundle.

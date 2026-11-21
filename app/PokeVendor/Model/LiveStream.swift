@@ -428,6 +428,12 @@ final class StreamSession {
         return min(Balance.ripShipLuckStep, max(-Balance.ripShipLuckStep, (luck - 1) * Balance.ripShipLuckStep))
     }
 
+    /// The share of market that a Rip & Ship buyer pays at most: a draw in the band, the repeat buyer's luck, and the overhead camera.
+    func ripShipShare(_ item: StreamItem, contact: Contact?) -> Double {
+        let share = Double.random(in: isHot(item) ? Balance.ripShipHotBand : Balance.ripShipBand) + luckShift(contact)
+        return share * (store.hasUpgrade(.overheadCamera) ? Balance.overheadCameraPriceFactor : 1)
+    }
+
     private func isHot(_ item: StreamItem) -> Bool {
         let productID = store.data.sealed.first { $0.id == item.id }?.productID
         return SetLibrary.product(productID).map { store.isHot($0) } ?? false
@@ -440,7 +446,7 @@ final class StreamSession {
         let contact = drawRepeatBuyer()
         var offer = StreamBuyNow(item: item, price: price, expiresAt: minute + Balance.buyNowMinutes)
         offer.ripShip = true
-        offer.ceilingShare = Double.random(in: isHot(item) ? Balance.ripShipHotBand : Balance.ripShipBand) + luckShift(contact)
+        offer.ceilingShare = ripShipShare(item, contact: contact)
         offer.buyerContactID = contact?.id
         buyNow = offer
         onCamera = item
@@ -453,7 +459,7 @@ final class StreamSession {
         items.remove(at: i)
         let contact = drawRepeatBuyer()
         let bidders = max(1, Int(viewers * 0.03))
-        let share = Double.random(in: isHot(item) ? Balance.ripShipHotBand : Balance.ripShipBand) + luckShift(contact)
+        let share = ripShipShare(item, contact: contact)
         let start = ShowSession.round(max(0.5, item.market * startShare))
         var a = StreamAuction(item: item, startPrice: start, endsAt: minute + Balance.auctionMinutes, top: start,
                               ceiling: item.market * share, bidders: bidders)

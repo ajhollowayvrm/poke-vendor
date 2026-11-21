@@ -36,7 +36,7 @@ struct ShipQueueView: View {
             } else if store.whatnotBanned {
                 Text("Whatnot banned you until day \((store.data.ripShip.bannedUntil ?? 0) + 1).").font(.caption).foregroundStyle(Theme.orange)
             }
-            Text("\(formatHours(store.hoursLeft)) left today. Each order takes \(Int(Balance.ripShipShipMinutes)) minutes.")
+            Text("\(formatHours(store.hoursLeft)) left today. Each order takes \(Int(store.ripShipShipMinutes)) minutes.")
                 .font(.caption.monospaced()).foregroundStyle(Theme.muted)
         }
     }
@@ -79,7 +79,7 @@ struct ShipQueueView: View {
         Button {
             message = store.shipRipShipOrders(orders.map(\.id))
         } label: {
-            Text("Ship all · \(orders.count * Int(Balance.ripShipShipMinutes)) min").frame(maxWidth: .infinity)
+            Text("Ship all · \(orders.count * Int(store.ripShipShipMinutes)) min").frame(maxWidth: .infinity)
         }
         .primaryButton()
         .controlSize(.large)

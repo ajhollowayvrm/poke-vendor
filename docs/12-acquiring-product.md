@@ -129,7 +129,8 @@ existing risk design.
 
 A grocery store and a pharmacy each have an official Pokemon card
 machine. A machine restocks about every 10 days. The calendar posts the
-restock 2 days ahead, with the hour. The player waits 2 hours at the
+restock 2 days ahead (4 days ahead with the machine map app, $60), with
+the hour. The player waits 2 hours at the
 machine. The wait cannot overlap a work shift. A wait works with a
 chance of 70%, and flipper pressure scales it like a camp. A success
 gives 1 to 3 products at MSRP, at most 2 of each. The player pays cash.
@@ -152,6 +153,18 @@ or more stores for one trip, and each store adds time to the trip. The
 run goes stop by stop. At each stop, the player sees the shelf, then
 buys or goes to the next stop. A stop with an empty shelf is a bust
 that costs the time for that stop.
+
+With the route planner app ($120), the planner puts the chosen stops in
+an order. A vendor hour is known when the player saw the vendor day, or
+a restock alert covers the chain. The order is:
+
+1. Known chains whose vendor day is not today.
+2. Known chains whose vendor comes today, by vendor hour. They come
+   late, so each one arrives after its vendor hour.
+3. Chains with an unknown vendor hour, and game shops, in the order
+   that the player chose.
+
+The planner shows the arrival time of each stop.
 
 A store run is different from camping. Camping targets a restock day
 that the calendar posts 2 to 3 days ahead (see
@@ -373,7 +386,9 @@ price refresh does not list takes its size from the table.
   to 105% of the case price on eBay, and 70% to 95% on Facebook. A stranger
   sells no case over $15,000. One fake roll covers the whole case. The tape
   and label check shows the tell of a fake case half of the time. A
-  professional reseal shows nothing. A listing can say that the case is
+  professional reseal shows nothing. With the seal inspection kit ($160),
+  the check works on any sealed product and shows the tell 2 times as
+  often. Each item gets one check. A listing can say that the case is
   "loaded". This is only the seller's words, and it is never true.
 - **Packs.** Each pack of an opened case is an independent draw.
 

@@ -83,7 +83,7 @@ is the same as real listings, which go up midweek for the weekend.
 | Garage sale | Friday to Sunday | 7 AM – 1 PM | 3 to 6 each week |
 | Estate sale | Thursday to Saturday, one sale runs all 3 days | 8 AM – 3 PM each day | 0 to 2 each week |
 | Store restock day | Usually a weekday | Starts at 8 AM | Each big retail store posts one about every 2 weeks |
-| Card machine restock | Any day, 2 days ahead | An hour from 10 AM to 4 PM | A grocery machine and a pharmacy machine, each about every 10 days |
+| Card machine restock | Any day, 2 days ahead (4 with the machine map app) | An hour from 10 AM to 4 PM | A grocery machine and a pharmacy machine, each about every 10 days |
 | Vendor stock (alert) | The vendor day of an alerted chain | The vendor hour | Only for a player with a restock alert (see [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#restock-alerts)) |
 
 Camping targets a posted restock day (see

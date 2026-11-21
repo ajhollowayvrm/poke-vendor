@@ -8,6 +8,7 @@ struct StoreRunPlanner: View {
     @State private var message: String?
 
     var body: some View {
+        let route = store.plannedRoute(chosen)
         let hours = Double(chosen.count) * store.storeStopHours
         VStack(spacing: 12) {
             VStack(spacing: 0) {
@@ -56,12 +57,13 @@ struct StoreRunPlanner: View {
             if let message { Banner(text: message, color: Theme.orange) }
 
             let start = store.slot(for: hours)
+            if store.hasUpgrade(.routePlanner), !chosen.isEmpty, let start { routeBox(route, start: start) }
             Button {
-                guard let start = store.startStoreRun(chosen) else {
+                guard let start = store.startStoreRun(route) else {
                     message = "You do not have \(formatHours(hours)) free today."
                     return
                 }
-                nav.storeRun = StoreRunSession(stops: chosen, startHour: start)
+                nav.storeRun = StoreRunSession(stops: route, startHour: start)
                 chosen = []
             } label: {
                 Text(chosen.isEmpty ? "Select stores" :
@@ -73,6 +75,34 @@ struct StoreRunPlanner: View {
             .controlSize(.large)
             .disabled(chosen.isEmpty || start == nil)
         }
+    }
+
+    /// The route planner: the order of the stops and the arrival time of each. Read only: it writes no state.
+    private func routeBox(_ route: [LocalStore], start: Double) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("ROUTE").font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            ForEach(Array(route.enumerated()), id: \.element) { i, s in
+                let arrive = start + Double(i) * store.storeStopHours
+                let slot = store.vendorSlot(s)
+                let vendorToday = store.vendorKnown(s) && slot.weekday == store.weekday
+                HStack(alignment: .firstTextBaseline) {
+                    Text("\(i + 1). \(s.rawValue)").font(.subheadline)
+                    Spacer()
+                    Text("arrive \(GameStore.clock(arrive))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                }
+                if vendorToday {
+                    Text(arrive >= slot.hour ? "Vendor came at about \(GameStore.clock(slot.hour)). You arrive after it."
+                                              : "Vendor comes at about \(GameStore.clock(slot.hour)). You arrive before it.")
+                        .font(.caption)
+                        .foregroundStyle(arrive >= slot.hour ? Theme.cyan : Theme.orange)
+                }
+            }
+            Text("Chains with a vendor today come after your other known chains, by vendor hour, so you arrive late. Unknown chains come last.").font(.caption2).foregroundStyle(Theme.muted)
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.surface)
+        .framed()
     }
 
     /// The detail line of a stop in the planner.

@@ -137,8 +137,8 @@ struct SetupStage: View {
         if session.packed { return "Your load left the car. You can only take items out." }
         let bin = CarryBin.of(item)
         let room = store.capacity(bin)
-        if CarryBin.space(item) > room {
-            return "Too big: it needs \(CarryBin.space(item)) spaces, and your \(bin.name.lowercased()) holds \(room)."
+        if store.carrySpace(item) > room {
+            return "Too big: it needs \(store.carrySpace(item)) spaces, and your \(bin.name.lowercased()) holds \(room)."
         }
         return "Your \(bin.name.lowercased()) is full."
     }
@@ -160,8 +160,8 @@ struct SetupStage: View {
                     if shown > 0 {
                         Text("On a table \(shown)× in 3 weeks").font(.caption2).foregroundStyle(Theme.orange)
                     }
-                    if session.venue.limitsLoad, item.kind == .sealed, CarryBin.space(item) > 1 {
-                        Text("\(CarryBin.space(item)) spaces").font(.caption2).foregroundStyle(Theme.muted)
+                    if session.venue.limitsLoad, item.kind == .sealed, store.carrySpace(item) > 1 {
+                        Text("\(store.carrySpace(item)) spaces").font(.caption2).foregroundStyle(Theme.muted)
                     }
                     if let blocked {
                         Text(blocked).font(.caption2).foregroundStyle(Theme.muted)

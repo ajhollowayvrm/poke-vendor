@@ -114,17 +114,20 @@ result. The game has no livestream group breaks.
     6.5% as the Rip & Ship sales of the last 28 days pass $15,000,
     $50,000, $150,000, and $500,000.
   - Processing: 2.9% of the sale plus the buyer's shipping, and $0.30.
-  - Supplies: $0.50.
+  - Supplies: $0.50 ($0.25 with the shipping station).
 - **The rip.** The stream clock stops while the player rips. A whole-case
   rip runs at 0.75 minutes for each pack, and it opens the case once. A
   buyer waits about 10 minutes before the chat gets bored. A rip that
   stops early ships the unopened packs.
+- **The overhead camera.** Rip & Ship buyers pay up to 5% more: the
+  buyer ceiling is multiplied by 1.05.
 - **The buyer reaction.** The buyer says "LET'S GO" when the cards are
   worth 1.5 times the price or more, and "rip..." under half of it.
 - **Clips.** A big hit is a clip. It brings followers: 3% of the viewers.
 - **The ship queue.** After the rip, the order waits in the ship queue.
-  Shipping takes 10 minutes for each order. The player must ship within 2
-  days. A shipped order gives the repeat buyer 2 contact points.
+  Shipping takes 10 minutes for each order (5 minutes with the shipping
+  station, $350). The shipping station also cuts the supplies by $0.25
+  for each order. The player must ship within 2 days. A shipped order gives the repeat buyer 2 contact points.
 - **An order that never opened.** If the stream ends before the rip, or the
   app closes, Whatnot refunds the buyer. The player pays back the net, and
   loses 0.02 authenticity. A resealed product stops the rip. Whatnot
@@ -132,7 +135,8 @@ result. The game has no livestream group breaks.
   [14-counterfeit-risk.md](14-counterfeit-risk.md)).
 - **Palm the hit.** After a big hit in a Rip & Ship rip, the player can
   "palm it": swap the hit off camera. The buyer gets a bulk card. This is
-  a scam. The camera catches it half of the time. A catch costs 40
+  a scam. The camera catches it half of the time (3 times in 4 with the
+  overhead camera, $450, which needs the camera kit). A catch costs 40
   reputation, a Whatnot ban of 8 weeks, and a callout that starts at
   heat 90. A miss is a hidden act that can come out later (see
   [35-callouts.md](35-callouts.md)).

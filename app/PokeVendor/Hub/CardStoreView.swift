@@ -257,7 +257,7 @@ struct CardStoreView: View {
             .compactMap { group -> (name: String, count: Int)? in group.value.first.map { ($0.name, group.value.count) } }
             .sorted { $0.name < $1.name }
         return DetailBox(title: "Back room") {
-            Text("\(cases.count) of \(Balance.backRoomCases) cases. When a product has \(Balance.backRoomRestockAt) unit or fewer on the shelf, the store opens a case of it overnight and puts the units out. Customers never see a case.")
+            Text("\(cases.count) of \(store.backRoomCapacity) cases. When a product has \(Balance.backRoomRestockAt) unit or fewer on the shelf, the store opens a case of it overnight and puts the units out. Customers never see a case.")
                 .font(.caption).foregroundStyle(Theme.muted)
             ForEach(loose, id: \.name) { row in
                 HStack {
@@ -438,7 +438,7 @@ struct CardStoreView: View {
                     Image(systemName: f.icon).font(.title3).foregroundStyle(owned ? Theme.green : Theme.cyan).frame(width: 28)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(f.name).font(.subheadline.weight(.semibold))
-                        Text(f.detail).font(.caption).foregroundStyle(Theme.muted)
+                        Text(f.detail + (f.requires.map { " Needs the \($0.name.lowercased())." } ?? "")).font(.caption).foregroundStyle(Theme.muted)
                     }
                     Spacer()
                     if owned {
@@ -501,7 +501,7 @@ struct StockShelvesSheet: View {
         let stock = store.storeStock
         let cardRoom = max(0, store.storeCardSlots - store.storeCardsUsed)
         let sealedRoom = max(0, store.storeSealedSlots - stock.sealed.count)
-        let caseRoom = store.hasBackRoom ? max(0, Balance.backRoomCases - store.backRoomCases.count) : 0
+        let caseRoom = store.hasBackRoom ? max(0, store.backRoomCapacity - store.backRoomCases.count) : 0
         let pickedCards = items.filter { $0.kind == .card && picked.contains($0.id) }.count
         let pickedSealed = items.filter { $0.kind == .sealed && !$0.isCase && picked.contains($0.id) }.count
         let pickedCases = items.filter { $0.isCase && picked.contains($0.id) }.count

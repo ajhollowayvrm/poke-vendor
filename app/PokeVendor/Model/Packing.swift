@@ -111,9 +111,9 @@ enum CarryBin: CaseIterable {
 
     /// The space one item takes in its bin. Sealed product: 1 pack is 1 space, more is 1 plus 1 for each 6 packs.
     /// A sealed case packs tighter: 1 plus 1 for each 8 packs (docs/29-packing-and-crowds.md, Cases).
-    static func space(_ item: ShowItem) -> Int {
+    static func space(_ item: ShowItem, casePacksPerSpace: Int = Balance.casePacksPerSpace) -> Int {
         guard item.kind == .sealed else { return 1 }
-        if item.isCase { return 1 + Int((Double(item.packs) / Double(Balance.casePacksPerSpace)).rounded(.up)) }
+        if item.isCase { return 1 + Int((Double(item.packs) / Double(casePacksPerSpace)).rounded(.up)) }
         return item.packs <= 1 ? 1 : 1 + Int((Double(item.packs) / 6).rounded(.up))
     }
 }
@@ -121,6 +121,8 @@ enum CarryBin: CaseIterable {
 extension Balance {
     /// A sealed case takes 1 space plus 1 for each this many packs.
     static let casePacksPerSpace = 8
+    /// With the hand truck, a sealed case takes 1 space plus 1 for each this many packs.
+    static let handTruckPacksPerSpace = 12
     static let binderSpace = [40, 160]
     static let slabBoxSpace = [3, 20]
     static let toteSpace = [8, 30]
@@ -158,6 +160,11 @@ extension GameStore {
         }
         // The cargo van carries more of each bin.
         return hasUpgrade(.cargoVan) ? Int((Double(space) * Balance.cargoVanFactor).rounded()) : space
+    }
+
+    /// The space one item takes in its bin, with the hand truck.
+    func carrySpace(_ item: ShowItem) -> Int {
+        CarryBin.space(item, casePacksPerSpace: hasUpgrade(.handTruck) ? Balance.handTruckPacksPerSpace : Balance.casePacksPerSpace)
     }
 
     /// The days before today when the item sat on a table, in the last 21 days.

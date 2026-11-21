@@ -14,8 +14,9 @@ not upgrades.
 
 - An upgrade can need another upgrade first. The cargo van needs the
   better car, the camera kit needs the studio lights, and the big
-  contact book needs the contact book. The row on the Upgrades screen
-  says so.
+  contact book needs the contact book. The hand truck needs the folding
+  cart, the overhead camera needs the camera kit, and the reprint radar
+  needs the price tracker app. The row on the Upgrades screen says so.
 - An upgrade with a number states the number in its text, for example
   "Shipping costs 30% less on every sale that ships".
 
@@ -58,6 +59,7 @@ See [14-counterfeit-risk.md](14-counterfeit-risk.md).
 | Vendor binder | $40 | Carry 160 raw cards to a table instead of 40. |
 | Slab case | $90 | Carry 20 slabs instead of 3. |
 | Folding cart | $120 | Carry 30 spaces of sealed product instead of 8. |
+| Hand truck | $180 | A sealed case takes 1 space plus 1 for each 12 packs, not each 8. A case of 10 Elite Trainer Boxes takes 9 spaces, not 13. Needs the folding cart. |
 | Cargo van | $6,500 | 50% more carry space in each bin. Needs the better car. |
 | Premium booth | $3,000 | A better spot at a booked show table: 20% more visitors. |
 | Showcase case | $750 | Opens the Showcase section: a lit case for 6 cards of $1,000 or more. See [20-card-shows.md](20-card-shows.md#the-showcase). |
@@ -91,9 +93,24 @@ See [15-selling.md](15-selling.md).
 | Bulk broker | $250 | At a game shop stop, bulk sells for cash at 35% of market, as well as for store credit at 50%. The broker does not check for fakes. |
 | Supply wholesale account | $150 | Supplies cost 20% less. |
 | Price tracker app | $200 | Market news comes 2 days before the prices start to move. The morning report says "Price tracker". |
+| Reprint radar | $200 | Shows which sealed products the player holds are in a reprint wave or an out-of-print notice, and the chance of a flipper dump. It shows the lines in the Flippers and stores box on the Market screen, and on the sealed item screen. It reads the print news and the flipper state, and it changes no price. Needs the price tracker app. |
+| Seal inspection kit | $160 | The tape and label check works on any sealed product, not only cases. It shows the tell of a reseal 2 times as often. A professional reseal still shows nothing. Each item gets one check. |
+| Route planner app | $120 | The store run planner puts the chosen stops in an order. Known chains whose vendor day is not today come first. Chains whose vendor comes today come next, by vendor hour, so each one arrives after a vendor hour that the player already knows. Chains with an unknown vendor hour stay in the order the player chose, at the end. It shows the arrival time of each stop. |
+| Machine map app | $60 | An official card machine restock is posted 4 days ahead, not 2. |
 
 See [12-acquiring-product.md](12-acquiring-product.md) and
 [33-collections.md](33-collections.md#upgrades).
+
+### Rip & Ship and callouts
+
+| Upgrade | Cost | What it does |
+| --- | --- | --- |
+| Shipping station | $350 | Shipping a Rip & Ship order takes 5 minutes, not 10. Each order costs $0.25 less in supplies. |
+| Overhead camera | $450 | Rip & Ship buyers pay up to 5% more. The camera catches 75% of palmed hits, not 50%. Needs the camera kit. |
+| Purchase records app | $120 | When the player denies a false product integrity or forbidden product callout, the heat falls in 1 day, not 2. The rival loses 1.5 times the normal credibility. It does nothing for a true callout. |
+
+See [06-social-media.md](06-social-media.md) and
+[35-callouts.md](35-callouts.md).
 
 ### Collecting and contacts
 
@@ -140,7 +157,7 @@ See [16-time-and-day.md](16-time-and-day.md#costs-that-grow).
 
 | Where | Upgrades |
 | --- | --- |
-| Your store | Second display case $500, sealed wall $400, play tables $700, security cameras $350, lighted sign $300, point-of-sale system $900 (the clerk sells as well as the player), bigger unit $2,500, large unit $4,500. See [22-own-store.md](22-own-store.md). |
+| Your store | Second display case $500, sealed wall $400, play tables $700, security cameras $350, lighted sign $300, point-of-sale system $900 (the clerk sells as well as the player), back room $600, back room shelving $400 (24 cases, needs the back room), acrylic sealed cases $150 (sealed items on the shelf sell as if the price were 5% lower), bigger unit $2,500, large unit $4,500. See [22-own-store.md](22-own-store.md). |
 | Each vending machine | Card reader $300, camera $250, remote stock data $150. See [31-vending-machines.md](31-vending-machines.md). |
 | Restock alerts | A monthly fee, not an upgrade: $8 for one chain, $25 for every chain. The alert tells the player the evening before a vendor day. See [34-flippers-and-retail-limits.md](34-flippers-and-retail-limits.md#restock-alerts). |
 

@@ -42,6 +42,8 @@ enum StoreLocation: String, Codable, CaseIterable, Hashable {
 /// A one-time buy for the store. The store keeps it until the store closes.
 enum StoreFixture: String, Codable, CaseIterable, Hashable {
     case extraCase, sealedWall, playTables, cameras, sign, pos, backRoom
+    /// The back room holds more cases, and acrylic cases make sealed product on the shelf look cheaper to a customer.
+    case backRoomShelving, acrylicCases
 
     var name: String {
         switch self {
@@ -52,6 +54,8 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .sign: "Lighted sign"
         case .pos: "Point-of-sale system"
         case .backRoom: "Back room"
+        case .backRoomShelving: "Back room shelving"
+        case .acrylicCases: "Acrylic sealed cases"
         }
     }
 
@@ -64,6 +68,8 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .sign: "\(Int((Balance.signTrafficBonus - 1) * 100))% more customers every day."
         case .pos: "The clerk sells as well as you do: a scanner, prices on screen, and a card terminal."
         case .backRoom: "Holds up to \(Balance.backRoomCases) sealed cases off the shelf. When a product runs low on the shelf, the store opens a case of it and restocks."
+        case .backRoomShelving: "The back room holds \(Balance.backRoomShelvingCases) cases instead of \(Balance.backRoomCases)."
+        case .acrylicCases: "Sealed items on the shelf sell as if the price were \(Int(((1 - Balance.acrylicPerceivedFactor) * 100).rounded()))% lower. You still get the full price."
         }
     }
 
@@ -76,8 +82,13 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .sign: "lightbulb.max"
         case .pos: "barcode.viewfinder"
         case .backRoom: "shippingbox.fill"
+        case .backRoomShelving: "square.grid.3x3.fill"
+        case .acrylicCases: "square.stack.3d.down.right"
         }
     }
+
+    /// A fixture that must come first.
+    var requires: StoreFixture? { self == .backRoomShelving ? .backRoom : nil }
 
     var cost: Double { Balance.fixtureCosts[self] ?? 0 }
 }
@@ -154,6 +165,8 @@ extension Balance {
     static let storeBrowseChance = 0.35
     /// What a customer pays at most, as a share of market.
     static let storeBuyerLimit = 0.92...1.28
+    /// With the acrylic cases, a customer judges a sealed price at this share of the shelf price.
+    static let acrylicPerceivedFactor = 0.95
     static let storeCasualBudget = 30.0
     /// The share of customers who come to the counter when the player works it: to buy, to trade, or to sell.
     static let counterVisitorShare = 0.6
@@ -163,7 +176,8 @@ extension Balance {
     static let storeSealedSlots = 40
     static let extraCaseSlots = 60
     static let sealedWallSlots = 60
-    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900, .backRoom: 600]
+    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900, .backRoom: 600,
+                                                    .backRoomShelving: 400, .acrylicCases: 150]
     static let signTrafficBonus = 1.15
     static let tournamentPlayers = 8...16
     /// The clerk sells a bit worse than the owner: customers buy this often, and never take a second item.
@@ -296,7 +310,7 @@ extension GameStore {
 
     func canBuyFixture(_ fixture: StoreFixture) -> Bool {
         guard let s = data.cardStore else { return false }
-        return !s.has(fixture) && canAfford(fixture.cost)
+        return !s.has(fixture) && canAfford(fixture.cost) && (fixture.requires.map(s.has) ?? true)
     }
 
     func buyFixture(_ fixture: StoreFixture) {
@@ -358,7 +372,7 @@ extension GameStore {
         let stock = storeStock
         let cardRoom = storeCardSlots - storeCardsUsed
         let sealedRoom = storeSealedSlots - stock.sealed.count
-        let caseRoom = Balance.backRoomCases - backRoomCases.count
+        let caseRoom = backRoomCapacity - backRoomCases.count
         let pick = stockable
         let cardIDs = Set(pick.cards.filter { ids.contains($0.id) }.sorted { $0.market > $1.market }.map(\.id)
             .prefix(max(0, cardRoom)))
@@ -569,11 +583,18 @@ extension GameStore {
             guard let item = pickForCustomer(items, packWeight: player ? Balance.eventPackWeight : 1) else { continue }
             let limit = item.market * Double.random(in: Balance.storeBuyerLimit)
             let price = shelfPrice(item)
-            guard price <= limit else { continue }
+            guard perceivedPrice(item, price: price) <= limit else { continue }
             revenue += sellFromStore(item, price: price, storeName: storeName)
             sold += 1
         }
         return (customers, sold, revenue)
+    }
+
+    /// The price that a customer judges. The acrylic cases make a sealed price look lower. The store still gets the full price.
+    func perceivedPrice(_ item: StoreShelfItem, price: Double) -> Double { priceSeen(sealed: !item.isCard, price: price) }
+
+    func priceSeen(sealed: Bool, price: Double) -> Double {
+        sealed && data.cardStore?.has(.acrylicCases) == true ? price * Balance.acrylicPerceivedFactor : price
     }
 
     /// One item in the store, as the customers see it.

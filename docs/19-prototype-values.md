@@ -99,7 +99,7 @@ Regular, the owner holds a sealed product at 85% of market (see
 | Ban | Heat 10 at one chain. 21 days. The heat falls to half |
 | GameStop markup | 1.35 to 1.6 × MSRP on hot product |
 | Club | $65 for 364 days, a warning 7 days before it ends. The price is the MSRP, never under $3.75 a pack |
-| Card machine | Every 10 days, posted 2 days ahead, at 10 AM to 4 PM. A 2-hour wait. A success chance of 70%. 1 to 3 products, at most 2 of each. Products: packs, bundles, ETBs, tins, blisters |
+| Card machine | Every 10 days, posted 2 days ahead (4 with the machine map app), at 10 AM to 4 PM. A 2-hour wait. A success chance of 70%. 1 to 3 products, at most 2 of each. Products: packs, bundles, ETBs, tins, blisters |
 | Show ban | 1 show in 6 bans in-print sealed |
 | Opened-at-MSRP offer | At standing Regular, once a week for each game shop. The product is hot, in print, at MSRP |
 | Rivals | 3 flippers and 2 creators. Base hostility 0.15 to 0.35, pulling back 2% a day. +0.08 for a buyout at the rival's chain, +0.05 for a camp win, +0.10 for a creator when the follower tier rises. The rival keeps 3 meetings |
@@ -416,7 +416,8 @@ Other values:
 | Open confirmation | A premium loss over $50 |
 | Stranger case | A dealer at a show 20%. An eBay or Facebook day 10%. Ask 85% to 105% (eBay) or 70% to 95% (Facebook) of the case price. No case over $15,000 |
 | Tape check | Shows the tell of a fake case 50% of the time. 10% of stranger listings say "loaded" |
-| Back room | $600. 12 cases. A product restocks at 1 unit or fewer on the shelf |
+| Tape check with the seal inspection kit | 100% for each fake except a professional reseal. The kit also works on any sealed product |
+| Back room | $600. 12 cases (24 with the back room shelving, $400). A product restocks at 1 unit or fewer on the shelf |
 
 ### Distributor
 
@@ -449,15 +450,15 @@ Other values:
 | Value | Prototype value |
 | --- | --- |
 | Commission | 8% under $15,000 of Rip & Ship sales in 28 days. 7.5% from $15,000, 7% from $50,000, 6.75% from $150,000, 6.5% from $500,000 |
-| Other fees | Processing 2.9% of (sale + buyer shipping) + $0.30. Supplies $0.50. The buyer pays shipping: $4.47 up to 3 packs, $9.85 up to 36 packs, $15.50 above |
-| Buy Now ceiling | 95% to 120% of market for a hot product, 90% to 105% for other product |
+| Other fees | Processing 2.9% of (sale + buyer shipping) + $0.30. Supplies $0.50 ($0.25 with the shipping station). The buyer pays shipping: $4.47 up to 3 packs, $9.85 up to 36 packs, $15.50 above |
+| Buy Now ceiling | 95% to 120% of market for a hot product, 90% to 105% for other product. × 1.05 with the overhead camera |
 | Buy chance | A viewer buys with 0.0024 a minute. A product over $500 scales by viewers ÷ 100 |
 | Rival creators | Each takes 5% of the buyers, down to 80% left |
 | Repeat buyer | 50% of buyers. ±5% by the last result |
 | The wait | 10 minutes. Impatience 3% |
 | Case rip | 0.75 minutes a pack |
 | Clip | 3% of the viewers become followers |
-| Ship | Within 2 days. 10 minutes an order. +2 contact points. Chargeback on day 7 |
+| Ship | Within 2 days. 10 minutes an order (5 with the shipping station). +2 contact points. Chargeback on day 7 |
 | Strikes | 2 in 60 days: a 28-day ban. 3 in 120 days: Rip & Ship ends |
 | Not opened, resealed | Authenticity −0.02, −0.05 |
 | Palm the hit | Caught 50%. Reputation −40. Ban 56 days. Callout heat 90. Late order act weight 2.0 after a chargeback |
@@ -477,6 +478,14 @@ Other values:
 | Studio lights, camera kit | $250, $600 |
 | Card reader | $80 |
 | Vendor binder, slab case, folding cart | $40, $90, $120 |
+| Hand truck (needs the folding cart) | $180. A case: 1 space for each 12 packs, not 8 |
+| Seal inspection kit | $160. The tape check works on any sealed product, 2 × the catch |
+| Route planner app | $120 |
+| Machine map app | $60. A machine restock posts 4 days ahead |
+| Shipping station | $350. Shipping 5 minutes an order, supplies −$0.25 |
+| Overhead camera (needs the camera kit) | $450. Buyer ceiling × 1.05. A palm is caught 75% of the time, not 50% |
+| Purchase records app | $120. A denied false integrity or forbidden callout: 1 day, rival credibility loss × 1.5 |
+| Reprint radar (needs the price tracker app) | $200. Read only |
 
 ## Your own store
 
@@ -500,7 +509,7 @@ Other values:
 | Room | 40 cards and 40 sealed. +60 with each fixture |
 | Clerk | $120 a day open. A customer buys 85% as often as with the player, and the clerk sells no second item |
 | At the counter | 60% of the day's customers come to the counter. 32% of them sell |
-| Fixtures | Second display case $500, sealed wall $400, play tables $700 (both events), security cameras $350, lighted sign $300 (×1.15 customers), back room $600 (12 cases) |
+| Fixtures | Second display case $500, sealed wall $400, play tables $700 (both events), security cameras $350, lighted sign $300 (×1.15 customers), back room $600 (12 cases), back room shelving $400 (24 cases), acrylic sealed cases $150 (sealed price judged at 95%) |
 | Back room restock | At 1 unit or fewer on the shelf. A case opens when the free shelf room is at least the smaller of the case size and a quarter of the sealed slots |
 | Friday tournament | 8 to 16 players, +10% a reputation tier. Fee $5, $10 (default), $15, or $20: attendance 150% less 5% a dollar. Prizes: 0.7 loose packs a player. +0.5 customers a player |
 | Pokemon League | Saturday or Sunday morning. 6 to 14 players, +5% a reputation tier. Fee free (default), $2, or $5: attendance 100% less 6% a dollar. A promo card a player at $0.75. +0.8 customers a player, small-budget |

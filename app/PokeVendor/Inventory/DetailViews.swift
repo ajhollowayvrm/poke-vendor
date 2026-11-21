@@ -455,6 +455,9 @@ struct SealedDetailView: View {
                                  + (upcoming.map { " · \($0.inPrint ? "reprint" : "out of print") in \($0.day - store.day) days" } ?? ""))
                                 .font(.caption.monospaced())
                                 .foregroundStyle(product.isInPrint ? Theme.muted : Theme.green)
+                            if store.hasUpgrade(.reprintRadar) {
+                                ForEach(store.reprintRadar(product), id: \.self) { Text($0).font(.caption).foregroundStyle(Theme.cyan) }
+                            }
                         }
                         Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id,
                              caseUnits: item.caseUnits, caseFresh: item.isCaseFresh)
@@ -512,6 +515,9 @@ struct SealedDetailView: View {
                         }
                     }
                     if let product, let units = item.caseUnits { caseOpenBox(item, product: product, units: units) }
+                    if !item.isCase, store.hasUpgrade(.sealInspectionKit) {
+                        DetailBox(title: "Seal check") { tapeCheck(item) }
+                    }
                     if item.fake != nil || !item.source.hasPrefix("Test") {
                         AuthenticityBox(cardID: item.id, fake: item.fake, known: item.isKnownFake, verified: item.isVerified,
                                         status: item.status, sealed: true, eyeball: store.eyeballWarning(item),
@@ -583,20 +589,25 @@ struct SealedDetailView: View {
                     Button("Open the case", role: .destructive) { caseRequest = CaseRequest(source: .closed(item.id)) }
                 }
             }
-            // A case from a stranger can be a reseal. The check is free, runs once, and halves the risk (never removes it).
-            if item.caseFresh == nil, item.fakeKnown != true {
-                if item.caseChecked == true {
-                    CaseCheckResult(fake: item.fake, key: item.id.uuidString)
-                    if Counterfeit.caseCheckLine(item.fake, key: item.id.uuidString) != nil, item.fake != nil {
-                        Button("Mark it as resealed") { store.markFakeKnown(sealedID: item.id) }
-                            .buttonStyle(.bordered)
-                            .controlSize(.small)
-                    }
-                } else {
-                    Button("Check the tape and label") { store.checkCase(item.id) }
+            tapeCheck(item)
+        }
+    }
+
+    /// A case from a stranger can be a reseal. The check is free, runs once, and halves the risk (never removes it).
+    /// The seal inspection kit finds the tell twice as often, and works on any sealed product.
+    @ViewBuilder private func tapeCheck(_ item: SealedItem) -> some View {
+        if item.caseFresh == nil, item.fakeKnown != true {
+            if item.caseChecked == true {
+                CaseCheckResult(fake: item.fake, key: item.id.uuidString, kit: item.checkedWithKit == true)
+                if Counterfeit.caseCheckLine(item.fake, key: item.id.uuidString, kit: item.checkedWithKit == true) != nil, item.fake != nil {
+                    Button("Mark it as resealed") { store.markFakeKnown(sealedID: item.id) }
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                 }
+            } else {
+                Button("Check the tape and label") { store.checkCase(item.id) }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
             }
         }
     }

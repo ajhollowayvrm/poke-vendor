@@ -215,6 +215,7 @@ struct StoreView: View {
 }
 
 struct OfferRow: View {
+    @Environment(GameStore.self) private var store
     let offer: StoreOffer
     let bought: Bool
     let locked: Bool
@@ -252,7 +253,7 @@ struct OfferRow: View {
                     Text(note).font(.caption2).foregroundStyle(Theme.cyan)
                 }
                 // A stranger's case: a free check of the tape and label. The listing is seeded by day, so a second look reads the same.
-                if offer.caseUnits != nil {
+                if offer.caseUnits != nil || (!offer.isSingle && store.hasUpgrade(.sealInspectionKit)) {
                     if checked {
                         CaseCheckResult(fake: offer.fake, key: offer.id)
                     } else {

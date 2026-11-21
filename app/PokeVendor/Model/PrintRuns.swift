@@ -186,6 +186,53 @@ extension GameStore {
         data.printChanges.filter { $0.day <= data.day && $0.day > data.day - 28 }.sorted { $0.day > $1.day }
     }
 
+    /// The reprint radar: what the print runs and the flippers do to one sealed product. Read only: it changes no state and no price.
+    /// It names a reprint wave now, an announced reprint or out-of-print notice, a dump now, and the chance of a dump.
+    func reprintRadar(_ product: Product) -> [String] {
+        let day = data.day
+        let changes = data.printChanges.filter { $0.slug == product.homeSlug }
+        var lines: [String] = []
+        // The active wave: the latest start that no end has closed. A wave that names other products only dips this one.
+        let ended = Set(changes.filter { $0.endsWave && $0.day <= day }.compactMap(\.waveID))
+        let wave = changes.filter { $0.inPrint && !$0.endsWave && $0.day <= day && $0.waveID.map { !ended.contains($0) } == true }
+            .max { $0.day < $1.day }
+        if let wave {
+            lines.append(wave.products?.contains(product.id) ?? true ? "In a reprint wave now. Stores restock it, and its price is down."
+                                                                      : "Its set is in a reprint wave. This product dips a little.")
+        }
+        let upcoming = changes.filter { $0.day > day && !$0.endsWave }.min { $0.day < $1.day }
+        if let c = upcoming {
+            let days = c.day - day
+            let when = "in \(days) day\(days == 1 ? "" : "s")"
+            if c.inPrint {
+                lines.append(c.products?.contains(product.id) ?? true ? "Reprint \(when)." : "A reprint of other products in its set starts \(when). This product dips a little.")
+            } else {
+                lines.append("Its set goes out of print \(when).")
+            }
+        }
+        if let dump = data.marketEvents.first(where: { $0.kind == .flipperDump && $0.products?.contains(product.id) == true && $0.factor(day: day) != 1 }) {
+            lines.append("Flippers are dumping it now: \(String(format: "%+.0f%%", (dump.factor(day: day) - 1) * 100)) so far.")
+        }
+        // A dump starts on the first day of a reprint, when the flippers are at or over the dump level.
+        if let c = upcoming, c.inPrint, c.waveID == nil || c.waveID == c.id, product.isInPrint, product.isHot() {
+            lines.append(data.flipperPressure >= Balance.dumpPressure ? "Flipper dump chance: high. Flippers are crowding the shelves."
+                                                                       : "Flipper dump chance: low. Flippers are under the dump level.")
+        }
+        return lines
+    }
+
+    /// The products that the player holds with a radar line, by name.
+    var radarEntries: [(product: Product, lines: [String])] {
+        var seen: Set<String> = []
+        var out: [(product: Product, lines: [String])] = []
+        for item in data.sealed {
+            guard let id = item.productID, seen.insert(id).inserted, let product = SetLibrary.product(id) else { continue }
+            let lines = reprintRadar(product)
+            if !lines.isEmpty { out.append((product, lines)) }
+        }
+        return out.sorted { $0.product.name < $1.product.name }
+    }
+
     func printTitle(_ c: PrintChange) -> String {
         let name = SetLibrary.info(c.slug)?.name ?? c.slug
         let what = c.products.map { Self.reprintedText($0, set: name) }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GoodsRow: View {
+    @Environment(GameStore.self) private var store
     let item: VendorItem
     let tool: Int
     let canAfford: Bool
@@ -38,7 +39,7 @@ struct GoodsRow: View {
                 }
                 if item.looksOff { LooksOffLine(sealed: item.isSealed) }
                 // A stranger's case: a free check of the tape and label. A check is never proof.
-                if item.caseUnits != nil {
+                if item.caseUnits != nil || (item.isSealed && store.hasUpgrade(.sealInspectionKit)) {
                     if checked {
                         CaseCheckResult(fake: item.fake, key: item.id.uuidString)
                     } else {

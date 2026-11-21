@@ -21,6 +21,7 @@ Each big store has one vendor day in each week. The vendor brings the stock for 
 - A batch holds a fixed number of units and 1 to 6 products. Each product has at least 2 units. The rest of the units go to the products by random weight.
 - A hot product in a batch drains while the store is open (from 8 AM to 10 PM). A product that is not hot drains slowly.
 - Camping a posted restock is separate. A camp is a visit. The planner says "vendor stock" for the weekly batch and "restock" for a posted restock day.
+- The route planner app orders a store run around the vendor hours that the player knows (see [12-acquiring-product.md](12-acquiring-product.md#local-stores-store-run-time-cost)).
 
 | Store | Units in a batch | Products in a batch |
 | --- | --- | --- |
@@ -147,6 +148,14 @@ When the pressure is 0.6 or more, flippers sell stock that they cannot move.
 - A reprint and a dump together never cut a price by more than 45%.
 - The market news shows the dump.
 
+### The reprint radar
+
+The reprint radar upgrade ($200, needs the price tracker app) shows the print news and the flipper state for each sealed product that the player holds. It is read only. It changes no price.
+
+- The lines are: the product is in a reprint wave now, a reprint or an out-of-print notice is coming (with the days), flippers are dumping the product now, and the chance of a flipper dump.
+- The dump chance is high when a reprint of the set is coming, the product is hot and in print, and the pressure is 0.6 or more. It is low when the pressure is less.
+- The lines show in the Flippers and stores box on the Market screen, and on the sealed item screen.
+
 ### The winter dip
 
 The after-holiday dip of sealed prices is 50% deeper (−15%) when the pressure is 0.6 or more on its first day. The game sets the size on that day and keeps it for the whole dip.
@@ -217,7 +226,7 @@ GameStop sells hot product at 1.35 to 1.6 times the MSRP.
 
 A grocery store machine and a pharmacy machine sell Pokemon product. A machine restocks about every 10 days, at an hour from 10 to 16.
 
-- The calendar posts the restock 2 days ahead.
+- The calendar posts the restock 2 days ahead. With the machine map app, it posts 4 days ahead.
 - The player waits 2 hours. The wait follows the work-hour rule: it cannot overlap a work shift.
 - A wait works with a chance of 70%. A late start keeps 75% of the chance for each hour. Pressure scales the chance like a camp.
 - A success gives 1 to 3 products at MSRP, at most 2 of each. The player pays cash. A machine adds no heat.

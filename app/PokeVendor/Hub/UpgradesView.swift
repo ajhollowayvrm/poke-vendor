@@ -30,6 +30,7 @@ struct UpgradesView: View {
                     upgradeRow(.vendorBinder)
                     upgradeRow(.slabCase)
                     upgradeRow(.foldingCart)
+                    upgradeRow(.handTruck)
                     upgradeRow(.cargoVan)
                     upgradeRow(.premiumBooth)
                     upgradeRow(.showcaseCase)
@@ -56,6 +57,10 @@ struct UpgradesView: View {
                     upgradeRow(.bulkBroker)
                     upgradeRow(.supplyAccount)
                     upgradeRow(.priceTracker)
+                    upgradeRow(.reprintRadar)
+                    upgradeRow(.sealInspectionKit)
+                    upgradeRow(.routePlanner)
+                    upgradeRow(.machineMap)
                 }
                 DetailBox(title: "Collecting") {
                     upgradeRow(.premiumBinder)
@@ -77,9 +82,14 @@ struct UpgradesView: View {
                     upgradeRow(.cameraKit)
                     upgradeRow(.editingSoftware)
                 }
+                DetailBox(title: "Rip & Ship and callouts") {
+                    upgradeRow(.shippingStation)
+                    upgradeRow(.overheadCamera)
+                    upgradeRow(.purchaseRecords)
+                }
                 // Upgrades that live on their own screens (docs/09-upgrades.md).
                 DetailBox(title: "On other screens") {
-                    elsewhere("Store fixtures and a bigger space", detail: "Display cases, a sealed wall, play tables, cameras, a sign, a point-of-sale system, and bigger units.",
+                    elsewhere("Store fixtures and a bigger space", detail: "Display cases, a sealed wall, play tables, cameras, a sign, a point-of-sale system, a back room, shelving, acrylic cases, and bigger units.",
                               icon: "storefront", enabled: store.cardStore != nil) { nav.path.append(.cardStore) }
                     elsewhere("Vending machine parts", detail: "A card reader, a camera, and remote stock data, for each machine.",
                               icon: "cabinet", enabled: !store.machines.isEmpty) { nav.path.append(.vending) }

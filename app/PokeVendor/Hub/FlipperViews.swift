@@ -80,7 +80,30 @@ struct FlipperMarketBox: View {
                     .font(.subheadline)
                     .foregroundStyle(days > 0 ? Theme.orange : Theme.muted)
             }
+            if store.hasUpgrade(.reprintRadar) { ReprintRadarList() }
             RivalsBox()
+        }
+    }
+}
+
+/// The reprint radar for the sealed product that the player holds. Read only (docs/34-flippers-and-retail-limits.md).
+struct ReprintRadarList: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let entries = store.radarEntries
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Reprint radar").font(.subheadline.weight(.medium))
+            if entries.isEmpty {
+                Text("No reprint, out-of-print notice, or dump for the sealed product that you hold.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+            ForEach(entries, id: \.product.id) { entry in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(entry.product.name).font(.subheadline).lineLimit(2)
+                    ForEach(entry.lines, id: \.self) { Text($0).font(.caption).foregroundStyle(Theme.cyan) }
+                }
+            }
         }
     }
 }

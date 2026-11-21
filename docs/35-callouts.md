@@ -118,7 +118,7 @@ The cost depends on the peak heat. It comes when the callout ends.
 | Reply | Needs | What it does |
 | --- | --- | --- |
 | Stay silent | Nothing | The heat falls 15% each night, as it does without a reply. |
-| Deny | An account | On a **true** callout, the heat is multiplied by 1.5. The denial falls apart with a chance of 50% with proof, or 20% without. Then reputation falls by 8, and the proof is out. On a **false** callout, the callout ends in 2 days, reputation rises by 1, and the rival loses 0.25 credibility. The rival also gives the player a receipt. |
+| Deny | An account | On a **true** callout, the heat is multiplied by 1.5. The denial falls apart with a chance of 50% with proof, or 20% without. Then reputation falls by 8, and the proof is out. On a **false** callout, the callout ends in 2 days, reputation rises by 1, and the rival loses 0.25 credibility. The rival also gives the player a receipt. With the purchase records app ($120), a false product integrity or forbidden product callout ends in 1 day, and the rival loses 0.375 credibility (1.5 times). |
 | Make it right | Cash | The player pays the cost below. The heat falls to 0 in 1 day. Followers from a counter-callout go back. No account needed. |
 | Counter-callout | An account, and a rival accuser | The heat rises by 30. The player gains 0.5% of followers and loses 0.05 authenticity. The rival loses 0.1 credibility on a true callout and 0.3 on a false one. The rival gains 0.2 hostility. A game shop accuser costs 10 standing points. |
 
@@ -151,7 +151,7 @@ Each week, on the day that is a multiple of 7, every rival can post. The player 
 ### Credibility
 
 - Credibility is from 0.25 to 1.0. It scales the start heat of what the rival posts, and the chance of a post.
-- A deny that proves a false callout costs the rival 0.25. A counter-callout costs 0.1 or 0.3. A player callout with proof costs 0.3.
+- A deny that proves a false callout costs the rival 0.25. With the purchase records app, a false product integrity or forbidden product callout costs the rival 0.375. A counter-callout costs 0.1 or 0.3. A player callout with proof costs 0.3.
 - A rival regains 0.05 each week.
 
 ### Drama bait

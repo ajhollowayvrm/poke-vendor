@@ -53,6 +53,8 @@ extension Balance {
     /// 2 hours and gets 1 to 3 products at MSRP, at most 2 of each.
     static let machineCycleDays = 10
     static let machineNotice = 2
+    /// With the machine map app, a machine restock is posted this many days ahead.
+    static let machineMapNotice = 4
     static let machineCampHours = 2.0
     static let machineSuccess = 0.7
     static let machineLimit = 2
@@ -92,7 +94,7 @@ extension GameStore {
         }
         for m in OfficialMachine.allCases {
             let r = machineRestockDay(m, cycle: day / Balance.machineCycleDays)
-            guard r.day == day, r.day - data.day <= Balance.machineNotice else { continue }
+            guard r.day == day, r.day - data.day <= machineNoticeDays else { continue }
             out.append(CalendarEntry(kind: .restock, title: "\(m.rawValue) restock",
                                      detail: "About \(GameStore.clock(r.hour)) · wait \(formatHours(Balance.machineCampHours)) · limit \(Balance.machineLimit)"))
         }
@@ -173,14 +175,17 @@ extension GameStore {
         return (day, Double(r.int(Balance.machineHours)))
     }
 
-    /// The machine restocks that are posted now: today, and up to 2 days ahead.
+    /// The days ahead that a machine restock is posted: more with the machine map app.
+    var machineNoticeDays: Int { hasUpgrade(.machineMap) ? Balance.machineMapNotice : Balance.machineNotice }
+
+    /// The machine restocks that are posted now: today, and up to 2 days ahead (4 with the machine map app).
     var postedMachineRestocks: [MachineRestock] {
         let cycle = data.day / Balance.machineCycleDays
         var out: [MachineRestock] = []
         for m in OfficialMachine.allCases {
             for c in [cycle, cycle + 1] {
                 let r = machineRestockDay(m, cycle: c)
-                if r.day >= data.day, r.day - data.day <= Balance.machineNotice {
+                if r.day >= data.day, r.day - data.day <= machineNoticeDays {
                     out.append(MachineRestock(machine: m, day: r.day, hour: r.hour))
                 }
             }

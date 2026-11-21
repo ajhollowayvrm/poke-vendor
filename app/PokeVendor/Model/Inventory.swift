@@ -607,6 +607,8 @@ struct SealedItem: Codable, Identifiable, Hashable {
     var caseFresh: Bool?
     /// The player checked the tape and the label of this case. The check runs once.
     var caseChecked: Bool?
+    /// The check used the seal inspection kit. A check keeps the result it had, so buying the kit later changes no old check.
+    var checkedWithKit: Bool?
     /// The plug order that this item came from (Model/Plug.swift). Units from an opened plug case keep it.
     var grayOrder: UUID?
     /// A loose unit in the store's back room, off the shelf (Model/Cases.swift). Only meaningful with status `.inStore`.
@@ -615,7 +617,7 @@ struct SealedItem: Codable, Identifiable, Hashable {
 
     enum CodingKeys: String, CodingKey {
         case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
-        case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, grayOrder, backRoom
+        case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, checkedWithKit, grayOrder, backRoom
     }
 
     var isCase: Bool { caseUnits != nil }

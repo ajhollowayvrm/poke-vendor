@@ -315,11 +315,14 @@ private struct UnitTile: View {
 
 /// The result of the tape and label check on a case. The result depends only on the case, so a second look reads the same.
 struct CaseCheckResult: View {
+    @Environment(GameStore.self) private var store
     let fake: FakeTier?
     let key: String
+    /// Whether the check used the kit. Nil: the current kit state (a listing that is not checked yet).
+    var kit: Bool?
 
     var body: some View {
-        if let tell = Counterfeit.caseCheckLine(fake, key: key) {
+        if let tell = Counterfeit.caseCheckLine(fake, key: key, kit: kit ?? store.hasUpgrade(.sealInspectionKit)) {
             Text(tell).font(.caption).foregroundStyle(Theme.orange)
         } else {
             Text("The tape and label look right. A check is never proof.").font(.caption).foregroundStyle(Theme.muted)

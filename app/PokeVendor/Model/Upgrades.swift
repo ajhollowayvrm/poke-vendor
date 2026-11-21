@@ -47,6 +47,15 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
     case sortingTrays, bulkBroker, supplyAccount, priceTracker
     /// Short-form video editing, and a better master set binder.
     case editingSoftware, premiumBinder
+    /// Sealed product: a hand truck for cases (docs/29), a seal inspection kit (docs/12), a route planner for store runs
+    /// (docs/34), and a machine map for card machine restocks (docs/12).
+    case handTruck, sealInspectionKit, routePlanner, machineMap
+    /// Rip & Ship: a shipping station and an overhead camera (docs/06).
+    case shippingStation, overheadCamera
+    /// Callouts: purchase records that prove a false claim about a product (docs/35).
+    case purchaseRecords
+    /// Shows the reprint wave, the out-of-print notice, and the flipper dump of the sealed product the player holds (docs/34).
+    case reprintRadar
 
     var name: String {
         switch self {
@@ -91,6 +100,14 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .priceTracker: "Price tracker app"
         case .editingSoftware: "Editing software"
         case .premiumBinder: "Premium master set binder"
+        case .handTruck: "Hand truck"
+        case .sealInspectionKit: "Seal inspection kit"
+        case .routePlanner: "Route planner app"
+        case .machineMap: "Machine map app"
+        case .shippingStation: "Shipping station"
+        case .overheadCamera: "Overhead camera"
+        case .purchaseRecords: "Purchase records app"
+        case .reprintRadar: "Reprint radar"
         }
     }
 
@@ -137,6 +154,14 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .priceTracker: "Market news arrives \(Balance.priceTrackerLead) days before prices start to move."
         case .editingSoftware: "Shorts take \(Int(((1 - Balance.editingFactor) * 100).rounded()))% less editing time."
         case .premiumBinder: "A completed master set pays \(Int(((Balance.premiumBinderFactor - 1) * 100).rounded()))% more reputation and followers."
+        case .handTruck: "A sealed case takes 1 space plus 1 for each \(Balance.handTruckPacksPerSpace) packs, not each \(Balance.casePacksPerSpace). A case of 10 Elite Trainer Boxes takes 9 spaces, not 13."
+        case .sealInspectionKit: "The tape and label check works on any sealed product, not only cases. It shows the tell of a reseal \(Int(Balance.sealInspectionFactor)) times as often. A professional reseal still shows nothing."
+        case .routePlanner: "The store run planner puts stops in an order so each one arrives after the vendor hour that you already know. It shows the arrival time of each stop. Chains with an unknown vendor hour stay in your order, at the end."
+        case .machineMap: "An official card machine restock is posted \(Balance.machineMapNotice) days ahead, not \(Balance.machineNotice)."
+        case .shippingStation: "Shipping a Rip & Ship order takes \(Int(Balance.ripShipShipMinutes * Balance.shippingStationTimeFactor)) minutes, not \(Int(Balance.ripShipShipMinutes)). Each order costs \(money(Balance.shippingStationSuppliesCut)) less in supplies."
+        case .overheadCamera: "Rip & Ship buyers pay up to \(Int(((Balance.overheadCameraPriceFactor - 1) * 100).rounded()))% more. The camera catches \(Int(Balance.palmFoundCameraChance * 100))% of palmed hits, not \(Int(Balance.palmFoundChance * 100))%."
+        case .purchaseRecords: "When you deny a false product integrity or forbidden product callout, the heat falls in \(Balance.purchaseRecordsFalseDays) day, not \(Balance.calloutDenyFalseDays). The rival loses \(Balance.purchaseRecordsCredFactor.formatted())× the credibility. It does nothing for a true callout."
+        case .reprintRadar: "Shows which sealed products that you hold are in a reprint wave or an out-of-print notice, and the chance of a flipper dump. It shows the lines on the Market screen and on each sealed product. It changes no price."
         }
     }
 
@@ -185,6 +210,14 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .priceTracker: "chart.line.uptrend.xyaxis.circle"
         case .editingSoftware: "film"
         case .premiumBinder: "books.vertical.circle"
+        case .handTruck: "cart.badge.plus"
+        case .sealInspectionKit: "magnifyingglass.circle.fill"
+        case .routePlanner: "map"
+        case .machineMap: "mappin.and.ellipse"
+        case .shippingStation: "shippingbox"
+        case .overheadCamera: "camera.metering.center.weighted"
+        case .purchaseRecords: "doc.text.magnifyingglass"
+        case .reprintRadar: "dot.radiowaves.left.and.right"
         }
     }
 
@@ -194,6 +227,9 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .cameraKit: .studioLights
         case .bigContactBook: .contactBook
         case .cargoVan: .betterCar
+        case .handTruck: .foldingCart
+        case .overheadCamera: .cameraKit
+        case .reprintRadar: .priceTracker
         default: nil
         }
     }
@@ -209,6 +245,8 @@ extension Balance {
         .shippingKit: 180, .repricer: 200, .proSeller: 2_000, .psaMembership: 1_200, .gradeEstimate: 300, .uvLight: 75,
         .cargoVan: 6_500, .premiumBooth: 3_000, .sortingTrays: 90, .bulkBroker: 250, .supplyAccount: 150, .priceTracker: 200,
         .editingSoftware: 150, .premiumBinder: 60,
+        .handTruck: 180, .sealInspectionKit: 160, .routePlanner: 120, .machineMap: 60, .shippingStation: 350, .overheadCamera: 450,
+        .purchaseRecords: 120, .reprintRadar: 200,
     ]
     /// Contact book room: no upgrade, the contact book, and the big contact book.
     static let contactBookSizes = [4, 8, 15]

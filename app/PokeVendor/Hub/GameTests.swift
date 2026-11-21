@@ -42,6 +42,7 @@ final class GameTests {
         timed("retail", retail)
         timed("online", online)
         timed("ripship", ripShip)
+        timed("sealedUpgrades", sealedUpgrades)
         timed("phase7", phase7)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
@@ -1552,6 +1553,8 @@ final class GameTests {
               "a plug order did not deliver one case with one gray market entry")
         // A seizure: the items leave with no refund, one seizure act appears, and the purchase act is gone.
         store.data.plug.orders[0].seizeDay = store.day + 1
+        // The purchase act may have come out already. The seizure must retire it either way, so test the harder case.
+        if let k = store.data.hiddenActs.firstIndex(where: { $0.id == order.actID }) { store.data.hiddenActs[k].exposed = true }
         cash = store.cash
         nextDay()
         check(!store.data.sealed.contains { $0.grayOrder == order.id } && store.data.plug.orders[0].state == .seized, "a seizure left plug stock behind")
@@ -2915,6 +2918,211 @@ final class GameTests {
                 check(o?.refunded == false && o?.state == .ripped && o?.loose.count == 1 && session.ripping == nil,
                       "a stream that ended mid-rip did not ship the cards to the buyer")
             }
+        }
+    }
+
+    /// The eight sealed product upgrades and the two store fixtures (docs/09-upgrades.md): one small check for each.
+    private func sealedUpgrades() {
+        fresh()
+        func own(_ u: Upgrade) { store.data.upgrades.append(u.rawValue) }
+        guard let etb = SetLibrary.catalog.first(where: { $0.kind == "Elite Trainer Box" && $0.market > 0 && !$0.isStoreExclusive }),
+              let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }) else {
+            return check(false, "no product for the sealed upgrade test")
+        }
+        let costs: [Upgrade: Double] = [.handTruck: 180, .sealInspectionKit: 160, .routePlanner: 120, .machineMap: 60, .shippingStation: 350,
+                                        .overheadCamera: 450, .purchaseRecords: 120, .reprintRadar: 200]
+        for (u, c) in costs { check(u.cost == c && u.detail.contains("."), "the \(u.name) has the wrong cost or no text") }
+        check(Upgrade.handTruck.requires == .foldingCart && Upgrade.overheadCamera.requires == .cameraKit
+              && Upgrade.reprintRadar.requires == .priceTracker && Upgrade.machineMap.requires == nil, "a sealed upgrade has the wrong prerequisite")
+
+        // 1. Hand truck: a case takes 1 space plus 1 for each 12 packs. It needs the folding cart and costs $180.
+        let caseItem = ShowItem(id: UUID(), kind: .sealed, name: "c", detail: "", market: 1, image: nil, condition: nil, graded: false,
+                                setSlug: etb.homeSlug, packs: etb.packs * 10, isCase: true)
+        let wide = store.carrySpace(caseItem)
+        check(!store.canBuyUpgrade(.handTruck), "the hand truck sold without the folding cart")
+        own(.foldingCart)
+        let cash = store.cash
+        store.buyUpgrade(.handTruck)
+        check(store.hasUpgrade(.handTruck) && abs(cash - store.cash - 180) < 0.005, "the hand truck did not cost exactly $180")
+        check(wide == 1 + Int((Double(etb.packs * 10) / 8).rounded(.up))
+              && store.carrySpace(caseItem) == 1 + Int((Double(etb.packs * 10) / 12).rounded(.up)) && store.carrySpace(caseItem) < wide,
+              "the hand truck did not change the case carry space")
+
+        // 2. Seal inspection kit: the check works on any sealed product, finds a tell twice as often, and runs once.
+        guard let unit = store.addTestProduct(blister.id), let k = store.data.sealed.firstIndex(where: { $0.id == unit.id }) else {
+            return check(false, "no sealed unit for the seal kit test")
+        }
+        store.data.sealed[k].fake = .bootleg
+        check(store.checkCase(unit.id) == nil && store.data.sealed[k].caseChecked != true, "the tape check ran on a unit with no kit")
+        // A case that was checked before the kit keeps its old result after the kit arrives. Find a case that the plain check misses.
+        var oldCase = store.testCase(etb, units: 4, fresh: false)
+        for _ in 0..<40 where Counterfeit.caseCheckCatches(.bootleg, key: oldCase.uuidString) { oldCase = store.testCase(etb, units: 4, fresh: false) }
+        guard let j = store.data.sealed.firstIndex(where: { $0.id == oldCase }) else { return check(false, "no case for the seal kit test") }
+        store.data.sealed[j].fake = .bootleg
+        _ = store.checkCase(oldCase)
+        let plainRead = Counterfeit.caseCheckLine(.bootleg, key: oldCase.uuidString, kit: store.data.sealed[j].checkedWithKit == true)
+        own(.sealInspectionKit)
+        check(plainRead == nil && store.data.sealed[j].checkedWithKit == nil
+              && Counterfeit.caseCheckLine(.bootleg, key: oldCase.uuidString, kit: store.data.sealed[j].checkedWithKit == true) == plainRead,
+              "buying the kit changed the result of an old check")
+        check(store.checkCase(unit.id) == Counterfeit.caseTells(.bootleg) && store.checkCase(unit.id) == nil && store.data.sealed[k].checkedWithKit == true,
+              "the kit check on a unit did not run once and record the kit")
+        var seen = 0, shown = 0
+        for n in 0..<1000 where Counterfeit.caseCheckCatches(.convincing, key: "kit-\(n)", kit: true) { seen += 1 }
+        for n in 0..<200 where Counterfeit.caseCheckLine(.professional, key: "kit-\(n)", kit: true) != nil { shown += 1 }
+        check(seen == 1000 && shown == 0, "the kit did not double the catch, or it shows a professional reseal (\(seen), \(shown))")
+
+        // 3. Route planner: stops with a vendor hour that the player knows come first, by hour. The rest keep their order.
+        let chains = LocalStore.allCases.filter { !$0.isGameShop }
+        let weekday = store.vendorSlot(chains[0]).weekday
+        store.data.day += ((weekday - store.data.day % 7) + 7) % 7
+        let sameDay = chains.filter { store.vendorSlot($0).weekday == weekday }
+        let others = chains.filter { !sameDay.contains($0) }
+        for c in sameDay { store.data.retail.seenSlot[c.rawValue] = weekday }
+        let chosen = [LocalStore.castle] + others.prefix(2) + sameDay.reversed()
+        check(store.plannedRoute(chosen) == chosen, "the route changed with no planner")
+        own(.routePlanner)
+        let route = store.plannedRoute(chosen)
+        let hours = route.prefix(sameDay.count).map { store.vendorSlot($0).hour }
+        check(route.count == chosen.count && Set(route.prefix(sameDay.count)) == Set(sameDay) && zip(hours, hours.dropFirst()).allSatisfy { $0 <= $1 }
+              && Array(route.suffix(others.prefix(2).count + 1)) == [LocalStore.castle] + others.prefix(2), "the route is not in vendor order")
+        // A known chain whose vendor is not today comes before the chains with a vendor today.
+        if let away = others.first {
+            store.data.retail.seenSlot[away.rawValue] = store.vendorSlot(away).weekday
+            let mixed = store.plannedRoute([LocalStore.castle] + sameDay + [away])
+            check(mixed.first == away && Set(mixed.dropFirst().prefix(sameDay.count)) == Set(sameDay) && mixed.last == LocalStore.castle,
+                  "a known chain with a vendor on another day did not come first")
+            store.data.retail.seenSlot[away.rawValue] = nil
+        }
+
+        // 4. Machine map: a machine restock is posted 4 days ahead, not 2.
+        let today = store.data.day
+        var farthest = 0, farthestMap = 0
+        for d in today..<(today + 40) {
+            store.data.day = d
+            farthest = max(farthest, store.postedMachineRestocks.map { $0.day - d }.max() ?? 0)
+        }
+        own(.machineMap)
+        for d in today..<(today + 40) {
+            store.data.day = d
+            farthestMap = max(farthestMap, store.postedMachineRestocks.map { $0.day - d }.max() ?? 0)
+        }
+        store.data.day = today
+        check(farthest == Balance.machineNotice && farthestMap == Balance.machineMapNotice, "the machine map posts \(farthestMap) days ahead, not 4 (plain: \(farthest))")
+
+        // 5. Shipping station: half the shipping time, and $0.25 less supplies for each order.
+        check(store.ripShipShipMinutes == 10 && abs(store.ripShipFees(price: 100, shipping: 4.47).supplies - 0.50) < 0.001, "the Rip & Ship base time or supplies changed")
+        store.buyUpgrade(.shippingStation)
+        check(store.ripShipShipMinutes == 5 && abs(store.ripShipFees(price: 100, shipping: 4.47).supplies - 0.25) < 0.001, "the shipping station did not halve the time or cut the supplies")
+        if let item = store.addTestProduct(blister.id),
+           let order = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+            _ = store.beginRipShipRip(order.id, ripID: UUID())
+            store.finishRipShip(order.id)
+            store.data.hour = 18
+            check(store.shipRipShipOrders([order.id]) == nil && abs(store.data.hour - (18 + 5.0 / 60)) < 0.0001
+                  && store.data.ripShip.orders.first { $0.id == order.id }?.shipped == true, "shipping one order did not take 5 minutes")
+        } else {
+            check(false, "no Rip & Ship order for the shipping station test")
+        }
+
+        // 6. Overhead camera: buyers pay up to 5% more, and the camera catches 75% of palms.
+        let streamSession = StreamSession(store: store, hours: 1, items: [], scheduled: false)
+        let anItem = StreamItem(id: UUID(), name: "t", market: 100, image: nil, sealed: true, packs: 3)
+        func topShare() -> Double {
+            var top = 0.0
+            for _ in 0..<300 { top = max(top, streamSession.ripShipShare(anItem, contact: nil)) }
+            return top
+        }
+        let plainTop = topShare(), plainChance = store.palmFoundChance
+        store.data.upgrades.removeAll { $0 == Upgrade.overheadCamera.rawValue }
+        own(.cameraKit)
+        store.buyUpgrade(.overheadCamera)
+        let cameraTop = topShare()
+        check(plainChance == Balance.palmFoundChance && store.palmFoundChance == 0.75 && plainTop <= Balance.ripShipBand.upperBound
+              && cameraTop > Balance.ripShipBand.upperBound && cameraTop <= Balance.ripShipBand.upperBound * 1.05,
+              "the overhead camera did not raise the buyer price or the palm catch (\(plainTop), \(cameraTop))")
+
+        // 7. Purchase records: a denied false integrity or forbidden callout falls in 1 day, and the rival loses 1.5 times the credibility.
+        guard let rivalIndex = store.data.rivals.indices.first else { return check(false, "no rival for the purchase records test") }
+        let rivalID = store.data.rivals[rivalIndex].id
+        func deny(_ type: CalloutType, truth: Bool) -> (days: Int?, lost: Double) {
+            store.data.callouts.open = []
+            store.data.rivals[rivalIndex].credibility = 1
+            guard let id = store.testCallout(type, truth: truth, receipts: false, heat: 40, accuser: .rival(.rival(rivalID))) else { return (nil, 0) }
+            store.replyToCallout(id, .deny)
+            return (store.callout(id)?.fallEndDay.map { $0 - store.day }, 1 - store.credibility(.rival(rivalID)))
+        }
+        let plain = deny(.productIntegrity, truth: false)
+        own(.purchaseRecords)
+        let withRecords = deny(.productIntegrity, truth: false), forbidden = deny(.forbidden, truth: false)
+        let greed = deny(.greed, truth: false), real = deny(.productIntegrity, truth: true)
+        check(plain.days == 2 && abs(plain.lost - Balance.rivalCredDenied) < 0.0001, "a plain deny changed")
+        check(withRecords.days == 1 && forbidden.days == 1 && abs(withRecords.lost - Balance.rivalCredDenied * 1.5) < 0.0001,
+              "the purchase records did not speed up a denied false callout, or it did not cost the rival 1.5 times")
+        check(greed.days == 2 && abs(greed.lost - Balance.rivalCredDenied) < 0.0001 && real.days == nil && real.lost == 0,
+              "the purchase records changed another type of callout, or a true one")
+        store.data.callouts.open = []
+
+        // 8. Reprint radar: lines for a reprint and an out-of-print notice. It never changes a price or a change.
+        store.data.sealed.removeAll()
+        check(store.radarEntries.isEmpty && store.reprintRadar(etb).isEmpty, "the radar shows a line with no news")
+        var reprint = PrintChange(slug: etb.homeSlug, day: store.day + 5, announcedDay: store.day, inPrint: true, jump: -0.2)
+        reprint.waveID = reprint.id
+        store.data.printChanges = [reprint]
+        let marketBefore = etb.market
+        check(store.reprintRadar(etb).contains { $0.hasPrefix("Reprint in 5 days") }, "the radar does not show a coming reprint")
+        store.data.printChanges = [PrintChange(slug: etb.homeSlug, day: store.day + 3, announcedDay: store.day, inPrint: false, jump: 0.2)]
+        check(store.reprintRadar(etb).contains { $0.contains("goes out of print in 3 days") }, "the radar does not show an out-of-print notice")
+        _ = store.addTestProduct(etb.id)
+        check(store.radarEntries.map(\.product.id) == [etb.id] && etb.market == marketBefore && store.data.printChanges.count == 1,
+              "the radar missed a held product, or it changed a price or a print change")
+        // An old out-of-print notice, and an active wave that names other products: this product is not in the wave.
+        let otherIDs = SetLibrary.catalog.filter { $0.homeSlug == etb.homeSlug && $0.id != etb.id }.prefix(1).map(\.id)
+        var wave = PrintChange(slug: etb.homeSlug, day: store.day - 1, announcedDay: store.day - 10, inPrint: true, jump: -0.2, products: otherIDs)
+        wave.waveID = wave.id
+        store.data.printChanges = [PrintChange(slug: etb.homeSlug, day: store.day - 50, announcedDay: store.day - 60, inPrint: false, jump: 0.2), wave]
+        check(!otherIDs.isEmpty && !store.reprintRadar(etb).contains { $0.hasPrefix("In a reprint wave") }
+              && store.reprintRadar(etb).contains { $0.contains("dips a little") }, "the radar put a product in a wave that names other products")
+        store.data.printChanges = []
+
+        // 9. Back room shelving: the back room holds 24 cases. It needs the back room, and it costs $400.
+        store.testOpenCardStore(.stripMall, term: 1)
+        store.data.sealed.removeAll()
+        let caseIDs = (0..<13).map { _ in store.testCase(etb, units: 4, fresh: true) }
+        check(!store.canBuyFixture(.backRoomShelving), "the shelving sold with no back room")
+        store.data.cardStore?.fixtures.append(.backRoom)
+        check(store.stockStore(Set(caseIDs)) == Balance.backRoomCases && store.backRoomCapacity == Balance.backRoomCases, "the plain back room did not stop at 12 cases")
+        let before = store.cash
+        store.buyFixture(.backRoomShelving)
+        check(abs(before - store.cash - 400) < 0.005 && store.backRoomCapacity == 24, "the shelving did not cost $400 or hold 24 cases")
+        check(store.stockStore(Set(caseIDs)) == 1 && store.backRoomCases.count == 13, "the shelving did not take a thirteenth case")
+
+        // 10. Acrylic cases: a customer judges a sealed price at 95%. A card price stays. The player gets the full price.
+        let sealedItem = GameStore.StoreShelfItem(id: UUID(), name: "s", market: 100, paid: nil, setSlug: etb.homeSlug, isCard: false, isPack: false,
+                                                  productKey: "p", fake: nil, known: false)
+        let cardItem = GameStore.StoreShelfItem(id: UUID(), name: "c", market: 100, paid: nil, setSlug: etb.homeSlug, isCard: true, isPack: false,
+                                                productKey: "", fake: nil, known: false)
+        check(store.perceivedPrice(sealedItem, price: 100) == 100, "a sealed price changed with no acrylic cases")
+        let cashBefore = store.cash
+        store.buyFixture(.acrylicCases)
+        check(abs(cashBefore - store.cash - 150) < 0.005 && abs(store.perceivedPrice(sealedItem, price: 100) - 95) < 0.0001
+              && store.perceivedPrice(cardItem, price: 100) == 100, "the acrylic cases did not cost $150 or did not lower the sealed price by 5%")
+        // At the counter, a buyer's limit reaches further for a sealed item, and the player still asks the full price.
+        store.data.hour = 12
+        if let counter = store.startCounter() {
+            let shown = { (kind: ShowItem.Kind) in ShowItem(id: UUID(), kind: kind, name: "x", detail: "", market: 100, image: nil, condition: nil, graded: false,
+                                                           setSlug: etb.homeSlug, packs: 9, isCase: false) }
+            check(abs(counter.buyLimit(top: 90, ask: 100, item: shown(.sealed)) - 90 / Balance.acrylicPerceivedFactor) < 0.0001
+                  && counter.buyLimit(top: 90, ask: 100, item: shown(.card)) == 90 && counter.buyLimit(top: 200, ask: 100, item: shown(.sealed)) == 100,
+                  "the counter buyer limit ignores the acrylic cases, or it lets the price go over the ask")
+        } else {
+            check(false, "no counter session for the acrylic test")
+        }
+        if let saved = try? JSONEncoder().encode([StoreFixture.backRoomShelving, .acrylicCases]),
+           let loaded = try? JSONDecoder().decode([StoreFixture].self, from: saved), let up = try? JSONDecoder().decode([Upgrade].self, from: Data(#"["handTruck","reprintRadar"]"#.utf8)) {
+            check(loaded == [.backRoomShelving, .acrylicCases] && up == [.handTruck, .reprintRadar], "a new fixture or upgrade did not survive a save and a load")
+        } else {
+            check(false, "a new fixture or upgrade did not encode and decode")
         }
     }
 

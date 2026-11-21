@@ -281,7 +281,7 @@ struct RipView: View {
             }
             Button("Leave it", role: .cancel) {}
         } message: { _ in
-            Text("This is a scam. The card stays with you, and \(model.shipBuyer ?? "the buyer") gets a bulk card in its place. The camera catches about half of all palms. If it does, Whatnot bans you and the clip spreads.")
+            Text("This is a scam. The card stays with you, and \(model.shipBuyer ?? "the buyer") gets a bulk card in its place. The camera catches \(model.store?.hasUpgrade(.overheadCamera) == true ? "about 3 in 4" : "about half of all") palms. If it does, Whatnot bans you and the clip spreads.")
         }
         .sheet(isPresented: $stopRuleShown) {
             if let slug = model.currentPack?.setSlug, let store = model.store {

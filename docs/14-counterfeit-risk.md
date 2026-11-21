@@ -41,7 +41,9 @@ storefront label alone.
   for the whole case, at the source rate. If the roll says fake, every
   unit of the case is resealed. The tape and label check on a case shows
   the tell of a fake half of the time. A professional reseal shows nothing
-  (see [12-acquiring-product.md](12-acquiring-product.md#cases)).
+  (see [12-acquiring-product.md](12-acquiring-product.md#cases)). The seal
+  inspection kit makes the check work on any sealed product and finds the
+  tell 2 times as often. A professional reseal still shows nothing.
 - **The plug** (see [12-acquiring-product.md](12-acquiring-product.md#the-plug)):
   a base rate of 5.5%. The sealed and hype factors bring it to about 4% for
   a hot case. One roll covers the whole case. Stock that the police seize
