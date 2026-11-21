@@ -13,6 +13,32 @@ struct HotTag: View {
     }
 }
 
+/// A product that a game shop opened. The player must rip it (integration 4.1).
+struct OpenedTag: View {
+    var body: some View {
+        Text(ItemStatus.openedAtShop.tag)
+            .font(.system(size: 9, weight: .bold, design: .monospaced))
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(Theme.cyan.opacity(0.2))
+            .foregroundStyle(Theme.cyan)
+            .clipShape(Capsule())
+    }
+}
+
+/// A show that bans sealed product that is for sale at retail now (docs/20-card-shows.md).
+struct NoInPrintTag: View {
+    var body: some View {
+        Text("No in-print sealed")
+            .font(.system(size: 9, weight: .bold, design: .monospaced))
+            .padding(.horizontal, 5)
+            .padding(.vertical, 2)
+            .background(Theme.orange.opacity(0.2))
+            .foregroundStyle(Theme.orange)
+            .clipShape(Capsule())
+    }
+}
+
 /// The flipper market on the Market screen: how many flippers work the shelves, the chains that tightened their limits,
 /// and the MSRP step (docs/proposals/sealed-product, Part A 2.1, 1.3, and 3.4).
 struct FlipperMarketBox: View {

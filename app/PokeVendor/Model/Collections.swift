@@ -606,6 +606,13 @@ extension ShowSession {
             : CollectionTheme.allCases.randomElement() ?? .modernBinder
         let source = store.fakeSource(contact: nil, fallback: venue.fakeSource == .none ? .stranger : venue.fakeSource)
         var lot = CollectionLot.make(theme, fakes: source, tired: store.eyeFactor)
+        // A seller at a show with the rule leaves the in-print sealed at home. The lot is a local value.
+        if bansInPrintSealed {
+            lot.pieces.removeAll { piece in
+                if case .sealed(let p) = piece.goods { return p.isInPrint }
+                return false
+            }
+        }
         let (askRange, floorRange) = Self.collectionRanges(type)
         let askShare = Double.random(in: askRange)
         // Most sellers bring what the player can pay for: they keep their best cards. Now and then, someone brings it all.

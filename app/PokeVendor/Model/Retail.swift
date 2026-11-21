@@ -172,6 +172,10 @@ extension Balance {
     static let clubHotPerDay = 1
     /// The most hours that a player can wait at a stop for the vendor.
     static let vendorWaitMax = 2.0
+    /// A game shop opens one hot product at MSRP for a player at this standing or higher, this many times a week
+    /// (integration 4.1). The player must rip it.
+    static let ripHereStanding = StandingLevel.regular
+    static let ripHerePerWeek = 1
 }
 
 extension Balance {
@@ -361,7 +365,9 @@ extension GameStore {
     /// drain. At strictness 3, hot items leave the shelf for a drawing. At strictness 4 the shelf is empty. A ban
     /// does not hide the shelf: the limit is 0 and the view says why.
     func shelf(at store: LocalStore, hour: Double) -> [ShelfItem] {
-        if store.isGameShop { return Market.shelf(store, day: data.day, discount: shopDiscount(store)) }
+        if store.isGameShop {
+            return Market.shelf(store, day: data.day, discount: shopDiscount(store), ripHere: ripHereOffer(store))
+        }
         let level = strictness(store).level
         guard level < 4 else { return [] }
         let today = data.day
@@ -374,6 +380,31 @@ extension GameStore {
                              quantity: Int((Double(item.batchQuantity) * share).rounded()),
                              batchDay: vDay, hot: item.hot, batchQuantity: item.batchQuantity)
         }
+    }
+
+    /// The product that a game shop opened for a player who rips it this week, or nil (integration 4.1). The shop offers it
+    /// at standing Regular or higher, once a week, and the same week gives the same product. A buy ends the offer.
+    func ripHereOffer(_ store: LocalStore) -> Product? {
+        guard store.isGameShop, standing(store).rank >= Balance.ripHereStanding.rank,
+              data.retail.ripHereWeek[store.rawValue] != data.day / 7 else { return nil }
+        let kinds = Balance.bigStoreKinds
+        let candidates = SetLibrary.catalog.filter { $0.msrp != nil && kinds.contains($0.kind) && !$0.isStoreExclusive }
+        guard !candidates.isEmpty else { return nil }
+        let salt = UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0) + 3
+        var r = SeededRandom(seed: UInt64(data.day / 7 + 1) &* 40_503 &+ salt &* 2_309)
+        let start = r.int(0...(candidates.count - 1))
+        // Start at a seeded place and walk on to the first hot product that is in print.
+        for i in 0..<candidates.count {
+            let p = candidates[(start + i) % candidates.count]
+            if p.isInPrint, p.isHot() { return p }
+        }
+        return nil
+    }
+
+    /// A show with the rule bans sealed product that is for sale at retail now. A case keeps the product ID of its unit
+    /// product, so a case of an in-print product is banned too (integration 1.6).
+    func bannedAtShow(_ item: SealedItem, show: CardShow?) -> Bool {
+        show?.noInPrintSealed == true && SetLibrary.product(item.productID)?.isInPrint == true
     }
 
     /// The end of the day: today's visit state clears. Old batch entries and the pressure log are pruned.

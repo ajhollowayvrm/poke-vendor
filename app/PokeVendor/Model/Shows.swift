@@ -32,6 +32,8 @@ struct CardShow: Codable, Identifiable, Hashable {
     var goodSpot: Bool?
     /// A rival flipper took a nearby table (Model/Rivals.swift). Optional, so old saves still load.
     var rivalID: UUID?
+    /// The show bans sealed product that is for sale at retail now (docs/20-card-shows.md). Optional, so old saves still load.
+    var noInPrintSealed: Bool?
 
     var endDay: Int { startDay + size.days - 1 }
     var lastBookingDay: Int { startDay - size.bookingCloses }
@@ -72,6 +74,11 @@ struct CalendarEntry: Identifiable {
     }
 }
 
+extension Balance {
+    /// The share of shows that ban sealed product that is for sale at retail now.
+    static let noInPrintSealedShare = 1.0 / 6
+}
+
 extension GameStore {
     // MARK: - Scheduling
 
@@ -94,7 +101,11 @@ extension GameStore {
                     let name = Self.showNames[Int(rng.next() * CGFloat(Self.showNames.count)) % Self.showNames.count]
                     let venues = size == .regional ? Self.regionalVenues : Self.localVenues
                     let venue = venues[Int(rng.next() * CGFloat(venues.count)) % venues.count]
-                    data.shows.append(CardShow(name: name, venue: venue, size: size, startDay: day))
+                    // A separate seed keeps the names and the venues of the shows that older builds planned.
+                    var ban = SeededRandom(seed: UInt64(day) &* 7_919 &+ 613 &+ (size == .regional ? 4_001 : 0))
+                    var show = CardShow(name: name, venue: venue, size: size, startDay: day)
+                    show.noInPrintSealed = ban.double(0...1) < Balance.noInPrintSealedShare
+                    data.shows.append(show)
                 }
             }
             data.showsPlannedThrough = day
@@ -412,7 +423,7 @@ extension GameStore {
         for show in data.shows where show.covers(day) {
             let dayText = show.size.days > 1 ? " · day \(day - show.startDay + 1) of \(show.size.days)" : ""
             out.append(CalendarEntry(kind: .show, title: show.name,
-                                     detail: "\(show.size.label)\(dayText) · \(show.booked ? "table booked" : "no table")",
+                                     detail: "\(show.size.label)\(dayText) · \(show.booked ? "table booked" : "no table")\(show.noInPrintSealed == true ? " · no in-print sealed" : "")",
                                      showID: show.id))
         }
         for kind in MeetKind.allCases where kind.weekday == weekday {
@@ -828,6 +839,14 @@ final class ShowSession {
                           crowd: show.size == .regional ? .regionalShow : .localShow)
         store.seedContacts()
         var vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show))
+        // At a show with the rule, no floor vendor sells in-print sealed. A sealed dealer then carries only older sealed.
+        if show.noInPrintSealed == true {
+            func inPrint(_ item: VendorItem) -> Bool {
+                if case .sealed(let p) = item.goods { return p.isInPrint }
+                return false
+            }
+            for i in vendors.indices { vendors[i].items.removeAll(where: inPrint) }
+        }
         // A rival flipper sets up a table of hot sealed. Part of it is resealed (the plug fake rate).
         if let id = show.rivalID, let rival = store.rival(id) {
             // The cheap tests come first: `isInPrint` and `isHot` read the market, and the catalog is large.
@@ -856,7 +875,9 @@ final class ShowSession {
         minute = start
         startMinute = start
         closeMinute = min((venue.close - venue.open) * 60, start + venue.hours * 60)
-        let stock = venue.kind == .store ? store.storeStock : store.showStock
+        var stock = venue.kind == .store ? store.storeStock : store.showStock
+        // At a show with the rule, in-print sealed stays home.
+        stock.sealed = stock.sealed.filter { !store.bannedAtShow($0, show: show) }
         rival = show?.rivalID.flatMap { store.rival($0) }
         rivalItems = rival == nil ? [] : Set(stock.sealed.filter { SetLibrary.product($0.productID)?.isInPrint == true }.map(\.id))
         heatAtOpen = store.hottestCallout
@@ -927,8 +948,13 @@ final class ShowSession {
 
     var stockItems: [ShowItem] {
         // At the player's own store, the table is the stock in the store.
-        store.showItems(venue.kind == .store ? store.storeStock : store.showStock)
+        guard venue.kind != .store else { return store.showItems(store.storeStock) }
+        let stock = store.showStock
+        return store.showItems((stock.cards, stock.sealed.filter { !store.bannedAtShow($0, show: show) }))
     }
+
+    /// True when this show bans sealed product that is for sale at retail now.
+    var bansInPrintSealed: Bool { show?.noInPrintSealed == true }
 
     // MARK: Packing (docs/29-packing-and-crowds.md)
 
@@ -1398,6 +1424,8 @@ final class ShowSession {
         guard let product = SetLibrary.catalog.filter({ pool.contains($0.homeSlug) && $0.market > 0 }).randomElement() else {
             return nil
         }
+        // A seller at a show with the rule does not come with in-print sealed.
+        if bansInPrintSealed, product.isInPrint { return nil }
         return (.sealed(product), product.market)
     }
 

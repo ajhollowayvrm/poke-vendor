@@ -121,6 +121,8 @@ struct StoreRunView: View {
     /// Someone who came up to the player at this stop (docs/28-messages-and-encounters.md).
     @State private var encounter: ShopEncounter?
     @State private var encounterResult: String?
+    /// The rip of a product that the shop opened for the player (integration 4.1). It opens at once after the buy.
+    @State private var rip: RipSession?
 
     var body: some View {
         NavigationStack {
@@ -136,6 +138,9 @@ struct StoreRunView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .tint(Theme.cyan)
+        .fullScreenCover(item: $rip) { session in
+            RipView(items: session.items, store: store) { rip = nil }
+        }
         .onAppear {
             for s in stops where s.isGameShop { startPoints[s] = store.shop(s).points }
             rollEncounter()
@@ -227,9 +232,14 @@ struct StoreRunView: View {
                                         HStack(spacing: 6) {
                                             Text(item.product.name).font(.subheadline).lineLimit(2)
                                             if item.hot { HotTag() }
+                                            if item.ripHere { OpenedTag() }
                                         }
                                         Text(shelfCaption(item, left: left, allowed: allowed, game: s.isGameShop))
                                             .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                        if item.ripHere {
+                                            Text("The shop opened this box and sells it at MSRP. You must rip it here. You cannot sell it or keep it closed.")
+                                                .font(.caption).foregroundStyle(Theme.orange)
+                                        }
                                         if item.batchDay != nil, left == 0 {
                                             Text(store.data.retail.batchBought[item.id]?.emptied == true ? "You took the last one."
                                                  : store.data.retail.visitLines[item.id] ?? "Sold out.")
@@ -242,6 +252,10 @@ struct StoreRunView: View {
                                         if store.buyShelf(item, at: s, credit: useCredit && s.isGameShop) {
                                             spent += item.price
                                             bought.append(item.product.name)
+                                            // The buy made the item. Open the rip on it now.
+                                            if item.ripHere, let opened = store.data.sealed.last, opened.status == .openedAtShop {
+                                                rip = RipSession(items: [opened])
+                                            }
                                         }
                                     }
                                     .primaryButton()

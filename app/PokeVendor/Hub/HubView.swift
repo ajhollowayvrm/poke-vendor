@@ -225,6 +225,18 @@ struct HubView: View {
             .buttonStyle(.plain)
             .disabled(block != nil)
         }
+        ForEach(store.machineRestocksNow) { restock in
+            let block = store.machineCampBlock(restock)
+            Button {
+                if let result = store.campMachine(restock) { haul = result }
+            } label: {
+                ChevronRow(icon: "square.grid.3x3", title: "Wait at the \(restock.machine.rawValue.lowercased())",
+                        detail: block ?? "About \(GameStore.clock(restock.hour)) · \(formatHours(Balance.machineCampHours)) · limit \(Balance.machineLimit) of each",
+                        accent: block == nil)
+            }
+            .buttonStyle(.plain)
+            .disabled(block != nil)
+        }
         ForEach(store.data.retail.drawingWins) { win in
             let name = SetLibrary.product(win.productID)?.name ?? "a product"
             Button {
@@ -237,7 +249,7 @@ struct HubView: View {
             .buttonStyle(.plain)
             .disabled(!store.canAfford(win.price))
         }
-        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty,
+        if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.machineRestocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty,
            store.data.retail.drawingWins.isEmpty {
             Text(nextEventText)
                 .font(.caption2)

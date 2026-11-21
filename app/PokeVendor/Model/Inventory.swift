@@ -412,6 +412,10 @@ enum ItemStatus: Codable, Hashable {
     /// A viewer bought this product on a Rip & Ship stream. The player must open it on that stream (Model/RipShip.swift).
     /// Loose packs and pulled cards of the product keep this status until they move to the order.
     case soldToViewer(orderID: UUID)
+    /// A game shop opened this product and sold it at MSRP to a player who rips (Model/Retail.swift, `ripHereOffer`).
+    /// The player must rip it. No sell, list, shelf, vend, split, or Rip & Ship path offers an item with a status.
+    /// Loose packs of the product keep this status until the player rips them.
+    case openedAtShop
 
     /// A listing that the player can take down: any listing except a running eBay auction.
     var isRemovableListing: Bool {
@@ -431,6 +435,7 @@ enum ItemStatus: Codable, Hashable {
         case .inStore: "IN YOUR STORE"
         case .atAuctionHouse(let a): "AT \(a.house.rawValue.uppercased()) · DAY \(a.auctionDay + 1)"
         case .soldToViewer: "SOLD · SHIPS TO A VIEWER"
+        case .openedAtShop: "OPENED · RIP IT"
         }
     }
 }

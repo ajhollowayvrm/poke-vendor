@@ -81,6 +81,8 @@ struct StatusBox: View {
                 }
             case .soldToViewer:
                 Text("Sold to a viewer on Rip & Ship. It ships to them.").font(.subheadline)
+            case .openedAtShop:
+                Text("Opened at the shop. Rip it to see what is inside.").font(.subheadline)
             case .atAuctionHouse(let a):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("At \(a.house.rawValue) · auction on day \(a.auctionDay + 1)").font(.subheadline)

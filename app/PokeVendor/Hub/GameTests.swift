@@ -42,6 +42,7 @@ final class GameTests {
         timed("retail", retail)
         timed("online", online)
         timed("ripship", ripShip)
+        timed("phase7", phase7)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -2060,6 +2061,216 @@ final class GameTests {
         }
     }
 
+    /// Sealed product phase 7: shows that ban in-print sealed, official card machines, the opened-at-MSRP offer, and the store
+    /// break-in with its rider (docs/proposals/sealed-product, Part A T13 and integration 4.1 and 4.2).
+    private func phase7() {
+        fresh()
+        let inPrint = SetLibrary.catalog.filter { $0.isInPrint && $0.msrp != nil && !$0.isStoreExclusive }
+        guard let live = inPrint.first(where: { $0.packs >= 3 }), let old = SetLibrary.catalog.first(where: { !$0.isInPrint && $0.market > 0 }) else {
+            return check(false, "the phase 7 test has no product")
+        }
+
+        // T13: a unit and a case of an in-print product are banned at a show with the rule. Old sealed is not.
+        var banning = CardShow(name: "Ban", venue: "Hall", size: .local, startDay: store.data.day)
+        banning.noInPrintSealed = true
+        let plain = CardShow(name: "Plain", venue: "Hall", size: .local, startDay: store.data.day)
+        let caseID = store.testCase(live, units: 4, fresh: false)
+        guard let unit = store.addTestProduct(live.id), let oldUnit = store.addTestProduct(old.id),
+              let caseItem = store.data.sealed.first(where: { $0.id == caseID }) else { return check(false, "the show ban test has no items") }
+        check(store.bannedAtShow(unit, show: banning) && store.bannedAtShow(caseItem, show: banning),
+              "a unit or a case of an in-print product is not banned at a show with the rule")
+        check(!store.bannedAtShow(oldUnit, show: banning) && !store.bannedAtShow(unit, show: plain) && !store.bannedAtShow(unit, show: nil),
+              "out-of-print sealed, or a show with no rule, banned an item")
+        check(!store.data.shows.isEmpty && store.data.shows.allSatisfy { $0.noInPrintSealed != nil }, "a new show has no ban roll")
+        if var json = (try? JSONSerialization.jsonObject(with: JSONEncoder().encode(banning))) as? [String: Any] {
+            json["noInPrintSealed"] = nil
+            if let old = try? JSONSerialization.data(withJSONObject: json), let show = try? JSONDecoder().decode(CardShow.self, from: old) {
+                check(show.noInPrintSealed == nil && !store.bannedAtShow(unit, show: show), "a show from an older save did not load with no ban")
+            } else {
+                check(false, "an old show did not decode")
+            }
+        } else {
+            check(false, "could not read a show as JSON")
+        }
+
+        // Old saves: an insurance policy with no rider key, and the new item status.
+        if let policy = try? JSONDecoder().decode(InsuranceState.self, from: Data(#"{"active":true,"nextPremiumDay":5,"premiumsPaid":12.5,"payouts":3}"#.utf8)) {
+            check(policy.active && policy.nextPremiumDay == 5 && policy.payouts == 3 && !policy.storeRider, "a policy from an older save did not load")
+        } else {
+            check(false, "an old policy did not decode")
+        }
+        if let saved = try? JSONEncoder().encode(InsuranceState(active: true, nextPremiumDay: 9, premiumsPaid: 1, payouts: 2, storeRider: true)),
+           let loaded = try? JSONDecoder().decode(InsuranceState.self, from: saved) {
+            check(loaded.storeRider && loaded.nextPremiumDay == 9, "the store rider did not survive a save and a load")
+        } else {
+            check(false, "the policy did not encode and decode")
+        }
+        if let saved = try? JSONEncoder().encode(ItemStatus.openedAtShop), let loaded = try? JSONDecoder().decode(ItemStatus.self, from: saved) {
+            check(loaded == .openedAtShop && loaded.tag == "OPENED · RIP IT", "the opened-at-shop status did not survive a save and a load")
+        } else {
+            check(false, "the opened-at-shop status did not encode and decode")
+        }
+
+        // Official card machines: the posted days, one wait a day, and the limit of 2.
+        let first = store.machineRestockDay(.grocery, cycle: 0)
+        check((0..<Balance.machineCycleDays).contains(first.day) && Balance.machineHours.contains(Int(first.hour)), "a machine restock left its cycle")
+        for r in store.postedMachineRestocks {
+            check(r.day >= store.data.day && r.day - store.data.day <= Balance.machineNotice
+                  && store.restockEntries(day: r.day).contains { $0.title == "\(r.machine.rawValue) restock" },
+                  "a posted machine restock is not in the calendar, or it is outside its notice")
+        }
+        // A work day with a job: the wait at noon overlaps the shift, so it is blocked. Calling in sick clears the block.
+        let noon = MachineRestock(machine: .pharmacy, day: store.data.day, hour: 12)
+        check(store.worksToday && store.machineCampBlock(noon)?.hasPrefix("You work today") == true && store.campMachine(noon) == nil,
+              "a machine wait during work hours was not blocked")
+        store.callInSick()
+        check(!store.worksToday && store.machineCampBlock(noon) == nil, "calling in sick did not clear the machine block")
+        let restock = MachineRestock(machine: .grocery, day: store.data.day, hour: 10)
+        check(store.machineCampBlock(restock) == nil, "a free day has a block on a machine restock")
+        if let haul = store.campMachine(restock) {
+            check(haul.store == nil && haul.machine == .grocery && haul.items.count <= Balance.machineProducts.upperBound
+                  && haul.items.allSatisfy { $0.quantity <= Balance.machineLimit && $0.price == ($0.product.retailMSRP() ?? $0.product.market) },
+                  "a machine haul broke the limit or the MSRP rule")
+        } else {
+            check(false, "a machine restock could not be camped")
+        }
+        check(store.machineCampBlock(restock) == "Done for today" && store.campMachine(restock) == nil, "a second wait at one machine restock passed")
+        let machineItem = ShelfItem(id: "t13-machine", product: live, price: 7, quantity: Balance.machineLimit, hot: live.isHot())
+        let cash0 = store.cash
+        let count0 = store.data.sealed.count
+        var got = 0
+        for _ in 0..<4 where store.buyMachineItem(machineItem, machine: .grocery) { got += 1 }
+        check(got == Balance.machineLimit && store.data.sealed.count == count0 + got && abs(store.cash - (cash0 - 7 * Double(got))) < 0.005
+              && store.data.sealed.suffix(got).allSatisfy { $0.status == nil && $0.source == "Bought at a card machine" },
+              "a card machine sold \(got) units at a limit of \(Balance.machineLimit), or the cash did not match")
+
+        // Integration 4.1: a game shop opens one hot product a week at MSRP for a player at Regular or higher. It must be ripped.
+        fresh()
+        store.data.shops[LocalStore.castle.rawValue] = ShopState(points: 40)
+        store.data.shops[LocalStore.topDeck.rawValue] = ShopState(points: 0)
+        check(store.ripHereOffer(.topDeck) == nil && store.ripHereOffer(.target) == nil
+              && !store.shelf(at: .topDeck, hour: 12).contains { $0.ripHere }, "a stranger, or a big store, got an opened-at-MSRP offer")
+        guard store.ripHereOffer(.castle) != nil else { return check(false, "a Regular got no opened-at-MSRP offer") }
+        var offer: ShelfItem?
+        for _ in 0..<6 {
+            offer = store.shelf(at: .castle, hour: 12).first { $0.ripHere }
+            if offer != nil { break }
+            nextDay()
+        }
+        guard let offer else { return check(false, "the Castle shelf had no opened-at-MSRP item") }
+        check(offer.product.isInPrint && offer.product.isHot() && !offer.product.isStoreExclusive && Balance.bigStoreKinds.contains(offer.product.kind)
+              && offer.price == offer.product.retailMSRP() && offer.quantity == Balance.ripHerePerWeek
+              && store.shelf(at: .castle, hour: 12).filter(\.ripHere).count == 1, "the opened-at-MSRP item breaks its rule")
+        let cash1 = store.cash
+        let count1 = store.data.sealed.count
+        check(store.buyShelf(offer, at: .castle, credit: false), "could not buy the opened-at-MSRP item")
+        guard store.data.sealed.count == count1 + 1, let opened = store.data.sealed.last, opened.status == .openedAtShop else {
+            return check(false, "the opened-at-MSRP buy made no item with the opened status")
+        }
+        check(abs(cash1 - store.cash - offer.price) < 0.005 && store.data.retail.ripHereWeek["Cardboard Castle"] == store.data.day / 7,
+              "the opened-at-MSRP buy took the wrong cash, or it did not record the week")
+        check(store.ripHereOffer(.castle) == nil && !store.shelf(at: .castle, hour: 12).contains { $0.ripHere } && store.shelfLeft(offer) == 0,
+              "a second opened-at-MSRP item showed at one shop in one week")
+        // No sell, list, lot, shelf, vend, pawn, PC, stream, or Rip & Ship path offers it.
+        let others = (0..<Balance.lotMinItems).compactMap { _ in store.addTestProduct(live.id) }
+        let ids = Set(others.map(\.id) + [opened.id])
+        store.list([opened.id], channel: .ebay, price: { _ in 9 }, auctionDays: nil, insured: false)
+        store.setPC([opened.id], true)
+        check(store.pawn(opened.id) == "" && !store.listLot(ids, channel: .ebay, price: 50, insured: false) && store.data.lots.isEmpty
+              && store.data.sealed.contains { $0.id == opened.id && $0.status == .openedAtShop && !$0.pc },
+              "a sell, list, lot, pawn, or PC path took a product that the shop opened")
+        store.testOpenCardStore(.stripMall, term: 1)
+        check(!store.showStock.sealed.contains { $0.id == opened.id } && !store.vendableSealed.contains { $0.id == opened.id }
+              && !store.stockable.sealed.contains { $0.id == opened.id } && store.stockStore([opened.id]) == 0
+              && !store.streamStock.contains { $0.id == opened.id } && store.ripShipBlock(opened.id) != nil
+              && store.createRipShipOrder(itemID: opened.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) == nil,
+              "a show, a machine, the store, a stream, or Rip & Ship took a product that the shop opened")
+        check(store.hasStatus(opened.id) && !store.ripBlocked(opened.id), "the opened product is not rippable, or it has no status")
+        // Loose packs of an opened product keep the status, so a half rip cannot free them.
+        if var two = store.addTestProduct(live.id), let k = store.data.sealed.firstIndex(where: { $0.id == two.id }) {
+            store.data.sealed[k].status = .openedAtShop
+            two = store.data.sealed[k]
+            store.openProduct(two.id, ripID: UUID())
+            let loose = store.data.sealed.filter { $0.brokenFrom == two.id }
+            check(loose.count == live.packs && loose.allSatisfy { $0.status == .openedAtShop }, "loose packs of an opened product lost the status")
+        }
+        // The rip flow takes it, and nothing of it stays closed.
+        _ = ripAll([opened], steps: 200)
+        check(!store.data.sealed.contains { $0.id == opened.id } && !store.data.sealed.contains { $0.brokenFrom == opened.id },
+              "a product the shop opened was not fully ripped")
+
+        // Integration 4.2: the night break-in takes the dearest stock, costs the door repair, and the rider pays one claim.
+        fresh()
+        guard let dear = SetLibrary.catalog.first(where: { $0.market >= 100 && $0.packs > 1 && !$0.isStoreExclusive }) else {
+            return check(false, "the break-in test has no dear product")
+        }
+        store.testOpenCardStore(.stripMall, term: 1)
+        GameStore.forceBreakIn = 1
+        defer { GameStore.forceBreakIn = nil }
+        func stock(_ p: Product) -> SealedItem? {
+            guard let item = store.addTestProduct(p.id), store.stockStore([item.id]) == 1 else { return nil }
+            return item
+        }
+        guard let first = stock(dear) else { return check(false, "the break-in test could not stock an item") }
+        let lines = store.storeBreakInEndDay()
+        check(lines.count == 1 && lines[0].contains("broke into") && !store.data.sealed.contains { $0.id == first.id },
+              "the break-in gave no line, or it left the stolen item")
+        let repairs = store.data.ledger.filter { $0.label == "Store door repair" }
+        check(repairs.count == 1 && repairs[0].amount == -Balance.storeBreakInRepair && !store.data.ledger.contains { $0.label.hasPrefix("Insurance payout") },
+              "the break-in did not write one repair of \(money(Balance.storeBreakInRepair)), or a claim paid with no rider")
+        check(store.storeBreakInEndDay().isEmpty, "a break-in took from an empty store")
+
+        guard let second = stock(dear) else { return check(false, "the rider test could not stock an item") }
+        store.signInsurance()
+        let bare = store.insurancePremium
+        let cashA = store.cash
+        let start = store.storeRiderStartCost
+        store.setStoreRider(true)
+        store.setStoreRider(true)
+        check(store.data.insurance.storeRider && store.data.ledger.filter { $0.label == "Store stock rider" }.count == 1
+              && abs(cashA - store.cash - start) < 0.005, "turning on the rider did not charge its start cost once")
+        let value = store.realMarket(of: second)
+        let rider = max(Balance.policyMinPremium, (value * Balance.storeRiderRate * 100).rounded() / 100)
+        check(abs(store.storeRiderCost - rider) < 0.005 && abs(store.insurancePremium - bare - rider) < 0.005, "the rider cost is not in the premium")
+        // The rider costs a share of the highest stock value of the cycle. Taking the stock out does not cut it.
+        store.takeBackFromStore([second.id])
+        check(store.storeStockValue == 0 && abs(store.storeRiderCost - rider) < 0.005 && abs(store.insurancePremium - bare - rider) < 0.005,
+              "taking the stock out before the premium cut the rider cost")
+        check(store.stockStore([second.id]) == 1, "could not stock the item again")
+        let cashB = store.cash
+        let expect = ((value * Balance.policyCoverage - Balance.policyDeductible) * 100).rounded() / 100
+        _ = store.storeBreakInEndDay()
+        let claims = store.data.ledger.filter { $0.label.hasPrefix("Insurance payout") }
+        check(!store.data.sealed.contains { $0.id == second.id } && claims.count == 1 && abs(claims[0].amount - expect) < 0.005
+              && abs(store.cash - (cashB + expect - Balance.storeBreakInRepair)) < 0.005 && abs(store.data.insurance.payouts - expect) < 0.005,
+              "the rider claim is not value x coverage less the deductible, paid once")
+        // With the rider off, the policy pays nothing for store stock.
+        store.setStoreRider(false)
+        _ = stock(dear)
+        _ = store.storeBreakInEndDay()
+        check(store.data.ledger.filter { $0.label.hasPrefix("Insurance payout") }.count == 1, "a claim paid with the rider off")
+        store.setStoreRider(true)
+        store.cancelInsurance()
+        check(!store.data.insurance.storeRider, "cancelling the policy left the rider on")
+
+        // Shoplifting: a card of $33 to $39 is the one thing a thief takes from an otherwise empty store. The rider does not pay for it.
+        if let card = prismatic.first(where: { (33.0...39.0).contains($0.market ?? 0) }) {
+            fresh()
+            store.testOpenCardStore(.stripMall, term: 1)
+            store.addTestCard(card)
+            if let id = store.data.raw.last?.id, store.stockStore([id]) == 1, let shelfValue = store.storeShelf().first(where: { $0.id == id })?.market,
+               shelfValue > 31.25, shelfValue <= Balance.shopliftMaxValue {
+                store.signInsurance()
+                store.setStoreRider(true)
+                let before = store.data.ledger.filter { $0.label.hasPrefix("Insurance payout") }.count
+                let line = store.stealFromStore()
+                let paid = store.data.ledger.filter { $0.label.hasPrefix("Insurance payout") }
+                check(line != nil && !store.data.raw.contains { $0.id == id } && paid.count == before,
+                      "the rider paid a claim on a stolen card, but it covers sealed stock only")
+            }
+        }
+    }
+
     /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.
     /// End Day touches every system, so an exclusivity crash shows up here (memory: the exclusivity trap).
     private func days() {
@@ -2155,6 +2366,22 @@ final class GameTests {
             store.data.ripShip.grossByDay[-40] = 10
         }
 
+        // T10 (phase 7): a policy with the store rider, so the premium and the claim code run on full data (the premium is due on
+        // day 6), a night break-in on day 5, a product that a shop opened, and an old camp key that the machine camp prunes.
+        store.signInsurance()
+        store.setStoreRider(true)
+        store.data.insurance.nextPremiumDay = 6
+        store.data.campedDays = ["Walmart-0"]
+        defer { GameStore.forceBreakIn = nil }
+        var openedID: UUID?
+        if let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }),
+           let item = store.addTestProduct(blister.id), let k = store.data.sealed.firstIndex(where: { $0.id == item.id }) {
+            store.data.sealed[k].status = .openedAtShop
+            openedID = item.id
+        }
+        // A case in the back room does not sell, so the night break-in always finds stock.
+        let breakInProduct = SetLibrary.catalog.first { $0.market >= 100 && $0.packs > 1 && !$0.isStoreExclusive && $0.id != backRoomETB?.id }
+        var camped = false
         // T10: retail state that is not empty, so every closure in the new End Day hooks runs on a full array.
         let dumped = SetLibrary.catalog.filter { $0.isInPrint && $0.isHot() }.prefix(3).map(\.id)
         store.data.marketEvents.append({
@@ -2214,6 +2441,14 @@ final class GameTests {
         var rivalTable = false
         var shows = 0
         for day in 0..<14 {
+            // A Sunday: the player has the day free for the wait.
+            if day == 6 {
+                let restock = MachineRestock(machine: .pharmacy, day: store.day, hour: 12)
+                if let haul = store.campMachine(restock) {
+                    camped = true
+                    for item in haul.items { store.buyMachineItem(item, machine: restock.machine) }
+                }
+            }
             if day == 1, let start = store.startStoreRun([.walmart]),
                let item = store.shelf(at: .walmart, hour: start).first(where: { store.shelfLeft($0) > 0 && store.limitLeft($0, at: .walmart) > 0 }) {
                 store.buyShelf(item, at: .walmart, credit: false)
@@ -2228,6 +2463,9 @@ final class GameTests {
             for kind in store.meetsToday { if let s = store.startMeet(kind) { play(s) } }
             if day == 3 { _ = ripAll(Array(store.data.sealed.filter { $0.status == nil && !$0.setAside }.prefix(2))) }
             if day == 7 { visitMachines() }
+            if day == 5, let p = breakInProduct { store.stockStore([store.testCase(p, units: 4, fresh: true)]) }
+            // Only day 5 has a break-in. A chance of 0 on the other nights keeps the count at one.
+            GameStore.forceBreakIn = day == 5 ? 1 : 0
             if let id = fakeID, store.day == Balance.auctionIntakeDays + 1 {
                 var back = false
                 if case .arriving = store.card(id)?.status { back = true }
@@ -2238,6 +2476,12 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        // The phase 7 steps ran on full data: the machine camp, the premium, the forced break-in with its claim, and the opened product.
+        check(camped && !store.data.campedDays.contains("Walmart-0"), "the machine camp did not run, or it kept an old key")
+        check(store.data.ledger.filter { $0.label == "Store door repair" }.count == 1
+              && store.data.ledger.contains { $0.label.hasPrefix("Insurance payout") && $0.amount > 0 }, "the break-in on day 5 did not happen once, or the rider paid nothing (repairs \(store.data.ledger.filter { $0.label == "Store door repair" }.count), ledger \(store.data.ledger.filter { $0.label.hasPrefix("Insurance") || $0.label.hasPrefix("Store") }.map { "\($0.label) \($0.amount) d\($0.day)" }), policy \(store.data.insurance.active) \(store.data.insurance.storeRider)")
+        check(store.data.ledger.filter { $0.label == "Insurance premium" }.count >= 2, "the premium with the rider was not charged on its day")
+        check(openedID.flatMap { id in store.data.sealed.first { $0.id == id } }?.status == .openedAtShop, "the opened product lost its status in 14 days")
         check(rivalTable, "a rival at a booked show set up no table")
         // The callout steps settled. The forced act opened exactly one true callout. The denied false one closed at no cost.
         let everyCallout = store.data.callouts.open + store.data.callouts.closed

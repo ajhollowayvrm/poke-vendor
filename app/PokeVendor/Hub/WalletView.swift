@@ -142,6 +142,19 @@ extension WalletView {
             }
             Text("Pays \(percent)% of the market value of stolen or damaged items, less a \(money(Balance.policyDeductible)) deductible on each claim. The premium is due every 4 weeks.")
                 .font(.caption).foregroundStyle(Theme.muted)
+            if store.storeIsBuilt {
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle(isOn: Binding(get: { store.data.insurance.storeRider }, set: { store.setStoreRider($0) })) {
+                        Text("Cover store stock · \(money(store.storeRiderCost)) every 4 weeks").font(.subheadline)
+                    }
+                    .tint(Theme.cyan)
+                    .disabled(!store.canToggleStoreRider)
+                    Text(policy.active
+                         ? "Pays \(percent)% of the lost market value of the sealed stock in your store after a break-in or shoplifting, less the deductible. The rider costs \(Int(Balance.storeRiderRate * 100))% of that stock's value. Turning it on pays the rest of this cycle now (\(money(store.storeRiderStartCost)))."
+                         : "Sign up for the policy first. The rider costs \(Int(Balance.storeRiderRate * 100))% of the sealed stock's value in your store every 4 weeks.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
+            }
             if policy.active {
                 Text("Premiums paid \(money(policy.premiumsPaid)) · Payouts \(money(policy.payouts))")
                     .font(.caption.monospaced()).foregroundStyle(Theme.muted)

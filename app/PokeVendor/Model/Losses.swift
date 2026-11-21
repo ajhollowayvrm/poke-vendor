@@ -34,6 +34,18 @@ extension Balance {
     /// A claim pays this share of the loss, less the deductible.
     static let policyCoverage = 0.8
     static let policyDeductible = 25.0
+    /// The store stock rider costs this share of the sealed value in the store every 28 days, on top of the premium,
+    /// with the same minimum.
+    static let storeRiderRate = 0.03
+    /// Own store break-in at night: the base chance, the stored sealed value that doubles it, and the cap.
+    static let storeBreakInBase = 0.0005
+    static let storeBreakInValueScale = 25_000.0
+    static let storeBreakInMax = 0.006
+    /// Security cameras multiply the chance by this.
+    static let storeBreakInCameraFactor = 0.4
+    /// The thieves take at most this many sealed items, cases included. The door repair costs this much.
+    static let storeBreakInMaxItems = 6
+    static let storeBreakInRepair = 400.0
 }
 
 /// The player's collection insurance policy (docs/24-theft-and-insurance.md).
@@ -43,6 +55,28 @@ struct InsuranceState: Codable {
     var nextPremiumDay = 0
     var premiumsPaid = 0.0
     var payouts = 0.0
+    /// The rider that covers the sealed stock in the player's own store (integration 4.2).
+    var storeRider = false
+    /// The highest sealed value in the store since the last premium. The rider costs a share of it, so taking the stock
+    /// out before the premium day does not cut the cost.
+    var riderPeakValue = 0.0
+}
+
+/// A save from an older build has no `storeRider`. It takes the default.
+extension InsuranceState {
+    init(from decoder: Decoder) throws {
+        self.init()
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        func v<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T {
+            (try? c.decodeIfPresent(T.self, forKey: key)) ?? fallback
+        }
+        active = v(.active, active)
+        nextPremiumDay = v(.nextPremiumDay, nextPremiumDay)
+        premiumsPaid = v(.premiumsPaid, premiumsPaid)
+        payouts = v(.payouts, payouts)
+        storeRider = v(.storeRider, storeRider)
+        riderPeakValue = v(.riderPeakValue, riderPeakValue)
+    }
 }
 
 @MainActor
@@ -52,8 +86,10 @@ extension GameStore {
     /// An item in the player's hands: in storage, or listed for sale. Items at a grader, in transit, or in the store do not count.
     private func inHand(_ status: ItemStatus?) -> Bool {
         guard let status else { return true }
-        if case .listed = status { return true }
-        return false
+        switch status {
+        case .listed, .openedAtShop: return true
+        default: return false
+        }
     }
 
     /// What a claim counts for a card. The insurer does not pay for a fake.
@@ -68,8 +104,50 @@ extension GameStore {
         return cards + sealed
     }
 
+    /// The sealed value in the player's own store that the rider covers. The back room counts. A known fake counts as nothing.
+    var storeStockValue: Double {
+        data.sealed.filter { Self.isInStore($0.status) }.reduce(0) { $0 + claimValue($1) }
+    }
+
+    /// What the store stock rider costs for one 28-day cycle, at the highest stock value of the cycle.
+    var storeRiderCost: Double {
+        max(Balance.policyMinPremium, (max(storeStockValue, data.insurance.riderPeakValue) * Balance.storeRiderRate * 100).rounded() / 100)
+    }
+
+    /// The rider is on and it counts in the premium. It needs a built store.
+    private var riderCounts: Bool { data.insurance.storeRider && storeIsBuilt }
+
     var insurancePremium: Double {
         max(Balance.policyMinPremium, (insuredValue * Balance.policyPremiumRate * 100).rounded() / 100)
+            + (riderCounts ? storeRiderCost : 0)
+    }
+
+    /// The cost of the rider if the player turns it on now: the share of this cycle that is left.
+    var storeRiderStartCost: Double {
+        let left = max(1, min(Balance.policyCycleDays, data.insurance.nextPremiumDay - data.day))
+        return (storeRiderCost * Double(left) / Double(Balance.policyCycleDays) * 100).rounded() / 100
+    }
+
+    var canToggleStoreRider: Bool {
+        guard data.insurance.active, storeIsBuilt else { return false }
+        return data.insurance.storeRider || canAfford(storeRiderStartCost)
+    }
+
+    /// Turns the rider on or off. Turning it on pays the rest of this cycle at once, so a player cannot buy cover only
+    /// for the days between two premiums. Turning it off refunds nothing.
+    func setStoreRider(_ on: Bool) {
+        guard on != data.insurance.storeRider, on ? canToggleStoreRider : data.insurance.active else { return }
+        if on {
+            let cost = storeRiderStartCost
+            addLedger(-cost, .insurance, "Store stock rider")
+            data.insurance.premiumsPaid += cost
+            log("Added the store stock rider to your policy. It cost \(money(cost)) for the rest of this cycle.", cash: -cost)
+        } else {
+            log("Dropped the store stock rider.")
+        }
+        data.insurance.storeRider = on
+        data.insurance.riderPeakValue = on ? storeStockValue : 0
+        save()
     }
 
     var canSignInsurance: Bool { !data.insurance.active && canAfford(insurancePremium) }
@@ -88,6 +166,7 @@ extension GameStore {
     func cancelInsurance() {
         guard data.insurance.active else { return }
         data.insurance.active = false
+        data.insurance.storeRider = false
         log("Cancelled your collection insurance.")
         save()
     }
@@ -100,6 +179,12 @@ extension GameStore {
         addLedger(payout, .insurance, "Insurance payout · \(what)")
         data.insurance.payouts += payout
         return payout
+    }
+
+    /// Pays a claim for sealed stock or cards lost from the player's own store. It needs the rider.
+    func fileStoreClaim(loss: Double, what: String) -> Double {
+        guard data.insurance.storeRider, storeIsBuilt else { return 0 }
+        return fileClaim(loss: loss, what: what)
     }
 
     private func claimText(_ payout: Double) -> String {
@@ -171,11 +256,56 @@ extension GameStore {
         _ = lose(bag, event: "A thief broke into your car on the way to \(trip) and took your bag:")
     }
 
+    // MARK: - Store break-in
+
+    #if DEBUG
+    /// Test tool: replaces the chance of the night break-in.
+    static var forceBreakIn: Double?
+    #endif
+
+    /// End Day: a night break-in at the own store. The chance grows with the sealed value inside. The thieves take the
+    /// most valuable items, cases included. The player pays the door repair, and a consigner owed for a stolen card.
+    func storeBreakInEndDay() -> [String] {
+        guard let s = data.cardStore, storeIsBuilt else { return [] }
+        let inStore = data.sealed.filter { Self.isInStore($0.status) }
+        guard !inStore.isEmpty else { return [] }
+        let value = inStore.reduce(0) { $0 + realMarket(of: $1) }
+        var chance = min(Balance.storeBreakInMax, Balance.storeBreakInBase * (1 + value / Balance.storeBreakInValueScale))
+        if s.has(.cameras) { chance *= Balance.storeBreakInCameraFactor }
+        #if DEBUG
+        if let forced = Self.forceBreakIn { chance = forced }
+        #endif
+        guard Double.random(in: 0..<1) < chance else { return [] }
+        // Read into locals first: the removal and the payments below write `data`.
+        let taken = inStore.sorted { realMarket(of: $0) > realMarket(of: $1) }
+            .prefix(Int.random(in: 2...Balance.storeBreakInMaxItems))
+        let ids = Set(taken.map(\.id))
+        let lost = taken.reduce(0) { $0 + realMarket(of: $1) }
+        let claimable = taken.reduce(0) { $0 + claimValue($1) }
+        let names = taken.map(\.name)
+        let storeName = s.name
+        data.sealed.removeAll { ids.contains($0.id) }
+        let owed = payConsignedTheft(ids)
+        addLedger(-Balance.storeBreakInRepair, .businessCosts, "Store door repair")
+        let paid = fileStoreClaim(loss: claimable, what: nameList(names))
+        var line = "Someone broke into \(storeName) last night and took \(taken.count) sealed item\(taken.count == 1 ? "" : "s") (\(money(lost))). "
+            + "The door repair cost \(money(Balance.storeBreakInRepair))."
+        if owed > 0 { line += " You paid \(money(owed)) to a consigner." }
+        if data.insurance.storeRider {
+            line += paid > 0 ? " The store rider paid \(money(paid))." : " The deductible took the whole claim."
+        } else {
+            line += " You have no store stock rider."
+        }
+        return [line]
+    }
+
     // MARK: - End Day
 
     /// Home damage, then the premium. The premium comes after rent, so it never causes a missed rent.
     func lossesEndDay() -> [String] {
         var lines: [String] = []
+        // The rider charges the highest stock value of the cycle.
+        if riderCounts { data.insurance.riderPeakValue = max(data.insurance.riderPeakValue, storeStockValue) }
         if let line = homeDamage() { lines.append(line) }
         if let line = premiumDue() { lines.append(line) }
         return lines
@@ -217,11 +347,13 @@ extension GameStore {
         let premium = insurancePremium
         guard canAfford(premium) else {
             data.insurance.active = false
+            data.insurance.storeRider = false
             return "You could not pay the insurance premium of \(money(premium)). The policy ended."
         }
         addLedger(-premium, .insurance, "Insurance premium")
         data.insurance.premiumsPaid += premium
         data.insurance.nextPremiumDay = data.day + Balance.policyCycleDays
+        data.insurance.riderPeakValue = storeStockValue
         return "Insurance premium paid: \(money(premium))."
     }
 }

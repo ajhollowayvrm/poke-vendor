@@ -114,6 +114,7 @@ struct NextShowBox: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(show.name).font(.headline)
                     Text("\(show.size.label) · \(show.venue)").font(.caption).foregroundStyle(Theme.muted)
+                    if show.noInPrintSealed == true { NoInPrintTag() }
                     Text(days <= 0 ? "Today" : days == 1 ? "Tomorrow" : "In \(days) days · \(GameStore.weekdays[show.startDay % 7])")
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.cyan)
@@ -144,6 +145,11 @@ struct ShowDetailView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(show.name).font(.title2.bold())
                         Text("\(show.size.label) · \(show.venue)").font(.subheadline).foregroundStyle(Theme.muted)
+                        if show.noInPrintSealed == true {
+                            NoInPrintTag()
+                            Text("This show bans sealed product that stores sell now. Bring singles, slabs, or out-of-print sealed.")
+                                .font(.caption).foregroundStyle(Theme.orange)
+                        }
                         Text(dates(show)).font(.subheadline.monospaced()).foregroundStyle(Theme.cyan)
                     }
                     DetailBox(title: "The show") {

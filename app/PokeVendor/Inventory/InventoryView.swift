@@ -46,6 +46,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     case onTheWay = "On the way", arriving = "Arriving", atGrader = "At grader", authenticating = "Authenticating"
     case listed = "Listed", consigned = "Consigned", inStore = "In your store", atAuction = "At auction"
     case soldToViewer = "Sold to a viewer"
+    case openedAtShop = "Opened · rip it"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -69,6 +70,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         case .inStore: return self == .inStore
         case .atAuctionHouse: return self == .atAuction
         case .soldToViewer: return self == .soldToViewer
+        case .openedAtShop: return self == .openedAtShop
         case nil: return false
         }
     }
@@ -622,16 +624,18 @@ struct ItemActions<Extra: View>: View {
         let all = ids.union(stackIDs)
         let aside = all.contains { isSetAside($0) }
         let free = !ids.isEmpty && !all.contains { store.hasStatus($0) } && !aside
+        // A product that a game shop opened can only be ripped. It has a status, so every other action skips it.
+        let ripFree = !ids.isEmpty && !all.contains { store.ripBlocked($0) } && !aside
         ActionGrid {
             // A closed case opens first. It has no rip tiles.
             if kind == .sealed && (all.isEmpty || !all.allSatisfy({ id in store.data.sealed.first { $0.id == id }?.isCase == true })) {
                 ActionTile(title: "Rip", icon: "scissors", filled: true) { run { nav.startRip(sealed(ids)) } }
-                    .disabled(!free)
+                    .disabled(!ripFree)
                 // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
                 ActionTile(title: "Hits only", icon: "sparkles", tint: Theme.orange, filled: true) {
                     run { nav.startRip(sealed(ids), hitsOnly: true) }
                 }
-                .disabled(!free)
+                .disabled(!ripFree)
                 // Record & Rip films the rip for each running series that can take it (docs/32, Record & Rip).
                 let recordable = store.recordableSeries(sealed(ids))
                 if !recordable.isEmpty {
@@ -642,17 +646,17 @@ struct ItemActions<Extra: View>: View {
                             nav.startRip(items, recording: recordable)
                         }
                     }
-                    .disabled(!free)
+                    .disabled(!ripFree)
                 }
                 if stackIDs.count > ids.count {
                     ActionTile(title: "Rip all \(stackIDs.count)", icon: "scissors", filled: true) {
                         run { nav.startRip(sealed(stackIDs)) }
                     }
-                    .disabled(!free)
+                    .disabled(!ripFree)
                     ActionTile(title: "Hits all \(stackIDs.count)", icon: "sparkles", tint: Theme.orange, filled: true) {
                         run { nav.startRip(sealed(stackIDs), hitsOnly: true) }
                     }
-                    .disabled(!free)
+                    .disabled(!ripFree)
                 }
             }
             ActionTile(title: "Sell", icon: "dollarsign.circle", filled: kind != .sealed) { run { present(.sell(stackIDs)) } }

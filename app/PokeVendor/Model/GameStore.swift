@@ -467,6 +467,15 @@ final class GameStore {
             || data.slabs.contains { $0.id == id && $0.pc }
     }
 
+    /// True when the item cannot go into a rip. An item that a game shop opened (`.openedAtShop`) can.
+    func ripBlocked(_ id: UUID) -> Bool {
+        if let item = data.sealed.first(where: { $0.id == id }) {
+            if case .openedAtShop = item.status { return false }
+            return item.status != nil
+        }
+        return hasStatus(id)
+    }
+
     func hasStatus(_ id: UUID) -> Bool {
         data.sealed.contains { $0.id == id && $0.status != nil }
             || data.raw.contains { $0.id == id && $0.status != nil }
@@ -677,7 +686,10 @@ final class GameStore {
                               brokenFrom: item.id, acquiredDay: data.day)
         pack.fake = item.fake
         pack.fakeKnown = item.fakeKnown
-        if case .soldToViewer = item.status { pack.status = item.status }
+        switch item.status {
+        case .soldToViewer, .openedAtShop: pack.status = item.status
+        default: break
+        }
         return pack
     }
 
@@ -891,6 +903,11 @@ final class GameStore {
                                 acquired: .now, source: "Bought at \(store.rawValue)", productID: item.product.id,
                                 acquiredDay: data.day)
         bought.contents = BoxContents.draw(item.product, key: key)
+        // A product that the shop opened must be ripped: its status keeps it out of every sell path (integration 4.1).
+        if item.ripHere {
+            bought.status = .openedAtShop
+            data.retail.ripHereWeek[store.rawValue] = data.day / 7
+        }
         data.sealed.append(bought)
         log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
             cash: credit ? nil : -item.price)
@@ -1079,7 +1096,10 @@ final class GameStore {
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) { data.raw[i].status = listing(data.raw[i].id) }
         for i in data.slabs.indices where ids.contains(data.slabs[i].id) { data.slabs[i].status = listing(data.slabs[i].id) }
-        for i in data.sealed.indices where ids.contains(data.sealed[i].id) { data.sealed[i].status = listing(data.sealed[i].id) }
+        // A product that a game shop opened must be ripped, so it never goes up for sale (integration 4.1).
+        for i in data.sealed.indices where ids.contains(data.sealed[i].id) && data.sealed[i].status != .openedAtShop {
+            data.sealed[i].status = listing(data.sealed[i].id)
+        }
         log("Listed \(ids.count) item\(ids.count == 1 ? "" : "s") on \(channel.rawValue).")
         save()
     }
@@ -1299,6 +1319,7 @@ final class GameStore {
         if data.gameOver == nil { lines += debtEndDay() }
         if data.gameOver == nil { lines += collectionsEndDay() }
         if data.gameOver == nil { lines += lossesEndDay() }
+        if data.gameOver == nil { lines += storeBreakInEndDay() }
         if data.gameOver == nil { lines += storeGrowthDay() }
         if data.gameOver == nil { lines += businessCostsEndDay() }
         if data.gameOver == nil { lines += alertsEndDay() }

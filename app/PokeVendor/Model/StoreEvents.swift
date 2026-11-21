@@ -258,7 +258,12 @@ extension GameStore {
         let value = items.reduce(0) { $0 + $1.market }
         let name = items.count == 1 ? items[0].name : "\(items.count) \(items[0].name)"
         let owed = payConsignedTheft(ids)
-        return "\(name) (\(money(value))" + (owed > 0 ? ", and you paid \(money(owed)) to the owner of a consigned card)" : ")")
+        // The rider covers sealed stock only. It never pays for a card, a consigned card, or a known fake.
+        let paid = fileStoreClaim(loss: items.filter { !$0.isCard && !$0.consigned && !$0.known }.reduce(0) { $0 + $1.market }, what: name)
+        var notes: [String] = []
+        if owed > 0 { notes.append("you paid \(money(owed)) to the owner of a consigned card") }
+        if paid > 0 { notes.append("the store rider paid you \(money(paid))") }
+        return "\(name) (\(money(value))" + notes.map { ", and " + $0 }.joined() + ")"
     }
 
     func shopliftChance(for location: StoreLocation) -> Double {

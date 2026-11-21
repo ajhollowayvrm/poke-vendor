@@ -16,6 +16,13 @@ struct SetupStage: View {
                          : "You have no table, so nothing in the bag is for sale. Pack what you want to trade\(session.venue.isShow ? " to vendors" : "")\(session.hasGradingBooth ? " or grade at the booth" : ""). You cannot come back for more.")
                         .font(.subheadline)
                         .foregroundStyle(Theme.muted)
+                    if session.bansInPrintSealed {
+                        VStack(alignment: .leading, spacing: 4) {
+                            NoInPrintTag()
+                            Text("This show bans sealed product that stores sell now. Bring singles, slabs, or out-of-print sealed.")
+                                .font(.caption).foregroundStyle(Theme.orange)
+                        }
+                    }
                     if table {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("PRICE").font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)

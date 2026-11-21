@@ -32,6 +32,8 @@ struct ShelfItem: Identifiable, Hashable {
     var hot = false
     /// The units in the batch before any drain.
     var batchQuantity = 0
+    /// A game shop opened this product and sells it at MSRP to a player who rips it (integration 4.1).
+    var ripHere = false
 }
 
 /// Something a game shop bought from a local seller: often vintage or older, and sometimes a real find.
@@ -108,14 +110,20 @@ extension Balance {
 extension Market {
     /// A game shop's daily shelf. `discount` is the relationship price bonus (docs/21-relationships-and-reputation.md).
     /// A big store and the club use `GameStore.shelf(at:hour:)` (Model/Retail.swift).
-    static func shelf(_ store: LocalStore, day: Int, discount: Double = 0) -> [ShelfItem] {
+    /// `ripHere` is the product that the shop opened for a player who rips it. It shows only when the shop has stock today.
+    static func shelf(_ store: LocalStore, day: Int, discount: Double = 0, ripHere: Product? = nil) -> [ShelfItem] {
         guard store.isGameShop else { return [] }
         let salt = UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0) + 11
         var r = SeededRandom(seed: UInt64(day + 1) &* 15_485_863 &+ salt &* 3_571)
         guard r.double(0...1) < store.stockChance else { return [] }
-        return gameShopShelf(store, day: day, &r).map {
+        var items = gameShopShelf(store, day: day, &r).map {
             ShelfItem(id: $0.id, product: $0.product, price: retail($0.price * (1 - discount)), quantity: $0.quantity)
         }
+        if let ripHere, let price = ripHere.retailMSRP() {
+            items.append(ShelfItem(id: "ripHere-\(store.rawValue)-\(day / 7)", product: ripHere, price: price,
+                                   quantity: Balance.ripHerePerWeek, hot: true, ripHere: true))
+        }
+        return items
     }
 
     /// A game shop's shelf: mostly new product of every kind, collections and tins too, and some older sealed.

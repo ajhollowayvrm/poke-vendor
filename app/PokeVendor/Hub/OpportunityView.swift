@@ -89,20 +89,22 @@ struct CampView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text(haul.success ? "You got in" : "Sold out").font(.title2.bold())
             Text(haul.success
-                 ? "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue). \(haul.rivalLine ?? "The shelf is yours before the scalpers.") Everything is at MSRP."
-                 : "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue), and the stock was gone before you reached the shelf. \(haul.rivalLine ?? "")")
+                 ? "\(formatHours(haul.machine == nil ? Balance.campHours : Balance.machineCampHours)) in line at \(haul.place). \(haul.rivalLine ?? (haul.machine == nil ? "The shelf is yours before the scalpers." : "The machine is full.")) Everything is at MSRP."
+                 : "\(formatHours(haul.machine == nil ? Balance.campHours : Balance.machineCampHours)) in line at \(haul.place), and the stock was gone before you reached the shelf. \(haul.rivalLine ?? "")")
                 .font(.subheadline)
                 .foregroundStyle(Theme.muted)
-            if haul.success {
-                Text(store.limitText(haul.store)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                if let hint = store.heatHint(haul.store) { Text(hint).font(.caption).foregroundStyle(Theme.orange) }
+            if haul.success, let chain = haul.store {
+                Text(store.limitText(chain)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                if let hint = store.heatHint(chain) { Text(hint).font(.caption).foregroundStyle(Theme.orange) }
+            } else if haul.success {
+                Text("Limit \(Balance.machineLimit) of each product. The machine does not track you.").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             if let notice = store.retailNotice { Banner(text: notice, color: Theme.orange) }
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(haul.items) { item in
                         let left = store.shelfLeft(item)
-                        let allowed = store.limitLeft(item, at: haul.store)
+                        let allowed = haul.store.map { store.limitLeft(item, at: $0) } ?? Balance.machineLimit
                         HStack(spacing: 12) {
                             ProductImage(url: item.product.image, setName: item.product.name)
                                 .frame(width: 48, height: 66)
@@ -120,7 +122,11 @@ struct CampView: View {
                             Spacer()
                             Button(left > 0 ? money(item.price) : "Gone") {
                                 store.retailNotice = nil
-                                store.buyShelf(item, at: haul.store, credit: false)
+                                if let machine = haul.machine {
+                                    store.buyMachineItem(item, machine: machine)
+                                } else if let chain = haul.store {
+                                    store.buyShelf(item, at: chain, credit: false)
+                                }
                             }
                             .primaryButton()
                             .controlSize(.small)
