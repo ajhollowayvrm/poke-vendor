@@ -227,7 +227,18 @@ extension GameStore {
     @discardableResult
     /// `contentsKey` names the listing that the player looked inside, so the box holds the packs that they saw.
     func buySealedAtShow(_ product: Product, price: Double, vendor: String, at venue: String, fake: FakeTier? = nil,
-                         known: Bool? = nil, credit: Double? = nil, contentsKey: String? = nil) -> SealedItem {
+                         known: Bool? = nil, credit: Double? = nil, contentsKey: String? = nil, caseUnits: Int? = nil) -> SealedItem {
+        // A stranger's case: one fake roll covers the whole case, and the case never gets box contents.
+        if let units = caseUnits {
+            var item = makeCase(product, units: units, paid: price, source: "\(vendor), \(venue)", status: nil, fake: fake, caseFresh: false)
+            item.fakeKnown = known
+            if let credit { addStoreCredit(credit) } else { addLedger(-price, .sealed, "\(item.name) · \(vendor)") }
+            data.sealed.append(item)
+            log("Bought \(item.name) from \(vendor) at \(venue) for \(credit.map { "\(money($0)) in store credit" } ?? money(price)).",
+                cash: credit == nil ? -price : nil)
+            save()
+            return item
+        }
         if let credit { addStoreCredit(credit) } else { addLedger(-price, .sealed, "\(product.name) · \(vendor)") }
         var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
                               acquired: .now, source: "\(vendor), \(venue)", productID: product.id, acquiredDay: data.day)
@@ -259,6 +270,8 @@ extension GameStore {
     /// A trade: the player's item goes, and the other person's cards plus any cash come in.
     func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String) {
         settleOnlineListing(item.id, name: item.name)
+        // A trade at the table is a deal with a person, so it counts as a retail sale of a hot unit.
+        noteAllocationSold([item.id], offShelf: false)
         switch item.kind {
         case .card:
             data.raw.removeAll { $0.id == item.id }
@@ -287,6 +300,8 @@ extension GameStore {
     func tradeWithVendor(give: [ShowItem], get: [VendorItem], cash: Double, vendor: String, at venue: String) {
         let giveIDs = Set(give.map(\.id))
         let day = data.day
+        // A trade to a dealer is a sale to a reseller channel.
+        noteAllocationSold(Array(giveIDs), offShelf: true)
         // Build every new item first, so the closures below do not read `data` while they change it.
         var cards: [OwnedCard] = []
         var slabs: [OwnedCard] = []
@@ -406,6 +421,9 @@ extension GameStore {
         }
         out += eventEntries(day: day)
         out += auctionHouseEntries(day: day)
+        if day == distributorDecisionDay {
+            out.append(CalendarEntry(kind: .store, title: "Distributor decision", detail: "Your hobby account application"))
+        }
         let offset = day - data.day
         guard offset > 0 else { return out }
         let arriving = data.sealed.filter { if case .onTheWay(let d, _) = $0.status { return d == offset }; return false }
@@ -474,7 +492,7 @@ extension GameStore {
         let sealed = stock.sealed.map { item in
             ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
                      image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
-                     fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs, pc: item.pc)
+                     fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs, isCase: item.isCase, pc: item.pc)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
@@ -502,6 +520,8 @@ struct ShowItem: Identifiable, Hashable {
     var subgrades: [Double]? = nil
     /// The pack count of sealed product: it sets the carry space (docs/29-packing-and-crowds.md).
     var packs = 0
+    /// A sealed case. It packs tighter than loose boxes (Model/Packing.swift).
+    var isCase = false
     /// In the player's PC. Every deal on it carries the PC premium.
     var pc = false
     /// A showcase card that a buyer asked about. It counts as a PC item, with the PC price.
@@ -829,7 +849,7 @@ final class ShowSession {
             }
             // Reputation Trusted and up: a recurring vendor gives the player a first look at the best stock (docs/04).
             if venue.isShow, self.vendors[i].contactID != nil, store.reputationTier >= 2 {
-                for j in self.vendors[i].items.indices.prefix(Balance.firstLookItems) {
+                for j in self.vendors[i].items.indices.filter({ self.vendors[i].items[$0].caseUnits == nil }).prefix(Balance.firstLookItems) {
                     self.vendors[i].items[j].firstLook = true
                     self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * 0.95)
                 }
@@ -2009,7 +2029,7 @@ final class ShowSession {
             return
         }
         buyGoods(item.goods, price: item.price, from: vendor.name, fake: item.fake, looksOff: item.looksOff,
-                 contentsKey: item.id.uuidString)
+                 contentsKey: item.id.uuidString, caseUnits: item.caseUnits)
         store.recordDeal(vendor.contactID, what: "Bought \(item.name)", price: item.price, market: item.market ?? item.price,
                          slug: goodsSlug(item.goods))
         // Mystery packs do not run out. Everything else leaves the table.
@@ -2021,8 +2041,10 @@ final class ShowSession {
     /// `fake` is the item's hidden truth, and `looksOff` means the player saw it, so they know what they bought.
     /// `contentsKey` names the listing that the player looked inside (`BoxContents`).
     func buyGoods(_ goods: VendorGoods, price: Double, from seller: String, fake: FakeTier? = nil, looksOff: Bool = false,
-                          credit: Double? = nil, contentsKey: String? = nil) {
-        let name = VendorItem(goods: goods, price: price, market: nil).name
+                          credit: Double? = nil, contentsKey: String? = nil, caseUnits: Int? = nil) {
+        var named = VendorItem(goods: goods, price: price, market: nil)
+        named.caseUnits = caseUnits
+        let name = named.name
         let known: Bool? = looksOff && fake != nil ? true : nil
         switch goods {
         case .single(let print, let slug, let condition):
@@ -2037,7 +2059,7 @@ final class ShowSession {
             store.buyCardAtShow(card, price: price, vendor: seller, at: venue.name, credit: credit)
         case .sealed(let product):
             justBought = store.buySealedAtShow(product, price: price, vendor: seller, at: venue.name, fake: fake, known: known,
-                                               credit: credit, contentsKey: contentsKey)
+                                               credit: credit, contentsKey: caseUnits == nil ? contentsKey : nil, caseUnits: caseUnits)
         case .mystery(let pack):
             let contents = VendorFloor.open(pack)
             store.buyMysteryAtShow(pack, hit: contents.hit, filler: contents.filler, fillerSlug: contents.fillerSlug,

@@ -13,7 +13,7 @@ struct VendorTradeSheet: View {
 
     var body: some View {
         if let vendor {
-            let theirs = vendor.items.filter { if case .mystery = $0.goods { return false }; return true }
+            let theirs = vendor.items.filter { if case .mystery = $0.goods { return false }; return $0.caseUnits == nil }
             let mine = session.tradeStock
             // Items that left the table or the stock drop out of the picks.
             let giving = give.intersection(mine.map(\.id))
@@ -118,7 +118,7 @@ struct VendorTradeSheet: View {
     private func debugPicks() {
         guard ProcessInfo.processInfo.arguments.contains("tradesheet"), let vendor else { return }
         give = Set(session.tradeStock.filter { $0.market >= Balance.tradeMinItem }.prefix(2).map(\.id))
-        if let item = vendor.items.filter({ if case .mystery = $0.goods { return false }; return true }).min(by: { $0.price < $1.price }) {
+        if let item = vendor.items.filter({ if case .mystery = $0.goods { return false }; return $0.caseUnits == nil }).min(by: { $0.price < $1.price }) {
             get = [item.id]
         }
     }

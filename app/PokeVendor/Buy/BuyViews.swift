@@ -28,10 +28,16 @@ struct BuyView: View {
                         channelRow(title: "Big-store sites", detail: sitesDetail) { nav.path.append(.chainSites) }
                         channelRow(title: "Supplies", detail: store.suppliesSummary) { nav.path.append(.supplies) }
                         // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
-                        if store.wholesaleOpen {
-                            channelRow(title: "Distributor", detail: "Cases at \(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.wholesaleOffers.count) this week") {
+                        // The plug opens at reputation Known, so the row shows for a player with no wholesale yet.
+                        if store.wholesaleOpen || store.plugOpen {
+                            channelRow(title: store.wholesaleOpen ? "Distributor" : "Gray market",
+                                       detail: store.wholesaleOpen
+                                           ? "\(store.distributorTier.name) · cases at \(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.wholesaleOffers.count) this week"
+                                           : "\(store.data.plug.name ?? "The plug") · cash up front") {
                                 nav.path.append(.wholesale)
                             }
+                        }
+                        if store.wholesaleOpen {
                             channelRow(title: "Case splits", detail: store.openSplits.isEmpty ? "No invites right now" : "\(store.openSplits.count) open") {
                                 nav.path.append(.caseSplits)
                             }
@@ -213,6 +219,7 @@ struct OfferRow: View {
     let bought: Bool
     let locked: Bool
     let onBuy: () -> Void
+    @State private var checked = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -230,7 +237,7 @@ struct OfferRow: View {
             }
             .frame(width: 50, height: 64)
             // An online listing: the player cannot hold the box, so only the odds show.
-            .looksInside(offer.product) { nil }
+            .looksInside(offer.caseUnits == nil ? offer.product : nil) { nil }
             VStack(alignment: .leading, spacing: 3) {
                 Text(offer.title).font(.subheadline.weight(.medium)).lineLimit(2)
                 Text("mkt \(money(offer.market))\(offer.shipping > 0 ? " · ship \(money(offer.shipping))" : "")")
@@ -243,6 +250,14 @@ struct OfferRow: View {
                 }
                 if let note = offer.note {
                     Text(note).font(.caption2).foregroundStyle(Theme.cyan)
+                }
+                // A stranger's case: a free check of the tape and label. The listing is seeded by day, so a second look reads the same.
+                if offer.caseUnits != nil {
+                    if checked {
+                        CaseCheckResult(fake: offer.fake, key: offer.id)
+                    } else {
+                        Button("Check the tape and label") { checked = true }.buttonStyle(.bordered).controlSize(.mini)
+                    }
                 }
             }
             Spacer()

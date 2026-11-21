@@ -581,6 +581,21 @@ struct SealedDetailView: View {
                     Button("Open the case", role: .destructive) { caseRequest = CaseRequest(source: .closed(item.id)) }
                 }
             }
+            // A case from a stranger can be a reseal. The check is free, runs once, and halves the risk (never removes it).
+            if item.caseFresh == nil, item.fakeKnown != true {
+                if item.caseChecked == true {
+                    CaseCheckResult(fake: item.fake, key: item.id.uuidString)
+                    if Counterfeit.caseCheckLine(item.fake, key: item.id.uuidString) != nil, item.fake != nil {
+                        Button("Mark it as resealed") { store.markFakeKnown(sealedID: item.id) }
+                            .buttonStyle(.bordered)
+                            .controlSize(.small)
+                    }
+                } else {
+                    Button("Check the tape and label") { store.checkCase(item.id) }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+            }
         }
     }
 

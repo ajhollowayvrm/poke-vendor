@@ -11,6 +11,7 @@ struct ContactsView: View {
             VStack(alignment: .leading, spacing: 14) {
                 reputationBox
                 bookBox
+                suppliersBox
                 offersBox
                 knownBox
                 wantBox
@@ -109,6 +110,31 @@ struct ContactsView: View {
         }
         .background(Theme.surface)
         .framed()
+    }
+
+    /// The distributor rep and the plug. They are business lines, never in the book, and they give no reputation.
+    @ViewBuilder
+    private var suppliersBox: some View {
+        let suppliers = store.data.contacts.filter { $0.kind.isSupplier }
+        if !suppliers.isEmpty {
+            DetailBox(title: "Suppliers") {
+                ForEach(suppliers) { c in
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Image(systemName: c.kind.icon).foregroundStyle(Theme.cyan).frame(width: 18)
+                            Text(c.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                            Text(c.kind.label).font(.caption).foregroundStyle(Theme.muted)
+                            Spacer()
+                            Text("\(store.points(of: c))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        ProgressView(value: Double(store.points(of: c)), total: 100).tint(Theme.cyan)
+                    }
+                    .padding(.vertical, 2)
+                }
+                Text("A supplier is a business line. It never comes to a show or the counter, and it is never in your contact book.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
     }
 
     /// People the player dealt with who are not in the book.

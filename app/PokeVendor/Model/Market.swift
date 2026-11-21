@@ -21,10 +21,12 @@ struct StoreOffer: Identifiable, Hashable {
     var fake: FakeTier?
     /// For Facebook Marketplace: the seller set the pickup for a later day (docs/12, Facebook Marketplace).
     var pickupDay: Int?
+    /// A stranger's sealed case of this many units (Model/Cases.swift). Nil: one unit.
+    var caseUnits: Int?
 
     var title: String {
         switch item {
-        case .product(let p, _): p.name
+        case .product(let p, _): caseUnits.map { CaseMath.name(p, units: $0) } ?? p.name
         case .single(let c, _): "\(c.name) · \(c.variant)"
         }
     }
@@ -38,7 +40,7 @@ struct StoreOffer: Identifiable, Hashable {
 
     var market: Double {
         switch item {
-        case .product(let p, _): p.market
+        case .product(let p, _): caseUnits.map { CaseMath.market(p, units: $0) } ?? p.market
         case .single(let c, _): c.market ?? 0
         }
     }
@@ -170,7 +172,41 @@ enum Market {
                 out.append(offer)
             }
         }
+        if store == .ebay || store == .facebook, let offer = caseOffer(for: store, day: day) { out.append(offer) }
         return out
+    }
+
+    /// A stranger's case on about 1 day in 10 (docs/12, Cases). Its own seed keeps the day's other listings the same.
+    private static func caseOffer(for store: Storefront, day: Int) -> StoreOffer? {
+        let salt: UInt64 = store == .ebay ? 31 : 37
+        var r = SeededRandom(seed: UInt64(day + 1) &* 15_485_863 &+ salt)
+        guard r.double(0...1) < Balance.onlineCaseListingChance else { return nil }
+        // Modern and older eras only, and a price cap: no case of WOTC boxes, no five-figure case.
+        let eras = Set(Balance.modernSets + Balance.olderSets)
+        let pool = SetLibrary.catalog.filter { p in
+            guard Balance.wholesaleKinds.contains(p.kind), !p.isStoreExclusive, eras.contains(p.homeSlug),
+                  let units = CaseMath.units(p) else { return false }
+            return CaseMath.market(p, units: units) <= Balance.strangerCaseMax
+        }
+        guard !pool.isEmpty else { return nil }
+        let p = pool[r.int(0...(pool.count - 1))]
+        guard let units = CaseMath.units(p) else { return nil }
+        let market = CaseMath.market(p, units: units)
+        let share = store == .ebay ? r.double(Balance.ebayCaseShare) : r.double(Balance.facebookCaseShare)
+        let pickup = store == .facebook && r.double(0...1) < 0.5
+        let source: FakeSource = store == .ebay ? .ebay : .facebook
+        let rumor = r.double(0...1) < Balance.caseRumorChance
+        let rating = store == .ebay ? (r.double(96...100) * 10).rounded() / 10 : nil
+        let sales = store == .ebay ? r.int(5...2000) : nil
+        var offer = StoreOffer(id: "\(day)-\(store.rawValue)-case", store: store, item: .product(p, p.homeSlug),
+                               price: retail(market * share), shipping: pickup ? 0 : 24.99,
+                               deliveryDays: pickup ? 0 : (Balance.deliveryDays[store] ?? 4), pickup: pickup,
+                               sellerRating: rating, sellerSales: sales,
+                               note: rumor ? "Seller says: \"case fresh, and this case is loaded\"" : "Seller says: \"case fresh, never searched\"")
+        offer.caseUnits = units
+        offer.fake = Counterfeit.roll(source: source, sealed: true, slug: p.homeSlug, market: market,
+                                      msrp: (p.msrp ?? 0) * Double(units), &r)
+        return offer
     }
 
     /// A stable pick of up to `count` products for the day.

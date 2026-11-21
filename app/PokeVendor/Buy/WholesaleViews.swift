@@ -1,67 +1,169 @@
 import SwiftUI
 
 /// The distributor: cases at wholesale, from reputation Respected, or for a store with a weekly allocation
-/// (docs/12-acquiring-product.md, Distributor / wholesale).
+/// (docs/12-acquiring-product.md, Distributor / wholesale). A player with only the plug sees the gray market here.
 struct WholesaleView: View {
     @Environment(GameStore.self) private var store
     @State private var cases: [String: Int] = [:]
     @State private var message: String?
 
+    private var title: String {
+        store.distributorTier != .none ? store.distributorTier.name : store.plugOpen ? "Gray market" : "Distributor"
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                HStack {
-                    Text("\(Int((store.wholesaleDiscountNow * 100).rounded()))% of MSRP · \(store.hasStoreAccount ? "store account" : "minimum order \(money(Balance.wholesaleMinOrder))") · \(Balance.wholesaleDeliveryDays)-day delivery")
-                        .font(.caption).foregroundStyle(Theme.muted)
-                    Spacer()
-                    Text("Cash \(money(store.cash))").font(.caption.monospaced())
-                }
-                if store.hasStoreAccount {
-                    DetailBox(title: "Your allocation") {
-                        Text(store.hasStoreAccount ? "Hot product is allocated. Each week you can buy a few cases of each product: \(Balance.allocationBase) of a hot one, \(Balance.allocationBase + 1) of the rest. The limit grows by 1 case for each \(money(Balance.allocationStep)) you spend here, up to \(Balance.allocationMax). There is no minimum order." : "With no store, you can buy \(Balance.wholesaleCasesPerWeek) cases a week and 1 case of each product.")
-                            .font(.caption).foregroundStyle(Theme.muted)
-                        Text("Spent with the distributor: \(money(store.distributorSpent))")
-                            .font(.caption.monospaced())
+                if store.wholesaleOpen {
+                    HStack {
+                        Text(header).font(.caption).foregroundStyle(Theme.muted)
+                        Spacer()
+                        Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                    }
+                    if store.hasStoreAccount { repBox } else { hobbyBox }
+                    allocationBox
+                    if !store.data.distributor.warnings.isEmpty {
+                        Banner(text: "Warnings from your rep: \(store.data.distributor.warnings.count) of 3 in 12 weeks.", color: Theme.orange,
+                               icon: "exclamationmark.triangle.fill")
                     }
                 }
                 if let message { Banner(text: message, color: Theme.cyan, icon: "info.circle.fill") }
                 if !store.wholesaleOpen {
                     EmptyTab(text: "Wholesale opens at reputation Respected, or when your own store opens.")
                 }
-                ForEach(store.wholesaleOffers) { offer in
-                    let left = store.wholesaleLeft(offer)
-                    let top = left.map { max(1, $0) } ?? 10
-                    let n = min(cases[offer.id] ?? 1, top)
-                    HStack(alignment: .top, spacing: 12) {
-                        // An order ships later, so the player cannot hold the box: only the odds show.
-                        ProductImage(url: offer.product.image, setName: offer.product.name).frame(width: 50, height: 64)
-                            .looksInside(offer.product) { nil }
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(offer.product.name).font(.subheadline.weight(.medium)).lineLimit(2)
-                            Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · MSRP \(money(offer.product.retailMSRP() ?? 0)) · mkt \(money(offer.product.market))")
-                                .font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                            if let left {
-                                Text("Allocation this week: \(left) of \(store.wholesaleCap(offer.product)) case\(store.wholesaleCap(offer.product) == 1 ? "" : "s") left\(store.isHot(offer.product) ? " · hot product" : "")")
-                                    .font(.caption.monospaced()).foregroundStyle(left == 0 ? Theme.orange : Theme.cyan)
-                            }
-                            Stepper("\(n) case\(n == 1 ? "" : "s") · \(money(offer.casePrice * Double(n)))", value: Binding(get: { n }, set: { cases[offer.id] = $0 }), in: 1...top)
-                                .font(.caption)
-                            Button("Order") { message = store.buyWholesale(offer, cases: n) ?? "Ordered. It arrives in \(Balance.wholesaleDeliveryDays) days." }
-                                .primaryButton()
-                                .controlSize(.small)
-                                .disabled(left == 0 || !store.canAfford(offer.casePrice * Double(n)))
-                        }
-                    }
-                    .padding(12)
-                    .background(Theme.surface)
-                    .framed()
-                }
+                ForEach(store.wholesaleOffers) { offer in offerRow(offer) }
+                if store.plugOpen || store.data.plug.goneDay != nil { PlugSection() }
             }
             .padding(16)
         }
         .background(Theme.background.ignoresSafeArea())
-        .navigationTitle("Distributor")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var header: String {
+        let pct = Int((store.wholesaleDiscountNow * 100).rounded())
+        return store.hasStoreAccount
+            ? "\(pct)% of MSRP · hobby account · \(Balance.wholesaleDeliveryDays)-day delivery"
+            : "\(pct)% of MSRP · secondary wholesaler · minimum \(money(Balance.wholesaleMinOrder)) · \(Balance.wholesaleDeliveryDays)-day delivery"
+    }
+
+    /// The application, its checklist, and what the player waits for.
+    private var hobbyBox: some View {
+        let a = store.data.distributor
+        return DetailBox(title: "Hobby distributor account") {
+            if let until = a.closedUntil, store.day < until {
+                Text("Your account is closed until day \(until + 1). You buy from the secondary wholesaler.")
+                    .font(.caption).foregroundStyle(Theme.orange)
+            } else if let decision = store.distributorDecisionDay {
+                Text("Under review. The distributor decides on day \(decision + 1). Until then you buy at secondary terms.")
+                    .font(.caption).foregroundStyle(Theme.cyan)
+            } else {
+                Text("A hobby account buys at \(Int(Balance.storeWholesaleDiscount * 100))% of MSRP with no minimum order, and has a rep and a weekly allocation.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+                ForEach(store.distributorRequirements) { r in
+                    HStack(spacing: 8) {
+                        Image(systemName: r.met ? "checkmark.circle.fill" : "circle").foregroundStyle(r.met ? Theme.green : Theme.muted)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(r.label).font(.subheadline)
+                            Text(r.detail).font(.caption2).foregroundStyle(Theme.muted)
+                        }
+                    }
+                }
+                Button { store.applyToDistributor() } label: {
+                    Text("Apply · decision in \(Balance.distributorReviewDays) days").frame(maxWidth: .infinity)
+                }
+                .primaryButton()
+                .disabled(!store.canApplyToDistributor)
+            }
+        }
+    }
+
+    private var allocationBox: some View {
+        DetailBox(title: "Your allocation") {
+            Text(store.hasStoreAccount
+                 ? "Hot product: \(Balance.allocationBase) case of each product a week. The rest: \(Balance.allocationBase + 1) cases, and 1 more for each \(money(Balance.allocationStep)) you spend here, up to \(Balance.allocationMax + 1). There is no minimum order."
+                 : "With no hobby account, you can buy \(Balance.wholesaleCasesPerWeek) cases a week and 1 case of each product.")
+                .font(.caption).foregroundStyle(Theme.muted)
+            Text("Spent with the distributor: \(money(store.distributorSpent))").font(.caption.monospaced())
+            if store.hotFrozen, let until = store.data.distributor.hotFrozenUntil {
+                Text("No hot product for your account until day \(until + 1).").font(.caption).foregroundStyle(Theme.orange)
+            }
+        }
+    }
+
+    /// The rep, the fill chance, the shelf share, and the push.
+    private var repBox: some View {
+        let hot = store.wholesaleOffers.filter { store.isHot($0.product) }
+        let share = store.hotShelfShare
+        return DetailBox(title: "Your rep · \(store.repName)") {
+            ProgressView(value: Double(store.repPoints), total: 100).tint(Theme.cyan)
+            HStack {
+                Text("Relationship \(store.repPoints) of 100").font(.caption.monospaced())
+                Spacer()
+                if let first = hot.first {
+                    Text("Hot fill about \(Int((store.hotFillRate(first.product) * 100).rounded()))%").font(.caption.monospaced())
+                        .foregroundStyle(Theme.cyan)
+                }
+            }
+            if let share {
+                Text("Hot product sold to customers, last \(Balance.backDoorWindowDays / 7) weeks: \(Int((share * 100).rounded()))%. Your rep wants \(Int(Balance.backDoorShelfShare * 100))% or more.")
+                    .font(.caption)
+                    .foregroundStyle(share < Balance.backDoorShelfShare ? Theme.orange : Theme.muted)
+            } else {
+                Text("No hot sales yet. Your rep wants \(Int(Balance.backDoorShelfShare * 100))% of hot product to reach your customers.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+            Text("Spend and store events raise the relationship. Sales of hot product to resellers lower it.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+            Menu {
+                ForEach(hot) { offer in
+                    Button(offer.product.name) { message = store.pushForAllocation(offer.product.id) ?? "You pushed your rep for \(offer.product.name). Its fill is better this week." }
+                }
+            } label: {
+                Text(store.pushWaitUntil.map { "Push for more allocation · wait until day \($0 + 1)" } ?? "Push for more allocation (−\(Balance.pushCost))")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .disabled(hot.isEmpty || store.pushWaitUntil != nil)
+        }
+    }
+
+    private func offerRow(_ offer: WholesaleOffer) -> some View {
+        let left = store.wholesaleLeft(offer)
+        let top = left.map { max(1, $0) } ?? 10
+        let n = min(cases[offer.id] ?? 1, top)
+        let hot = store.isHot(offer.product)
+        return HStack(alignment: .top, spacing: 12) {
+            // An order ships later, so the player cannot hold the box: only the odds show.
+            ProductImage(url: offer.product.image, setName: offer.product.name).frame(width: 50, height: 64)
+                .looksInside(offer.product) { nil }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(offer.product.name).font(.subheadline.weight(.medium)).lineLimit(2)
+                Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · case mkt \(money(offer.caseMarket)) · MSRP \(money(offer.product.retailMSRP() ?? 0))")
+                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                if let left {
+                    Text("Allocation this week: \(left) of \(store.wholesaleCap(offer.product)) case\(store.wholesaleCap(offer.product) == 1 ? "" : "s") left\(hot ? " · hot product" : "")")
+                        .font(.caption.monospaced()).foregroundStyle(left == 0 ? Theme.orange : Theme.cyan)
+                }
+                if hot {
+                    Text("hot · fill about \(Int((store.hotFillRate(offer.product) * 100).rounded()))% · you pay only for the cases that fill")
+                        .font(.caption2.monospaced()).foregroundStyle(Theme.orange)
+                    if store.eliteCaseOpen {
+                        Text("Elite: 1 hot case this week skips the fill.").font(.caption2.monospaced()).foregroundStyle(Theme.cyan)
+                    }
+                }
+                Stepper("\(n) case\(n == 1 ? "" : "s") · \(money(offer.casePrice * Double(n)))", value: Binding(get: { n }, set: { cases[offer.id] = $0 }), in: 1...top)
+                    .font(.caption)
+                Button("Order") { message = store.buyWholesale(offer, cases: n) ?? "Ordered. It arrives in \(Balance.wholesaleDeliveryDays) days." }
+                    .primaryButton()
+                    .controlSize(.small)
+                    .disabled(left == 0 || !store.canAfford(offer.casePrice * Double(n)))
+            }
+        }
+        .padding(12)
+        .background(Theme.surface)
+        .framed()
     }
 }
 

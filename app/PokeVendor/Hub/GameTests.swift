@@ -37,6 +37,7 @@ final class GameTests {
         timed("market", market)
         timed("sealed", sealedFoundation)
         timed("cases", cases)
+        timed("distro", distro)
         timed("retail", retail)
         timed("online", online)
         timed("days", days)
@@ -758,7 +759,12 @@ final class GameTests {
         check(!offers.isEmpty && offers.allSatisfy { $0.caseSize == CaseMath.units($0.product) }, "a wholesale offer has a case size that the case rules do not give")
         check(offers.filter { $0.product.kind == "Booster bundle" }.allSatisfy { $0.caseSize == 25 }, "a wholesale bundle case is not 25")
         if let offer = offers.filter({ $0.casePrice >= Balance.wholesaleMinOrder && $0.casePrice < 15_000 }).min(by: { $0.casePrice < $1.casePrice }) {
+            // A hot case fills by chance, and an order can go missing. Force both, so the order always arrives.
+            GameStore.forceFill = 1
+            GameStore.forceWholesaleMissing = false
             check(store.buyWholesale(offer, cases: 1) == nil, "the wholesale test order failed")
+            GameStore.forceFill = nil
+            GameStore.forceWholesaleMissing = nil
             let units = store.data.sealed.filter { $0.source == "Wholesale" }
             check(!units.isEmpty && units.allSatisfy { $0.isCaseFresh && $0.fake == nil }, "a distributor unit is not case fresh")
         } else {
@@ -887,6 +893,357 @@ final class GameTests {
         check(dip != 0 && abs((scaled - base) - dip * 0.5) < 1e-9, "a winter scale of 1.5 did not deepen the dip by half")
         store.data.retail.winterScales = [:]
         store.syncMarket()
+    }
+
+    /// Sealed product phase 4: the distributor tiers, the fill roll, missing shipments, the back-door check, the plug,
+    /// the back room, and stranger cases (docs/proposals/sealed-product, Part B 9.1, Part A T8).
+    private func distro() {
+        fresh()
+        let catalog = SetLibrary.catalog
+        guard let hot = catalog.first(where: { $0.isInPrint && $0.isHot() && Balance.wholesaleKinds.contains($0.kind) && CaseMath.units($0) != nil
+                                                && !$0.isStoreExclusive && $0.msrp != nil }),
+              let cold = catalog.first(where: { $0.isInPrint && !$0.isHot() && Balance.wholesaleKinds.contains($0.kind) && CaseMath.units($0) != nil
+                                                && !$0.isStoreExclusive && $0.msrp != nil && $0.market < 600 }),
+              let etb = catalog.first(where: { $0.kind == "Elite Trainer Box" && $0.market > 0 && !$0.isStoreExclusive }) else {
+            return check(false, "the distributor test has no hot or cold product")
+        }
+        func offer(_ p: Product, discount: Double = Balance.storeWholesaleDiscount) -> WholesaleOffer {
+            let size = CaseMath.units(p) ?? 6
+            return WholesaleOffer(id: "t-\(p.id)", product: p, caseSize: size, unitPrice: Market.retail((p.retailMSRP() ?? p.market) * discount),
+                                  caseMarket: CaseMath.market(p, units: size))
+        }
+        func chargeEntries(_ from: Int) -> [LedgerEntry] {
+            store.data.ledger[from...].filter { $0.category == .wholesale && $0.amount < 0 }
+        }
+        func resetForces() {
+            GameStore.forceFill = nil
+            GameStore.forceBackDoorNotice = nil
+            GameStore.forceWholesaleMissing = nil
+            GameStore.forcePlugVanish = nil
+            GameStore.forcePlugShort = nil
+            GameStore.forcePlugSeize = nil
+        }
+        defer { resetForces() }
+
+        // Old saves decode: the account keeps its spend, and the plug and the Rip & Ship state load from nothing.
+        let oldAccount = try? JSONDecoder().decode(DistributorAccount.self, from: Data(#"{"spent": 9000, "week": 3, "cases": {}}"#.utf8))
+        check(oldAccount?.spent == 9000 && oldAccount?.week == 3 && oldAccount?.approvedDay == nil, "an old distributor account lost its spend")
+        check((try? JSONDecoder().decode(PlugState.self, from: Data("{}".utf8))) != nil
+              && (try? JSONDecoder().decode(RipShipState.self, from: Data("{}".utf8))) != nil, "an empty plug or ship state did not decode")
+
+        // A store from before the application keeps its account. A store in its build-out applies the normal way.
+        var old = GameData()
+        old.day = 20
+        old.cardStore = CardStoreState(name: "Old", location: .stripMall, leaseDay: 0, openDay: 5, deposit: 100)
+        old.distributor.migrated = false
+        GameStore.grandfatherDistributor(&old)
+        check(old.distributor.approvedDay == 5 && old.distributor.appliedDay == 5 && old.distributor.migrated, "a store from an old save did not keep its account")
+        check(oldAccount?.migrated == false, "an old account decoded as migrated")
+        var building = GameData()
+        building.day = 2
+        building.cardStore = CardStoreState(name: "New", location: .stripMall, leaseDay: 0, openDay: 5, deposit: 100)
+        GameStore.grandfatherDistributor(&building)
+        check(building.distributor.approvedDay == nil, "a store in its build-out got a free account")
+
+        // A restart never approves a store that did not apply: a built store with no application, saved and loaded by this
+        // build, stays unapproved. A lapsed application stays lapsed.
+        func reload(_ d: GameData) -> GameData? {
+            guard let saved = try? JSONEncoder().encode(d) else { return nil }
+            return try? JSONDecoder().decode(GameData.self, from: saved)
+        }
+        var built = GameData()
+        built.day = 20
+        built.cardStore = CardStoreState(name: "Built", location: .stripMall, leaseDay: 0, openDay: 5, deposit: 100)
+        if var loaded = reload(built) {
+            GameStore.grandfatherDistributor(&loaded)
+            check(loaded.distributor.approvedDay == nil && loaded.distributor.appliedDay == nil, "a restart approved a store that did not apply")
+            if var again = reload(loaded) {
+                GameStore.grandfatherDistributor(&again)
+                check(again.distributor.approvedDay == nil, "a second restart approved a store that did not apply")
+            }
+        } else {
+            check(false, "a built store did not encode and decode")
+        }
+        var lapsed = built
+        lapsed.distributor.appliedDay = nil
+        if var loaded = reload(lapsed) {
+            GameStore.grandfatherDistributor(&loaded)
+            check(loaded.distributor.approvedDay == nil, "a lapsed application came back after a restart")
+        }
+
+        // The application: no store, no application. A built store waits 14 days, then the distributor approves.
+        store.applyToDistributor()
+        check(store.data.distributor.appliedDay == nil && !store.hasStoreAccount, "an application went in with no store")
+        store.testOpenCardStore(.stripMall, term: 1)
+        check(store.canApplyToDistributor && store.distributorTier == .secondary, "a built store cannot apply, or has no secondary tier")
+        store.applyToDistributor()
+        check(store.data.distributor.appliedDay == store.day && store.distributorDecisionDay == store.day + Balance.distributorReviewDays
+              && !store.hasStoreAccount, "the application did not wait")
+        store.data.distributor.appliedDay = store.day - Balance.distributorReviewDays
+        _ = store.distributorEndDay()
+        check(store.hasStoreAccount && store.distributorTier == .hobby && store.data.distributor.repContactID != nil
+              && store.contact("distro:rep")?.kind == .distributorRep, "the distributor did not approve after 14 days")
+        // The rep: spend gives 3 points a week at most. A push costs 5 points and has a cooldown.
+        let rep0 = store.repPoints
+        store.creditRepSpend(10_000)
+        check(store.repPoints == rep0 + Balance.repPointsPerWeek, "rep spend gave \(store.repPoints - rep0) points, not \(Balance.repPointsPerWeek)")
+        let rep1 = store.repPoints
+        check(store.pushForAllocation(hot.id) == nil && store.repPoints == rep1 - Balance.pushCost, "a push did not cost its points")
+        check(store.pushForAllocation(hot.id) != nil && store.repPoints == rep1 - Balance.pushCost, "a second push worked in the cooldown")
+        check(store.hotFillRate(hot) > store.hotFillRate(cold) - 1 && store.hotFillRate(hot) <= Balance.fillMax, "the fill rate left its range")
+        // A store that closes loses the account. The check records stay.
+        store.data.distributor.hotRecords = [HotAllocationRecord(itemID: UUID(), units: 1, deliveredDay: store.day)]
+        let kept = store.data.cardStore
+        store.data.cardStore = nil
+        _ = store.distributorEndDay()
+        check(store.data.distributor.approvedDay == nil && store.data.distributor.hotRecords.count == 1, "a closed store kept its account or lost its records")
+        store.data.cardStore = kept
+        store.data.distributor.hotRecords = []
+        store.data.distributor.appliedDay = store.day
+        store.data.distributor.approvedDay = store.day
+
+        // Hot cap stays at 1 (D-3). Other product grows with spend.
+        store.data.distributor.spent = 30_000
+        check(store.wholesaleCap(hot) == 1, "the hot cap is \(store.wholesaleCap(hot)), not 1")
+        check(store.wholesaleCap(cold) == 6, "the cap of other product is \(store.wholesaleCap(cold)), not 6")
+
+        // The distributor delivers whole cases, and a short ship refunds the rest.
+        store.data.sealed.removeAll()
+        store.data.distributor.cases = [:]
+        store.addTestCash(50_000)
+        GameStore.forceWholesaleMissing = false
+        let coldOffer = offer(cold)
+        var cash = store.cash
+        var ledgerAt = store.data.ledger.count
+        check(store.buyWholesale(coldOffer, cases: 1) == nil, "the case order failed")
+        let delivered = store.data.sealed.filter { $0.source == "Wholesale" }
+        let units = delivered.reduce(0) { $0 + ($1.caseUnits ?? 1) }
+        let refund = store.data.ledger[ledgerAt...].filter { $0.label.hasPrefix("Short shipment refund") }.reduce(0) { $0 + $1.amount }
+        check(abs(Double(units) - (Double(coldOffer.caseSize) - refund / coldOffer.unitPrice)) < 0.01, "the order delivered \(units) units for a refund of \(refund)")
+        check(refund > 0 || (delivered.count == 1 && delivered[0].isCase && delivered[0].isCaseFresh), "a full order did not arrive as one case-fresh case")
+        check(abs((cash - store.cash) - (coldOffer.casePrice - refund)) < 0.01, "the cash change of the case order is wrong")
+        check(chargeEntries(ledgerAt).count == 1 && abs(chargeEntries(ledgerAt)[0].amount + coldOffer.casePrice) < 0.001, "the order charge is not the case price")
+
+        // A missing shipment: no items, no spend, one refund later.
+        let spent = store.data.distributor.spent
+        let held = store.data.sealed.count
+        store.data.distributor.cases = [:]
+        GameStore.forceWholesaleMissing = true
+        cash = store.cash
+        check(store.buyWholesale(coldOffer, cases: 1) == nil, "the missing order failed")
+        check(store.data.sealed.count == held && store.data.distributor.spent == spent && abs((cash - store.cash) - coldOffer.casePrice) < 0.001,
+              "a missing order made items, spend, or the wrong charge")
+        check(store.data.retail.missingShipments.count == 1 && abs(store.data.retail.missingShipments[0].refund - coldOffer.casePrice) < 0.001
+              && store.data.retail.missingShipments[0].noticeDay == store.day + Balance.wholesaleDeliveryDays, "the missing shipment is wrong")
+        GameStore.forceWholesaleMissing = false
+
+        // T8: a due missing shipment refunds once. A new one waits for its notice and its refund day.
+        store.data.retail.missingShipments = [MissingShipment(name: "test", noticeDay: store.day, refundDay: store.day + 1, refund: 120)]
+        nextDay()
+        let refunds = store.data.ledger.filter { $0.label.hasPrefix("Missing shipment refund") }
+        check(refunds.count == 1 && abs(refunds[0].amount - 120) < 0.001 && store.data.retail.missingShipments.isEmpty,
+              "a missing shipment did not refund exactly once")
+        store.registerMissingShipment(name: "t", refund: 10, learnIn: 5)
+        check(store.data.retail.missingShipments.first?.noticeDay == store.day + 5
+              && store.data.retail.missingShipments.first?.refundDay == store.day + 5 + Balance.missingShipmentRefundDays, "registerMissingShipment set the wrong days")
+        store.data.retail.missingShipments = []
+
+        // Fill charges only filled cases. A hot request uses the allocation even when it does not fill.
+        let hotOffer = offer(hot)
+        store.data.sealed.removeAll()
+        store.data.distributor.cases = [:]
+        store.data.distributor.hotRecords = []
+        GameStore.forceFill = 0
+        cash = store.cash
+        ledgerAt = store.data.ledger.count
+        _ = store.buyWholesale(hotOffer, cases: 1)
+        check(store.cash == cash && store.data.sealed.isEmpty && store.wholesaleLeft(hotOffer) == 0 && chargeEntries(ledgerAt).isEmpty,
+              "an unfilled hot request charged, delivered, or kept its allocation")
+        store.data.distributor.cases = [:]
+        GameStore.forceFill = 1
+        ledgerAt = store.data.ledger.count
+        _ = store.buyWholesale(hotOffer, cases: 1)
+        check(chargeEntries(ledgerAt).count == 1 && abs(chargeEntries(ledgerAt)[0].amount + hotOffer.casePrice) < 0.001, "a filled hot case did not charge exactly its price")
+        check(!store.data.sealed.isEmpty && !store.data.distributor.hotRecords.isEmpty, "a filled hot case made no item or no record")
+
+        // Elite: one hot case a week skips the fill roll. The second one rolls.
+        store.data.distributor.cases = [:]
+        store.data.distributor.eliteCaseWeek = -1
+        store.addReputation(700)
+        GameStore.forceFill = 0
+        store.data.sealed.removeAll()
+        ledgerAt = store.data.ledger.count
+        _ = store.buyWholesale(hotOffer, cases: 1)
+        check(chargeEntries(ledgerAt).count == 1 && !store.data.sealed.isEmpty, "the Elite hot case did not skip the fill roll")
+        // The Elite case is used. The normal case of the same product still rolls, so the cap stays at 2.
+        check(store.wholesaleCap(hot) == 2 && store.wholesaleLeft(hotOffer) == 1, "the Elite case lost the normal case of its product")
+        ledgerAt = store.data.ledger.count
+        _ = store.buyWholesale(hotOffer, cases: 1)
+        check(chargeEntries(ledgerAt).isEmpty, "a second Elite case skipped the fill roll")
+        GameStore.forceFill = nil
+
+        // Retail and off-shelf sales (D-3): the counter counts for the shelf, a reseller channel does not.
+        let a = SealedItem(setSlug: etb.homeSlug, name: etb.name, packs: etb.packs, paid: 30, acquired: .now, source: "Test", productID: etb.id)
+        let b = SealedItem(setSlug: etb.homeSlug, name: etb.name, packs: etb.packs, paid: 30, acquired: .now, source: "Test", productID: etb.id)
+        store.data.distributor.hotRecords = [a, b].map { HotAllocationRecord(itemID: $0.id, units: 1, deliveredDay: store.day) }
+        store.addReceipt(name: etb.name, venue: "Test counter", price: 50, net: 50, paid: 30, ids: [a.id])
+        _ = store.completeSaleNow(name: etb.name, channel: .ebay, price: 50, sealed: true, insured: false, paid: 30, ids: [b.id])
+        check(store.data.distributor.hotRecords[0].outcome == .retail && store.data.distributor.hotRecords[1].outcome == .offShelf,
+              "the counter or eBay sale marked the wrong outcome")
+
+        // The back-door verdict: a warning, a freeze, then a closed account. One hidden act in 28 days.
+        func offShelfRecords(_ n: Int) {
+            store.data.distributor.hotRecords += (0..<n).map { _ in
+                var r = HotAllocationRecord(itemID: UUID(), units: 1, deliveredDay: store.day - 1)
+                r.outcome = .offShelf
+                r.outcomeDay = store.day
+                return r
+            }
+        }
+        store.data.distributor.hotRecords = []
+        store.data.hiddenActs = []
+        GameStore.forceBackDoorNotice = true
+        offShelfRecords(6)
+        check(store.testBackDoorCheck().count == 1 && store.data.distributor.warnings.count == 1, "6 off-shelf sales gave no warning")
+        offShelfRecords(6)
+        _ = store.testBackDoorCheck()
+        check(store.data.distributor.hotFrozenUntil != nil && store.hotFrozen && store.wholesaleCap(hot) == 0, "a second warning did not freeze hot product")
+        offShelfRecords(6)
+        _ = store.testBackDoorCheck()
+        check(store.data.distributor.closedUntil != nil && !store.hasStoreAccount, "a third warning did not close the account")
+        check(store.data.hiddenActs.filter { $0.kind == .backDoorAllocation }.count == 1, "the back-door check recorded more than one act in 28 days")
+        // Fewer than 6 units, or a good shelf share, judge nothing.
+        store.data.distributor.hotRecords = []
+        offShelfRecords(5)
+        check(store.testBackDoorCheck().isEmpty, "5 sold units were judged")
+        GameStore.forceBackDoorNotice = nil
+        store.data.distributor.closedUntil = nil
+        store.data.distributor.hotFrozenUntil = nil
+        store.data.distributor.warnings = []
+        store.data.distributor.hotRecords = []
+
+        // The plug: a gray order is not an income tax cost.
+        check(!Balance.taxableCategories.contains(.grayMarket), "the gray market is taxable")
+        store.testUnlockPlug()
+        GameStore.forcePlugVanish = false
+        GameStore.forcePlugShort = false
+        GameStore.forcePlugSeize = false
+        store.addTestCash(200_000)
+        guard let plugOffer = store.plugOffers.first else { return check(false, "the plug has no offer") }
+        store.data.sealed.removeAll()
+        ledgerAt = store.data.ledger.count
+        cash = store.cash
+        check(store.orderFromPlug(plugOffer, cases: 1) == nil && store.data.plug.orders.count == 1, "the plug order failed")
+        guard var order = store.data.plug.orders.first else { return }
+        check(abs((cash - store.cash) - plugOffer.casePrice) < 0.001 && store.data.hiddenActs.contains { $0.id == order.actID && $0.kind == .plugPurchase },
+              "a plug order took the wrong cash or left no act")
+        store.data.plug.orders[0].arrivesDay = store.day + 1
+        nextDay()
+        order = store.data.plug.orders[0]
+        let gray = store.data.sealed.filter { $0.grayOrder == order.id }
+        let grayEntries = store.data.ledger[ledgerAt...].filter { $0.category == .grayMarket }
+        check(order.state == .delivered && gray.count == 1 && gray[0].isCase && grayEntries.count == 1 && abs(grayEntries[0].amount + plugOffer.casePrice) < 0.001,
+              "a plug order did not deliver one case with one gray market entry")
+        // A seizure: the items leave with no refund, one seizure act appears, and the purchase act is gone.
+        store.data.plug.orders[0].seizeDay = store.day + 1
+        cash = store.cash
+        nextDay()
+        check(!store.data.sealed.contains { $0.grayOrder == order.id } && store.data.plug.orders[0].state == .seized, "a seizure left plug stock behind")
+        check(store.data.hiddenActs.filter { $0.kind == .plugSeized }.count == 1 && store.data.hiddenActs.first { $0.kind == .plugSeized }?.revealDay != nil
+              && !store.data.hiddenActs.contains { $0.id == order.actID }, "a seizure did not leave one seizure act and retire the purchase act")
+        check(!store.data.ledger.contains { $0.day == store.day && $0.category == .grayMarket && $0.amount > 0 }, "a seizure refunded money")
+        // A vanish: the prepaid money is gone, and the plug is gone.
+        check(store.plugOpen, "the plug closed before it vanished")
+        guard let second = store.plugOffers.first else { return check(false, "the plug has no second offer") }
+        _ = store.orderFromPlug(second, cases: 1)
+        store.data.plug.orders[store.data.plug.orders.count - 1].arrivesDay = store.day + 1
+        GameStore.forcePlugVanish = true
+        cash = store.cash
+        nextDay()
+        check(!store.plugOpen && store.data.plug.orders.last?.state == .vanished && abs(store.cash - cash) < 0.001, "a vanish refunded money or kept the plug open")
+
+        // The back room: a case never goes on the customer shelf. The store opens one case of a product a night.
+        store.testOpenCardStore(.stripMall, term: 1)
+        store.data.sealed.removeAll()
+        let c1 = store.testCase(etb, units: 4, fresh: true)
+        let c2 = store.testCase(etb, units: 4, fresh: true)
+        check(store.stockStore([c1, c2]) == 0 && !store.data.sealed.contains { GameStore.isInStore($0.status) }, "a case went in the store with no back room")
+        store.data.cardStore?.fixtures.append(.backRoom)
+        check(store.stockStore([c1, c2]) == 2 && store.backRoomCases.count == 2 && store.storeStock.sealed.isEmpty, "the back room did not hold two cases")
+        check(store.storeShelf().allSatisfy { $0.isCard } , "a case is on the customer shelf")
+        let lines = store.backRoomRestock()
+        let shelf = store.storeStock.sealed.filter { $0.productID == etb.id }
+        check(lines.count == 1 && shelf.count == 4 && store.backRoomCases.count == 1 && shelf.allSatisfy { !$0.isCase }, "the back room restock did not open exactly one case")
+        check(abs(shelf.reduce(0) { $0 + $1.paid } - store.data.sealed.filter { $0.productID == etb.id && !$0.isCase }.reduce(0) { $0 + $1.paid }) < 0.001, "the restock duplicated units")
+        check(store.backRoomRestock().isEmpty, "a product with stock on the shelf restocked")
+
+        // A pack case is bigger than the shelf: the units that fit go out, the rest wait in the back room, and the shelf
+        // refills from them before another case opens. Units and cost are kept.
+        store.data.sealed.removeAll()
+        if let pack = catalog.first(where: { Balance.caseSize(for: $0) == 144 && $0.market > 0 && !$0.isStoreExclusive }) {
+            let big1 = store.testCase(pack, units: 144, fresh: true)
+            let big2 = store.testCase(pack, units: 144, fresh: true)
+            let paid = store.data.sealed.reduce(0) { $0 + $1.paid }
+            store.stockStore([big1, big2])
+            let room = store.storeSealedSlots
+            func shelfUnits() -> [SealedItem] { store.storeStock.sealed.filter { $0.productID == pack.id } }
+            _ = store.backRoomRestock()
+            check(shelfUnits().count == room && store.backRoomUnits.count == 144 - room && store.backRoomCases.count == 1,
+                  "a 144-pack case gave \(shelfUnits().count) on the shelf and \(store.backRoomUnits.count) in the back room")
+            check(store.storeShelf().filter { !$0.isCard }.count == room, "a back-room unit is on the customer shelf")
+            let soldUnits = shelfUnits()
+            let sold = Set(soldUnits.map(\.id))
+            let soldPaid = soldUnits.reduce(0) { $0 + $1.paid }
+            store.data.sealed.removeAll { sold.contains($0.id) }
+            _ = store.backRoomRestock()
+            check(shelfUnits().count == room && store.backRoomUnits.count == 144 - 2 * room && store.backRoomCases.count == 1,
+                  "the shelf did not refill from the back room before a new case opened")
+            let looseLeft = store.data.sealed.filter { !$0.isCase }.count
+            let unitsLeft = looseLeft + 144 * store.backRoomCases.count
+            let paidLeft = store.data.sealed.reduce(0) { $0 + $1.paid }
+            check(unitsLeft == 144 * 2 - room, "units were lost in the back room split")
+            check(abs(paidLeft + soldPaid - paid) < 0.01, "the cost was not kept in the back room split")
+        } else {
+            check(false, "no 144-pack product for the back room test")
+        }
+
+        // Stranger cases: one roll for the whole case, an odd listing day, and the tape check.
+        var found: StoreOffer?
+        for day in 0..<400 where found == nil { found = Market.offers(for: .ebay, day: day).first { $0.caseUnits != nil } }
+        if let listing = found, let product = listing.product, let units = listing.caseUnits {
+            check(abs(listing.market - CaseMath.market(product, units: units)) < 0.001 && listing.title == CaseMath.name(product, units: units),
+                  "a case listing has the wrong title or price")
+            var fakeListing = listing
+            fakeListing.fake = .convincing
+            store.data.boughtToday = []
+            store.data.sealed.removeAll()
+            store.addTestCash(100_000)
+            check(store.buy(fakeListing), "the case listing did not sell")
+            if let item = store.data.sealed.first {
+                check(item.isCase && item.caseUnits == units && item.fake == .convincing && !item.isCaseFresh && abs(item.paid - (fakeListing.price + fakeListing.shipping)) < 0.001,
+                      "a bought stranger case has the wrong fields")
+            } else {
+                check(false, "the stranger case did not arrive in the inventory")
+            }
+        } else {
+            check(false, "no eBay case listing in 400 days")
+        }
+        check(!Counterfeit.caseCheckCatches(nil, key: "x"), "the tape check caught a real case")
+        var tellsProfessional = 0
+        for k in 0..<200 where Counterfeit.caseCheckLine(.professional, key: "pro-\(k)") != nil { tellsProfessional += 1 }
+        check(tellsProfessional == 0, "the tape check shows a tell for a professional reseal")
+        var caught = 0
+        for k in 0..<1000 where Counterfeit.caseCheckCatches(.bootleg, key: "key-\(k)") { caught += 1 }
+        check(caught > 400 && caught < 600 && Counterfeit.caseCheckCatches(.bootleg, key: "key-3") == Counterfeit.caseCheckCatches(.bootleg, key: "key-3"),
+              "the tape check does not halve the risk (\(caught) of 1000)")
+        let owned = store.testCase(etb, units: 4, fresh: false)
+        _ = store.checkCase(owned)
+        check(store.data.sealed.first { $0.id == owned }?.caseChecked == true && store.checkCase(owned) == nil, "a case was checked twice")
+
+        // Carry space: a case packs at 1 plus 1 for each 8 packs.
+        let caseItem = ShowItem(id: UUID(), kind: .sealed, name: "c", detail: "", market: 1, image: nil, condition: nil, graded: false,
+                                setSlug: etb.homeSlug, packs: etb.packs * 10, isCase: true)
+        check(CarryBin.space(caseItem) == 1 + Int((Double(etb.packs * 10) / 8).rounded(.up)), "a case takes the wrong carry space")
     }
 
     /// Sealed product phase 2: limits, the vendor batch and its drain, heat and bans, the club, the dump cap, and the
@@ -1321,6 +1678,31 @@ final class GameTests {
         store.stockStore(Set(pick.cards.prefix(4).map(\.id) + pick.sealed.prefix(4).map(\.id)))
         store.addTestShow(.local)
 
+        // T10 (phase 4): the distributor, the plug, the hot records, the missing shipments, and a back-room case, so every
+        // new End Day step runs on a full array.
+        store.testApproveDistributor()
+        store.data.cardStore?.fixtures.append(.backRoom)
+        let backRoomETB = SetLibrary.catalog.first { $0.kind == "Elite Trainer Box" && $0.market > 0 && !$0.isStoreExclusive }
+        if let etb = backRoomETB { store.stockStore([store.testCase(etb, units: 4, fresh: true)]) }
+        store.testUnlockPlug()
+        GameStore.forcePlugVanish = false
+        GameStore.forcePlugShort = false
+        GameStore.forcePlugSeize = false
+        defer {
+            GameStore.forcePlugVanish = nil
+            GameStore.forcePlugShort = nil
+            GameStore.forcePlugSeize = nil
+        }
+        store.addTestCash(100_000)
+        if let offer = store.plugOffers.first, store.orderFromPlug(offer, cases: 1) == nil {
+            store.data.plug.orders[0].arrivesDay = 3
+        }
+        var oldRecord = HotAllocationRecord(itemID: UUID(), units: 1, deliveredDay: -120)
+        oldRecord.outcome = .retail
+        oldRecord.outcomeDay = -100
+        store.data.distributor.hotRecords = [oldRecord, HotAllocationRecord(itemID: UUID(), units: 1, deliveredDay: 1)]
+        store.data.retail.missingShipments.append(MissingShipment(name: "Test order", noticeDay: 4, refundDay: 5, refund: 10))
+
         // T10: retail state that is not empty, so every closure in the new End Day hooks runs on a full array.
         let dumped = SetLibrary.catalog.filter { $0.isInPrint && $0.isHot() }.prefix(3).map(\.id)
         store.data.marketEvents.append({
@@ -1374,6 +1756,15 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        // The distributor, plug, and back-room steps settled: the order arrived, the old record left, the refund came, the case opened.
+        check(store.data.plug.orders.first?.state == .delivered || store.data.plug.orders.isEmpty, "the plug order did not arrive in 14 days")
+        check(!store.data.distributor.hotRecords.contains { $0.deliveredDay == -120 } && store.data.retail.missingShipments.isEmpty
+              && store.data.ledger.contains { $0.label.hasPrefix("Missing shipment refund") }, "a hot record or a missing shipment did not settle in 14 days")
+        if let etb = backRoomETB {
+            let units = store.data.sealed.filter { $0.productID == etb.id && !$0.isCase }.count
+                + store.data.sealed.filter { $0.productID == etb.id }.reduce(0) { $0 + ($1.caseUnits ?? 0) }
+            check(units <= 4 && !store.backRoomCases.contains { $0.productID == etb.id }, "the back room case did not open, or its units grew (\(units))")
+        }
         check(!store.data.sealed.contains { $0.id == onlineOrder.id } && store.data.ledger.filter { $0.label.hasPrefix("Order cancelled") }.count == 1
               && store.data.retail.drawings.isEmpty && store.data.retail.drawingWins.isEmpty && store.data.retail.dropOrders.isEmpty,
               "the online orders, drawings, or wins did not settle in 14 days")

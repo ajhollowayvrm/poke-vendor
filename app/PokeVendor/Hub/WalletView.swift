@@ -53,6 +53,7 @@ struct WalletView: View {
                     }
                 }
                 TaxBox()
+                pendingRefundsBox
                 debtBox
                 insuranceBox
                 DetailBox(title: "Ledger") {
@@ -86,6 +87,26 @@ struct WalletView: View {
 }
 
 extension WalletView {
+    /// Distributor orders that never arrived. Each refund comes on its day.
+    @ViewBuilder
+    private var pendingRefundsBox: some View {
+        let lost = store.data.retail.missingShipments
+        if !lost.isEmpty {
+            DetailBox(title: "Pending refunds") {
+                ForEach(lost) { s in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(s.name).font(.subheadline).lineLimit(2)
+                            Text("refund on \(GameCalendar.date(s.refundDay).text)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        Spacer()
+                        Text(money(s.refund)).font(.subheadline.monospaced())
+                    }
+                }
+            }
+        }
+    }
+
     /// Credit and debt, with the way into the Loans screen (docs/27-debt-and-loans.md).
     private var debtBox: some View {
         let debt = store.data.debt

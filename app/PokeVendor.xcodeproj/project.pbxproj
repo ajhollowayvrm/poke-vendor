@@ -18,6 +18,7 @@
 		0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7653D159E767B267752F265 /* StoreRunViews.swift */; };
 		085A46C44F6F4811EA21DE23 /* crown-zenith.json in Resources */ = {isa = PBXBuildFile; fileRef = C54A7EE716D8B3165068669F /* crown-zenith.json */; };
 		0995BCAC20317ADD99AB997E /* Taxes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5F86050C95B7226F93873C /* Taxes.swift */; };
+		0A66AFC65E7CB88B56AD2DEA /* Distributor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01CCED216C743810AE8DAB0 /* Distributor.swift */; };
 		0B1D570F7C38939714CB4041 /* RetailSim.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBCDFCBA704936241278B42 /* RetailSim.swift */; };
 		0B3C36D61F4A2B88E17758D1 /* Supplies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D2A072C747DEAB8413196A /* Supplies.swift */; };
 		0B64F9CA51E7C74EBA58A377 /* gym-challenge-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = AB1C957636EDC5EFEE0853E3 /* gym-challenge-1st-edition.json */; };
@@ -99,6 +100,7 @@
 		4E14652814D639209494DB7F /* lost-origin.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B54A884DC3FCF4D498BA581 /* lost-origin.json */; };
 		4E2A75B7C80B790FD05DD90E /* skyridge.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B48285729B6638BC44FA869 /* skyridge.json */; };
 		4FEBC49138517374635D5204 /* mcdonalds-collection-2021.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */; };
+		504DE9EDE44E73F9071E33BA /* PlugViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1B7C470E4DC7731F37066E /* PlugViews.swift */; };
 		5054B1A8694974DC21257E9F /* rising-rivals.json in Resources */ = {isa = PBXBuildFile; fileRef = 617D61638A31A85F3BE630D9 /* rising-rivals.json */; };
 		512687D15CB634EBCB49407A /* battle-styles.json in Resources */ = {isa = PBXBuildFile; fileRef = 8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */; };
 		51B39009255482C3B2DB9E7D /* emerging-powers.json in Resources */ = {isa = PBXBuildFile; fileRef = 678B02909309694DEE98F244 /* emerging-powers.json */; };
@@ -475,6 +477,7 @@
 		8A358D246B4A0E231698B762 /* silver-tempest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "silver-tempest.json"; sourceTree = "<group>"; };
 		8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreCredit.swift; sourceTree = "<group>"; };
 		8C8CDE83DD6D061C2A6229A4 /* battle-styles.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "battle-styles.json"; sourceTree = "<group>"; };
+		8E1B7C470E4DC7731F37066E /* PlugViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlugViews.swift; sourceTree = "<group>"; };
 		8FC50C93732086290DFAC1F5 /* hidden-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-legends.json"; sourceTree = "<group>"; };
 		915F98D6A385AE0C6AD57D98 /* BoxContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoxContents.swift; sourceTree = "<group>"; };
 		917BD5729F252442572920DA /* white-flare.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "white-flare.json"; sourceTree = "<group>"; };
@@ -581,6 +584,7 @@
 		EEEB387BE91E6437D08702D6 /* breakthrough.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = breakthrough.json; sourceTree = "<group>"; };
 		EF7FFEBF9985028B8340B74E /* plasma-blast.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-blast.json"; sourceTree = "<group>"; };
 		EFEB00B5E3B98AFB182E5118 /* RipModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipModel.swift; sourceTree = "<group>"; };
+		F01CCED216C743810AE8DAB0 /* Distributor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Distributor.swift; sourceTree = "<group>"; };
 		F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		F52ED77C7307D16459401032 /* team-rocket.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-rocket.json"; sourceTree = "<group>"; };
 		F608F1C0EB11E6D8282E4752 /* 151.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = 151.json; sourceTree = "<group>"; };
@@ -847,6 +851,7 @@
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
 				F93E91BC33F28004C994B1EE /* Debt.swift */,
 				531934AE1683B48C6717CC3A /* Demand.swift */,
+				F01CCED216C743810AE8DAB0 /* Distributor.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				0A9B0564A22D5EBD10731BDC /* Flippers.swift */,
 				72B8DDD2771C5F7B9863D6CE /* GameCalendar.swift */,
@@ -997,6 +1002,7 @@
 			children = (
 				781DF97D530EE9737F37D11A /* BuyViews.swift */,
 				65469CAC827C7749BFFC7033 /* ChainSitesView.swift */,
+				8E1B7C470E4DC7731F37066E /* PlugViews.swift */,
 				D7653D159E767B267752F265 /* StoreRunViews.swift */,
 				CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */,
 				C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */,
@@ -1268,6 +1274,7 @@
 				D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */,
 				02FDC2C400CC7F8D85AD622F /* Demand.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
+				0A66AFC65E7CB88B56AD2DEA /* Distributor.swift in Sources */,
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				7A35C872266C162E6BEC2E3D /* Events.swift in Sources */,
 				95BC6AA92A776C8DAF0608FB /* FlipperViews.swift in Sources */,
@@ -1312,6 +1319,7 @@
 				FCAD9164775A3F88F8F0FE00 /* Payments.swift in Sources */,
 				A144BF1527518313ED6C8305 /* PersonalCollection.swift in Sources */,
 				792379EDEB29916CD81A5483 /* Plug.swift in Sources */,
+				504DE9EDE44E73F9071E33BA /* PlugViews.swift in Sources */,
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
 				F85DCACE4F481C99EAC7F29B /* PriceCycle.swift in Sources */,
 				90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */,

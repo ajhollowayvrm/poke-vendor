@@ -110,13 +110,17 @@ enum CarryBin: CaseIterable {
     static func of(_ item: ShowItem) -> CarryBin { item.kind == .sealed ? .tote : item.graded ? .slabBox : .binder }
 
     /// The space one item takes in its bin. Sealed product: 1 pack is 1 space, more is 1 plus 1 for each 6 packs.
+    /// A sealed case packs tighter: 1 plus 1 for each 8 packs (docs/29-packing-and-crowds.md, Cases).
     static func space(_ item: ShowItem) -> Int {
         guard item.kind == .sealed else { return 1 }
+        if item.isCase { return 1 + Int((Double(item.packs) / Double(Balance.casePacksPerSpace)).rounded(.up)) }
         return item.packs <= 1 ? 1 : 1 + Int((Double(item.packs) / 6).rounded(.up))
     }
 }
 
 extension Balance {
+    /// A sealed case takes 1 space plus 1 for each this many packs.
+    static let casePacksPerSpace = 8
     static let binderSpace = [40, 160]
     static let slabBoxSpace = [3, 20]
     static let toteSpace = [8, 30]

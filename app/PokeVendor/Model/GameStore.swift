@@ -302,6 +302,8 @@ final class GameStore {
             // Cards from before the set price effects learn their set. A promo is not in its set file, so it stays nil.
             for i in saved.raw.indices { Self.fillSetSlug(&saved.raw[i]) }
             for i in saved.slabs.indices { Self.fillSetSlug(&saved.slabs[i]) }
+            // A store from before the application keeps its distributor account.
+            Self.grandfatherDistributor(&saved)
             data = saved
         } else {
             data = GameData()
@@ -311,6 +313,7 @@ final class GameStore {
         scheduleShows()
         scheduleSales()
         seedContacts()
+        ensureRepContact()
         seedRivals()
         seedPressureLog()
     }
@@ -669,6 +672,7 @@ final class GameStore {
     func openProduct(_ sourceID: UUID, ripID: UUID) -> [CardPrint] {
         guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
         let item = data.sealed.remove(at: i)
+        noteAllocationOpened(item.id)
         let order = Self.shipOrderID(of: item)
         var newIDs: [UUID] = []
         for slug in packSlugs(of: item) {
@@ -707,6 +711,7 @@ final class GameStore {
         var order: UUID?
         if let i = data.sealed.firstIndex(where: { $0.id == sourceID }) {
             let item = data.sealed.remove(at: i)
+            noteAllocationOpened(item.id)
             order = Self.shipOrderID(of: item)
             var rest = packSlugs(of: item)
             if let first = rest.firstIndex(of: setSlug) { rest.remove(at: first) } else if !rest.isEmpty { rest.removeFirst() }
@@ -774,11 +779,18 @@ final class GameStore {
         let status: ItemStatus? = offer.pickup ? nil : .onTheWay(daysLeft: offer.deliveryDays, store: offer.store)
         switch offer.item {
         case .product(let product, let slug):
-            addLedger(-total, .sealed, "\(product.name) · \(offer.store.rawValue)")
-            var item = SealedItem(setSlug: slug, name: product.name, packs: product.packs, paid: total,
+            addLedger(-total, .sealed, "\(offer.title) · \(offer.store.rawValue)")
+            var item: SealedItem
+            if let units = offer.caseUnits {
+                // A stranger's case: one fake roll covers the whole case, and the seller's words give no tag.
+                item = makeCase(product, units: units, paid: total, source: "Bought on \(offer.store.rawValue)", status: status,
+                                fake: offer.fake, caseFresh: false)
+            } else {
+                item = SealedItem(setSlug: slug, name: product.name, packs: product.packs, paid: total,
                                   acquired: .now, source: "Bought on \(offer.store.rawValue)",
                                   productID: product.id, status: status, acquiredDay: data.day)
-            item.fake = offer.fake
+                item.fake = offer.fake
+            }
             data.sealed.append(item)
         case .single(let print, let slug):
             addLedger(-total, .singles, "\(print.name) · \(offer.store.rawValue)")
@@ -1216,6 +1228,7 @@ final class GameStore {
 
         lines += advanceSealed()
         lines += retailOrdersEndDay()
+        lines += backRoomRestock()
         lines += advanceCards()
         lines += gradingBillsEndDay()
         lines += lotOrdersEndDay()
@@ -1233,6 +1246,8 @@ final class GameStore {
         lines += paymentsEndDay()
         lines += streamsEndDay()
         lines += splitsEndDay()
+        lines += distributorEndDay()
+        lines += plugEndDay()
         lines += meetupsEndDay()
         lines += offersEndDay()
         lines += lotsEndDay()
@@ -1568,8 +1583,9 @@ final class GameStore {
         let costs = saleCosts(price: price, channel: channel, sealed: sealed, insured: insured)
         let net = price - costs.fees - costs.shipping - costs.insurance
         addLedger(net, .sale, "\(name) · \(channel.rawValue) · sold \(money(price))")
+        // eBay, TCGplayer, and Facebook are outside reseller channels. Lots sell through this path too.
         addReceipt(name: name, venue: channel.rawValue, price: price, net: net, paid: paid, overstated: overstated, ids: ids,
-                   markets: markets)
+                   markets: markets, offShelf: [.ebay, .ebayAuction, .tcgplayer, .facebook].contains(channel))
         noteDemand(name, channel: channel)
         if channel.ships { useShippingSupplies(name: name, price: price, slab: slab, sealed: sealed) }
         notePlatformSale(channel: channel, price: price)

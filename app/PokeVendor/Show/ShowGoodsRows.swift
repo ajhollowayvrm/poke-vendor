@@ -6,6 +6,7 @@ struct GoodsRow: View {
     let canAfford: Bool
     let buy: () -> Void
     let ask: () -> Void
+    @State private var checked = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -23,7 +24,8 @@ struct GoodsRow: View {
                 case .slab(_, let slug, let grade):
                     Text("\(SetLibrary.set(slug).name) · \(grade.label)").font(.caption.weight(.semibold)).foregroundStyle(Theme.cyan)
                 case .sealed(let product):
-                    Text("Sealed · \(product.kind)").font(.caption).foregroundStyle(Theme.muted)
+                    Text(item.caseUnits.map { "Sealed case · \($0) × \(product.kind)" } ?? "Sealed · \(product.kind)")
+                        .font(.caption).foregroundStyle(Theme.muted)
                 case .mystery(let pack):
                     Text(pack.detail).font(.caption).foregroundStyle(Theme.muted)
                 }
@@ -35,6 +37,14 @@ struct GoodsRow: View {
                     }
                 }
                 if item.looksOff { LooksOffLine(sealed: item.isSealed) }
+                // A stranger's case: a free check of the tape and label. A check is never proof.
+                if item.caseUnits != nil {
+                    if checked {
+                        CaseCheckResult(fake: item.fake, key: item.id.uuidString)
+                    } else {
+                        Button("Check the tape and label") { checked = true }.buttonStyle(.bordered).controlSize(.small)
+                    }
+                }
                 HStack(spacing: 8) {
                     Button(isMystery ? "Buy and open" : "Buy", action: buy)
                         .primaryButton().tint(Theme.cyan)
@@ -69,7 +79,7 @@ struct GoodsImage: View {
         switch item.goods {
         case .sealed(let product):
             ProductImage(url: item.image, setName: item.name).clipShape(RoundedRectangle(cornerRadius: 3))
-                .looksInside(product) { contentsKey.map { BoxContents.draw(product, key: $0) } }
+                .looksInside(item.caseUnits == nil ? product : nil) { contentsKey.map { BoxContents.draw(product, key: $0) } }
         case .mystery(let pack):
             MysteryPackArt(pack: pack)
         case .slab(let print, _, let grade):

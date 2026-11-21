@@ -11,6 +11,7 @@ struct CardStoreView: View {
     @State private var stocking = false
     @State private var closing = false
     @State private var onlineSheet: SellRequest?
+    @State private var caseRequest: CaseRequest?
 
     var body: some View {
         ScrollView {
@@ -26,6 +27,7 @@ struct CardStoreView: View {
                     todayBox(s)
                     numbersBox
                     shelvesBox
+                    if store.hasBackRoom { backRoomBox }
                     pricesBox(s)
                     staffBox(s)
                     StoreEventsBox()
@@ -48,6 +50,7 @@ struct CardStoreView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $stocking) { StockShelvesSheet() }
         .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
+        .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(isPresent: $signing),
                             titleVisibility: .visible, presenting: signing) { location in
             Button("Sign for \(money(location.upfront(term: term)))") { store.signLease(location, term: term, name: name) }
@@ -215,6 +218,17 @@ struct CardStoreView: View {
                 StatCell(label: "Sealed", value: "\(stock.sealed.count) / \(store.storeSealedSlots)")
                 StatCell(label: "At your price", value: money(value))
             }
+            // The rep watches where hot distributor product goes: customers, or resellers.
+            if !store.data.distributor.hotRecords.isEmpty {
+                if let share = store.hotShelfShare {
+                    Text("Hot product from your distributor sold to customers, last \(Balance.backDoorWindowDays / 7) weeks: \(Int((share * 100).rounded()))%. Your rep wants \(Int(Balance.backDoorShelfShare * 100))% or more.")
+                        .font(.caption)
+                        .foregroundStyle(share < Balance.backDoorShelfShare ? Theme.orange : Theme.muted)
+                } else {
+                    Text("No hot product from your distributor has sold yet. Your rep wants \(Int(Balance.backDoorShelfShare * 100))% of it to reach customers.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
+            }
             Button { stocking = true } label: { Text("Stock the shelves").frame(maxWidth: .infinity) }
                 .primaryButton()
                 .disabled(store.stockable.cards.isEmpty && store.stockable.sealed.isEmpty)
@@ -231,6 +245,32 @@ struct CardStoreView: View {
                 SetGroup(slug: group.slug, count: group.items.count, list: "store") {
                     ForEach(group.items) { stockRow($0) }
                 }
+            }
+        }
+    }
+
+    /// Sealed cases off the shelf. When a product runs low, the store opens a case of it at night and restocks.
+    private var backRoomBox: some View {
+        let cases = store.backRoomCases
+        return DetailBox(title: "Back room") {
+            Text("\(cases.count) of \(Balance.backRoomCases) cases. When a product has \(Balance.backRoomRestockAt) unit or fewer on the shelf, the store opens a case of it overnight and puts the units out. Customers never see a case.")
+                .font(.caption).foregroundStyle(Theme.muted)
+            ForEach(cases) { item in
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.name).font(.subheadline).lineLimit(2)
+                        Text("case mkt \(money(store.realMarket(of: item)))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                    if item.onlineListing == nil {
+                        Button("Open") { caseRequest = CaseRequest(source: .closed(item.id)) }.buttonStyle(.bordered).controlSize(.small)
+                    }
+                    Button { store.takeBackFromStore([item.id]) } label: { Image(systemName: "arrow.uturn.backward.circle") }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Theme.muted)
+                        .accessibilityLabel("Take back \(item.name)")
+                }
+                .padding(.vertical, 2)
             }
         }
     }
@@ -449,17 +489,19 @@ struct StockShelvesSheet: View {
         let stock = store.storeStock
         let cardRoom = max(0, store.storeCardSlots - store.storeCardsUsed)
         let sealedRoom = max(0, store.storeSealedSlots - stock.sealed.count)
+        let caseRoom = store.hasBackRoom ? max(0, Balance.backRoomCases - store.backRoomCases.count) : 0
         let pickedCards = items.filter { $0.kind == .card && picked.contains($0.id) }.count
-        let pickedSealed = items.filter { $0.kind == .sealed && picked.contains($0.id) }.count
-        let fits = min(pickedCards, cardRoom) + min(pickedSealed, sealedRoom)
+        let pickedSealed = items.filter { $0.kind == .sealed && !$0.isCase && picked.contains($0.id) }.count
+        let pickedCases = items.filter { $0.isCase && picked.contains($0.id) }.count
+        let fits = min(pickedCards, cardRoom) + min(pickedSealed, sealedRoom) + min(pickedCases, caseRoom)
         NavigationStack {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s"). PC items, master set cards, listed items, and known fakes stay home.")
+                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s")\(store.hasBackRoom ? ", and \(caseRoom) case\(caseRoom == 1 ? "" : "s") in the back room" : ""). PC items, master set cards, listed items, and known fakes stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
-                        if pickedCards > cardRoom || pickedSealed > sealedRoom {
+                        if pickedCards > cardRoom || pickedSealed > sealedRoom || pickedCases > caseRoom {
                             Text("Not everything fits. The dearest cards go in first.").font(.caption).foregroundStyle(Theme.orange)
                         }
                         HStack {

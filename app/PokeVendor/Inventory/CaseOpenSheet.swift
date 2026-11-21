@@ -302,3 +302,17 @@ private struct UnitTile: View {
         .onAppear { withAnimation(.easeOut(duration: 0.6)) { ring = true } }
     }
 }
+
+/// The result of the tape and label check on a case. The result depends only on the case, so a second look reads the same.
+struct CaseCheckResult: View {
+    let fake: FakeTier?
+    let key: String
+
+    var body: some View {
+        if let tell = Counterfeit.caseCheckLine(fake, key: key) {
+            Text(tell).font(.caption).foregroundStyle(Theme.orange)
+        } else {
+            Text("The tape and label look right. A check is never proof.").font(.caption).foregroundStyle(Theme.muted)
+        }
+    }
+}

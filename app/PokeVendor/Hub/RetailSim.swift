@@ -7,18 +7,26 @@ import Foundation
 final class RetailSim {
     private let store: GameStore
     private let flipper: Bool
+    /// A shop owner: the honest player with a store and a hobby distributor account. It orders each week and reports the fill rate.
+    private let shop: Bool
     private var lastCampWindow = -1
+    /// Hot records that sold on the shelf, at the last look. Records leave the list after 56 days, so this is a snapshot.
+    private var soldRetail = 0
+    /// The hot cases asked for and filled over the whole run, split by the age of the account.
+    private var fillNew = (asked: 0, got: 0), fillTenured = (asked: 0, got: 0)
     /// Columns that later phases add: Part B's hot fill rate (phase 4) and Part C's callouts (phase 6).
     var extraColumns: [(name: String, value: () -> String)] = []
 
     private struct Week {
         var shelfUnits = 0, campUnits = 0, onlineUnits = 0, dumps = 0, incidents = 0, bans = 0
         var fillOneHour: [Double] = [], fillAfterWork: [Double] = [], hotShare: [Double] = []
+        var fillAsked = 0, fillGot = 0
     }
 
-    init(store: GameStore, flipper: Bool) {
+    init(store: GameStore, flipper: Bool, shop: Bool = false) {
         self.store = store
         self.flipper = flipper
+        self.shop = shop
     }
 
     func run(days: Int) {
@@ -32,7 +40,13 @@ final class RetailSim {
             _ = store.joinClub()
             store.subscribeAlerts(.allChains, store: nil)
         }
-        print("RETAILSIM day p strict heat(g/max) bans units(shelf/camp/online) fill(1h/17h) hot dumps incidents "
+        if shop {
+            store.testOpenCardStore(.stripMall, term: 12)
+            store.data.cardStore?.fixtures.append(.backRoom)
+            store.setClerk(true)
+            store.applyToDistributor()
+        }
+        print("RETAILSIM day p strict heat(g/max) bans units(shelf/camp/online) fill(1h/17h) hot dumps incidents fill(hot cases got/asked) "
               + extraColumns.map(\.name).joined(separator: " "))
         var week = Week(), total = Week()
         var pressures: [Double] = []
@@ -41,6 +55,7 @@ final class RetailSim {
             // A ban starts during the day, so it is in the log and not in the morning report. Count the new ones here.
             let banned = store.data.retail.bannedUntil
             if flipper { playFlipper(&week) } else { playHonest(&week) }
+            if shop { orderWholesale(&week); stockShop() }
             week.bans += store.data.retail.bannedUntil.filter { banned[$0.key] != $0.value }.count
             store.report = nil
             if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }
@@ -50,6 +65,20 @@ final class RetailSim {
             week.dumps += lines.filter { $0.contains("dumping") }.count
             week.incidents += lines.filter { $0.contains("tightens its card limits") }.count
             if store.day % 7 == 0 { printWeek(week); add(week, to: &total); week = Week() }
+        }
+        func rate(_ f: (asked: Int, got: Int)) -> String { f.asked == 0 ? "-" : String(format: "%.2f (%d/%d)", Double(f.got) / Double(f.asked), f.got, f.asked) }
+        if shop {
+            let w = store.hotSalesWindow
+            print("RETAILSIM SHELF hotShelfShare=\(store.hotShelfShare.map { String(format: "%.2f", $0) } ?? "-") window(retail/offShelf/delivered)="
+                  + "\(w.retail)/\(w.offShelf)/\(w.delivered) soldRetail=\(soldRetail) warnings=\(store.data.distributor.warnings.count) "
+                  + "hotActs=\(store.data.hiddenActs.filter { $0.kind == .backDoorAllocation }.count) "
+                  + "shelfUnits=\(store.storeStock.sealed.count) backRoom=\(store.backRoomCases.count) "
+                  + "inHand=\(store.data.sealed.filter { $0.status == nil && $0.source.contains("Wholesale") }.count) records=\(store.data.distributor.hotRecords.count) "
+                  + "storeSold=\(store.data.cardStore?.history.reduce(0) { $0 + $1.sold } ?? 0) lastDays=\(store.data.cardStore?.history.suffix(5).map { "\($0.day):\($0.customers)/\($0.sold)" } ?? []) "
+                  + "store=\(store.data.cardStore?.name ?? "closed")")
+            print("RETAILSIM FILL new account (first 8 weeks): \(rate(fillNew)) tenured (after week 26): \(rate(fillTenured)) "
+                  + "rep=\(store.repPoints) spent=\(Int(store.data.distributor.spent)) warnings=\(store.data.distributor.warnings.count) "
+                  + "closed=\(store.data.distributor.closedUntil != nil)")
         }
         let years = Double(days) / 364
         print(String(format: "RETAILSIM END days=%d shelf/wk=%.2f camp/wk=%.2f online/wk=%.2f bans/yr=%.2f incidents/yr=%.1f dumps/yr=%.1f ms=%d",
@@ -63,6 +92,37 @@ final class RetailSim {
                      pressures.reduce(0, +) / Double(max(1, pressures.count)), share { $0 < 0.35 }, share { $0 >= 0.35 && $0 <= 0.65 },
                      share { $0 > 0.65 }, share { $0 <= range.lowerBound + 0.001 }, share { $0 >= range.upperBound - 0.001 }))
         fflush(stdout)
+    }
+
+    /// The shop owner shelves what the distributor sent, so the shelf sells it and the back-door check judges real sales.
+    /// The back room opens each case, and its loose units refill the shelf at night.
+    private func stockShop() {
+        guard store.hasBackRoom else { return }
+        // Only hot product goes on the shelf. Cheap product that no one buys would fill the slots and block it.
+        let hotUnsold = Set(store.data.distributor.hotRecords.filter { $0.outcome == nil }.map(\.itemID))
+        let ids = Set(store.data.sealed.filter { $0.status == nil && !$0.setAside && hotUnsold.contains($0.id) }.map(\.id))
+        if !ids.isEmpty { store.stockStore(ids) }
+        soldRetail = store.data.distributor.hotRecords.filter { $0.outcome == .retail }.count
+    }
+
+    /// The shop owner's weekly order on Monday: one case of each hot offer, and the three cheapest other offers, so the
+    /// spend grows the rep like a real shop. The fill rate counts the filled cases from the ledger line of each order.
+    private func orderWholesale(_ w: inout Week) {
+        guard store.weekday == 0, store.hasStoreAccount else { return }
+        let offers = store.wholesaleOffers
+        let hot = offers.filter { store.isHot($0.product) }
+        let rest = offers.filter { !store.isHot($0.product) }.sorted { $0.casePrice < $1.casePrice }.prefix(3)
+        for offer in hot + rest {
+            guard (store.wholesaleLeft(offer) ?? 1) > 0 else { continue }
+            let before = store.data.ledger.count
+            _ = store.buyWholesale(offer, cases: 1)
+            guard store.isHot(offer.product) else { continue }
+            let charged = store.data.ledger[before...].contains { $0.category == .wholesale && $0.amount < 0 }
+            w.fillAsked += 1
+            if charged { w.fillGot += 1 }
+            if store.day < 56 { fillNew.asked += 1; if charged { fillNew.got += 1 } }
+            if store.day >= 182 { fillTenured.asked += 1; if charged { fillTenured.got += 1 } }
+        }
     }
 
     /// On each chain's vendor day: the share of hot units left 1 hour after the vendor, and at 17:00.
@@ -164,10 +224,11 @@ final class RetailSim {
         func mean(_ a: [Double]) -> String { a.isEmpty ? "-" : String(format: "%.2f", a.reduce(0, +) / Double(a.count)) }
         let strict = LocalStore.allCases.filter { !$0.isGameShop }.map { "\(store.strictness($0).level)" }.joined()
         let maxHeat = store.data.retail.storeHeat.values.max() ?? 0
-        print(String(format: "RETAILSIM %d %.2f %@ %.1f/%.1f %d %d/%d/%d %@/%@ %@ %d %d ",
+        let fill = w.fillAsked == 0 ? "-" : String(format: "%.2f(%d/%d)", Double(w.fillGot) / Double(w.fillAsked), w.fillGot, w.fillAsked)
+        print(String(format: "RETAILSIM %d %.2f %@ %.1f/%.1f %d %d/%d/%d %@/%@ %@ %d %d %@ ",
                      store.day, store.data.flipperPressure, strict, store.data.scalperHeat, maxHeat, w.bans,
                      w.shelfUnits, w.campUnits, w.onlineUnits, mean(w.fillOneHour), mean(w.fillAfterWork), mean(w.hotShare),
-                     w.dumps, w.incidents) + extraColumns.map { $0.value() }.joined(separator: " "))
+                     w.dumps, w.incidents, fill) + extraColumns.map { $0.value() }.joined(separator: " "))
     }
 
     private func add(_ w: Week, to t: inout Week) {

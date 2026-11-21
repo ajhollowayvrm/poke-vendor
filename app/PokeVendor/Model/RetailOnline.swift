@@ -98,6 +98,10 @@ extension Balance {
 
     /// The report warns this many days before the club membership ends.
     static let clubWarnDays = 7
+
+    /// The chance that a distributor order never arrives, and the days from the notice to the refund.
+    static let wholesaleMissingChance = 0.01
+    static let missingShipmentRefundDays = 14
 }
 
 @MainActor
@@ -231,10 +235,40 @@ extension GameStore {
         for order in dueOrders where Double.random(in: 0..<1) < order.chance {
             if let line = cancelOrder(order) { lines.append(line) }
         }
-        // Phase 4: missing distributor shipments (`missingShipmentsEndDay`).
+        // Missing distributor shipments.
+        lines += missingShipmentsEndDay()
         // The club membership ends in 7 days (proposal 1.7).
         if let until = data.retail.clubUntil, until == today + Balance.clubWarnDays {
             lines.append("Your warehouse club membership ends in \(Balance.clubWarnDays) days. Renew it at the club stop.")
+        }
+        return lines
+    }
+
+    // MARK: - Missing distributor shipments
+
+    /// The order is lost on the way. `learnIn` is the days until the player learns it: the normal delivery days.
+    /// The refund comes `missingShipmentRefundDays` after that.
+    func registerMissingShipment(name: String, refund: Double, learnIn: Int) {
+        let notice = data.day + learnIn
+        data.retail.missingShipments.append(MissingShipment(name: name, noticeDay: notice,
+                                                            refundDay: notice + Balance.missingShipmentRefundDays, refund: refund))
+    }
+
+    /// Tells the player about a lost order, and pays each refund once. A refund counts as a wholesale credit, so it
+    /// nets the order cost for income tax.
+    func missingShipmentsEndDay() -> [String] {
+        let today = data.day
+        var lines: [String] = []
+        var all = data.retail.missingShipments
+        for i in all.indices where !all[i].noticed && all[i].noticeDay <= today {
+            all[i].noticed = true
+            lines.append("Your \(all[i].name) did not arrive. The distributor's truck never reached you. It opened a claim, and the refund comes in \(Balance.missingShipmentRefundDays) days.")
+        }
+        let paid = all.filter { $0.refundDay <= today }
+        data.retail.missingShipments = all.filter { $0.refundDay > today }
+        for s in paid {
+            addLedger(s.refund, .wholesale, "Missing shipment refund · \(s.name)")
+            lines.append("The distributor refunded \(money(s.refund)) for the missing \(s.name).")
         }
         return lines
     }

@@ -41,7 +41,7 @@ enum StoreLocation: String, Codable, CaseIterable, Hashable {
 
 /// A one-time buy for the store. The store keeps it until the store closes.
 enum StoreFixture: String, Codable, CaseIterable, Hashable {
-    case extraCase, sealedWall, playTables, cameras, sign, pos
+    case extraCase, sealedWall, playTables, cameras, sign, pos, backRoom
 
     var name: String {
         switch self {
@@ -51,6 +51,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .cameras: "Security cameras"
         case .sign: "Lighted sign"
         case .pos: "Point-of-sale system"
+        case .backRoom: "Back room"
         }
     }
 
@@ -62,6 +63,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .cameras: "Stops shoplifting on the days the clerk is alone."
         case .sign: "\(Int((Balance.signTrafficBonus - 1) * 100))% more customers every day."
         case .pos: "The clerk sells as well as you do: a scanner, prices on screen, and a card terminal."
+        case .backRoom: "Holds up to \(Balance.backRoomCases) sealed cases off the shelf. When a product runs low on the shelf, the store opens a case of it and restocks."
         }
     }
 
@@ -73,6 +75,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .cameras: "video.badge.checkmark"
         case .sign: "lightbulb.max"
         case .pos: "barcode.viewfinder"
+        case .backRoom: "shippingbox.fill"
         }
     }
 
@@ -160,7 +163,7 @@ extension Balance {
     static let storeSealedSlots = 40
     static let extraCaseSlots = 60
     static let sealedWallSlots = 60
-    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900]
+    static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900, .backRoom: 600]
     static let signTrafficBonus = 1.15
     static let tournamentPlayers = 8...16
     /// The clerk sells a bit worse than the owner: customers buy this often, and never take a second item.
@@ -265,6 +268,7 @@ extension GameStore {
         for i in data.sealed.indices where Self.isInStore(data.sealed[i].status) {
             data.sealed[i].status = back
             data.sealed[i].onlineListing = nil
+            data.sealed[i].backRoom = nil
             count += 1
         }
         data.bulk += s.source.bulkBox
@@ -326,15 +330,17 @@ extension GameStore {
         return false
     }
 
-    /// Everything on the store's shelves and in its cases.
+    /// Everything on the store's shelves and in its cases. A case in the back room is not here: no customer sees it.
     var storeStock: (cards: [OwnedCard], sealed: [SealedItem]) {
-        ((data.raw + data.slabs).filter { Self.isInStore($0.status) }, data.sealed.filter { Self.isInStore($0.status) })
+        ((data.raw + data.slabs).filter { Self.isInStore($0.status) }, data.sealed.filter { Self.isInStore($0.status) && !$0.inBackRoom })
     }
 
     /// What the player can put in the store: free, not in the PC or a master set, and not a known fake.
+    /// A case needs the back room.
     var stockable: (cards: [OwnedCard], sealed: [SealedItem]) {
         let stock = showStock
-        return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc })
+        let room = hasBackRoom
+        return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc && (room || !$0.isCase) })
     }
 
     var storeCardSlots: Int {
@@ -352,14 +358,21 @@ extension GameStore {
         let stock = storeStock
         let cardRoom = storeCardSlots - storeCardsUsed
         let sealedRoom = storeSealedSlots - stock.sealed.count
+        let caseRoom = Balance.backRoomCases - backRoomCases.count
         let pick = stockable
         let cardIDs = Set(pick.cards.filter { ids.contains($0.id) }.sorted { $0.market > $1.market }.map(\.id)
             .prefix(max(0, cardRoom)))
-        let sealedIDs = Set(pick.sealed.filter { ids.contains($0.id) }.map(\.id).prefix(max(0, sealedRoom)))
+        // Units use the shelf room. Cases use the back room.
+        let unitIDs = pick.sealed.filter { ids.contains($0.id) && !$0.isCase }.map(\.id).prefix(max(0, sealedRoom))
+        let caseIDs = pick.sealed.filter { ids.contains($0.id) && $0.isCase }.map(\.id).prefix(max(0, caseRoom))
+        let sealedIDs = Set(unitIDs + caseIDs)
         let placed = ItemStatus.inStore(since: data.day)
         for i in data.raw.indices where cardIDs.contains(data.raw[i].id) { data.raw[i].status = placed }
         for i in data.slabs.indices where cardIDs.contains(data.slabs[i].id) { data.slabs[i].status = placed }
-        for i in data.sealed.indices where sealedIDs.contains(data.sealed[i].id) { data.sealed[i].status = placed }
+        for i in data.sealed.indices where sealedIDs.contains(data.sealed[i].id) {
+            data.sealed[i].status = placed
+            data.sealed[i].backRoom = nil
+        }
         let count = cardIDs.count + sealedIDs.count
         guard count > 0 else { return 0 }
         log("Put \(count) item\(count == 1 ? "" : "s") in \(data.cardStore?.name ?? "the store").")
@@ -381,6 +394,7 @@ extension GameStore {
         for i in data.sealed.indices where ids.contains(data.sealed[i].id) && Self.isInStore(data.sealed[i].status) {
             data.sealed[i].status = data.sealed[i].onlineListing.map(ItemStatus.listed)
             data.sealed[i].onlineListing = nil
+            data.sealed[i].backRoom = nil
         }
         save()
     }

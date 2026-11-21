@@ -77,6 +77,47 @@ extension Balance {
     static let caseFreshSaleBonus = 1.05
     /// Opening a case that loses more premium than this asks the player to confirm.
     static let caseOpenConfirmPremium = 50.0
+    /// A show sealed dealer has a case with this chance. An eBay or Facebook day lists one with this chance.
+    static let dealerCaseChance = 0.20
+    static let onlineCaseListingChance = 0.10
+    /// What an eBay or Facebook seller asks for a case, as a share of the case price.
+    static let ebayCaseShare = 0.85...1.05
+    static let facebookCaseShare = 0.70...0.95
+    /// A stranger sells no case above this price.
+    static let strangerCaseMax = 15_000.0
+    /// The tape and label check shows the tell of a fake case this often. It never removes the risk.
+    static let caseCheckCatch = 0.5
+    /// The share of stranger case listings that say "this case is loaded". It is never true.
+    static let caseRumorChance = 0.10
+    /// The back room holds this many cases. The store opens a case when its product has this many units or fewer on the shelf.
+    static let backRoomCases = 12
+    static let backRoomRestockAt = 1
+}
+
+extension Counterfeit {
+    /// The tape and label check on a case. A fake shows its tell half of the time. The same case always reads the same.
+    static func caseCheckCatches(_ tier: FakeTier?, key: String) -> Bool {
+        guard tier != nil else { return false }
+        var hash: UInt64 = 1469598103934665603
+        for b in key.utf8 { hash = (hash ^ UInt64(b)) &* 1099511628211 }
+        return Double(hash % 10_000) / 10_000 < Balance.caseCheckCatch
+    }
+
+    /// What the check shows. A professional reseal shows nothing, so the risk stays real.
+    static func caseTells(_ tier: FakeTier) -> String {
+        switch tier {
+        case .bootleg: "The label is a photocopy, and the tape is clear store tape."
+        case .convincing: "There is old tape under the new tape at one seam."
+        case .professional: "The tape and label look right. Nothing to see."
+        }
+    }
+
+    /// The line that the tape check shows. Nil when the check finds no tell.
+    static func caseCheckLine(_ tier: FakeTier?, key: String) -> String? {
+        // A professional reseal shows nothing, so it reads the same as a real case.
+        guard let tier, tier != .professional, caseCheckCatches(tier, key: key) else { return nil }
+        return caseTells(tier)
+    }
 }
 
 enum CaseMath {
@@ -153,7 +194,7 @@ extension GameStore {
             ids.append(unit.id)
             data.sealed.append(unit)
         }
-        // Phase 4: `splitHotRecord(caseID: box.id, into: ids)` moves the hot allocation record to the units.
+        splitHotRecord(caseID: box.id, into: ids)      // the hot allocation record moves to the units
         inheritChallenge(from: box.id, ids)            // a P&L challenge case keeps its units in the challenge
         log("Opened the case: \(units) × \(product.name).")
         if saves { save() }
@@ -164,6 +205,77 @@ extension GameStore {
     func casePremium(_ item: SealedItem) -> Double {
         guard let units = item.caseUnits, let product = SetLibrary.product(item.productID) else { return 0 }
         return realMarket(of: item) - product.market * Double(units)
+    }
+
+    /// The tape and label check on an owned case. It runs once. A free action.
+    @discardableResult
+    func checkCase(_ id: UUID) -> String? {
+        guard let i = data.sealed.firstIndex(where: { $0.id == id }), data.sealed[i].isCase, data.sealed[i].caseChecked != true else { return nil }
+        data.sealed[i].caseChecked = true
+        let line = Counterfeit.caseCheckLine(data.sealed[i].fake, key: id.uuidString)
+        save()
+        return line
+    }
+
+    // MARK: - The back room
+
+    /// The cases in the back room.
+    var backRoomCases: [SealedItem] { data.sealed.filter { $0.isCase && Self.isInStore($0.status) } }
+
+    /// Loose units in the back room: what is left of a case that did not fit on the shelf.
+    var backRoomUnits: [SealedItem] { data.sealed.filter { !$0.isCase && $0.inBackRoom } }
+
+    var hasBackRoom: Bool { storeIsBuilt && data.cardStore?.has(.backRoom) == true }
+
+    /// The store restocks its shelf from the back room each night (docs/22-own-store.md, Back room). For each product
+    /// with `backRoomRestockAt` units or fewer on the shelf: first it refills from loose back-room units. If there are
+    /// none, it opens a case when the free shelf room is at least the smaller of the case size and a quarter of the
+    /// shelf. The units that fit go on the shelf, and the rest stay in the back room as loose units. At most one
+    /// restock of each product each night. Units and cost are conserved.
+    func backRoomRestock() -> [String] {
+        guard hasBackRoom else { return [] }
+        // Read everything into locals first. `openCase` mutates `data.sealed`.
+        let stock = storeStock.sealed
+        var room = storeSealedSlots - stock.count
+        let quarter = max(1, storeSealedSlots / 4)
+        let loose = backRoomUnits.filter { $0.onlineListing == nil && !$0.isKnownFake && !$0.pc }
+        let cases = backRoomCases.filter { $0.onlineListing == nil && !$0.isKnownFake && !$0.pc }
+            .map { (id: $0.id, product: $0.productID, units: $0.caseUnits ?? 0, name: $0.name) }
+        var restocked: Set<String> = []
+        var lines: [String] = []
+        let today = data.day
+        // 1. Loose back-room units go back on the shelf first.
+        for product in Set(loose.compactMap(\.productID)).sorted() where room > 0 {
+            let onShelf = stock.filter { $0.productID == product }.count
+            guard onShelf <= Balance.backRoomRestockAt else { continue }
+            let ids = Set(loose.filter { $0.productID == product }.prefix(room).map(\.id))
+            guard !ids.isEmpty else { continue }
+            for i in data.sealed.indices where ids.contains(data.sealed[i].id) {
+                data.sealed[i].backRoom = nil
+                data.sealed[i].status = .inStore(since: today)
+            }
+            restocked.insert(product)
+            room -= ids.count
+            let name = loose.first { $0.productID == product }?.name ?? "product"
+            lines.append("The store put \(ids.count) more \(name) on the shelf from the back room.")
+        }
+        // 2. Open a case of a product that is low and has no loose units waiting.
+        for c in cases where room >= min(c.units, quarter) {
+            guard let product = c.product, !restocked.contains(product) else { continue }
+            let onShelf = stock.filter { $0.productID == product }.count
+            guard onShelf <= Balance.backRoomRestockAt else { continue }
+            let ids = openCase(c.id, status: .inStore(since: today), save: false)
+            guard !ids.isEmpty else { continue }
+            // The units that fit stay on the shelf. The rest wait in the back room.
+            let onShelfNow = min(ids.count, room)
+            let waiting = Set(ids.dropFirst(onShelfNow))
+            for i in data.sealed.indices where waiting.contains(data.sealed[i].id) { data.sealed[i].backRoom = true }
+            restocked.insert(product)
+            room -= onShelfNow
+            lines.append("The store opened the \(c.name) from the back room and put \(onShelfNow) on the shelf."
+                         + (waiting.isEmpty ? "" : " \(waiting.count) stay in the back room."))
+        }
+        return lines
     }
 
     #if DEBUG

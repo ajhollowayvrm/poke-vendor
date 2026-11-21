@@ -8,6 +8,8 @@ struct WholesaleOffer: Identifiable, Hashable {
     let product: Product
     let caseSize: Int
     let unitPrice: Double
+    /// The market price of the whole case today, for the row on the distributor screen.
+    let caseMarket: Double
 
     var casePrice: Double { unitPrice * Double(caseSize) }
 }
@@ -80,44 +82,104 @@ extension GameStore {
             let size = CaseMath.units(p) ?? 6
             let floor = p.market * (hasStoreAccount ? Balance.storeWholesaleMarketFloor : Balance.wholesaleMarketFloor)
             out.append(WholesaleOffer(id: "w\(data.day / 7)-\(i)", product: p, caseSize: size,
-                                      unitPrice: Market.retail(max((p.retailMSRP() ?? p.market) * wholesaleDiscountNow, floor))))
+                                      unitPrice: Market.retail(max((p.retailMSRP() ?? p.market) * wholesaleDiscountNow, floor)),
+                                      caseMarket: CaseMath.market(p, units: size)))
         }
         return out.sorted { $0.casePrice > $1.casePrice }
     }
 
-    /// Buys cases. The minimum order is $500, and the boxes arrive in 5 days. A store account has no minimum order,
-    /// but it can buy only its weekly allocation of each product.
+    #if DEBUG
+    /// Test tool: replaces the 1% roll that loses an order.
+    static var forceWholesaleMissing: Bool?
+    #endif
+
+    /// Buys cases. The secondary wholesaler has a minimum order (`Balance.wholesaleMinOrder`). A hobby account has no
+    /// minimum, but it can buy only its weekly allocation. Hot product fills only part of the request. The order
+    /// arrives in 5 days as sealed cases. 1 order in 100 goes missing, and the distributor refunds it later.
     func buyWholesale(_ offer: WholesaleOffer, cases: Int) -> String? {
-        let total = offer.casePrice * Double(cases)
         guard cases > 0 else { return nil }
         if let left = wholesaleLeft(offer), cases > left {
-            return left == 0 ? "Your allocation of this product is used up this week." : "Your allocation has \(left) more case\(left == 1 ? "" : "s") of this product this week."
+            return left == 0 ? "Your allocation of this product is used up this week."
+                             : "Your allocation has \(left) more case\(left == 1 ? "" : "s") of this product this week."
         }
-        guard total >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
-        guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }
-        addLedger(-total, .wholesale, "\(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) · Distributor")
-        let ordered = offer.caseSize * cases
-        let boxes = Double.random(in: 0..<1) < Balance.wholesaleShortChance
+        let requested = offer.casePrice * Double(cases)
+        guard requested >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
+        guard canAfford(requested) else { return "You need \(money(requested)). You have \(money(cash))." }
+        // 1. The fill roll. Read every value into locals first.
+        let hot = isHot(offer.product)
+        let fill = hotFillRate(offer.product)
+        let week = data.day / 7
+        let today = data.day
+        var filled = cases
+        var usedElite = false
+        if hot {
+            filled = 0
+            var rolls = cases
+            if eliteCaseOpen { filled = 1; rolls -= 1; usedElite = true }
+            for _ in 0..<rolls where Double.random(in: 0..<1) < fill { filled += 1 }
+        }
+        if usedElite {
+            data.distributor.eliteCaseWeek = week
+            data.distributor.eliteProductID = offer.product.id
+        }
+        // The request uses the allocation, even when it does not fill.
+        recordWholesale(offer, cases: cases)
+        guard filled > 0 else {
+            log("The distributor filled 0 of \(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name). Hot product is short. Nothing was charged.")
+            save()
+            return "Hot product is short. The distributor filled 0 of \(cases). Nothing was charged."
+        }
+        // 2. The charge, for the filled cases only.
+        let total = offer.casePrice * Double(filled)
+        let orderName = "\(filled) case\(filled == 1 ? "" : "s") of \(offer.product.name)"
+        addLedger(-total, .wholesale, "\(orderName) · Distributor")
+        // 3. The missing-shipment roll. No items, no hot records, no rep credit, no spend.
+        #if DEBUG
+        let missing = GameStore.forceWholesaleMissing ?? (Double.random(in: 0..<1) < Balance.wholesaleMissingChance)
+        #else
+        let missing = Double.random(in: 0..<1) < Balance.wholesaleMissingChance
+        #endif
+        if missing {
+            registerMissingShipment(name: orderName, refund: total, learnIn: Balance.wholesaleDeliveryDays)
+            log("Ordered \(orderName) from the distributor for \(money(total)). It should arrive in \(Balance.wholesaleDeliveryDays) days.", cash: -total)
+            save()
+            return nil
+        }
+        data.distributor.spent += total
+        creditRepSpend(total)
+        // 4. The short-ship roll and the delivery as cases.
+        let ordered = filled * offer.caseSize
+        let shipped = Double.random(in: 0..<1) < Balance.wholesaleShortChance
             ? max(1, Int(Double(ordered) * Double.random(in: Balance.wholesaleShortShare))) : ordered
-        if boxes < ordered {
-            let refund = offer.unitPrice * Double(ordered - boxes)
+        if shipped < ordered {
+            let refund = offer.unitPrice * Double(ordered - shipped)
             addLedger(refund, .wholesale, "Short shipment refund · \(offer.product.name)")
-            log("The distributor is short on \(offer.product.name). It ships \(boxes) of \(ordered) and refunds \(money(refund)).", cash: refund)
+            log("The distributor is short on \(offer.product.name). It ships \(shipped) of \(ordered) and refunds \(money(refund)).", cash: refund)
         }
-        for _ in 0..<boxes {
-            var item = SealedItem(setSlug: offer.product.homeSlug, name: offer.product.name, packs: offer.product.packs,
-                                  paid: offer.unitPrice, acquired: .now, source: "Wholesale", productID: offer.product.id,
-                                  status: .arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor"),
-                                  acquiredDay: data.day)
-            // The distributor broke the case, and no one searched the boxes (Model/Cases.swift).
-            item.caseFresh = true
-            data.sealed.append(item)
+        let arriving = ItemStatus.arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor")
+        var newItems: [SealedItem] = []
+        for _ in 0..<(shipped / offer.caseSize) {
+            newItems.append(makeCase(offer.product, units: offer.caseSize, paid: offer.casePrice, source: "Wholesale",
+                                     status: arriving, caseFresh: true))
         }
-        recordWholesale(offer, cases: cases, total: total)
-        log("Ordered \(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) from the distributor for \(money(total)). It arrives in \(Balance.wholesaleDeliveryDays) days.",
-            cash: -total)
+        // The distributor broke the last case, and no one searched the boxes (Model/Cases.swift).
+        for _ in 0..<(shipped % offer.caseSize) {
+            var u = SealedItem(setSlug: offer.product.homeSlug, name: offer.product.name, packs: offer.product.packs,
+                               paid: offer.unitPrice, acquired: .now, source: "Wholesale", productID: offer.product.id,
+                               status: arriving, acquiredDay: today)
+            u.caseFresh = true
+            newItems.append(u)
+        }
+        data.sealed += newItems
+        // 5. Hot cases on the hobby account go into the back-door check.
+        if hot, hasStoreAccount {
+            let delivered = today + Balance.wholesaleDeliveryDays
+            data.distributor.hotRecords += newItems.map { HotAllocationRecord(itemID: $0.id, units: $0.caseUnits ?? 1, deliveredDay: delivered) }
+        }
+        let fillText = filled < cases ? " The distributor filled \(filled) of \(cases)." : ""
+        log("Ordered \(orderName) from the distributor for \(money(total)).\(fillText) It arrives in \(Balance.wholesaleDeliveryDays) days.", cash: -total)
         save()
-        return nil
+        return filled < cases ? "Hot product is short. The distributor filled \(filled) of \(cases) and charged only for those." : nil
     }
 
     // MARK: - Case splits

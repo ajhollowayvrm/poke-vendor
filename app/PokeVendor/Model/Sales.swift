@@ -30,10 +30,13 @@ extension GameStore {
     }
 
     /// `ids` are the items that sold. A P&L challenge item puts the net into the challenge cash. `markets` splits a lot.
+    /// `offShelf`: the sale went to an outside reseller channel. A hot unit from the distributor that sells so counts
+    /// against the shelf share (Model/Distributor.swift). Every other sale counts as a retail sale.
     func addReceipt(name: String, venue: String, price: Double, net: Double, paid: Double?, overstated: Bool = false,
-                    ids: [UUID] = [], markets: [UUID: Double]? = nil) {
+                    ids: [UUID] = [], markets: [UUID: Double]? = nil, offShelf: Bool = false) {
         receipts.append(SaleReceipt(name: name, venue: venue, price: price, net: net, paid: paid, overstatedCondition: overstated))
         creditChallenge(ids, net: net, markets: markets)
+        noteAllocationSold(ids, offShelf: offShelf)
     }
 
     func clearReceipts() { receipts.removeAll() }

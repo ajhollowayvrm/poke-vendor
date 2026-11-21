@@ -604,13 +604,21 @@ struct SealedItem: Codable, Identifiable, Hashable {
     var caseChecked: Bool?
     /// The plug order that this item came from (Model/Plug.swift). Units from an opened plug case keep it.
     var grayOrder: UUID?
+    /// A loose unit in the store's back room, off the shelf (Model/Cases.swift). Only meaningful with status `.inStore`.
+    /// Nil: on the shelf. Cleared when the unit goes to the shelf or leaves the store.
+    var backRoom: Bool?
 
     enum CodingKeys: String, CodingKey {
         case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
-        case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, grayOrder
+        case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, grayOrder, backRoom
     }
 
     var isCase: Bool { caseUnits != nil }
+    /// In the store but off the shelf: a case, or a loose unit that waits in the back room. No customer sees it.
+    var inBackRoom: Bool {
+        guard case .inStore = status else { return false }
+        return isCase || backRoom == true
+    }
     var isCaseFresh: Bool { caseFresh == true }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }

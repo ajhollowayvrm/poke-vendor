@@ -10,11 +10,11 @@ extension HubView {
             GameTests(store: store).run()
             return
         }
-        // Balance aid: `-retailsim <days> [honest|flipper]` plays End Day with every hook and prints the retail state
+        // Balance aid: `-retailsim <days> [honest|flipper|shop]` plays End Day with every hook and prints the retail state
         // each week (Hub/RetailSim.swift). It replaces the save.
         if let i = args.firstIndex(of: "-retailsim") {
             let days = i + 1 < args.count ? Int(args[i + 1]) ?? 365 : 365
-            RetailSim(store: store, flipper: args.contains("flipper")).run(days: days)
+            RetailSim(store: store, flipper: args.contains("flipper"), shop: args.contains("shop")).run(days: days)
             return
         }
         // Screenshot aid: `-regular` makes every contact Regular first.
@@ -24,6 +24,21 @@ extension HubView {
             case "wallet": nav.path = [.wallet]
             case "loans": nav.path = [.wallet, .loans]
             case "buy": nav.path = [.buy]
+            case "distributor":
+                // A built store with an approved hobby account, a back room case, and the plug.
+                store.startRun()
+                store.addTestCash(50_000)
+                store.testOpenCardStore(.stripMall, term: 1)
+                store.testApproveDistributor()
+                store.testUnlockPlug()
+                nav.path = [.buy, .wholesale]
+            case "plug":
+                // A Known player with no store: the plug is the only supplier.
+                store.startRun()
+                store.addReputation(60)
+                store.addTestCash(5_000)
+                store.testUnlockPlug()
+                nav.path = [.buy]
             case "amazon": nav.path = [.buy, .store(.amazon)]
             case "ebay":
                 // `-lotupgrades` gives the three eBay lot upgrades (docs/33-collections.md).

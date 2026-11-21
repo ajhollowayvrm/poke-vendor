@@ -200,6 +200,8 @@ struct VendorItem: Identifiable, Hashable {
     var looksOff = false
     /// A recurring vendor shows it to the player before the public table (docs/04, reputation Trusted).
     var firstLook = false
+    /// A sealed case of this many units (Model/Cases.swift). Nil: one unit.
+    var caseUnits: Int?
 
     var slug: String? {
         switch goods {
@@ -224,7 +226,7 @@ struct VendorItem: Identifiable, Hashable {
     var name: String {
         switch goods {
         case .single(let p, _, _), .slab(let p, _, _): p.name
-        case .sealed(let product): product.name
+        case .sealed(let product): caseUnits.map { CaseMath.name(product, units: $0) } ?? product.name
         case .mystery(let pack): pack.name
         }
     }
@@ -338,6 +340,16 @@ enum VendorFloor {
             add(2...4) { sealed(from: pool, kind: kind) }
         case .sealedDealer:
             add(12...18) { sealed(from: sealedPool(vintage: 0.3, older: 0.35), kind: kind) }
+            // One case 20% of the time (docs/12, Cases). The show start rolls its fake, like every item.
+            if Double.random(in: 0..<1) < Balance.dealerCaseChance,
+               let p = SetLibrary.catalog.filter({ Balance.wholesaleKinds.contains($0.kind) && Balance.modernSets.contains($0.homeSlug)
+                                                   && !$0.isStoreExclusive && CaseMath.units($0) != nil }).randomElement(),
+               let units = CaseMath.units(p) {
+                let market = CaseMath.market(p, units: units)
+                var item = VendorItem(goods: .sealed(p), price: price(market, kind), market: market)
+                item.caseUnits = units
+                items.append(item)
+            }
         case .mysteryPacks:
             items += MysteryPack.catalog.map { VendorItem(goods: .mystery($0), price: $0.price, market: nil) }
             add(3...6) { single(from: Balance.modernSets + Balance.vintageSets, minMarket: 5, kind: kind) }
@@ -349,7 +361,7 @@ enum VendorFloor {
         var seen: Set<String> = []
         items = items.filter { item in
             guard case .sealed(let p) = item.goods else { return true }
-            return seen.insert(p.id).inserted
+            return seen.insert("\(p.id)-\(item.caseUnits ?? 1)").inserted
         }
         return items.sorted { ($0.market ?? $0.price) > ($1.market ?? $1.price) }
     }
