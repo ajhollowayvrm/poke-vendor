@@ -273,6 +273,8 @@ final class GameStore {
     var report: DayReport?
     /// A notice from the last buy at a big store or camp: a heat hint or a ban. The view shows it, then clears it.
     var retailNotice: String?
+    /// The peak viewers of the stream that runs now. A palm in a Rip & Ship rip reads it for its witnesses.
+    @ObservationIgnored var currentStreamPeakViewers = 0
     /// The route of a top goal the player just reached. It opens the "you made it" screen.
     var madeIt: GoalRoute?
     private var slabsBack: [OwnedCard] = []
@@ -302,6 +304,13 @@ final class GameStore {
             // Cards from before the set price effects learn their set. A promo is not in its set file, so it stays nil.
             for i in saved.raw.indices { Self.fillSetSlug(&saved.raw[i]) }
             for i in saved.slabs.indices { Self.fillSetSlug(&saved.slabs[i]) }
+            // The cards that wait in a Rip & Ship order come back to Raw on a refund, so they get the same repair.
+            for k in saved.ripShip.orders.indices {
+                for i in saved.ripShip.orders[k].cards.indices {
+                    Destamp.migrate(&saved.ripShip.orders[k].cards[i])
+                    Self.fillSetSlug(&saved.ripShip.orders[k].cards[i])
+                }
+            }
             // A store from before the application keeps its distributor account.
             Self.grandfatherDistributor(&saved)
             data = saved
@@ -420,17 +429,23 @@ final class GameStore {
         item.isKnownFake ? 0 : realMarket(of: item)
     }
 
+    /// Everything that a Rip & Ship order holds for its buyer is booked as sold: it counts in no total of the player.
+    private static func soldToViewer(_ status: ItemStatus?) -> Bool {
+        if case .soldToViewer = status { return true }
+        return false
+    }
+
     var marketValue: Double {
-        data.sealed.reduce(0) { $0 + market(of: $1) }
-            + data.raw.reduce(0) { $0 + $1.market }
+        data.sealed.reduce(0) { Self.soldToViewer($1.status) ? $0 : $0 + market(of: $1) }
+            + data.raw.reduce(0) { Self.soldToViewer($1.status) ? $0 : $0 + $1.market }
             + data.slabs.reduce(0) { $0 + $1.market }
-            + data.bulk.reduce(0) { $0 + $1.value }
+            + data.bulk.reduce(0) { $1.shipOrder != nil ? $0 : $0 + $1.value }
             + lotsMarketValue
             + data.machines.reduce(0) { total, m in total + m.stock.reduce(0) { $0 + market(of: $1.item) } }
     }
 
     var paid: Double {
-        data.sealed.reduce(0) { $0 + $1.paid }
+        data.sealed.reduce(0) { Self.soldToViewer($1.status) ? $0 : $0 + $1.paid }
             + data.raw.reduce(0) { $0 + ($1.paid ?? 0) }
             + data.slabs.reduce(0) { $0 + ($1.paid ?? 0) }
             + data.openedPaid
@@ -736,7 +751,8 @@ final class GameStore {
             order = Self.shipOrderID(of: data.sealed[i])
             data.sealed.remove(at: i)
         }
-        data.openedPaid += paidPerPack
+        // A product sold to a viewer already left the paid total, so its packs add no opened cost here.
+        if order == nil { data.openedPaid += paidPerPack }
         var bulk: [CardPrint] = []
         for card in cards {
             guard let print = card.print else { continue }
@@ -1245,6 +1261,7 @@ final class GameStore {
         lines += saleProblemsEndDay()
         lines += paymentsEndDay()
         lines += streamsEndDay()
+        lines += ripShipEndDay()
         lines += splitsEndDay()
         lines += distributorEndDay()
         lines += plugEndDay()

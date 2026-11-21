@@ -40,6 +40,7 @@ final class GameTests {
         timed("distro", distro)
         timed("retail", retail)
         timed("online", online)
+        timed("ripship", ripShip)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -63,15 +64,27 @@ final class GameTests {
 
     private var prismatic: [CardPrint] { SetLibrary.set("prismatic-evolutions").prints }
 
-    /// Opens every pack of a rip in Sift mode.
-    private func ripAll(_ items: [SealedItem]) -> RipModel {
-        let model = RipModel(items: items, store: store)
+    /// The cards with a print that the last `ripAll` showed, Energy cards not counted.
+    private var ripSeen = 0
+
+    /// Opens every pack of a rip in Sift mode. `ripID` and `prepare` let a test build the model for a Rip & Ship order.
+    private func ripAll(_ items: [SealedItem], ripID: UUID = UUID(), steps limit: Int = 40, prepare: ((RipModel) -> Void)? = nil) -> RipModel {
+        let model = RipModel(items: items, store: store, ripID: ripID)
+        prepare?(model)
         model.mode = .sift
+        ripSeen = 0
         var steps = 0
-        while model.phase != .done || model.hasNextPack, steps < 40 {
+        while model.phase != .done || model.hasNextPack, steps < limit {
             steps += 1
-            if model.phase == .done { model.nextPack() } else { _ = model.sift(); model.resume() }
+            if model.phase == .done {
+                ripSeen += model.everyCard.filter { $0.print != nil }.count
+                model.nextPack()
+            } else {
+                _ = model.sift()
+                model.resume()
+            }
         }
+        if model.phase == .done { ripSeen += model.everyCard.filter { $0.print != nil }.count }
         return model
     }
 
@@ -1702,6 +1715,36 @@ final class GameTests {
         oldRecord.outcomeDay = -100
         store.data.distributor.hotRecords = [oldRecord, HotAllocationRecord(itemID: UUID(), units: 1, deliveredDay: 1)]
         store.data.retail.missingShipments.append(MissingShipment(name: "Test order", noticeDay: 4, refundDay: 5, refund: 10))
+        // T10 (phase 5): Rip & Ship orders in every state, so the End Day closures run on full arrays. One order is ripped and
+        // never shipped (the late act on day 3, the chargeback on day 7). One was never opened (the refund on day 1). One
+        // palm was caught on camera. One old refunded order and one old gross entry wait for the prune.
+        var rippedShip: UUID?
+        if let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }) {
+            func ship(ripped: Bool) -> UUID? {
+                guard let item = store.addTestProduct(blister.id),
+                      let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) else { return nil }
+                if ripped {
+                    _ = store.beginRipShipRip(o.id, ripID: UUID())
+                    store.finishRipShip(o.id)
+                }
+                return o.id
+            }
+            rippedShip = ship(ripped: true)
+            _ = ship(ripped: false)
+            // The palm order ships at once, so only one order ends in a chargeback.
+            if let caught = ship(ripped: true), let k = store.data.ripShip.orders.firstIndex(where: { $0.id == caught }) {
+                store.data.ripShip.orders[k].palmCaught = true
+                store.data.ripShip.orders[k].palmedValue = 50
+                let hour = store.data.hour
+                store.shipRipShipOrders([caught])
+                store.data.hour = hour           // shipping uses 10 minutes, and the show on day 0 needs the whole morning
+            }
+            var oldOrder = RipShipOrder(buyer: "Old buyer", buyerContactID: nil, itemID: UUID(), itemName: "Old order", productID: nil, caseUnits: nil,
+                                        price: 10, shipping: 4.47, fees: store.ripShipFees(price: 10, shipping: 4.47), paid: 5, soldDay: -40, auction: false)
+            oldOrder.refunded = true
+            store.data.ripShip.orders.append(oldOrder)
+            store.data.ripShip.grossByDay[-40] = 10
+        }
 
         // T10: retail state that is not empty, so every closure in the new End Day hooks runs on a full array.
         let dumped = SetLibrary.catalog.filter { $0.isInPrint && $0.isHot() }.prefix(3).map(\.id)
@@ -1756,6 +1799,11 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        // The Rip & Ship steps settled: nothing is still waiting for a rip, the late order was cancelled with one strike, and the old data left.
+        check(!store.data.ripShip.orders.contains { $0.state == .sold && $0.open } && !store.data.ripShip.orders.contains { $0.soldDay == -40 }
+              && store.data.ripShip.grossByDay[-40] == nil, "a Rip & Ship order did not settle, or the old data stayed, in 14 days")
+        check(rippedShip.flatMap { id in store.data.ripShip.orders.first { $0.id == id } }?.refunded == true && store.data.ripShip.strikes.count == 1
+              && store.data.ripShip.orders.filter { $0.palmCaught }.allSatisfy(\.palmSettled), "the late Rip & Ship order did not end in a chargeback with one strike")
         // The distributor, plug, and back-room steps settled: the order arrived, the old record left, the refund came, the case opened.
         check(store.data.plug.orders.first?.state == .delivered || store.data.plug.orders.isEmpty, "the plug order did not arrive in 14 days")
         check(!store.data.distributor.hotRecords.contains { $0.deliveredDay == -120 } && store.data.retail.missingShipments.isEmpty
@@ -1783,6 +1831,382 @@ final class GameTests {
         check(stocked > 0 && stocked == inStock + out, "vending: \(stocked) stocked, but \(inStock) in stock and \(out) out")
         check(!store.machines.contains { $0.cashBox < 0 }, "a vending cash box is negative")
         check(!store.data.dealStories.contains { $0.day < store.day }, "a deal story stayed in the queue past its day")
+    }
+
+    /// Sealed product phase 5: Rip & Ship (docs/proposals/sealed-product, Part B 9.2).
+    private func ripShip() {
+        fresh()
+        guard let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }),
+              let bundle = SetLibrary.catalog.first(where: { $0.kind == "Booster bundle" && $0.packs == 6 && $0.market > 0 && Balance.caseSize(for: $0) == 25 }),
+              let big = prismatic.max(by: { ($0.market ?? 0) < ($1.market ?? 0) }) else {
+            return check(false, "no blister, bundle, or card for the Rip & Ship test")
+        }
+        func newOrder(_ price: Double = 20) -> RipShipOrder? {
+            guard let item = store.addTestProduct(blister.id) else { return nil }
+            return store.createRipShipOrder(itemID: item.id, price: price, buyer: "Jess", buyerContactID: nil, auction: false)
+        }
+        func live(_ id: UUID) -> RipShipOrder? { store.data.ripShip.orders.first { $0.id == id } }
+        func refunds() -> [LedgerEntry] { store.data.ledger.filter { $0.category == .refund && $0.label.hasPrefix("Whatnot refund") } }
+        /// A Rip & Ship order that already ripped nothing, as if its stream rip ended at once.
+        func rippedOrder(daysAgo: Int = 0) -> RipShipOrder? {
+            guard let o = newOrder() else { return nil }
+            _ = store.beginRipShipRip(o.id, ripID: UUID())
+            store.finishRipShip(o.id)
+            if let k = store.data.ripShip.orders.firstIndex(where: { $0.id == o.id }) { store.data.ripShip.orders[k].rippedDay = store.day - daysAgo }
+            return live(o.id)
+        }
+
+        // The fees: 8% + 2.9% of (sale + buyer shipping) + $0.30 + $0.50 supplies. A big month lowers the commission.
+        let f = store.ripShipFees(price: 100, shipping: 4.47)
+        check(abs(f.total - 11.83) < 0.005, "the Rip & Ship fees on $100 are \(f.total), not 11.83")
+        store.data.ripShip.grossByDay[store.day] = 20_000
+        check(store.ripShipCommissionRate == 0.075, "a $20,000 month did not lower the commission to 7.5%")
+        store.data.ripShip.grossByDay = [:]
+        let oldSave = RipShipState()
+        check((try? JSONDecoder().decode(RipShipState.self, from: Data(#"{"strikes": [3]}"#.utf8)))?.strikes == [3] && oldSave.orders.isEmpty,
+              "a Rip & Ship state with a missing field did not decode")
+
+        // One order, one buyer, one whole product. The money comes now, and the item is locked.
+        let cashBefore = store.cash
+        guard let order = newOrder() else { return check(false, "could not create a Rip & Ship order") }
+        check(abs(store.cash - cashBefore - order.net) < 0.005, "the Rip & Ship sale did not pay exactly its net")
+        check(store.data.sealed.first { $0.id == order.itemID }?.status == .soldToViewer(orderID: order.id), "the sold product has no order status")
+        check(store.createRipShipOrder(itemID: order.itemID, price: 20, buyer: "Nate", buyerContactID: nil, auction: false) == nil
+              && store.ripShipBlock(order.itemID) != nil && !store.streamStock.contains { $0.id == order.itemID },
+              "a sold product can be sold or brought to a stream again")
+
+        // Every content goes to the buyer: the cards, the bulk, the promos, and no other owner keeps one.
+        let rid = UUID()
+        let items = store.beginRipShipRip(order.id, ripID: rid)
+        check(items.count == 1 && store.beginRipShipRip(order.id, ripID: UUID()).isEmpty, "a Rip & Ship rip started twice")
+        _ = ripAll(items, ripID: rid) { $0.shipOrderID = order.id }
+        let seen = ripSeen
+        check(store.data.raw.contains { $0.ripID == rid } || store.data.bulk.contains { $0.ripID == rid }, "the rip made no cards")
+        store.finishRipShip(order.id)
+        let promos = blister.pickOnePromo ? min(1, blister.promos.count) : blister.promos.count
+        if let done = live(order.id) {
+            let bulkCards = done.bulk.reduce(0) { $0 + $1.cards.count }
+            check(done.state == .ripped && done.open, "a ripped order is not open and ripped")
+            check(done.cards.count + bulkCards == seen + promos, "the order holds \(done.cards.count + bulkCards) cards, but the rip showed \(seen) and \(promos) promos")
+            check(!store.data.raw.contains { $0.ripID == rid } && !store.data.bulk.contains { $0.ripID == rid || $0.shipOrder == order.id },
+                  "a card of the buyer's rip is still in Inventory")
+            check(!store.data.raw.contains { if case .soldToViewer(let id) = $0.status { return id == order.id }; return false }
+                  && !store.data.sealed.contains { if case .soldToViewer(let id) = $0.status { return id == order.id }; return false },
+                  "a card or a pack of the order still carries its status")
+            check(done.loose.count == 0, "a pack of a fully ripped blister ships unopened")
+        } else {
+            check(false, "the order is gone after its rip")
+        }
+
+        // An early stop ships the packs that stayed closed.
+        if let early = newOrder() {
+            let eid = UUID()
+            let model = RipModel(items: store.beginRipShipRip(early.id, ripID: eid), store: store, ripID: eid)
+            model.shipOrderID = early.id
+            model.mode = .sift
+            _ = model.sift()
+            while model.phase == .open { _ = model.sift(); model.resume() }
+            store.finishRipShip(early.id)
+            let loose = live(early.id)?.loose.count ?? -1
+            check(loose == blister.packs - 1 && !store.data.sealed.contains { $0.brokenFrom != nil && $0.status != nil },
+                  "an early stop shipped \(loose) packs, not \(blister.packs - 1)")
+        } else {
+            check(false, "could not make the early stop order")
+        }
+
+        // A whole case for one buyer: the units open under the order, and every one ships.
+        let caseID = store.testCase(bundle, units: 25, fresh: true)
+        if let caseOrder = store.createRipShipOrder(itemID: caseID, price: CaseMath.market(bundle, units: 25), buyer: "Priya",
+                                                    buyerContactID: nil, auction: true) {
+            let units = store.beginRipShipRip(caseOrder.id, ripID: UUID())
+            check(units.count == 25 && units.allSatisfy { $0.status == .soldToViewer(orderID: caseOrder.id) }, "a sold case did not open into 25 locked units")
+            store.finishRipShip(caseOrder.id)
+            check(live(caseOrder.id)?.loose.count == 25 && !store.data.sealed.contains { $0.productID == bundle.id }, "a whole case did not ship all 25 units")
+        } else {
+            check(false, "could not sell a whole case")
+        }
+
+        // Palm the hit: the card stays with the player, and the buyer gets a bulk card in its place.
+        GameStore.forcePalmCaught = false
+        defer { GameStore.forcePalmCaught = nil }
+        func palmedOrder() -> (order: RipShipOrder, card: UUID)? {
+            guard let o = newOrder() else { return nil }
+            let pid = UUID()
+            _ = store.beginRipShipRip(o.id, ripID: pid)
+            var hit = OwnedCard(print: big, setSlug: "prismatic-evolutions", acquired: .now, paid: nil, ripID: pid, acquiredDay: store.day)
+            hit.status = .soldToViewer(orderID: o.id)
+            store.data.raw.append(hit)
+            store.notePalm(orderID: o.id, ripID: pid, print: big, value: big.market ?? 0)
+            store.finishRipShip(o.id)
+            return live(o.id).map { ($0, hit.id) }
+        }
+        if let (p, card) = palmedOrder() {
+            check(store.data.raw.first { $0.id == card }?.status == nil && p.palmedCardIDs == [card] && !p.cards.contains { $0.id == card },
+                  "a palmed card did not stay with the player")
+            check(p.bulk.contains { $0.cards.count == 1 }, "the buyer got no bulk card in place of the palm")
+            check(store.data.hiddenActs.contains { $0.kind == .palmedHit && $0.sourceID == p.id && abs($0.refund - (p.price + (big.market ?? 0))) < 0.005 },
+                  "a palm that nobody caught recorded no act with the right refund")
+            store.returnPalmedCards(p.id)
+            let back = live(p.id)
+            check(!store.data.raw.contains { $0.id == card } && back?.cards.contains { $0.id == card } == true && back?.shipped == true && back?.refunded == true,
+                  "returnPalmedCards did not send the card and close the order")
+            check(!store.data.hiddenActs.contains { $0.sourceID == p.id }, "returnPalmedCards left an act in the log")
+        } else {
+            check(false, "could not palm")
+        }
+        // A palmed order that a chargeback refunded owes only the card, never the price twice.
+        if let (p2, _) = palmedOrder() {
+            let value = big.market ?? 0
+            check(abs(store.palmRefundDue(p2.id) - (p2.price + value)) < 0.005, "the palm refund is not the price plus the card")
+            store.refundRipShipOrder(p2.id, reason: .chargeback)
+            check(abs(store.palmRefundDue(p2.id) - value) < 0.005, "the palm refund counts the price after a chargeback")
+        } else {
+            check(false, "could not make the second palm order")
+        }
+
+        // One order never has both a secret palm act and a forced callout, and two palms share one act.
+        func addHit(_ o: RipShipOrder, _ pid: UUID) {
+            var hit = OwnedCard(print: big, setSlug: "prismatic-evolutions", acquired: .now, paid: nil, ripID: pid, acquiredDay: store.day)
+            hit.status = .soldToViewer(orderID: o.id)
+            store.data.raw.append(hit)
+        }
+        for caughtSecond in [true, false] {
+            if let o = newOrder() {
+                let pid = UUID()
+                _ = store.beginRipShipRip(o.id, ripID: pid)
+                for (n, caught) in [!caughtSecond, caughtSecond].enumerated() {
+                    addHit(o, pid)
+                    GameStore.forcePalmCaught = caught
+                    store.notePalm(orderID: o.id, ripID: pid, print: big, value: 10)
+                    if n == 0, !caught { check(store.data.hiddenActs.filter { $0.sourceID == o.id }.count == 1, "a palm recorded no single act") }
+                }
+                GameStore.forcePalmCaught = false
+                let acts = store.data.hiddenActs.filter { $0.sourceID == o.id }
+                check(live(o.id)?.palmCaught == true && acts.isEmpty && live(o.id)?.palmActID == nil,
+                      "two palms in one order left a secret act next to a caught palm")
+                store.data.ripShip.orders.removeAll { $0.id == o.id }       // End Day must not settle this test order
+            } else {
+                check(false, "could not make the two-palm order")
+            }
+        }
+        if let o = newOrder() {
+            let pid = UUID()
+            _ = store.beginRipShipRip(o.id, ripID: pid)
+            for _ in 0..<2 { addHit(o, pid); store.notePalm(orderID: o.id, ripID: pid, print: big, value: 10) }
+            let acts = store.data.hiddenActs.filter { $0.sourceID == o.id }
+            check(acts.count == 1 && abs((acts.first?.refund ?? 0) - (o.price + 20)) < 0.005, "two palms did not share one act with the full refund")
+            store.data.ripShip.orders.removeAll { $0.id == o.id }
+        } else {
+            check(false, "could not make the shared-act order")
+        }
+
+        // Booking: a Rip & Ship sale takes the product out of Paid and Unrealized at once, as a normal sale does. A refund puts it back.
+        // A hot unit that returns by a refund records its next sale on its real channel. The P&L challenge credit goes back too.
+        if let item = store.addTestProduct(blister.id) {
+            let paid1 = store.paid, value1 = store.marketValue, market = store.realMarket(of: item)
+            store.data.distributor.hotRecords = [HotAllocationRecord(itemID: item.id, units: 1, deliveredDay: store.day)]
+            var series = ShortSeries(format: .pnl, name: "Test", startDay: store.day)
+            series.items = [item.id]
+            series.cash = 100
+            store.data.shorts.series = [series]
+            if let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+                check(abs((paid1 - store.paid) - item.paid) < 0.005 && abs((value1 - store.marketValue) - market) < 0.005,
+                      "a Rip & Ship sale did not take the product out of Paid and the market value")
+                check(store.data.distributor.hotRecords.first?.outcome == .retail, "a Rip & Ship sale of a hot unit did not count as retail")
+                check(abs((store.data.shorts.series.first?.cash ?? 0) - (100 + o.net)) < 0.005 && live(o.id)?.challengeCredit != nil,
+                      "a Rip & Ship sale did not credit the P&L challenge once")
+                store.refundRipShipOrder(o.id, reason: .notOpened)
+                check(abs(store.paid - paid1) < 0.005 && abs(store.marketValue - value1) < 0.005, "a refund did not put the product back in Paid and the market value")
+                check(store.data.distributor.hotRecords.first?.outcome == nil && abs((store.data.shorts.series.first?.cash ?? 0) - 100) < 0.005,
+                      "a refund kept the hot outcome or the challenge credit")
+                _ = store.completeSaleNow(name: item.name, channel: .ebay, price: 50, sealed: true, insured: false, paid: item.paid, ids: [item.id])
+                check(store.data.distributor.hotRecords.first?.outcome == .offShelf, "a hot unit sold on eBay after a refund did not record its real channel")
+            } else {
+                check(false, "could not sell the hot unit")
+            }
+            store.data.sealed.removeAll { $0.id == item.id }
+            store.data.distributor.hotRecords = []
+            store.data.shorts.series = []
+        }
+        // A ripped order that a chargeback refunds keeps Paid whole: the cost of the opened packs goes back to `openedPaid`.
+        if let item = store.addTestProduct(blister.id) {
+            let paid1 = store.paid
+            if let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+                let rid = UUID()
+                let model = RipModel(items: store.beginRipShipRip(o.id, ripID: rid), store: store, ripID: rid)
+                model.shipOrderID = o.id
+                model.mode = .sift
+                _ = model.sift()
+                while model.phase == .open { _ = model.sift(); model.resume() }
+                check(abs(store.paid - (paid1 - item.paid)) < 0.01, "ripping a sold product changed Paid")
+                store.finishRipShip(o.id)
+                check(abs(store.paid - (paid1 - item.paid)) < 0.01, "shipping the contents changed Paid")
+                store.refundRipShipOrder(o.id, reason: .chargeback)
+                check(abs(store.paid - paid1) < 0.01, "a chargeback did not restore Paid (\(store.paid) against \(paid1))")
+            } else {
+                check(false, "could not sell the chargeback product")
+            }
+        }
+        // Two chargebacks so far gave two strikes and a ban. Clear them, so the next orders can sell.
+        store.data.ripShip.strikes = []
+        store.data.ripShip.bannedUntil = nil
+        // A resealed product shows on camera: the buyer is refunded, the junk stays, and Paid comes back whole.
+        store.data.social.authenticity = 0.5
+        if let item = store.addTestProduct(blister.id), let i = store.data.sealed.firstIndex(where: { $0.id == item.id }) {
+            store.data.sealed[i].fake = .convincing
+            let paid1 = store.paid, auth = store.data.social.authenticity
+            if let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+                _ = store.beginRipShipRip(o.id, ripID: UUID())
+                let line = store.finishRipShip(o.id) ?? ""
+                check(live(o.id)?.refunded == true && line.contains("resealed") && store.data.social.authenticity < auth
+                      && !store.data.sealed.contains { $0.status == .soldToViewer(orderID: o.id) }
+                      && abs(store.paid - paid1) < 0.01, "a resealed product on camera was not refunded and unlocked")
+            } else {
+                check(false, "could not sell the resealed product")
+            }
+        }
+        // A seized product refunds the buyer.
+        if let o = newOrder() {
+            let line = store.refundRipShipOrder(o.id, reason: .seized)
+            check(live(o.id)?.refunded == true && line.contains("Police") && store.data.sealed.first { $0.id == o.itemID }?.status == nil,
+                  "a seized order was not refunded and unlocked")
+        } else {
+            check(false, "could not make the seized order")
+        }
+        // An order stays while one of its acts is in the log, even when it is old and refunded.
+        do {
+            let act = store.recordHiddenAct(.unshippedOrder, weight: 1, note: "test")
+            var old = RipShipOrder(buyer: "Old", buyerContactID: nil, itemID: UUID(), itemName: "Old", productID: nil, caseUnits: nil, price: 10,
+                                   shipping: 4.47, fees: store.ripShipFees(price: 10, shipping: 4.47), paid: 5, soldDay: -40, auction: false)
+            old.refunded = true
+            old.lateActID = act
+            let saved = store.data.ripShip
+            store.data.ripShip.orders = [old]
+            _ = store.ripShipEndDay()
+            check(store.data.ripShip.orders.count == 1, "the prune dropped an order whose act is still in the log")
+            store.retireHiddenAct(act, force: true)
+            _ = store.ripShipEndDay()
+            check(store.data.ripShip.orders.isEmpty, "the prune kept an old order with no act")
+            store.data.ripShip = saved
+        }
+
+        // Shipping, the late act, the day-7 chargeback, and the strike. One End Day settles three orders.
+        store.data.ripShip.strikes = []
+        let notOpened = newOrder()
+        // An order whose rip started when the app quit: End Day finishes it and ships the contents to the buyer.
+        let quit = newOrder()
+        if let q = quit { _ = store.beginRipShipRip(q.id, ripID: UUID()) }
+        let late = rippedOrder(daysAgo: 2)
+        let cancelled = rippedOrder(daysAgo: 6)
+        let gross = store.data.ripShip.grossByDay.values.reduce(0, +)
+        let refundsBefore = refunds().count
+        store.report = nil
+        store.endDay()
+        if let n = notOpened, let l = late, let c = cancelled {
+            let newRefunds = refunds().dropFirst(refundsBefore).map(\.amount)
+            check(newRefunds.count == 2 && newRefunds.contains { abs($0 + n.net) < 0.005 } && newRefunds.contains { abs($0 + c.price) < 0.005 },
+                  "End Day did not refund the unopened order for its net and charge back the day-7 order for its price, once each")
+            check(live(n.id)?.refunded == true && store.data.sealed.first { $0.id == n.itemID }?.status == nil, "an order that was never opened was not refunded")
+            check(quit.flatMap { live($0.id) }.map { $0.state == .ripped && $0.open && $0.loose.count == 1 } == true,
+                  "End Day did not finish a rip that the app quit in the middle of")
+            check(live(c.id)?.refunded == true, "the day-7 cancel did not refund the order")
+            check(store.data.ripShip.strikes.count == 1 && !store.whatnotBanned, "a first chargeback did not give exactly one strike")
+            check(live(c.id)?.loose.isEmpty == true && store.data.sealed.contains { $0.productID == blister.id && $0.status == nil },
+                  "the product of a chargeback did not come back to Inventory")
+            check(store.data.hiddenActs.contains { $0.kind == .unshippedOrder && $0.sourceID == c.id }, "a chargeback recorded no unshipped-order act")
+            check(live(l.id)?.lateActID != nil && store.data.hiddenActs.contains { $0.kind == .unshippedOrder && $0.sourceID == l.id }, "a late order recorded no act")
+            // One refund only: a second call pays nothing.
+            let ledger = store.data.ledger.count
+            let cash = store.cash
+            check(store.refundRipShipOrder(c.id).isEmpty && store.refundRipShipOrder(n.id, reason: .chargeback).isEmpty
+                  && store.data.ledger.count == ledger && store.cash == cash, "a refunded order paid twice")
+            // Shipping the late order costs 10 minutes and retires its act.
+            let before = store.data.hour
+            check(store.shipRipShipOrders([l.id]) == nil && live(l.id)?.shipped == true && abs(store.data.hour - before - 10.0 / 60) < 0.0001
+                  && !store.data.hiddenActs.contains { $0.sourceID == l.id }, "shipping an order did not cost 10 minutes and retire its act")
+            check(store.refundRipShipOrder(l.id, reason: .chargeback).isEmpty, "a shipped order was refunded")
+        } else {
+            check(false, "could not make the shipping orders")
+        }
+        check(store.data.ripShip.grossByDay.values.reduce(0, +) <= gross, "a refunded order still counts for the commission tier")
+        // A save and a load keep every order. (A card print drops its `priceKey` cache: GameStore.init fills it again.)
+        func signature(_ state: RipShipState) -> [String] {
+            state.orders.map { "\($0.id) \($0.state.rawValue) \($0.refunded) \($0.shipped) \($0.cards.count) \($0.bulk.count) \($0.loose.count) \($0.price)" }
+                + ["\(state.strikes)", "\(state.ripShipClosed)", "\(state.bannedUntil ?? -1)"]
+        }
+        if let again = try? JSONDecoder().decode(RipShipState.self, from: JSONEncoder().encode(store.data.ripShip)) {
+            check(signature(again) == signature(store.data.ripShip) && again.orders.count > 3, "a save and a load changed the Rip & Ship orders")
+        } else {
+            check(false, "the Rip & Ship state did not save and load")
+        }
+
+        // Strikes: a second chargeback in 60 days bans Whatnot, and a third in 120 days ends Rip & Ship. An old strike drops out.
+        if let second = rippedOrder() {
+            store.refundRipShipOrder(second.id, reason: .chargeback)
+            check(store.whatnotBanned && store.data.ripShip.strikes.count == 2 && store.ripShipBlock(UUID()) != nil, "a second strike in 60 days did not ban Whatnot")
+        } else {
+            check(false, "could not make the second strike order")
+        }
+        store.data.ripShip.bannedUntil = nil
+        if let third = rippedOrder() {
+            store.refundRipShipOrder(third.id, reason: .chargeback)
+            check(store.data.ripShip.ripShipClosed && store.data.ripShip.strikes.count == 3, "a third strike in 120 days did not end Rip & Ship")
+        } else {
+            check(false, "could not make the third strike order")
+        }
+        store.data.ripShip = RipShipState()
+        store.data.ripShip.strikes = [store.day - 200]
+        if let old = rippedOrder() {
+            store.refundRipShipOrder(old.id, reason: .chargeback)
+            check(store.data.ripShip.strikes.count == 1 && !store.whatnotBanned, "a strike older than 120 days still counts")
+        } else {
+            check(false, "could not make the old strike order")
+        }
+
+        // A palm that the camera caught: the reputation, the Whatnot ban, and a forced callout.
+        store.data.ripShip = RipShipState()
+        store.addReputation(400)
+        GameStore.forcePalmCaught = true
+        let repBefore = store.data.reputation
+        let calloutsBefore = store.data.callouts.open.count
+        if let (caught, _) = palmedOrder() {
+            check(caught.palmCaught && !store.data.hiddenActs.contains { $0.kind == .palmedHit && $0.sourceID == caught.id },
+                  "a palm on camera recorded a secret act")
+            store.report = nil
+            store.endDay()
+            check(repBefore - store.data.reputation >= Balance.palmFoundReputation && store.whatnotBanned
+                  && store.data.callouts.open.count == calloutsBefore + 1 && store.data.callouts.open.last?.actKind == .palmedHit,
+                  "a palm on camera did not cost reputation, ban Whatnot, and open one callout")
+        } else {
+            check(false, "could not make the caught palm order")
+        }
+        GameStore.forcePalmCaught = nil
+
+        // A stream that ends mid-rip still sends every card to the buyer, and nobody refunds. An unripped order is refunded.
+        store.data.ripShip = RipShipState()
+        store.data.social.authenticity = 0.5
+        for waiting in [false, true] {
+            guard let item = store.addTestProduct(blister.id) else { continue }
+            var streamItem = store.streamStock.first { $0.id == item.id }
+            streamItem?.ripShip = true
+            guard let streamItem else { continue }
+            let session = StreamSession(store: store, hours: 2, items: [streamItem], scheduled: false)
+            session.testRipShipSale(streamItem, price: 20)
+            guard let sold = session.ripShipWaiting else { check(false, "the test stream sold nothing"); continue }
+            if !waiting {
+                check(session.startRipShipRip() != nil && session.ripping != nil, "the rip of a waiting order did not start")
+                session.tick()
+                check(session.minute == 0, "the stream clock ran during a Rip & Ship rip")
+            }
+            session.end()
+            let o = live(sold.id)
+            if waiting {
+                check(o?.refunded == true && session.ripping == nil, "a stream that ended with an unripped order did not refund it")
+            } else {
+                check(o?.refunded == false && o?.state == .ripped && o?.loose.count == 1 && session.ripping == nil,
+                      "a stream that ended mid-rip did not ship the cards to the buyer")
+            }
+        }
     }
 
     /// Plays one show, meet, or counter session with simple moves. The load must fit its bins, and every item that

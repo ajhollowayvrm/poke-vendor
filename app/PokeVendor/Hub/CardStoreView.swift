@@ -252,9 +252,21 @@ struct CardStoreView: View {
     /// Sealed cases off the shelf. When a product runs low, the store opens a case of it at night and restocks.
     private var backRoomBox: some View {
         let cases = store.backRoomCases
+        // Loose units that wait in the back room, counted for each product.
+        let loose = Dictionary(grouping: store.backRoomUnits, by: { $0.productID ?? $0.name })
+            .compactMap { group -> (name: String, count: Int)? in group.value.first.map { ($0.name, group.value.count) } }
+            .sorted { $0.name < $1.name }
         return DetailBox(title: "Back room") {
             Text("\(cases.count) of \(Balance.backRoomCases) cases. When a product has \(Balance.backRoomRestockAt) unit or fewer on the shelf, the store opens a case of it overnight and puts the units out. Customers never see a case.")
                 .font(.caption).foregroundStyle(Theme.muted)
+            ForEach(loose, id: \.name) { row in
+                HStack {
+                    Text("\(row.count) × \(row.name)").font(.subheadline).lineLimit(2)
+                    Spacer()
+                    Text("loose").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                }
+                .padding(.vertical, 2)
+            }
             ForEach(cases) { item in
                 HStack(spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {

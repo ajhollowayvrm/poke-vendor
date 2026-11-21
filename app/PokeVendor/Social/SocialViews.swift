@@ -25,6 +25,14 @@ struct SocialHubView: View {
                     .buttonStyle(.bordered)
                     .tint(.red)
                     .controlSize(.large)
+                    if !store.data.ripShip.orders.isEmpty || store.recentStrikes > 0 {
+                        NavigationLink(value: AppRoute.shipQueue) {
+                            Label("Rip & Ship queue · \(store.ordersToShip.count) to ship", systemImage: "shippingbox")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                    }
                     ShortsSection()
                     inbox
                     if !store.saleTips.isEmpty { tips }

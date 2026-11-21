@@ -122,6 +122,7 @@
 		5E314A75E9482AAE174AF1E4 /* LoansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B789AFBC7E60902CCEA9F3 /* LoansView.swift */; };
 		5F70D84EFAD160D690442153 /* MessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC667D87E2F82D64D9B1C45F /* MessagesView.swift */; };
 		5FB9D02054882C35C7069D88 /* SuppliesViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */; };
+		5FBCF201DDF11EB08466D657 /* RipShipViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2512F281A5420EEEAC982FD8 /* RipShipViews.swift */; };
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
 		6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */ = {isa = PBXBuildFile; fileRef = A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */; };
 		66F84AAE77B66E974C6B2FE9 /* unbroken-bonds.json in Resources */ = {isa = PBXBuildFile; fileRef = 12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */; };
@@ -242,6 +243,7 @@
 		C9F245EC988EC93EC1037DB3 /* paldean-fates.json in Resources */ = {isa = PBXBuildFile; fileRef = 201CF0C8665BF1729BF4B106 /* paldean-fates.json */; };
 		CA12F46151423814D55751CF /* southern-islands.json in Resources */ = {isa = PBXBuildFile; fileRef = 3DAA9319761EC5C721BCC199 /* southern-islands.json */; };
 		CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */; };
+		CA753FD8510E5E80F8846624 /* ShipQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96C570ABFB42BAFB47AE7B9 /* ShipQueueView.swift */; };
 		CB079E91CC1C7523A92B2F88 /* rebel-clash.json in Resources */ = {isa = PBXBuildFile; fileRef = EC719A5C459CB908DDE8EBAB /* rebel-clash.json */; };
 		CBA46384E9252AC4448B4E46 /* neo-discovery-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = AEF22D5F29B5F8AC42F419C3 /* neo-discovery-1st-edition.json */; };
 		CCD94901C0FAFE8579F3CD57 /* temporal-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = FE044E20B20FB2490087A1C9 /* temporal-forces.json */; };
@@ -340,6 +342,7 @@
 		20D2A072C747DEAB8413196A /* Supplies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supplies.swift; sourceTree = "<group>"; };
 		22DCF071A80BA4398E968082 /* HubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubView.swift; sourceTree = "<group>"; };
 		2383AC5B43DFCF54E5DC0845 /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
+		2512F281A5420EEEAC982FD8 /* RipShipViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipShipViews.swift; sourceTree = "<group>"; };
 		25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordEpisodeSheet.swift; sourceTree = "<group>"; };
 		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
 		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
@@ -593,6 +596,7 @@
 		F7D9595E67FF077A0C497893 /* 30th-celebration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "30th-celebration.json"; sourceTree = "<group>"; };
 		F885E2CD1858D928F56B9E78 /* OfferLotViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfferLotViews.swift; sourceTree = "<group>"; };
 		F93E91BC33F28004C994B1EE /* Debt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debt.swift; sourceTree = "<group>"; };
+		F96C570ABFB42BAFB47AE7B9 /* ShipQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShipQueueView.swift; sourceTree = "<group>"; };
 		F9EC5CBDB247E18EBDF795F2 /* mysterious-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mysterious-treasures.json"; sourceTree = "<group>"; };
 		FA2426C0050E11BB75D79A1E /* Losses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Losses.swift; sourceTree = "<group>"; };
 		FAF0483A8B75F89A628B7214 /* neo-discovery.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery.json"; sourceTree = "<group>"; };
@@ -652,6 +656,8 @@
 		28DB81501AA5B5775E544CC8 /* Stream */ = {
 			isa = PBXGroup;
 			children = (
+				2512F281A5420EEEAC982FD8 /* RipShipViews.swift */,
+				F96C570ABFB42BAFB47AE7B9 /* ShipQueueView.swift */,
 				55AB0D2FABBE0297520AD440 /* StreamView.swift */,
 			);
 			path = Stream;
@@ -1333,6 +1339,7 @@
 				24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */,
 				EE25610F66D60690F7AE0E00 /* RipSettings.swift in Sources */,
 				E61D9A90370E32009F66F4D0 /* RipShip.swift in Sources */,
+				5FBCF201DDF11EB08466D657 /* RipShipViews.swift in Sources */,
 				B60883AA719B45A9A0FE33D4 /* RipView+Reveal.swift in Sources */,
 				AD9AD35F481816554B112EE4 /* RipView+Special.swift in Sources */,
 				F09EFDDFD8790FA639C566F4 /* RipView+Tear.swift in Sources */,
@@ -1346,6 +1353,7 @@
 				4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */,
 				1F4DF34D41F7780E560BF034 /* SetSections.swift in Sources */,
 				A12FA90603696A823D4B70CE /* SettingsView.swift in Sources */,
+				CA753FD8510E5E80F8846624 /* ShipQueueView.swift in Sources */,
 				20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */,
 				403146ABA26241C2139E9290 /* Shorts.swift in Sources */,
 				E52E815BE6C24DE5EBA27591 /* ShortsViews.swift in Sources */,

@@ -40,6 +40,15 @@ extension RipView {
     }
 
     func placement(for card: RipCard, layout: TableLayout) -> Placement {
+        if model.palmedIDs.contains(card.id) {
+            // A palmed hit slides down out of the frame.
+            let p = unpalmedPlacement(for: card, layout: layout)
+            return Placement(point: CGPoint(x: p.point.x, y: p.point.y + 400), scale: p.scale, rotation: p.rotation, z: p.z, faceUp: p.faceUp)
+        }
+        return unpalmedPlacement(for: card, layout: layout)
+    }
+
+    private func unpalmedPlacement(for card: RipCard, layout: TableLayout) -> Placement {
         if let j = model.pile.firstIndex(where: { $0.id == card.id }) {
             return Placement(point: layout.pileCenter, scale: layout.pileScale, rotation: card.tilt,
                              z: 100 + Double(j), faceUp: true)

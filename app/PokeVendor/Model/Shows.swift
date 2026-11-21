@@ -424,6 +424,7 @@ extension GameStore {
         if day == distributorDecisionDay {
             out.append(CalendarEntry(kind: .store, title: "Distributor decision", detail: "Your hobby account application"))
         }
+        out += ripShipCalendarEntries(day: day)
         let offset = day - data.day
         guard offset > 0 else { return out }
         let arriving = data.sealed.filter { if case .onTheWay(let d, _) = $0.status { return d == offset }; return false }

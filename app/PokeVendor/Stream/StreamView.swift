@@ -11,10 +11,13 @@ struct StreamView: View {
     @State private var rip: RipSession?
     /// The product picked for a rip. The cover opens after the pick sheet is gone.
     @State private var pendingRip: SealedItem?
+    /// A Rip & Ship case: the case sheet shows first, and the rip starts when it closes.
+    @State private var buyerCase: CaseRequest?
+    @State private var pendingShip: RipSession?
     @State private var confirmEnd = false
 
     enum PickMode: Identifiable {
-        case show, giveaway, rip, auction, buyNow
+        case show, giveaway, rip, auction, buyNow, ripShip
         var id: Int { hashValue }
     }
 
@@ -39,20 +42,26 @@ struct StreamView: View {
                 rip = RipSession(items: [sealed])
             }
         }) { mode in
-            StreamPickSheet(session: session, mode: mode) { item, price in
+            StreamPickSheet(session: session, mode: mode) { item, price, auction in
                 switch mode {
                 case .show: session.showCard(item)
                 case .giveaway: session.giveaway(item)
                 case .rip: pendingRip = session.ripNow(item)
                 case .auction: session.startAuction(item, startShare: price / max(item.market, 0.01))
                 case .buyNow: session.offerBuyNow(item, price: price)
+                case .ripShip:
+                    if auction {
+                        session.auctionRipShip(item, startShare: price / max(item.market, 0.01))
+                    } else if price > 0 {
+                        session.offerRipShip(item, price: price)
+                    }
                 }
             }
             .presentationDetents([.medium, .large])
         }
         .fullScreenCover(item: $rip) { rip in
-            RipView(items: rip.items, store: store, allowedModes: [.normal, .fast],
-                    onHits: { hits in session.ripDone(hits: hits) }) { self.rip = nil }
+            RipView(items: rip.items, store: store, allowedModes: [.normal, .fast], ripID: rip.ripID, shipOrder: rip.shipOrder,
+                    onHits: { hits, line in session.ripDone(hits: hits, ripShipLine: line) }) { self.rip = nil }
         }
         .confirmationDialog("End the stream?", isPresented: $confirmEnd, titleVisibility: .visible) {
             Button("End stream", role: .destructive) { session.end() }
@@ -70,6 +79,7 @@ struct StreamView: View {
                     if session.chatSlow {
                         Banner(text: "Chat is slowing down. Talk to chat, or show something.", color: Theme.orange, icon: "bubble.left.and.exclamationmark.bubble.right")
                     }
+                    if let order = session.ripShipWaiting { RipShipWaitingPanel(order: order, onRip: ripForBuyer) }
                     if let a = session.auction { auctionPanel(a) }
                     if let b = session.buyNow { buyNowPanel(b) }
                     chat
@@ -77,6 +87,27 @@ struct StreamView: View {
                 .padding(16)
             }
             actions
+        }
+        .sheet(item: $buyerCase, onDismiss: {
+            // The rip starts when the case sheet closes, also when the player swipes it away.
+            if let ship = pendingShip {
+                pendingShip = nil
+                rip = ship
+            }
+        }) { request in
+            CaseOpenSheet(source: request.source, onDone: { _ in })
+        }
+    }
+
+    /// "Rip for the buyer": the clock stops, and the rip opens. A case opens into its units first.
+    private func ripForBuyer() {
+        guard let started = session.startRipShipRip() else { return }
+        let ripSession = RipSession(items: started.items, ripID: started.ripID, shipOrder: started.order)
+        if started.order.caseUnits != nil {
+            pendingShip = ripSession
+            buyerCase = CaseRequest(source: .forBuyer(units: started.items.map(\.id), buyer: started.order.buyer))
+        } else {
+            rip = ripSession
         }
     }
 
@@ -207,19 +238,29 @@ struct StreamView: View {
 
     private var actions: some View {
         let whatnot = session.whatnotOpen
+        let free = session.ripShipWaiting == nil
         return VStack(spacing: 8) {
             HStack(spacing: 8) {
                 action("Show a card", "rectangle.portrait.on.rectangle.portrait", enabled: !session.items.isEmpty) { pick = .show }
                 action("Talk to chat", "bubble.left.and.bubble.right", enabled: true) { session.talk() }
                 action("Rip", "sparkles", enabled: session.items.contains { $0.sealed && !$0.isCase }) { pick = .rip }
-            }
-            HStack(spacing: 8) {
                 action("Give away", "gift", enabled: !session.items.isEmpty) { pick = .giveaway }
-                action(whatnot ? "Auction" : "Auction · 1k followers", "hammer", enabled: whatnot && session.auction == nil && !session.items.isEmpty) { pick = .auction }
-                action(whatnot ? "Buy Now" : "Buy Now · 1k followers", "tag", enabled: whatnot && session.buyNow == nil && !session.items.isEmpty) { pick = .buyNow }
             }
-            if !whatnot {
-                Text("Auctions and Buy Now use Whatnot. It opens at 1,000 followers.").font(.caption2).foregroundStyle(Theme.muted)
+            // The three Whatnot actions have their own row. An order that waits for its rip blocks the other sales.
+            HStack(spacing: 8) {
+                action(whatnot ? "Auction" : "Auction · 1k followers", "hammer", enabled: whatnot && free && session.auction == nil && !session.items.isEmpty) { pick = .auction }
+                action(whatnot ? "Buy Now" : "Buy Now · 1k followers", "tag", enabled: whatnot && free && session.buyNow == nil && !session.items.isEmpty) { pick = .buyNow }
+                action("Rip & Ship", "shippingbox", enabled: session.ripShipOpen && session.items.contains(where: \.ripShip)) { pick = .ripShip }
+            }
+            if store.whatnotBanned {
+                Text("Whatnot banned you until day \((store.data.ripShip.bannedUntil ?? 0) + 1). Auctions, Buy Now, and Rip & Ship are closed.")
+                    .font(.caption2).foregroundStyle(Theme.orange)
+            } else if !whatnot {
+                Text("Auctions, Buy Now, and Rip & Ship use Whatnot. It opens at 1,000 followers.").font(.caption2).foregroundStyle(Theme.muted)
+            } else if store.data.ripShip.ripShipClosed {
+                Text("Whatnot ended your Rip & Ship access.").font(.caption2).foregroundStyle(Theme.orange)
+            } else if !session.items.contains(where: \.ripShip) {
+                Text("Mark a sealed product \"R&S\" in the setup to sell it on Rip & Ship.").font(.caption2).foregroundStyle(Theme.muted)
             }
         }
         .padding(12)
@@ -245,14 +286,22 @@ struct StreamView: View {
 /// Picks an item for a stream action, and a price for an auction or a Buy Now.
 struct StreamPickSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(GameStore.self) private var store
     let session: StreamSession
     let mode: StreamView.PickMode
-    let onPick: (StreamItem, Double) -> Void
+    /// The item, the price, and (Rip & Ship only) true for an auction.
+    let onPick: (StreamItem, Double, Bool) -> Void
     @State private var chosen: StreamItem?
     @State private var percent: Double = 100
+    /// Rip & Ship: Buy Now or auction.
+    @State private var ripShipAuction = false
 
     private var items: [StreamItem] {
-        mode == .rip ? session.items.filter { $0.sealed && !$0.isCase } : session.items
+        switch mode {
+        case .rip: session.items.filter { $0.sealed && !$0.isCase }
+        case .ripShip: session.items.filter(\.ripShip)
+        default: session.items
+        }
     }
 
     private var title: String {
@@ -262,28 +311,53 @@ struct StreamPickSheet: View {
         case .rip: "Rip on stream"
         case .auction: "Auction"
         case .buyNow: "Buy Now"
+        case .ripShip: "Rip & Ship"
         }
     }
 
-    private var needsPrice: Bool { mode == .auction || mode == .buyNow }
+    private var needsPrice: Bool { mode == .auction || mode == .buyNow || mode == .ripShip }
+    /// Rip & Ship Buy Now runs from 80% to 130% of market. Every other price runs from 20% to 150%.
+    private var range: ClosedRange<Double> { mode == .ripShip && !ripShipAuction ? 80...130 : 20...150 }
+    /// A whole case needs stream time: 0.75 minutes for each pack.
+    private func caseBlock(_ item: StreamItem) -> String? {
+        guard mode == .ripShip, item.isCase, session.minutesLeft < Double(item.packs) * Balance.ripShipCaseMinutesPerPack else { return nil }
+        return "Not enough stream time to open the whole case."
+    }
     private var price: Double { ShowSession.round(max(0.5, (chosen?.market ?? 0) * percent / 100)) }
 
     var body: some View {
         NavigationStack {
             Form {
                 if let item = chosen, needsPrice {
-                    Section(mode == .auction ? "Start price" : "Price") {
+                    Section(mode == .auction || (mode == .ripShip && ripShipAuction) ? "Start price" : "Price") {
                         Text(item.name).font(.headline)
+                        if mode == .ripShip {
+                            Picker("Sale", selection: $ripShipAuction) {
+                                Text("Buy Now").tag(false)
+                                Text("Auction").tag(true)
+                            }
+                            .pickerStyle(.segmented)
+                            .onChange(of: ripShipAuction) { _, auction in percent = auction ? Balance.auctionStartShare * 100 : 95 }
+                        }
                         HStack {
-                            Slider(value: $percent, in: 20...150, step: 5)
+                            Slider(value: $percent, in: range, step: 5)
                             Text(money(price)).font(.body.monospaced()).frame(width: 90, alignment: .trailing)
                         }
-                        Text(mode == .auction
-                             ? "\(Int(percent))% of market. A low start brings bids. The timer runs \(Int(Balance.auctionMinutes)) minutes. Whatnot takes \(Int(Balance.whatnotFeeRate * 1000) / 10)% + \(money(Balance.whatnotFeeFlat)), and you ship."
-                             : "\(Int(percent))% of market. The first viewer who taps Buy gets it. It comes down after \(Int(Balance.buyNowMinutes)) minutes.")
-                            .font(.caption).foregroundStyle(Theme.muted)
-                        Button(mode == .auction ? "Start the auction" : "Put it up") {
-                            onPick(item, price)
+                        if mode == .ripShip {
+                            // An auction ends near market, so its fees show at market.
+                            RipShipFeeBox(item: item, price: ripShipAuction ? item.market : price)
+                            Text("Rip & Ship: one viewer buys the whole product. You open it on stream. Every card ships to that viewer.")
+                                .font(.caption).foregroundStyle(Theme.muted)
+                            Text("Viewers pay about 95% to 120% of market for hot product, 90% to 105% for the rest.")
+                                .font(.caption).foregroundStyle(Theme.muted)
+                        } else {
+                            Text(mode == .auction
+                                 ? "\(Int(percent))% of market. A low start brings bids. The timer runs \(Int(Balance.auctionMinutes)) minutes. Whatnot takes \(Int(Balance.whatnotFeeRate * 1000) / 10)% + \(money(Balance.whatnotFeeFlat)), and you ship."
+                                 : "\(Int(percent))% of market. The first viewer who taps Buy gets it. It comes down after \(Int(Balance.buyNowMinutes)) minutes.")
+                                .font(.caption).foregroundStyle(Theme.muted)
+                        }
+                        Button(mode == .auction || ripShipAuction && mode == .ripShip ? "Start the auction" : "Put it up") {
+                            onPick(item, price, ripShipAuction)
                             dismiss()
                         }
                     }
@@ -294,19 +368,24 @@ struct StreamPickSheet: View {
                             Button {
                                 if needsPrice {
                                     chosen = item
-                                    percent = mode == .auction ? Balance.auctionStartShare * 100 : 100
+                                    ripShipAuction = false
+                                    percent = mode == .auction ? Balance.auctionStartShare * 100 : mode == .ripShip ? 95 : 100
                                 } else {
-                                    onPick(item, item.market)
+                                    onPick(item, item.market, false)
                                     dismiss()
                                 }
                             } label: {
-                                HStack {
-                                    Text(item.name).foregroundStyle(Theme.text).lineLimit(1)
-                                    if item.fakeKnown { Tag(text: "FAKE", color: .red) }
-                                    Spacer()
-                                    Text(money(item.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack {
+                                        Text(item.name).foregroundStyle(Theme.text).lineLimit(1)
+                                        if item.fakeKnown { Tag(text: "FAKE", color: .red) }
+                                        Spacer()
+                                        Text(money(item.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                    }
+                                    if let block = caseBlock(item) { Text(block).font(.caption).foregroundStyle(Theme.orange) }
                                 }
                             }
+                            .disabled(caseBlock(item) != nil)
                         }
                     }
                 }
@@ -320,6 +399,7 @@ struct StreamPickSheet: View {
 
 /// The end of the stream: peak viewers, tips, sales with fees, pulls, followers, and giveaways.
 struct StreamSummaryView: View {
+    @Environment(AppNav.self) private var nav
     let session: StreamSession
     let onDone: () -> Void
 
@@ -335,9 +415,9 @@ struct StreamSummaryView: View {
                         StatCell(label: "Followers", value: "\(session.followersGained >= 0 ? "+" : "")\(session.followersGained)",
                                  color: session.followersGained >= 0 ? Theme.green : Theme.orange)
                     }
-                    if !session.sold.isEmpty {
-                        DetailBox(title: "Sold on Whatnot · \(session.sold.count)") {
-                            ForEach(Array(session.sold.enumerated()), id: \.offset) { _, s in
+                    if !session.liveSold.isEmpty {
+                        DetailBox(title: "Sold on Whatnot · \(session.liveSold.count)") {
+                            ForEach(Array(session.liveSold.enumerated()), id: \.offset) { _, s in
                                 HStack {
                                     Text(s.name).font(.subheadline).lineLimit(1)
                                     Spacer()
@@ -345,6 +425,12 @@ struct StreamSummaryView: View {
                                 }
                             }
                             Text("Total \(money(session.soldTotal)), fees and shipping \(money(session.feesTotal)).").font(.caption.monospaced())
+                        }
+                    }
+                    if !session.ripShipOrders.isEmpty {
+                        RipShipSummaryBox(session: session) {
+                            onDone()
+                            nav.path.append(.shipQueue)
                         }
                     }
                     if !session.pulls.isEmpty {
@@ -391,6 +477,8 @@ struct StreamSetupView: View {
     var plan: StreamPlan?
     @State private var hours = Balance.streamHours[0]
     @State private var chosen: Set<UUID> = []
+    /// The chosen items that the player marked for Rip & Ship.
+    @State private var ripShip: Set<UUID> = []
     @State private var later = false
     @State private var day = 0
     @State private var startHour = 19.0
@@ -458,18 +546,45 @@ struct StreamSetupView: View {
                 Section("Bring · \(chosen.count) of \(stock.count)") {
                     if stock.isEmpty { Text("You have nothing free to bring. PC items, master set cards, and listed items stay home.").foregroundStyle(Theme.muted) }
                     ForEach(stock) { item in
-                        Button {
-                            if chosen.contains(item.id) { chosen.remove(item.id) } else { chosen.insert(item.id) }
-                        } label: {
-                            HStack {
-                                Image(systemName: chosen.contains(item.id) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundStyle(chosen.contains(item.id) ? Theme.cyan : Theme.muted)
-                                Text(item.name).foregroundStyle(Theme.text).lineLimit(1)
-                                if item.sealed { Tag(text: "SEALED") }
-                                Spacer()
-                                Text(money(item.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        HStack {
+                            Image(systemName: chosen.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(chosen.contains(item.id) ? Theme.cyan : Theme.muted)
+                            Text(item.name).foregroundStyle(Theme.text).lineLimit(1)
+                            if item.sealed { Tag(text: "SEALED") }
+                            Spacer()
+                            Text(money(item.market)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                            if chosen.contains(item.id), item.sealed, store.followerTier >= 1, store.ripShipBlock(item.id) == nil {
+                                Button {
+                                    if ripShip.contains(item.id) { ripShip.remove(item.id) } else { ripShip.insert(item.id) }
+                                } label: {
+                                    Text("R&S")
+                                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 3)
+                                        .foregroundStyle(ripShip.contains(item.id) ? Color.black : Theme.cyan)
+                                        .background(ripShip.contains(item.id) ? Theme.cyan : Theme.cyan.opacity(0.15))
+                                }
+                                .buttonStyle(.borderless)
+                                .accessibilityLabel("Rip and Ship \(item.name)")
                             }
                         }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if chosen.contains(item.id) {
+                                chosen.remove(item.id)
+                                ripShip.remove(item.id)
+                            } else {
+                                chosen.insert(item.id)
+                            }
+                        }
+                    }
+                    if store.data.ripShip.ripShipClosed {
+                        Text("Whatnot ended your Rip & Ship access.").font(.caption).foregroundStyle(Theme.orange)
+                    } else if store.whatnotBanned {
+                        Text("Whatnot banned you until day \((store.data.ripShip.bannedUntil ?? 0) + 1).").font(.caption).foregroundStyle(Theme.orange)
+                    } else {
+                        Text("Rip & Ship: one viewer buys the whole product. You open it on stream. Every card ships to that viewer. Whatnot takes 8% plus 2.9% and $0.30.")
+                            .font(.caption).foregroundStyle(Theme.muted)
                     }
                 }
             }
@@ -480,13 +595,15 @@ struct StreamSetupView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     if later, plan == nil {
                         Button("Schedule") {
-                            store.scheduleStream(day: day, startHour: startHour, hours: hours, itemIDs: Array(chosen))
+                            store.scheduleStream(day: day, startHour: startHour, hours: hours, itemIDs: Array(chosen),
+                                                 ripShipIDs: Array(ripShip.intersection(chosen)))
                             dismiss()
                         }
                         .disabled(day <= store.day)
                     } else {
                         Button("Go live") {
-                            if let session = store.startStream(hours: hours, itemIDs: Array(chosen), scheduled: plan != nil) {
+                            if let session = store.startStream(hours: hours, itemIDs: Array(chosen), scheduled: plan != nil,
+                                                               ripShipIDs: Array(ripShip.intersection(chosen))) {
                                 dismiss()
                                 nav.stream = StreamCover(session: session)
                             }
@@ -499,6 +616,7 @@ struct StreamSetupView: View {
                 if let plan {
                     hours = plan.hours
                     chosen = Set(plan.itemIDs).intersection(stock.map(\.id))
+                    ripShip = Set(plan.ripShipIDs ?? []).intersection(chosen)
                 }
             }
         }

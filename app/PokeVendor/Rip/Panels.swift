@@ -56,6 +56,7 @@ struct TopBar: View {
                 .font(.caption.monospaced())
                 .foregroundStyle(Theme.muted)
                 .lineLimit(1)
+            if let buyer = model.shipBuyer, let price = model.shipPrice { shipChips(buyer: buyer, price: price) }
             HStack(spacing: 14) {
                 let net = model.shownValue - model.shownCost
                 stat("VALUE", money(model.shownValue), Theme.text)
@@ -67,6 +68,30 @@ struct TopBar: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 4)
+    }
+
+    /// The buyer meter, the unit tracker of a whole case, and the palm count. The meter is green above the price.
+    private func shipChips(buyer: String, price: Double) -> some View {
+        let value = model.shipValue
+        return VStack(alignment: .leading, spacing: 3) {
+            Text("FOR \(buyer.uppercased()) · \(money(value)) of \(money(price))")
+                .font(.caption.monospaced().weight(.semibold))
+                .foregroundStyle(value >= price ? Theme.green : Theme.muted)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background((value >= price ? Theme.green : Theme.muted).opacity(0.15), in: Capsule())
+            if let unit = model.unitProgress {
+                Text("Unit \(unit.index) of \(unit.count) · best so far: \(model.bestHit.map { "\($0.name) \(money($0.market))" } ?? "none")")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(Theme.muted)
+                    .lineLimit(1)
+            }
+            if !model.palmedIDs.isEmpty {
+                Text("\(model.palmedIDs.count) card\(model.palmedIDs.count == 1 ? "" : "s") palmed")
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(Theme.orange)
+            }
+        }
     }
 
     private func stat(_ label: String, _ value: String, _ color: Color) -> some View {
@@ -83,6 +108,11 @@ struct TopBar: View {
 struct CardInfo: View {
     let card: RipCard?
     let tool: Int
+    /// A Rip & Ship rip: the buyer's name. Every card ships to the buyer.
+    var shipsTo: String?
+    /// The card is a big hit in a Rip & Ship rip, so the player can palm it.
+    var canPalm = false
+    var onPalm: () -> Void = {}
     let hint: String
     @Binding var gradesOpen: Bool
 
@@ -114,6 +144,7 @@ struct CardInfo: View {
             }
             cutLine
             grades
+            if let shipsTo { shipRow(shipsTo) }
         }
         .opacity(card == nil ? 0 : 1)
         .overlay {
@@ -128,6 +159,20 @@ struct CardInfo: View {
         .padding(12)
         .background(Theme.surface)
         .framed()
+    }
+
+    /// "Ships to" under the price of every card. A big hit also gets a small, muted palm option: never the main button.
+    private func shipRow(_ buyer: String) -> some View {
+        HStack {
+            Text(card?.print == nil ? " " : "Ships to \(buyer)").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+            Spacer()
+            if canPalm {
+                Button("Palm it", action: onPalm)
+                    .font(.caption)
+                    .foregroundStyle(Theme.muted)
+                    .buttonStyle(.plain)
+            }
+        }
     }
 
     /// The front and back cut on one line: words without a tool, or left to right and top to bottom with one.
@@ -364,6 +409,7 @@ struct SummaryView: View {
                             HStack(spacing: 6) {
                                 Text(card.name).font(.subheadline.weight(.medium))
                                 WearText(wear: card.condition.wear)
+                                if model.palmedIDs.contains(card.id) { Tag(text: "PALMED", color: Theme.orange) }
                             }
                             Text(card.print?.variant ?? "").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             CutLine(reading: .front(card.condition.cut, tool: model.centeringTool))
@@ -375,7 +421,7 @@ struct SummaryView: View {
                     .overlay(alignment: .top) { Rectangle().fill(Theme.line).frame(height: 1) }
                 }
             }
-            Text("Hits go to Raw. Bulk · \(bulk) cards go to the rip's bulk group.")
+            Text(model.shipBuyer.map { "Every card ships to \($0). Bulk · \(bulk) cards." } ?? "Hits go to Raw. Bulk · \(bulk) cards go to the rip's bulk group.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
             if model.canPost, let best = hits.first {
@@ -388,7 +434,7 @@ struct SummaryView: View {
                         .buttonStyle(.bordered)
                 }
             }
-            if model.canPost { RipEpisodeButtons(model: model) }
+            if model.canPost, model.shipOrderID == nil { RipEpisodeButtons(model: model) }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

@@ -148,6 +148,16 @@ struct HubView: View {
         if store.hasUpgrade(.dropDiscord), store.isPokemonCenterDropLive(day: store.day + 1) {
             Banner(text: "Discord: a Pokemon Center drop is set for tomorrow.", color: Theme.cyan)
         }
+        // Rip & Ship orders that wait for a label. Orange when one is late.
+        let toShip = store.ordersToShip
+        if !toShip.isEmpty {
+            let late = toShip.contains { store.day > store.shipByDay($0) }
+            Button { nav.path.append(.shipQueue) } label: {
+                Banner(text: "\(toShip.count) Rip & Ship order\(toShip.count == 1 ? "" : "s") to ship\(late ? ". One is late." : ".")",
+                       color: late ? Theme.orange : Theme.cyan, icon: "shippingbox")
+            }
+            .buttonStyle(.plain)
+        }
         // Messages about cards (docs/28-messages-and-encounters.md).
         if store.unreadMessages > 0 {
             Button { nav.path.append(.messages) } label: {

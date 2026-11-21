@@ -4,6 +4,8 @@ import SwiftUI
 enum CaseOpenSource {
     case closed(UUID)
     case opened(units: [UUID], title: String)
+    /// A Rip & Ship case that the stream opened already. Every unit ships to the buyer, so the sheet has one action.
+    case forBuyer(units: [UUID], buyer: String)
 }
 
 /// A request to show the case sheet.
@@ -13,7 +15,7 @@ struct CaseRequest: Identifiable {
 }
 
 /// The case opening flow (docs/12-acquiring-product.md, Cases). It uses no flash: a rising grid and rings near the tiles.
-/// Phase 5 adds a "for a buyer" mode for Rip & Ship.
+/// The "for a buyer" mode serves a Rip & Ship case: one button rips every unit for the buyer.
 struct CaseOpenSheet: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
@@ -46,6 +48,7 @@ struct CaseOpenSheet: View {
         switch source {
         case .closed: product.map { CaseMath.name($0, units: units) } ?? "Case"
         case .opened(_, let title): title
+        case .forBuyer(_, let buyer): "\(buyer)'s case"
         }
     }
 
@@ -83,7 +86,7 @@ struct CaseOpenSheet: View {
             knownFake = item.isKnownFake
             // The eyeball check reads the case once, before the tape is cut.
             if let tier = item.fake, !item.isKnownFake, Counterfeit.eyeballCatches(tier, id: id) { resealHint = true }
-        case .opened(let ids, _):
+        case .opened(let ids, _), .forBuyer(let ids, _):
             unitIDs = ids
             productID = store.data.sealed.first { $0.id == ids.first }?.productID
             units = ids.count
@@ -223,29 +226,35 @@ struct CaseOpenSheet: View {
     private var summary: some View {
         return VStack(spacing: 10) {
             Text(summaryText).font(.subheadline).foregroundStyle(Theme.muted).multilineTextAlignment(.center)
-            HStack {
-                Button("Done") { finish() }
+            if case .forBuyer(let ids, let buyer) = source {
+                Button("Rip all \(ids.count) for \(buyer)") { finish() }
                     .primaryButton()
-                if let first = unitIDs.first {
-                    Button("Rip one now") {
-                        finish()
-                        let item = store.data.sealed.filter { $0.id == first }
-                        Task {
-                            try? await Task.sleep(for: .milliseconds(400))
-                            nav.startRip(item)
-                        }
-                    }
-                    .buttonStyle(.bordered)
-                    if store.cardStore != nil {
-                        Button("Put on the shelf") {
-                            store.stockStore(Set(unitIDs))
+                    .controlSize(.large)
+            } else {
+                HStack {
+                    Button("Done") { finish() }
+                        .primaryButton()
+                    if let first = unitIDs.first {
+                        Button("Rip one now") {
                             finish()
+                            let item = store.data.sealed.filter { $0.id == first }
+                            Task {
+                                try? await Task.sleep(for: .milliseconds(400))
+                                nav.startRip(item)
+                            }
                         }
                         .buttonStyle(.bordered)
+                        if store.cardStore != nil {
+                            Button("Put on the shelf") {
+                                store.stockStore(Set(unitIDs))
+                                finish()
+                            }
+                            .buttonStyle(.bordered)
+                        }
                     }
                 }
+                .controlSize(.regular)
             }
-            .controlSize(.regular)
         }
     }
 
@@ -253,6 +262,7 @@ struct CaseOpenSheet: View {
         switch source {
         case .closed: "\(units) × \(product?.name ?? "units") · \(money(product?.market ?? 0)) each · now in Sealed."
         case .opened: "\(unitIDs.count) units · now in Sealed."
+        case .forBuyer(_, let buyer): "\(unitIDs.count) units. Every card ships to \(buyer)."
         }
     }
 

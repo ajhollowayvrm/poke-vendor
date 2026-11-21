@@ -31,6 +31,7 @@ enum AppRoute: Hashable {
     case messages
     case vending
     case masterSet(String)
+    case shipQueue
 }
 
 struct StoreRunSession: Identifiable {
@@ -52,6 +53,9 @@ struct RipSession: Identifiable {
     var hitsOnly = false
     /// Record & Rip: the series that the rip is filmed for (docs/32-short-form-video.md, Record & Rip).
     var recording: [SeriesFormat] = []
+    /// A Rip & Ship rip: the rip ID that the order holds, and the order. Every card goes to the buyer.
+    var ripID = UUID()
+    var shipOrder: RipShipOrder?
 }
 
 /// A meet, league night, a garage or estate sale, or an opportunity, in the show day screen.
@@ -118,6 +122,7 @@ extension View {
             case .cardStore: CardStoreView()
             case .supplies: SuppliesView()
             case .loans: LoansView()
+            case .shipQueue: ShipQueueView()
             }
         }
     }

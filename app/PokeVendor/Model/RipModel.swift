@@ -32,7 +32,7 @@ final class RipModel {
     private(set) var packExtras: [CardPrint] = []
     /// The rip queue. The whole queue is one rip (docs/18-ripping.md, The rip queue).
     private(set) var queue: [QueuedPack]
-    let ripID = UUID()
+    let ripID: UUID
     private(set) var packIndex = 0
     let store: GameStore?
     /// A short note under the mode control, for example why Sift is off.
@@ -103,7 +103,8 @@ final class RipModel {
     /// Changes when a resealed pack opens, so the screen shows the banner once for each pack.
     private(set) var resealedMoment: UUID?
 
-    init(items: [SealedItem], store: GameStore?, hitsOnly: Bool = false) {
+    init(items: [SealedItem], store: GameStore?, hitsOnly: Bool = false, ripID: UUID = UUID()) {
+        self.ripID = ripID
         // A second guard: no path can rip a closed case.
         queue = items.filter { !$0.isCase }.flatMap { item in
             let product = item.brokenFrom == nil ? SetLibrary.product(item.productID) : nil
@@ -144,12 +145,65 @@ final class RipModel {
     /// The set of each pack in the product that is opening.
     var unboxPackSlugs: [String] { queue.filter { $0.sourceID == currentPack?.sourceID }.map(\.setSlug) }
 
+    /// A Rip & Ship rip: every card goes to this order (Model/RipShip.swift). Nil: the player's own rip.
+    var shipOrderID: UUID?
+    var shipBuyer: String?
+    /// The order price, for the buyer meter.
+    var shipPrice: Double?
+    /// A whole case for one buyer: one unbox opens every unit of the case at once.
+    var unboxOnce = false
+
+    /// What the buyer gets so far: the rip value less the hits that the player palmed.
+    var shipValue: Double { ripValue - palmedValue }
+
+    /// The units of the rip in queue order, each once. A whole-case rip shows "Unit 7 of 25".
+    private var unitIDs: [UUID] {
+        var seen: Set<UUID> = []
+        return queue.map(\.sourceID).filter { seen.insert($0).inserted }
+    }
+
+    /// The place of the unit in hand, and the number of units. Only a whole-case rip has units.
+    var unitProgress: (index: Int, count: Int)? {
+        guard unboxOnce, let pack = currentPack else { return nil }
+        let units = unitIDs
+        return (units.firstIndex(of: pack.sourceID).map { $0 + 1 } ?? 1, units.count)
+    }
+
+    /// The best hit of the rip so far.
+    var bestHit: RipCard? { allHits.max { $0.market < $1.market } }
+
     @discardableResult
     func openProduct() -> [CardPrint] {
         guard let pack = currentPack else { return [] }
-        unboxed.insert(pack.sourceID)
-        packExtras = store?.openProduct(pack.sourceID, ripID: ripID) ?? []
-        return packExtras
+        // A whole case opens every unit of the same product in one unbox.
+        let targets = unboxOnce
+            ? Array(Set(queue.filter { $0.productID == pack.productID && !unboxed.contains($0.sourceID) }.map(\.sourceID)))
+            : [pack.sourceID]
+        var extras: [CardPrint] = []
+        for id in targets {
+            unboxed.insert(id)
+            extras += store?.openProduct(id, ripID: ripID) ?? []
+        }
+        packExtras = extras
+        return extras
+    }
+
+    // MARK: - Palm the hit
+
+    /// The hits that the player palmed in this rip, and their market value.
+    private(set) var palmedIDs: Set<UUID> = []
+    private(set) var palmedValue = 0.0
+
+    /// The player can palm a big hit once for each card, only in a Rip & Ship rip.
+    func canPalm(_ card: RipCard) -> Bool { shipOrderID != nil && card.hitTier == .big && !palmedIDs.contains(card.id) }
+
+    /// Swaps a big hit off camera. The card stays with the player. The buyer gets a bulk card in its place. A scam:
+    /// the camera catches it half of the time.
+    func palm(_ card: RipCard) {
+        guard canPalm(card), let orderID = shipOrderID, let print = card.print else { return }
+        palmedIDs.insert(card.id)
+        palmedValue += card.market
+        store?.notePalm(orderID: orderID, ripID: ripID, print: print, value: card.market)
     }
 
     /// Goes from the opened product to its packs. The pack at `index` of the product's packs rips first.

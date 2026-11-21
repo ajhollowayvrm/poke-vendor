@@ -130,6 +130,8 @@ struct Contact: Codable, Identifiable, Hashable {
     /// True when the player put them in the contact book. Only a contact in the book saves things, holds things, and
     /// offers to bring things to a show. Nil in a save from before the contact book.
     var registered: Bool?
+    /// What the contents of their last Rip & Ship order were worth, as a share of the price. Optional: old saves have none.
+    var ripShipLuck: Double?
 
     var inBook: Bool { registered == true }
 }

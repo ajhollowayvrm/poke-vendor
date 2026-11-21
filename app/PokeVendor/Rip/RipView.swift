@@ -6,14 +6,26 @@ struct RipView: View {
 
     /// `onHits` gets every hit of the rip when the screen closes. A live stream uses it.
     /// `recording` films the rip for these series. A filmed rip allows Normal and Fast only, as on a live stream.
+    /// `shipOrder`: a Rip & Ship rip. Every card goes to that order's buyer. The rip has no recording and no Hits only.
+    /// `onHits` also gets the line that `finishRipShip` returns.
     init(items: [SealedItem], store: GameStore, allowedModes: [RipMode] = RipMode.allCases, hitsOnly: Bool = false,
-         recording: [SeriesFormat] = [], onHits: (([RipCard]) -> Void)? = nil, onClose: @escaping () -> Void) {
-        let model = RipModel(items: items, store: store, hitsOnly: hitsOnly)
-        model.recording = recording
-        model.allowedModes = recording.isEmpty ? allowedModes : allowedModes.filter { $0 != .sift }
+         recording: [SeriesFormat] = [], ripID: UUID = UUID(), shipOrder: RipShipOrder? = nil,
+         onHits: (([RipCard], String?) -> Void)? = nil, onClose: @escaping () -> Void) {
+        let model = RipModel(items: items, store: store, hitsOnly: shipOrder == nil && hitsOnly, ripID: ripID)
+        if let shipOrder {
+            model.shipOrderID = shipOrder.id
+            model.shipBuyer = shipOrder.buyer
+            model.shipPrice = shipOrder.price
+            model.unboxOnce = shipOrder.caseUnits != nil
+        }
+        model.recording = shipOrder == nil ? recording : []
+        model.allowedModes = shipOrder != nil ? [.normal, .fast]
+            : recording.isEmpty ? allowedModes : allowedModes.filter { $0 != .sift }
         _model = State(initialValue: model)
         self.onClose = {
-            onHits?(model.allHits)
+            // Move the buyer's cards first, then tell the stream.
+            let line = shipOrder.flatMap { store.finishRipShip($0.id) }
+            onHits?(model.allHits, line)
             onClose()
         }
     }
@@ -57,6 +69,8 @@ struct RipView: View {
     /// The runner for Fast and Sift.
     @State var autoTask: Task<Void, Never>?
     @State private var stopRuleShown = false
+    /// The big hit that the player is about to palm. The dialog asks first.
+    @State private var palmAsk: RipCard?
     /// The info panel, the pile label, and the glow wait until a card has turned face up.
     @State var infoCard: RipCard?
     @State var pileTop: RipCard?
@@ -98,7 +112,7 @@ struct RipView: View {
                             .position(p.point)
                             .zIndex(p.z)
                             // The Hits only row of tears hides the cards until they rise out of the last pack.
-                            .opacity(tearingIndex != nil && !cardsRise && !cardsOut ? 0 : 1)
+                            .opacity(tearingIndex != nil && !cardsRise && !cardsOut ? 0 : model.palmedIDs.contains(card.id) ? 0 : 1)
                             .allowsHitTesting(false)
                     }
                 }
@@ -128,7 +142,7 @@ struct RipView: View {
                                    center: .center, startRadius: 0, endRadius: layout.packW * (godLight ? 1.1 : 0.8))
                         .frame(width: layout.packW * 1.8, height: layout.packW * 1.1)
                         .blendMode(.plusLighter)
-                        .opacity(openFlash)
+                        .opacity(openFlash * (model.shipOrderID != nil ? 0.5 : 1))
                         .position(x: layout.packCenter.x, y: tearY(layout))
                         .allowsHitTesting(false)
                         .zIndex(302)
@@ -259,6 +273,16 @@ struct RipView: View {
         .onChange(of: model.paused) { _, paused in
             if !paused, model.mode != .normal { runAuto() }
         }
+        .confirmationDialog("Palm the \(palmAsk?.name ?? "card")?", isPresented: Binding(isPresent: $palmAsk),
+                            titleVisibility: .visible, presenting: palmAsk) { card in
+            Button("Palm it", role: .destructive) {
+                Haptics.tap(.medium)
+                withAnimation(.easeIn(duration: 0.35)) { model.palm(card) }
+            }
+            Button("Leave it", role: .cancel) {}
+        } message: { _ in
+            Text("This is a scam. The card stays with you, and \(model.shipBuyer ?? "the buyer") gets a bulk card in its place. The camera catches about half of all palms. If it does, Whatnot bans you and the clip spreads.")
+        }
         .sheet(isPresented: $stopRuleShown) {
             if let slug = model.currentPack?.setSlug, let store = model.store {
                 StopRuleSheet(slug: slug).environment(store)
@@ -388,8 +412,12 @@ struct RipView: View {
     private var bottomPanel: some View {
         VStack(spacing: 10) {
             let sealed = model.phase == .sealed && model.mode == .normal
-            CardInfo(card: sealed ? nil : infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil },
+            let shown = sealed ? nil : infoCard.flatMap { card in model.allCards.contains { $0.id == card.id } ? card : nil }
+            CardInfo(card: shown,
                      tool: model.centeringTool,
+                     shipsTo: model.shipBuyer,
+                     canPalm: shown.map { model.canPalm($0) } ?? false,
+                     onPalm: { palmAsk = shown },
                      hint: !sealed ? "Tap the card to reveal it.\nHold the stack to peek at the cards."
                          : model.willCombine && model.packsLeft > 1 ? "Hits only. One swipe opens all \(model.packsLeft) packs."
                          : "Tap or swipe across the top of the pack to open it.",
