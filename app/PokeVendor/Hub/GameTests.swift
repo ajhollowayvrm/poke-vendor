@@ -35,6 +35,7 @@ final class GameTests {
         timed("boxes", boxes)
         timed("series", seriesJoin)
         timed("market", market)
+        timed("sealed", sealedFoundation)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -652,6 +653,74 @@ final class GameTests {
     }
 
     // MARK: - Fourteen days of play
+
+    /// The sealed product foundation (phase 0): the seeded rivals, the hidden log, and the save of the new fields.
+    private func sealedFoundation() {
+        fresh()
+        let rivals = store.data.rivals
+        check(rivals.count == 5 && Set(rivals.map(\.id)).count == 5, "seedRivals made \(rivals.count) rivals with duplicate IDs")
+        check(rivals.filter { $0.kind == .flipper }.count == 3 && rivals.filter { $0.kind == .creator }.count == 2,
+              "the rivals are not 3 flippers and 2 creators")
+        check(rivals.filter { $0.kind == .flipper }.allSatisfy { $0.homeStores.count == 2 && !$0.name.isEmpty },
+              "a rival flipper has no home stores")
+        store.seedRivals()
+        check(store.data.rivals == rivals, "a second seedRivals changed or duplicated the rivals")
+
+        // The hidden log: record, then retire, leaves it empty.
+        let act = store.recordHiddenAct(.shelfBuyout, weight: 1, note: "test", witnesses: 5)
+        check(store.data.hiddenActs.count == 1, "recordHiddenAct did not add an act")
+        store.retireHiddenAct(act)
+        check(store.data.hiddenActs.isEmpty, "retireHiddenAct left the act in the log")
+
+        // A save keeps every new field.
+        guard let first = store.data.rivals.first else { return check(false, "no rival to test") }
+        store.rememberRival(first.id, .playerTookShelf, note: "test", byPlayer: true, hostility: 0.1)
+        store.noteRivalReceipt(first.id, note: "test")
+        store.recordHiddenAct(.priceGouge, weight: 1, note: "test")
+        store.startCallout(.greed, truth: true, receipts: false, accuser: .rival(.rival(first.id)), text: "Test callout.")
+        store.banFromWhatnot(days: 5, reason: "test")
+        store.data.retail.gougeDay = 4
+        store.data.retail.storeHeat["Target"] = 2
+        store.data.plug.name = "Test plug"
+        store.data.flipperPressure = 0.6
+        store.data.scalperHeat = 3
+        // Dictionaries with Int keys and a nested struct must round-trip too.
+        store.data.retail.pressureLog[3] = 0.4
+        store.data.retail.strictness["Target"] = ChainStrictness(level: 2)
+        store.data.ripShip.grossByDay[2] = 50
+        check(store.data.callouts.open.count == 1 && store.data.rivals.first?.memory.count == 1, "the stubs did not write")
+        guard let saved = try? JSONEncoder().encode(store.data),
+              let loaded = try? JSONDecoder().decode(GameData.self, from: saved) else {
+            return check(false, "the sealed fields did not encode and decode")
+        }
+        check(loaded.rivals == store.data.rivals && loaded.retail == store.data.retail && loaded.hiddenActs == store.data.hiddenActs
+              && loaded.callouts == store.data.callouts && loaded.plug == store.data.plug && loaded.ripShip == store.data.ripShip
+              && loaded.flipperPressure == 0.6 && loaded.scalperHeat == 3, "a save and a load lost sealed fields")
+        check(loaded.ripShip.bannedUntil == store.day + 5 && loaded.ripShip.banReason == "test", "a save and a load lost the Whatnot ban")
+
+        // An old save has none of the new keys. It loads with the defaults.
+        guard var object = (try? JSONSerialization.jsonObject(with: saved)) as? [String: Any] else {
+            return check(false, "the save is not an object")
+        }
+        for key in ["flipperPressure", "scalperHeat", "rivals", "retail", "plug", "ripShip", "hiddenActs", "callouts"] {
+            object[key] = nil
+        }
+        guard let old = try? JSONSerialization.data(withJSONObject: object),
+              let oldLoaded = try? JSONDecoder().decode(GameData.self, from: old) else {
+            return check(false, "an old save did not decode")
+        }
+        check(oldLoaded.rivals.isEmpty && oldLoaded.retail == RetailState() && oldLoaded.plug == PlugState()
+              && oldLoaded.ripShip == RipShipState() && oldLoaded.hiddenActs.isEmpty && oldLoaded.callouts == CalloutState()
+              && oldLoaded.flipperPressure == Balance.pressureStart && oldLoaded.scalperHeat == 0,
+              "an old save did not load the defaults")
+        // A nested struct that misses a key keeps its other fields.
+        let partial = Data(#"{"gougeDay": 9}"#.utf8)
+        check((try? JSONDecoder().decode(RetailState.self, from: partial))?.gougeDay == 9, "a partial RetailState did not decode")
+        // An old save gets its rivals when the store loads it.
+        store.data = oldLoaded
+        store.seedRivals()
+        check(store.data.rivals.count == 5, "a load did not seed the rivals of an old save")
+    }
 
     /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.
     /// End Day touches every system, so an exclusivity crash shows up here (memory: the exclusivity trap).

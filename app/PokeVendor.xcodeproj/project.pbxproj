@@ -117,6 +117,7 @@
 		63FF61559D09CC5ED1FE13DD /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B3A5E9B134DA765470B7666 /* Inventory.swift */; };
 		6530A7A91713B7B7F2E51FAC /* team-magma-vs-team-aqua.json in Resources */ = {isa = PBXBuildFile; fileRef = A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */; };
 		66F84AAE77B66E974C6B2FE9 /* unbroken-bonds.json in Resources */ = {isa = PBXBuildFile; fileRef = 12F19AAA7C46A6E7F1E32D73 /* unbroken-bonds.json */; };
+		673A89D5FB03A05FF35F40E7 /* Callouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A2E7965BD452ED910DD1B7 /* Callouts.swift */; };
 		687AA6D24FCF3B0F9C82C980 /* furious-fists.json in Resources */ = {isa = PBXBuildFile; fileRef = 687D38A7B84E86024E927A14 /* furious-fists.json */; };
 		697C57E1692D53608533B285 /* Losses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA2426C0050E11BB75D79A1E /* Losses.swift */; };
 		698B4217C58A357D7D697A6F /* double-crisis.json in Resources */ = {isa = PBXBuildFile; fileRef = 1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */; };
@@ -129,6 +130,7 @@
 		76DA8D89B34C2DE62DE99897 /* ascended-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F83F25627755699228CC982 /* ascended-heroes.json */; };
 		77F46089228046EF2432372E /* WholesaleViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */; };
 		78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */; };
+		792379EDEB29916CD81A5483 /* Plug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6748344097107575A0EA8B89 /* Plug.swift */; };
 		7A083944B51665537452772F /* ShowSetupStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A10F5C4AE81F84DCCB0FB86 /* ShowSetupStage.swift */; };
 		7A35C872266C162E6BEC2E3D /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689EB4A1DA309507FAA552BA /* Events.swift */; };
 		7A3F4E4177605B7802A0D612 /* evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = CC0E8783F786B72E1D0FF385 /* evolutions.json */; };
@@ -211,6 +213,7 @@
 		B8A7113DF6BAEB8511C84E37 /* ShowGoodsRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD3B410588AC949381EBBA1 /* ShowGoodsRows.swift */; };
 		BADCBA623F2EBF8FAC4B0487 /* jungle.json in Resources */ = {isa = PBXBuildFile; fileRef = 6187C2CFFD057E0E448F0CC8 /* jungle.json */; };
 		BD5A2FACC5DD80A8909BFF55 /* black-bolt.json in Resources */ = {isa = PBXBuildFile; fileRef = F78F3275EFDE7F3E896A5E91 /* black-bolt.json */; };
+		BD8B422EF86B53DA7596CB69 /* Rivals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4E804C9F95960A07F5BA90 /* Rivals.swift */; };
 		BDEC51C239A1F0178FF4F56A /* delta-species.json in Resources */ = {isa = PBXBuildFile; fileRef = 3A569E4A6BF6ADE917EC538F /* delta-species.json */; };
 		BDF93E32D155D521D1F428B1 /* StoreEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71039722F060097A21B22BB3 /* StoreEvents.swift */; };
 		BF40EF0C7B89584AA1DB15F8 /* base-set.json in Resources */ = {isa = PBXBuildFile; fileRef = 05ED658C6E7349BE468EC9FE /* base-set.json */; };
@@ -238,6 +241,7 @@
 		D110EAA94F1CC7FA2125A4A7 /* detective-pikachu.json in Resources */ = {isa = PBXBuildFile; fileRef = 9DC6A7C92B5A8D55CF5286FD /* detective-pikachu.json */; };
 		D1C8BBE2F185A0AC1B985FB5 /* sun-moon.json in Resources */ = {isa = PBXBuildFile; fileRef = FFB84E50DD5B533FE4BD8643 /* sun-moon.json */; };
 		D3B93B18BEA7DF8E26B5B8C3 /* dragons-exalted.json in Resources */ = {isa = PBXBuildFile; fileRef = 946CC77705EA5072E1E4B4B2 /* dragons-exalted.json */; };
+		D47785B7D74C27EAA2EAF04E /* RetailOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFDE58CA33D37B69E7FAA730 /* RetailOnline.swift */; };
 		D4D03F812AA93D164C7981BD /* prismatic-evolutions.json in Resources */ = {isa = PBXBuildFile; fileRef = B5511559E1A3A95108659987 /* prismatic-evolutions.json */; };
 		D889A9F9ED8A2AC4D22CCD94 /* vivid-voltage.json in Resources */ = {isa = PBXBuildFile; fileRef = B20617D3991981E63F15727B /* vivid-voltage.json */; };
 		D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93E91BC33F28004C994B1EE /* Debt.swift */; };
@@ -261,6 +265,7 @@
 		E52E815BE6C24DE5EBA27591 /* ShortsViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */; };
 		E5753F2C99B69BECBAC8EA6D /* heartgold-soulsilver.json in Resources */ = {isa = PBXBuildFile; fileRef = 47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */; };
 		E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */; };
+		E61D9A90370E32009F66F4D0 /* RipShip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E807C89D8CAF0F0F443F59A /* RipShip.swift */; };
 		E6ADCF95B4033D5F464D5D6E /* holon-phantoms.json in Resources */ = {isa = PBXBuildFile; fileRef = B2AC5F4521315B8D910BC433 /* holon-phantoms.json */; };
 		E6E2B17CADD62E764AEF5BD3 /* Opportunities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358CC15CDFF4392C2418EBCB /* Opportunities.swift */; };
 		E773086037F13A9C2D65807E /* DetailViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544120DEF70C6BCBC2EF918A /* DetailViews.swift */; };
@@ -282,6 +287,7 @@
 		F09EFDDFD8790FA639C566F4 /* RipView+Tear.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCA10E0346065DAC9FB7BF1 /* RipView+Tear.swift */; };
 		F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */ = {isa = PBXBuildFile; fileRef = 99D48054DE8D081D34F8C24C /* fossil.json */; };
 		F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */ = {isa = PBXBuildFile; fileRef = 649C90774494AA3AF98125AC /* legendary-collection.json */; };
+		F4572FD4B8BE110711D98967 /* Retail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6344A1A670648627BB04E7 /* Retail.swift */; };
 		F5AC00EB1CE6D87281F4CBF9 /* VendingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A433BDD5A3BD9A5C9E8F46A /* VendingViews.swift */; };
 		F7384A7B2C2A94AAFECAFAE1 /* ShowVendorTradeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A673B85CC9B895851554F68 /* ShowVendorTradeSheet.swift */; };
 		F7624A4AB352DEBA5FC67044 /* SocialViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820C299F6D8FD690239ED0CC /* SocialViews.swift */; };
@@ -300,6 +306,7 @@
 		07BCE444E4AD984840D93FF6 /* UpgradesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradesView.swift; sourceTree = "<group>"; };
 		086CD5486126C0FE54AF794E /* Collections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collections.swift; sourceTree = "<group>"; };
 		0892155B07C10C47B42D6134 /* PriceCycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceCycle.swift; sourceTree = "<group>"; };
+		0A4E804C9F95960A07F5BA90 /* Rivals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rivals.swift; sourceTree = "<group>"; };
 		0F00430F0834556CB005AAA2 /* ShowFloorStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowFloorStage.swift; sourceTree = "<group>"; };
 		0F522C90FE86AD311AB076F5 /* dragon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dragon.json; sourceTree = "<group>"; };
 		10B789AFBC7E60902CCEA9F3 /* LoansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoansView.swift; sourceTree = "<group>"; };
@@ -359,6 +366,7 @@
 		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
 		3DDA3B83589268718F6EE970 /* RipSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipSettings.swift; sourceTree = "<group>"; };
 		3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViews.swift; sourceTree = "<group>"; };
+		3F6344A1A670648627BB04E7 /* Retail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Retail.swift; sourceTree = "<group>"; };
 		3F83F25627755699228CC982 /* ascended-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ascended-heroes.json"; sourceTree = "<group>"; };
 		40AFA031CD12EA2F8CAF859A /* ultra-prism.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ultra-prism.json"; sourceTree = "<group>"; };
 		42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokeVendorApp.swift; sourceTree = "<group>"; };
@@ -409,6 +417,7 @@
 		642F08591A3569F0A27BA0D1 /* Market.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Market.swift; sourceTree = "<group>"; };
 		649C90774494AA3AF98125AC /* legendary-collection.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legendary-collection.json"; sourceTree = "<group>"; };
 		66B77CF9FA79C477304765CF /* generations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = generations.json; sourceTree = "<group>"; };
+		6748344097107575A0EA8B89 /* Plug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plug.swift; sourceTree = "<group>"; };
 		678B02909309694DEE98F244 /* emerging-powers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "emerging-powers.json"; sourceTree = "<group>"; };
 		6867FD072F0DC5CEAE46690F /* pitch-black.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pitch-black.json"; sourceTree = "<group>"; };
 		687D38A7B84E86024E927A14 /* furious-fists.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "furious-fists.json"; sourceTree = "<group>"; };
@@ -443,6 +452,7 @@
 		7C47B50B9FFDCF815C603661 /* obsidian-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "obsidian-flames.json"; sourceTree = "<group>"; };
 		7DB2E7EA020C2D7260109C7E /* RipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipView.swift; sourceTree = "<group>"; };
 		7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorePricing.swift; sourceTree = "<group>"; };
+		7E807C89D8CAF0F0F443F59A /* RipShip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipShip.swift; sourceTree = "<group>"; };
 		7E94D7F70903BA100DDFBA0F /* burning-shadows.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "burning-shadows.json"; sourceTree = "<group>"; };
 		7F23F60653C3E9407ECEFD30 /* guardians-rising.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "guardians-rising.json"; sourceTree = "<group>"; };
 		7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionViews.swift; sourceTree = "<group>"; };
@@ -505,6 +515,7 @@
 		BCFB88631EA718ED0E77E2CE /* roaring-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "roaring-skies.json"; sourceTree = "<group>"; };
 		BD567FF6A1AB5571EA47AA26 /* aquapolis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = aquapolis.json; sourceTree = "<group>"; };
 		BEE883B7CE36E2F72E9892DA /* shining-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "shining-fates.json"; sourceTree = "<group>"; };
+		BFDE58CA33D37B69E7FAA730 /* RetailOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetailOnline.swift; sourceTree = "<group>"; };
 		C05325B42F9797DF7460D557 /* SoundFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundFX.swift; sourceTree = "<group>"; };
 		C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantasmal-flames.json"; sourceTree = "<group>"; };
 		C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WholesaleViews.swift; sourceTree = "<group>"; };
@@ -518,6 +529,7 @@
 		CCDC5BC3CF78F1FEF20BBAA9 /* gym-heroes-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-heroes-1st-edition.json"; sourceTree = "<group>"; };
 		CD0B8BEE25B23110D7CE1EF2 /* evolving-skies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "evolving-skies.json"; sourceTree = "<group>"; };
 		CE9178C1573E5068893700E2 /* black-white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "black-white.json"; sourceTree = "<group>"; };
+		D0A2E7965BD452ED910DD1B7 /* Callouts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Callouts.swift; sourceTree = "<group>"; };
 		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
 		D3C180A062FEB64E1EB184FD /* legends-awakened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legends-awakened.json"; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
@@ -810,6 +822,7 @@
 				FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */,
 				3BE8F9A509ED85647311ACD5 /* Balance.swift */,
 				915F98D6A385AE0C6AD57D98 /* BoxContents.swift */,
+				D0A2E7965BD452ED910DD1B7 /* Callouts.swift */,
 				D85667450A30BCA2B91E3829 /* Camping.swift */,
 				3553A3A890986D3D87A796A8 /* CardStore.swift */,
 				086CD5486126C0FE54AF794E /* Collections.swift */,
@@ -843,12 +856,17 @@
 				29666B46E0F524E81D932375 /* Packing.swift */,
 				9881C74F0228AC7C882E6679 /* Payments.swift */,
 				B1321113F37B7D300C763312 /* PersonalCollection.swift */,
+				6748344097107575A0EA8B89 /* Plug.swift */,
 				0892155B07C10C47B42D6134 /* PriceCycle.swift */,
 				E31479E39C7B363F7E989E45 /* PrintRuns.swift */,
 				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
+				3F6344A1A670648627BB04E7 /* Retail.swift */,
+				BFDE58CA33D37B69E7FAA730 /* RetailOnline.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
 				EFEB00B5E3B98AFB182E5118 /* RipModel.swift */,
 				3DDA3B83589268718F6EE970 /* RipSettings.swift */,
+				7E807C89D8CAF0F0F443F59A /* RipShip.swift */,
+				0A4E804C9F95960A07F5BA90 /* Rivals.swift */,
 				DCC08691AB0384D342F8CF4F /* SaleProblems.swift */,
 				5BC5E06D2611E27D5195B7E9 /* Sales.swift */,
 				9E806A5D2CAC20EF3493CB08 /* Seasons.swift */,
@@ -1207,6 +1225,7 @@
 				336B3AF3DB9F360F1F2186A5 /* BoxContents.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
+				673A89D5FB03A05FF35F40E7 /* Callouts.swift in Sources */,
 				AE80D65ED6605B15A934D2E7 /* Camping.swift in Sources */,
 				FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */,
 				916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */,
@@ -1265,19 +1284,24 @@
 				41754DEBB1E847E8C2ACDD13 /* PaymentViews.swift in Sources */,
 				FCAD9164775A3F88F8F0FE00 /* Payments.swift in Sources */,
 				A144BF1527518313ED6C8305 /* PersonalCollection.swift in Sources */,
+				792379EDEB29916CD81A5483 /* Plug.swift in Sources */,
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
 				F85DCACE4F481C99EAC7F29B /* PriceCycle.swift in Sources */,
 				90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */,
 				E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */,
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */,
+				F4572FD4B8BE110711D98967 /* Retail.swift in Sources */,
+				D47785B7D74C27EAA2EAF04E /* RetailOnline.swift in Sources */,
 				3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */,
 				24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */,
 				EE25610F66D60690F7AE0E00 /* RipSettings.swift in Sources */,
+				E61D9A90370E32009F66F4D0 /* RipShip.swift in Sources */,
 				B60883AA719B45A9A0FE33D4 /* RipView+Reveal.swift in Sources */,
 				AD9AD35F481816554B112EE4 /* RipView+Special.swift in Sources */,
 				F09EFDDFD8790FA639C566F4 /* RipView+Tear.swift in Sources */,
 				EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */,
+				BD8B422EF86B53DA7596CB69 /* Rivals.swift in Sources */,
 				0CFAD014F3343BA39A16ABE0 /* SaleProblems.swift in Sources */,
 				290A84E7043308C76B2FD6A9 /* SaleReceiptView.swift in Sources */,
 				76C05A5741135E258BF8809F /* Sales.swift in Sources */,

@@ -138,6 +138,22 @@ struct GameData: Codable {
     var lotRates: [String: Double] = [:]
     /// Short-form video: the series, the view pay, the reveals, and the vlog (docs/32-short-form-video.md).
     var shorts = ShortsState()
+    // Sealed product play (docs/proposals/sealed-product).
+    /// Flipper pressure: how hard flippers compete for in-print sealed, 0.1 to 0.9 (Part A).
+    var flipperPressure = Balance.pressureStart
+    /// The player's hidden scalper heat over all chains and bots (Part A). No cap.
+    var scalperHeat = 0.0
+    /// Named rival flippers and rival creators (Model/Rivals.swift).
+    var rivals: [Rival] = []
+    /// Limits, vendor batches, strictness, drawings, online orders, alerts, and the MSRP step (Model/Retail.swift).
+    var retail = RetailState()
+    /// The gray market plug (Model/Plug.swift).
+    var plug = PlugState()
+    /// Rip & Ship orders, bans, and strikes (Model/RipShip.swift).
+    var ripShip = RipShipState()
+    /// The hidden log of shady acts, and the callouts (Model/Callouts.swift).
+    var hiddenActs: [HiddenAct] = []
+    var callouts = CalloutState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -231,6 +247,14 @@ extension GameData {
         lotOrders = v(.lotOrders, lotOrders)
         lotRates = v(.lotRates, lotRates)
         shorts = v(.shorts, shorts)
+        flipperPressure = v(.flipperPressure, flipperPressure)
+        scalperHeat = v(.scalperHeat, scalperHeat)
+        rivals = v(.rivals, rivals)
+        retail = v(.retail, retail)
+        plug = v(.plug, plug)
+        ripShip = v(.ripShip, ripShip)
+        hiddenActs = v(.hiddenActs, hiddenActs)
+        callouts = v(.callouts, callouts)
     }
 }
 
@@ -285,6 +309,7 @@ final class GameStore {
         scheduleShows()
         scheduleSales()
         seedContacts()
+        seedRivals()
     }
 
     // MARK: - Calendar and clock
@@ -537,6 +562,7 @@ final class GameStore {
         scheduleShows()
         scheduleSales()
         seedContacts()
+        seedRivals()
         save()
     }
 

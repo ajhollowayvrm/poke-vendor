@@ -6,6 +6,8 @@ enum LocalStore: String, CaseIterable, Codable, Hashable {
     case barnes = "Barnes & Noble", castle = "Cardboard Castle", topDeck = "Top Deck Games"
 
     var isGameShop: Bool { self == .castle || self == .topDeck }
+    /// A big chain store with a card aisle. Phase 2 of the sealed product plan adds `&& !isClub`.
+    var isBigStore: Bool { !isGameShop }
     /// Each stop adds its drive and its visit (docs/16-time-and-day.md). A better car makes it shorter
     /// (`GameStore.storeStopHours`).
     static let baseHours = 40.0 / 60.0
