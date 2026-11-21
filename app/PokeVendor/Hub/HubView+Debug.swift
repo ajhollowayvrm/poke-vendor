@@ -39,6 +39,17 @@ extension HubView {
                 store.addTestCash(5_000)
                 store.testUnlockPlug()
                 nav.path = [.buy]
+            case "callouts":
+                // A Known player with a social account, hidden acts that came out, a false callout, and a record.
+                store.startRun()
+                store.addReputation(60)
+                store.addTestCash(2_000)
+                store.createAccount("@demo")
+                store.recordHiddenAct(.shelfBuyout, weight: 1, note: "demo", witnesses: 5, revealDay: store.day)
+                store.recordHiddenAct(.lowballKid, weight: 1, note: "demo", witnesses: 3, revealDay: store.day)
+                _ = store.calloutsEndDay()
+                if let rival = store.data.rivals.first { store.rivalCallout(RivalView(key: .rival(rival.id), hostility: 0.3, credibility: 1, creator: false)) }
+                nav.path = [.callouts]
             case "amazon": nav.path = [.buy, .store(.amazon)]
             case "ebay":
                 // `-lotupgrades` gives the three eBay lot upgrades (docs/33-collections.md).

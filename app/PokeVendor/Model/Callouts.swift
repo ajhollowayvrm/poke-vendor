@@ -377,17 +377,105 @@ extension Balance {
     static let calloutHeatGreed = 40.0
     static let calloutHeatForbidden = 50.0
     static let calloutHeatSmear = 40.0
+    /// Heat lost each night with no reply schedule, the heat that a named rival adds with each answer, the heat under
+    /// which a callout ends, and the most days that a callout lasts.
+    static let calloutDecay = 0.15
+    static let calloutReplyHeat = 20.0
+    static let calloutEndHeat = 5.0
+    static let calloutMaxDays = 45
     /// Open callouts about the player, except forced ones.
     static let calloutMaxOpen = 3
+    /// The deny reply: the heat factor on a true callout, the find-out chances, the reputation lost when it falls apart,
+    /// the reputation gained on a false callout, and the days that a denied false callout needs to reach 0.
+    static let calloutDenyTrueFactor = 1.5
+    static let calloutDenyFindOutReceipts = 0.5
+    static let calloutDenyFindOutPlain = 0.2
+    static let calloutDenyCaughtRep = 8
+    static let calloutDenyFalseRep = 1
+    static let calloutDenyFalseDays = 2
+    static let calloutMakeRightDays = 1
     /// The cost of "make it right" when no act sets a refund: dollars for each heat point, lowest, highest.
     static let calloutGoodwillPerHeat = 2.0
     static let calloutGoodwillMin = 25.0
     static let calloutGoodwillMax = 250.0
+    /// Goodwill on a late Rip & Ship order: a share of the order price, and the lowest sum.
+    static let lateShipGoodwillShare = 0.10
+    static let lateShipGoodwillMin = 5.0
+    /// The counter-callout: the heat it adds, the followers (a share), the authenticity it costs, the rival credibility
+    /// it costs on a true and on a false callout, and the standing it costs with a game shop.
+    static let calloutCounterHeat = 30.0
+    static let calloutCounterFollowerShare = 0.005
+    static let calloutCounterAuthenticity = 0.05
+    static let calloutCounterCredTrue = 0.1
+    static let calloutCounterCredFalse = 0.3
+    static let calloutCounterShopCost = 10
+    /// The peak heat of the viral and the bad story costs, and the authenticity lost at a viral fade.
+    static let calloutViralPeak = 70.0
+    static let calloutBadPeak = 30.0
+    static let calloutViralAuthenticity = 0.1
+    /// A true callout costs this many points with the harmed contact.
+    static let calloutContactCost = 15
+    /// A true callout that peaks at this heat leaves a record. The record lasts this many days. Each record lowers the
+    /// start points of a new contact by `calloutRecordContactCost`. At most `calloutRecordMax` records count.
+    static let calloutRecordPeak = 50.0
+    static let calloutRecordDays = 90
+    static let calloutRecordContactCost = 5
+    static let calloutRecordMax = 3
+    /// A true integrity callout, or a log palm, that peaks at this heat bans Whatnot for these days.
+    static let calloutBanPeak = 80.0
+    static let calloutBanDays = 28...56
+    /// Receipts: the daily chance on a true callout, the lowest heat, and the heat that they add.
+    static let calloutReceiptsDaily = 0.15
+    static let calloutReceiptsMinHeat = 30.0
+    static let calloutReceiptsHeat = 10.0
+    /// The start heat factor of a false rival callout for a player with no account.
+    static let calloutNoAccountHeat = 0.5
+    /// No new sponsor offer at this heat or more.
+    static let calloutSponsorBlockHeat = 60.0
+    /// At a show, at this heat, this share of buyers mention the callout.
+    static let calloutCrowdHeat = 50.0
+    static let calloutCrowdChance = 0.125
+    static let responseBurnout = 0.05
+    // The hidden log.
+    static let hiddenActNotorietyStep = 0.1
+    static let hiddenActDailyCap = 0.5
+    static let hiddenActMinWeight = 0.05
+    static let hiddenActMaxDays = 90
+    static let hiddenActKeepDays = 120
+    static let witnessCap = 3.0
+    // Rivals.
+    static let rivalBreaksStory = 0.33
+    static let rivalCalloutBase = 0.008
+    static let rivalCalloutHostility = 0.06
+    static let rivalCalloutTruth = 0.4
+    static let rivalCalloutGap = 14
+    static let rivalCalloutGapFactor = 0.25
     /// At most 1 receipt from each rival in this many days.
     static let rivalReceiptGapDays = 30
     /// The lowest rival credibility, and the credibility that a game shop gets back each week.
     static let rivalCredFloor = 0.25
     static let rivalCredWeekly = 0.05
+    static let rivalCredDenied = 0.25
+    static let rivalReceiptDays = 60
+    static let shopRivalHostilityBase = 0.2
+    static let shopRivalHostilityRange = 0.5
+    static let dramaBaitGambling = 0.15
+    static let dramaBaitMax = 0.5
+    // The player calls out a rival.
+    static let playerCalloutRep = 1
+    static let playerCalloutFollowerShare = 0.005
+    static let playerCalloutFollowerMin = 10
+    static let playerCalloutCred = 0.3
+    static let playerCalloutHostility = 0.2
+    static let playerCalloutCooldown = 28
+    static let playerSmearAuthenticity = 0.05
+    static let playerSmearCredGain = 0.1
+    // The kid gift and the good stories.
+    static let kidGiftMinValue = 5.0
+    static let kidGiftMaxValue = 30.0
+    static let kidGiftStory = 0.15
+    static let goodStoryHeatCut = 10.0
+    static let viralGoodStoryHeatCut = 25.0
 }
 
 @MainActor
@@ -429,7 +517,10 @@ extension GameStore {
         data.hiddenActs[i].revealDay = day
     }
 
-    /// Phase 0 stub: appends the callout and returns the report line. Phase 6 adds the cap merge and the rival memory.
+    /// Opens a callout about the player. Returns the report line.
+    /// `force`: the callout opens past the cap (a palm caught on camera, a public fake post, an act with a fixed
+    /// reveal day, an unshipped order, a baseless player callout). Without `force`, a full cap adds the heat to an
+    /// open callout, so an act is never lost.
     @discardableResult
     func startCallout(_ type: CalloutType, truth: Bool, receipts: Bool, heat: Double? = nil, accuser: CalloutAccuser,
                       text: String, force: Bool = false, actID: UUID? = nil, actKind: HiddenActKind? = nil,
@@ -437,12 +528,34 @@ extension GameStore {
                       repPaid: Bool = false) -> String? {
         let today = data.day
         let start = min(100, heat ?? type.startHeat)
+        let open = data.callouts.open.filter { $0.target == .player }
+        if !force, open.count >= Balance.calloutMaxOpen {
+            // The heat joins an open true callout that is still going: the same type first, then any. It never joins a
+            // false callout or one that the player already resolved (deny, make it right), because the fade would
+            // count the act as beaten. With no such callout, an act opens its own callout past the cap, so it never
+            // vanishes. A claim with no act has nothing to lose and drops.
+            let live = open.filter { $0.truth && $0.fallFrom == nil }
+            if let pick = live.first(where: { $0.type == type }) ?? live.max(by: { $0.heat < $1.heat }),
+               let k = data.callouts.open.firstIndex(where: { $0.id == pick.id }) {
+                var c = data.callouts.open[k]
+                c.heat = min(100, c.heat + start)
+                c.peak = max(c.peak, c.heat)
+                c.reason = "More people piled on."
+                data.callouts.open[k] = c
+                log(text)
+                return "Callout: \(text) It joined the talk about you. Heat \(Int(c.heat))."
+            }
+            if actID == nil { return nil }
+        }
         let pay = refund > 0 ? refund : goodwill(heat: start)
         let c = Callout(type: type, accuser: accuser, startDay: today, text: text, truth: truth, receipts: receipts,
                         heat: start, peak: start, reason: receipts ? "They posted receipts." : "It is spreading.",
                         actID: actID, actKind: actKind, sourceID: sourceID, contactID: contactID, refund: pay,
                         repPaid: repPaid)
         data.callouts.open.append(c)
+        if case .rival(.rival(let id)) = accuser {
+            rememberRival(id, .rivalCalledOut, note: text, byPlayer: false)
+        }
         log(text)
         return "Callout: \(text) Heat \(Int(start))."
     }
@@ -450,6 +563,11 @@ extension GameStore {
     /// The cost of "make it right" when no act sets a refund.
     func goodwill(heat: Double) -> Double {
         (min(Balance.calloutGoodwillMax, max(Balance.calloutGoodwillMin, heat * Balance.calloutGoodwillPerHeat))).rounded()
+    }
+
+    /// The goodwill sum for a late Rip & Ship order: 10% of the order price, at least $5.
+    func lateGoodwill(_ price: Double) -> Double {
+        max(Balance.lateShipGoodwillMin, (price * Balance.lateShipGoodwillShare * 100).rounded() / 100)
     }
 
     /// At most 1 receipt from each rival each `Balance.rivalReceiptGapDays` days.
@@ -460,3 +578,609 @@ extension GameStore {
         data.callouts.rivalReceipts.append(RivalReceipt(key: .rival(id), day: today, note: note))
     }
 }
+
+// MARK: - Reads
+
+@MainActor
+extension GameStore {
+    var openCallouts: [Callout] { data.callouts.open.filter { $0.target == .player } }
+    var hottestCallout: Double { openCallouts.map(\.heat).max() ?? 0 }
+    var activeRecords: [CalloutRecord] {
+        let today = data.day
+        return data.callouts.records.filter { $0.untilDay >= today }
+    }
+    /// Points that a new contact loses for the active records.
+    var recordPenalty: Int { min(Balance.calloutRecordMax, activeRecords.count) * Balance.calloutRecordContactCost }
+
+    func callout(_ id: UUID) -> Callout? { data.callouts.open.first { $0.id == id } }
+
+    func name(of accuser: CalloutAccuser) -> String {
+        switch accuser {
+        case .rival(let key): name(of: key)
+        case .person(let name): name
+        case .player: data.social.handle ?? "You"
+        }
+    }
+
+    func name(of key: RivalKey) -> String {
+        switch key {
+        case .rival(let id): rival(id)?.name ?? "A rival"
+        case .shop(let shop): shop.rawValue
+        }
+    }
+
+    /// Named rivals keep credibility on `Rival`. Game shops keep it in `CalloutState`.
+    func credibility(_ key: RivalKey) -> Double {
+        switch key {
+        case .rival(let id): rival(id)?.credibility ?? 1
+        case .shop(let shop): data.callouts.shopCredibility[shop.rawValue] ?? 1
+        }
+    }
+
+    /// Lowers credibility, down to the floor at most. A named rival goes through `changeRivalCredibility`. A receipt
+    /// against a named rival is optional.
+    func loseCredibility(_ key: RivalKey, _ amount: Double, receipt: String?) {
+        let now = credibility(key)                       // read before any write
+        let next = max(Balance.rivalCredFloor, now - amount)
+        switch key {
+        case .rival(let id):
+            changeRivalCredibility(id, by: next - now)
+            if let receipt { noteRivalReceipt(id, note: receipt) }
+        case .shop(let shop):
+            data.callouts.shopCredibility[shop.rawValue] = next
+        }
+    }
+
+    /// Every rival that can post: the named rivals, and the two game shops after a lease.
+    func rivalPool() -> [RivalView] {
+        var out = data.rivals.map { r in
+            RivalView(key: .rival(r.id), hostility: r.hostility, credibility: r.credibility, creator: r.kind == .creator)
+        }
+        if data.cardStore != nil {
+            for shop in LocalStore.allCases where shop.isGameShop {
+                let points = Double(self.shop(shop).points)
+                out.append(RivalView(key: .shop(shop),
+                                     hostility: Balance.shopRivalHostilityBase + Balance.shopRivalHostilityRange * (1 - points / 100),
+                                     credibility: credibility(.shop(shop)), creator: false))
+            }
+        }
+        return out
+    }
+}
+
+/// One rival, as the callout system sees it. Built fresh each time. Not saved.
+struct RivalView {
+    let key: RivalKey
+    let hostility: Double
+    let credibility: Double
+    let creator: Bool
+    var accuser: CalloutAccuser { .rival(key) }
+}
+
+// MARK: - End Day
+
+@MainActor
+extension GameStore {
+    /// End Day: hidden acts that come out, the weekly rival roll, then heat, replies, and the end of callouts.
+    func calloutsEndDay() -> [String] {
+        var lines: [String] = []
+        storeShelfGouge()              // a high shelf price that stays up is a gouge each night
+        lines += exposeHiddenActs()
+        lines += rivalCalloutsWeekly()
+        lines += advanceCallouts()
+        return lines.filter { !$0.isEmpty }
+    }
+
+    /// The first night rule: an act can come out on the night it is recorded. Every value is read into a local
+    /// first. The loop changes only the local copy of the log (exclusivity rule).
+    private func exposeHiddenActs() -> [String] {
+        let today = data.day
+        let notor = Double(notoriety)
+        let pressure = data.flipperPressure
+        let heat = data.scalperHeat
+        var acts = data.hiddenActs
+        var exposed: [HiddenAct] = []
+        for i in acts.indices where !acts[i].exposed {
+            let a = acts[i]
+            let due: Bool
+            if let r = a.revealDay {
+                due = r <= today
+            } else {
+                let witness = min(Balance.witnessCap, 1 + log10(1 + Double(a.witnesses)) / 2)
+                var p = a.kind.discovery * a.weight * witness * (1 + Balance.hiddenActNotorietyStep * notor)
+                if a.kind.calloutType == .greed { p *= (0.5 + pressure) * (1 + min(1, heat / 10)) }
+                due = Double.random(in: 0..<1) < min(Balance.hiddenActDailyCap, p)
+            }
+            if due { exposed.append(a) } else if a.revealDay == nil { acts[i].weight *= 1 - a.decay }
+        }
+        data.hiddenActs = acts
+        var lines: [String] = []
+        for a in exposed {
+            guard let line = openCallout(from: a) else { continue }
+            if let i = data.hiddenActs.firstIndex(where: { $0.id == a.id }) { data.hiddenActs[i].exposed = true }
+            lines.append(line)
+        }
+        let keep = Balance.hiddenActKeepDays, maxDays = Balance.hiddenActMaxDays, minWeight = Balance.hiddenActMinWeight
+        data.hiddenActs.removeAll { a in
+            a.exposed ? today - a.day > keep
+                      : a.revealDay == nil && a.kind.decay > 0 && (a.weight < minWeight || today - a.day > maxDays)
+        }
+        return lines
+    }
+
+    /// The victim posts most callouts. A rival breaks the story 1 time in 3.
+    func openCallout(from a: HiddenAct) -> String? {
+        let rivals = data.rivals
+        let accuser: CalloutAccuser
+        if let r = rivals.randomElement(), Double.random(in: 0..<1) < Balance.rivalBreaksStory {
+            accuser = .rival(.rival(r.id))
+        } else {
+            accuser = .person(victimName(a))
+        }
+        let text = a.kind.calloutText.replacingOccurrences(of: "{who}", with: name(of: accuser))
+        let type = a.kind.calloutType
+        let pay = a.kind == .unshippedOrder ? lateGoodwill(a.refund) : a.refund
+        // An act with a fixed day, an unshipped order, and a palm open their own callout, so their order can settle it.
+        let force = a.revealDay != nil || a.kind == .unshippedOrder || a.kind == .palmedHit
+        return startCallout(type, truth: true, receipts: Double.random(in: 0..<1) < a.kind.receipts,
+                            heat: type.startHeat * min(1.5, max(0.75, a.weight)), accuser: accuser, text: text,
+                            force: force, actID: a.id, actKind: a.kind, sourceID: a.sourceID,
+                            contactID: a.contactID, refund: pay)
+    }
+
+    private func victimName(_ a: HiddenAct) -> String {
+        switch a.kind {
+        case .lowballKid: "A parent"
+        case .palmedHit, .unshippedOrder: "A stream buyer"
+        case .sellResealed, .counterfeitSold: "A buyer"
+        case .shelfBuyout, .limitEvasion, .storeBan: "A shopper"
+        default: "A collector"
+        }
+    }
+
+    // MARK: Rival callouts
+
+    /// Runs when `data.day % 7 == 0`. Game shops get credibility back here. Named rivals get it in `rivalsEndDay`.
+    private func rivalCalloutsWeekly() -> [String] {
+        let today = data.day
+        guard today % 7 == 0 else { return [] }
+        let regain = Balance.rivalCredWeekly, receiptDays = Balance.rivalReceiptDays
+        var state = data.callouts
+        state.dramaBait *= 0.5
+        state.shopCredibility = state.shopCredibility.mapValues { min(1, $0 + regain) }
+        state.rivalReceipts.removeAll { today - $0.day > receiptDays }
+        data.callouts = state
+        guard reputationTier >= 1 || (hasAccount && followerTier >= 1) else { return [] }   // nobody talks about an unknown
+        var lines: [String] = []
+        for r in rivalPool() {
+            let open = data.callouts.open
+            guard open.filter({ $0.target == .player }).count < Balance.calloutMaxOpen,
+                  !open.contains(where: { $0.accuser == r.accuser && $0.target == .player }) else { continue }
+            var p = (Balance.rivalCalloutBase + Balance.rivalCalloutHostility * r.hostility) * r.credibility
+            if r.creator { p += data.callouts.dramaBait }
+            if today - data.callouts.lastRivalCalloutDay < Balance.rivalCalloutGap { p *= Balance.rivalCalloutGapFactor }
+            guard Double.random(in: 0..<1) < p, let line = rivalCallout(r) else { continue }
+            lines.append(line)
+        }
+        return lines
+    }
+
+    /// A rival posts. 4 times in 10 it uses a real hidden act that fits the rival. Otherwise the claim is false.
+    @discardableResult
+    func rivalCallout(_ r: RivalView) -> String? {
+        let fits: Set<CalloutType> = r.creator ? [.fairness, .productIntegrity, .kids, .greed]
+                                               : [.greed, .forbidden, .productIntegrity]
+        let acts = data.hiddenActs.filter { !$0.exposed && fits.contains($0.kind.calloutType) }   // a read
+        let who = name(of: r.key)
+        let line: String?
+        if let act = acts.randomElement(), Double.random(in: 0..<1) < Balance.rivalCalloutTruth {
+            let text = act.kind.calloutText.replacingOccurrences(of: "{who}", with: who)
+            let pay = act.kind == .unshippedOrder ? lateGoodwill(act.refund) : act.refund
+            let force = act.kind == .unshippedOrder || act.kind == .palmedHit
+            line = startCallout(act.kind.calloutType, truth: true,
+                                receipts: Double.random(in: 0..<1) < act.kind.receipts * 0.5,
+                                heat: act.kind.calloutType.startHeat * r.credibility, accuser: r.accuser, text: text,
+                                force: force, actID: act.id, actKind: act.kind, sourceID: act.sourceID,
+                                contactID: act.contactID, refund: pay)
+            if line != nil, let i = data.hiddenActs.firstIndex(where: { $0.id == act.id }) { data.hiddenActs[i].exposed = true }
+        } else {
+            let type = falseType(r)
+            let scale = r.credibility * (hasAccount ? 1 : Balance.calloutNoAccountHeat)
+            line = startCallout(type, truth: false, receipts: false, heat: type.startHeat * scale, accuser: r.accuser,
+                                text: falseText(type, who: who))
+        }
+        if line != nil { data.callouts.lastRivalCalloutDay = data.day }
+        return line
+    }
+
+    private func falseType(_ r: RivalView) -> CalloutType {
+        if case .shop = r.key { return Bool.random() ? .greed : .productIntegrity }
+        let options: [(CalloutType, Double)] = r.creator ? [(.fairness, 0.5), (.greed, 0.35), (.kids, 0.15)]
+                                                         : [(.greed, 0.7), (.productIntegrity, 0.3)]
+        return ShowSession.weighted(options) ?? .greed
+    }
+
+    private func falseText(_ type: CalloutType, who: String) -> String {
+        switch type {
+        case .greed: "\(who) is telling people that your prices are inflated and that you scalp."
+        case .productIntegrity: "\(who) hints that your sealed product is resealed."
+        case .fairness: "\(who) says your rip videos are staged."
+        case .kids: "\(who) says you rip off kids at shows."
+        case .forbidden: "\(who) says your stock fell off a truck."
+        case .smear: "\(who) says you start drama for views."
+        }
+    }
+
+    /// The bad branch of the weekly random story: a callout from one named rival, or nothing.
+    func randomRivalStory() -> String? {
+        guard openCallouts.count < Balance.calloutMaxOpen, let r = rivalPool().randomElement() else { return nil }
+        return rivalCallout(r)
+    }
+
+    // MARK: Heat and the end of a callout
+
+    private func advanceCallouts() -> [String] {
+        let today = data.day
+        let hostility = Dictionary(data.rivals.map { ($0.id, $0.hostility) }, uniquingKeysWith: { a, _ in a })
+        var open = data.callouts.open
+        var ended: [Callout] = []
+        for i in open.indices {
+            var c = open[i]
+            if c.startDay == today { continue }          // a new callout keeps its starting heat for one night
+            if let from = c.fallFrom, let end = c.fallEndDay, let start = c.replyDay {
+                c.heat = today >= end ? 0 : from * Double(end - today) / Double(max(1, end - start))
+            } else {
+                c.heat *= 1 - Balance.calloutDecay
+                c.reason = "It is fading."
+            }
+            // A named rival answers a deny or a counter the next night.
+            if let reply = c.reply, reply == .deny || reply == .counter, c.replyDay == today - 1, c.fallFrom == nil,
+               case .rival(.rival(let id)) = c.accuser, Double.random(in: 0..<1) < (hostility[id] ?? 0.5) {
+                c.heat = min(100, c.heat + Balance.calloutReplyHeat)
+                c.reason = "They answered your reply."
+            }
+            // Receipts come out during the pile-on.
+            if c.truth, !c.receipts, c.heat >= Balance.calloutReceiptsMinHeat, Double.random(in: 0..<1) < Balance.calloutReceiptsDaily {
+                c.receipts = true
+                c.heat = min(100, c.heat + Balance.calloutReceiptsHeat)
+                c.reason = "Someone posted receipts."
+            }
+            c.peak = max(c.peak, c.heat)
+            open[i] = c
+            if c.heat < Balance.calloutEndHeat || today - c.startDay > Balance.calloutMaxDays { ended.append(c) }
+        }
+        let endedIDs = Set(ended.map(\.id))
+        open.removeAll { endedIDs.contains($0.id) }
+        data.callouts.open = open                        // write back once, then apply the effects
+        return ended.map { settle($0) }
+    }
+
+    /// The end of a callout. The peak heat sets the story cost, then the record and the Whatnot ban. It runs inside End
+    /// Day, so it never calls `save()`.
+    private func settle(_ c: Callout) -> String {
+        let today = data.day
+        guard c.target == .player else { return close(c, rep: 0, line: "") }
+        // A false callout that the player beat with a deny, or paid off, costs nothing at the end.
+        let won = !c.truth && (c.madeRight || c.reply == .deny)
+        var rep = 0
+        var line = "The callout from \(name(of: c.accuser)) faded."
+        if !won {
+            let viral = c.peak >= Balance.calloutViralPeak
+            if viral { rep = Balance.storyBadViralRep } else if c.peak >= Balance.calloutBadPeak { rep = Balance.storyBadRep }
+            if c.madeRight { rep = (rep + 1) / 2 }
+            if c.repPaid { rep = 0 }
+            if viral, hasAccount, !c.madeRight {
+                let loss = Int(Double(data.social.followers) * Balance.storyBadViralFollowerShare)
+                data.social.followers = max(0, data.social.followers - loss)
+                data.social.authenticity = max(0, data.social.authenticity - Balance.calloutViralAuthenticity)
+                line += " You lost \(loss) followers."
+            }
+        }
+        if rep > 0 { addReputation(-rep); line += " Reputation −\(rep)." }
+        if c.truth {
+            if let id = c.contactID { addPoints(id, -Balance.calloutContactCost) }
+            if c.peak >= Balance.calloutRecordPeak {
+                data.callouts.records.append(CalloutRecord(day: today, untilDay: today + Balance.calloutRecordDays,
+                                                           type: c.type, text: c.text))
+                line += " A busted thread about you stays up for \(Balance.calloutRecordDays) days."
+            }
+            // A palm found later through the log gets the same ban as a palm caught on camera. A caught palm has no
+            // act (`actID == nil`): `settlePalm` already banned it.
+            let palmFromLog = c.actKind == .palmedHit && c.actID != nil
+            if c.peak >= Balance.calloutBanPeak, palmFromLog || c.type == .productIntegrity {
+                let days = palmFromLog ? Balance.palmBanDays : Int.random(in: Balance.calloutBanDays)
+                banFromWhatnot(days: days, reason: palmFromLog ? "a palmed hit" : "a product integrity callout")
+                line += " Whatnot banned you from streams for \(days / 7) weeks."
+            }
+        }
+        if case .rival(.rival(let id)) = c.accuser {
+            rememberRival(id, .calloutEnded, note: c.text, byPlayer: won)
+        }
+        return close(c, rep: rep, line: line)
+    }
+
+    private func close(_ callout: Callout, rep: Int, line: String) -> String {
+        var c = callout
+        c.endedDay = data.day
+        c.repApplied = rep
+        c.outcome = line.isEmpty ? nil : line
+        var closed = data.callouts.closed
+        closed.append(c)
+        data.callouts.closed = Array(closed.suffix(20))
+        if !line.isEmpty { log(line) }
+        return line
+    }
+}
+
+// MARK: - Replies
+
+@MainActor
+extension GameStore {
+    /// A late Rip & Ship order that is still open.
+    func ripShipOrderOpen(_ id: UUID) -> Bool {
+        guard let o = data.ripShip.orders.first(where: { $0.id == id }) else { return false }
+        return !o.shipped && !o.refunded
+    }
+
+    /// What "make it right" pays now. A palm asks `palmRefundDue`, so an order that a chargeback already refunded pays
+    /// only the cards. Every other callout pays its stored `refund`.
+    func makeRightCost(_ c: Callout) -> Double {
+        if c.actKind == .palmedHit, let order = c.sourceID { return palmRefundDue(order) }
+        return c.refund
+    }
+
+    /// What each reply needs. Deny and counter need an account. They cannot both run on one callout.
+    func replyBlock(_ c: Callout, _ reply: CalloutReply) -> String? {
+        if c.fallFrom != nil { return "This callout is already ending." }
+        switch reply {
+        case .silent:
+            return nil
+        case .deny:
+            if !hasAccount { return "You need a social account to post a reply." }
+            if c.reply == .deny || c.caughtLying { return "You already denied it." }
+            if c.reply == .counter { return "You already hit back. A denial now looks weak." }
+            return nil
+        case .makeRight:
+            if c.actKind == .unshippedOrder, !c.sourceSettled, let id = c.sourceID, ripShipOrderOpen(id),
+               slot(for: Balance.ripShipShipMinutes / 60) == nil {
+                return "You need 10 minutes today to ship the order."
+            }
+            let cost = makeRightCost(c)
+            return canAfford(cost) ? nil : "You need \(money(cost))."
+        case .counter:
+            if !hasAccount { return "You need a social account to post a reply." }
+            guard case .rival = c.accuser else { return "You can only counter a rival." }
+            if c.type == .smear { return "You started this one. You cannot counter it." }
+            if c.reply == .counter { return "You already posted a counter-callout." }
+            if c.reply == .deny { return "You already denied it. Hitting back now looks petty." }
+            return nil
+        }
+    }
+
+    /// The player answers a callout. Returns one line for the sheet.
+    @discardableResult
+    func replyToCallout(_ id: UUID, _ reply: CalloutReply) -> String {
+        guard let first = callout(id) else { return "" }
+        if let block = replyBlock(first, reply) { return block }
+        // Calls into Rip & Ship come first, because they can change this callout (`retireHiddenAct(force:)` halves the heat).
+        var shippedNow = false
+        let cost = makeRightCost(first)                   // read before `returnPalmedCards` changes the order
+        if reply == .makeRight {
+            if first.actKind == .unshippedOrder, !first.sourceSettled, let order = first.sourceID, ripShipOrderOpen(order) {
+                if let fail = shipRipShipOrders([order]) { return fail }
+                shippedNow = true
+            }
+            if first.actKind == .palmedHit, let order = first.sourceID { returnPalmedCards(order) }
+        }
+        guard let i = data.callouts.open.firstIndex(where: { $0.id == id }) else { return "" }
+        var c = data.callouts.open[i]
+        let today = data.day
+        let who = name(of: c.accuser)
+        var out: String
+        switch reply {
+        case .silent:
+            c.reason = "You stayed silent. It fades on its own."
+            out = "You said nothing. The heat falls \(Int(Balance.calloutDecay * 100))% each day."
+        case .deny:
+            if c.truth {
+                c.heat = min(100, c.heat * Balance.calloutDenyTrueFactor)
+                c.reason = "You denied it. People are digging."
+                let findOut = c.receipts ? Balance.calloutDenyFindOutReceipts : Balance.calloutDenyFindOutPlain
+                if Double.random(in: 0..<1) < findOut {
+                    c.caughtLying = true
+                    c.receipts = true
+                    c.reason = "Your denial fell apart. The receipts are out."
+                    addReputation(-Balance.calloutDenyCaughtRep)
+                    out = "People found proof against your denial. Reputation −\(Balance.calloutDenyCaughtRep)."
+                } else {
+                    out = "You denied it. The heat went up."
+                }
+            } else {
+                c.fallFrom = c.heat
+                c.fallEndDay = today + Balance.calloutDenyFalseDays
+                c.reason = "You showed it was false."
+                addReputation(Balance.calloutDenyFalseRep)
+                if case .rival(let key) = c.accuser {
+                    loseCredibility(key, Balance.rivalCredDenied, receipt: "\(who) lied about you on day \(today + 1).")
+                }
+                out = "You showed the claim was false. \(denyProof(c)) Reputation +\(Balance.calloutDenyFalseRep). It ends in \(Balance.calloutDenyFalseDays) days."
+            }
+        case .makeRight:
+            if c.counterGain > 0 {
+                data.social.followers = max(0, data.social.followers - c.counterGain)
+                c.counterGain = 0
+            }
+            addLedger(-cost, .refund, "Made it right · \(c.type.label)")
+            c.madeRight = true
+            c.fallFrom = c.heat
+            c.fallEndDay = today + Balance.calloutMakeRightDays
+            c.reason = "You made it right."
+            if shippedNow {
+                out = "You shipped the order and paid \(money(cost)) for the wait. It ends tomorrow."
+            } else if c.actKind == .palmedHit {
+                out = "You paid \(money(cost)) and sent the card to the buyer. It ends tomorrow."
+            } else {
+                out = "You paid \(money(cost)) to make it right. It ends tomorrow."
+            }
+        case .counter:
+            c.heat = min(100, c.heat + Balance.calloutCounterHeat)
+            c.reason = "You hit back. Everyone is watching."
+            let gain = Int(Double(data.social.followers) * Balance.calloutCounterFollowerShare)
+            data.social.followers += gain
+            c.counterGain = gain
+            data.social.authenticity = max(0, data.social.authenticity - Balance.calloutCounterAuthenticity)
+            if case .rival(let key) = c.accuser {
+                loseCredibility(key, c.truth ? Balance.calloutCounterCredTrue : Balance.calloutCounterCredFalse, receipt: nil)
+                switch key {
+                case .rival(let rid): adjustRivalHostility(rid, Balance.playerCalloutHostility)
+                case .shop(let shop): addPoints(shopContactID(shop), -Balance.calloutCounterShopCost)
+                }
+            }
+            out = "You posted a counter-callout. +\(gain) followers. The heat went up on both sides."
+        }
+        // A reply can change this callout through a call above, so read it again before the one write.
+        guard let k = data.callouts.open.firstIndex(where: { $0.id == id }) else { return out }
+        c.peak = max(c.peak, c.heat)
+        c.acknowledged = true
+        if reply != .silent {
+            c.reply = reply
+            c.replyDay = today                         // "stay silent" never sets it
+        }
+        data.callouts.open[k] = c
+        if reply == .deny || reply == .counter || (reply == .makeRight && hasAccount) {
+            postResponse(subject: "\(reply.label) · \(who)", heat: c.heat)
+        }
+        log(out)
+        save()
+        return out
+    }
+
+    /// A line of proof from the player's own record, shown after a deny of a false callout.
+    private func denyProof(_ c: Callout) -> String {
+        let since = data.day - 30
+        switch c.type {
+        case .greed:
+            let n = data.ledger.filter { $0.category == .sale && $0.day >= since }.count
+            return "You posted your last \(n) sales. The prices were fair."
+        case .fairness:
+            let n = data.ripShip.orders.filter(\.shipped).count
+            return n > 0 ? "All \(n) of your recent Rip & Ship orders shipped." : "Your rip videos are uncut."
+        case .productIntegrity: return "You showed the seals and the receipts for your stock."
+        case .kids: return "Parents from your table vouched for you."
+        case .forbidden: return "You posted your invoices."
+        case .smear: return "Your record speaks for itself."
+        }
+    }
+
+    /// The reply shows in the post list. It has no follower gain.
+    private func postResponse(subject: String, heat: Double) {
+        let followers = data.social.followers
+        let views = max(1, Int(Double(followers) * 0.2 * max(0.3, heat / 50)))
+        let post = SocialPost(day: data.day, type: .response, subject: subject, views: views, followerChange: 0,
+                              likes: Int(Double(views) * 0.05), quality: 1, timing: 1, luck: 1)
+        data.social.posts.append(post)
+        data.social.burnout = min(1, data.social.burnout + Balance.responseBurnout)
+        data.social.lastPostDay = data.day
+    }
+}
+
+// MARK: - Player callouts, the kid gift, good stories
+
+@MainActor
+extension GameStore {
+    /// Why the player cannot call out this rival now, or nil. The player never calls out a game shop.
+    func playerCalloutBlock(_ rivalID: UUID) -> String? {
+        guard hasAccount else { return "You need a social account to post a callout." }
+        if let last = data.callouts.playerCalloutDay[rivalID], data.day - last < Balance.playerCalloutCooldown {
+            return "You called them out on day \(last + 1). Wait \(Balance.playerCalloutCooldown) days."
+        }
+        return nil
+    }
+
+    /// The proof that the player holds against a rival.
+    func receipts(against rivalID: UUID) -> [RivalReceipt] {
+        let key = RivalKey.rival(rivalID)
+        return data.callouts.rivalReceipts.filter { $0.key == key }
+    }
+
+    /// With a receipt the callout is true. Without one, the heat lands on the player.
+    @discardableResult
+    func calloutRival(_ rivalID: UUID) -> String {
+        if let block = playerCalloutBlock(rivalID) { return block }
+        let today = data.day
+        let rivalName = rival(rivalID)?.name ?? "the rival"
+        let cred = credibility(.rival(rivalID))
+        data.callouts.playerCalloutDay[rivalID] = today
+        let key = RivalKey.rival(rivalID)
+        let receipt = data.callouts.rivalReceipts.first { $0.key == key }
+        let out: String
+        if let receipt {
+            let used = receipt.id
+            data.callouts.rivalReceipts.removeAll { $0.id == used }
+            // A rival that nobody believes is worth little to expose.
+            let rep = Int((Double(Balance.playerCalloutRep) * cred).rounded())
+            let base = max(Balance.playerCalloutFollowerMin, Int(Double(data.social.followers) * Balance.playerCalloutFollowerShare))
+            let gain = Int((Double(base) * cred).rounded())
+            addReputation(rep)
+            data.social.followers += gain
+            loseCredibility(key, Balance.playerCalloutCred, receipt: nil)
+            adjustRivalHostility(rivalID, Balance.playerCalloutHostility)
+            data.callouts.open.append(Callout(type: .smear, accuser: .player, target: .rival(rivalID), startDay: today,
+                                              text: "You called out \(rivalName) with proof: \(receipt.note)", truth: true,
+                                              receipts: true, heat: 50, peak: 50, reason: "Your proof is spreading.", refund: 0))
+            out = "You called out \(rivalName) with proof. Reputation +\(rep), +\(gain) followers."
+        } else {
+            data.social.authenticity = max(0, data.social.authenticity - Balance.playerSmearAuthenticity)
+            changeRivalCredibility(rivalID, by: Balance.playerSmearCredGain)
+            adjustRivalHostility(rivalID, Balance.playerCalloutHostility)
+            startCallout(.smear, truth: true, receipts: true, accuser: .rival(key),
+                         text: "\(rivalName) asked for your proof. You had none.", force: true)
+            out = "You had no proof. \(rivalName) asked for it, and people turned on you."
+        }
+        postResponse(subject: "Callout · \(rivalName)", heat: receipt == nil ? Balance.calloutHeatSmear : 50)
+        log(out)
+        save()
+        return out
+    }
+
+    /// A kid gift can come back as a good story: 15% a story, and 1 in 5 of those viral. It reuses the deal story queue.
+    func kidGift(name: String, venue: String) {
+        let today = data.day
+        data.callouts.kidGiftDay = today
+        guard Double.random(in: 0..<1) < Balance.kidGiftStory else { return }
+        data.dealStories.append(DealStory(day: today + Int.random(in: Balance.storyDelay), good: true,
+                                          viral: Double.random(in: 0..<1) < Balance.storyViral,
+                                          text: "A parent posted the card you gave their kid at \(venue)."))
+    }
+
+    /// Good word lowers the heat of every open callout about the player. It works on a local copy.
+    func coolCallouts(by amount: Double) {
+        var open = data.callouts.open
+        for i in open.indices where open[i].target == .player && open[i].fallFrom == nil {
+            open[i].heat = max(0, open[i].heat - amount)
+            open[i].reason = "Good word about you is going around."
+        }
+        data.callouts.open = open
+    }
+}
+
+#if DEBUG
+@MainActor
+extension GameStore {
+    /// Test tool: opens a callout with fixed values. Nil when it merged into another one.
+    @discardableResult
+    func testCallout(_ type: CalloutType, truth: Bool, receipts: Bool, heat: Double, accuser: CalloutAccuser = .person("Test"),
+                     refund: Double = 40) -> UUID? {
+        let before = data.callouts.open.count
+        startCallout(type, truth: truth, receipts: receipts, heat: heat, accuser: accuser, text: "Test callout.", refund: refund)
+        return data.callouts.open.count > before ? data.callouts.open.last?.id : nil
+    }
+
+    /// Test tool: ends one callout now, with its current peak.
+    func testSettle(_ id: UUID) {
+        guard let c = callout(id) else { return }
+        data.callouts.open.removeAll { $0.id == id }
+        _ = settle(c)
+    }
+}
+#endif

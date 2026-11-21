@@ -787,7 +787,7 @@ extension ShowSession {
         for item in items {
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
-                                    refunds: false, contactID: v.contactID)
+                                    refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
             }
         }
         removeFromTable(Set(items.map(\.id)))

@@ -308,7 +308,7 @@ extension GameStore {
             addReputation(2)
             if let fake = item.fake {
                 recordBadSale(item: item.name, channel: "a sealed collector", price: o.price, fake: fake, known: item.isKnownFake,
-                              refunds: false)
+                              refunds: false, sealed: true)
             }
             log("Sold \(item.name) to a sealed collector for \(money(o.price)).", cash: o.price)
             save()

@@ -16,6 +16,11 @@ final class RetailSim {
     private var fillNew = (asked: 0, got: 0), fillTenured = (asked: 0, got: 0)
     /// Columns that later phases add: Part B's hot fill rate (phase 4) and Part C's callouts (phase 6).
     var extraColumns: [(name: String, value: () -> String)] = []
+    /// Callouts about the player that opened, split into true and false, for this week and for the run (phase 6).
+    private var seenCallouts: Set<UUID> = []
+    private var weekCallouts = (real: 0, fake: 0), totalCallouts = (real: 0, fake: 0)
+    /// The act kind behind each true callout, for the end line.
+    private var trueKinds: [String] = []
 
     private struct Week {
         var shelfUnits = 0, campUnits = 0, onlineUnits = 0, dumps = 0, incidents = 0, bans = 0
@@ -27,12 +32,27 @@ final class RetailSim {
         self.store = store
         self.flipper = flipper
         self.shop = shop
+        extraColumns.append(("callouts(open/true/false)", { [unowned self] in
+            "\(self.store.openCallouts.count)/\(self.weekCallouts.real)/\(self.weekCallouts.fake)"
+        }))
+    }
+
+    /// Counts the callouts about the player that opened since the last look.
+    private func countCallouts() {
+        for c in store.data.callouts.open + store.data.callouts.closed where c.target == .player && !seenCallouts.contains(c.id) {
+            seenCallouts.insert(c.id)
+            if c.truth { weekCallouts.real += 1; trueKinds.append(c.actKind?.rawValue ?? c.type.rawValue) } else { weekCallouts.fake += 1 }
+        }
     }
 
     func run(days: Int) {
         let start = Date()
         store.startRun()
         store.addTestCash(1_000_000)                     // rent never ends the run
+        // The start state of sim_report.md (section 2): Trusted, 5,000 followers, and an account. Rivals post about a
+        // player whom people know, so the callout rates need it.
+        store.addReputation(200)
+        store.testFollowers(5_000)
         if flipper {
             store.data.jobIndex = nil
             store.data.upgrades.append(Upgrade.restockBot.rawValue)
@@ -61,10 +81,15 @@ final class RetailSim {
             if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }
             store.endDay()
             pressures.append(store.data.flipperPressure)
+            countCallouts()
             let lines = store.report?.lines ?? []
             week.dumps += lines.filter { $0.contains("dumping") }.count
             week.incidents += lines.filter { $0.contains("tightens its card limits") }.count
-            if store.day % 7 == 0 { printWeek(week); add(week, to: &total); week = Week() }
+            if store.day % 7 == 0 {
+                printWeek(week); add(week, to: &total); week = Week()
+                totalCallouts = (totalCallouts.real + weekCallouts.real, totalCallouts.fake + weekCallouts.fake)
+                weekCallouts = (0, 0)
+            }
         }
         func rate(_ f: (asked: Int, got: Int)) -> String { f.asked == 0 ? "-" : String(format: "%.2f (%d/%d)", Double(f.got) / Double(f.asked), f.got, f.asked) }
         if shop {
@@ -85,6 +110,10 @@ final class RetailSim {
                      days, Double(total.shelfUnits) / Double(days) * 7, Double(total.campUnits) / Double(days) * 7,
                      Double(total.onlineUnits) / Double(days) * 7, Double(total.bans) / years,
                      Double(total.incidents) / years, Double(total.dumps) / years, Int(Date().timeIntervalSince(start) * 1000)))
+        totalCallouts = (totalCallouts.real + weekCallouts.real, totalCallouts.fake + weekCallouts.fake)
+        print(String(format: "RETAILSIM CALLOUTS true/yr=%.1f false/yr=%.1f rep=%d followers=%d hiddenActs=%d records=%d trueKinds=%@",
+                     Double(totalCallouts.real) / years, Double(totalCallouts.fake) / years, store.data.reputation,
+                     store.data.social.followers, store.data.hiddenActs.count, store.data.callouts.records.count, trueKinds.joined(separator: ",")))
         // The pressure bands, and the days at a clamp: the pressure must not stick at one.
         let range = Balance.pressureRange
         func share(_ test: (Double) -> Bool) -> Double { Double(pressures.filter(test).count) / Double(max(1, pressures.count)) * 100 }

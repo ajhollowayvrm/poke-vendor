@@ -11,6 +11,8 @@ enum PostType: String, Codable, CaseIterable, Hashable {
     case stream = "Live stream"
     /// A short-form video (docs/32-short-form-video.md). Shorts post from the series, not from this sheet.
     case short = "Short"
+    /// A reply to a callout (docs/35-callouts.md). It posts from the reply sheet, not from the new post sheet.
+    case response = "Response"
 
     var needsItem: Bool { self == .pullReveal || self == .collectionFlex || self == .forSale }
     var needsShow: Bool { self == .showPromo }
@@ -138,7 +140,7 @@ extension GameStore {
         case .forSale: 0.5 + min(1.2, log10(value + 1) * 0.5)
         case .sponsored: 0.8
         case .showPromo: 0.9
-        case .stream, .short: 1.0
+        case .stream, .short, .response: 1.0
         }
     }
 
@@ -224,6 +226,7 @@ extension GameStore {
     func advanceSocial() -> [String] {
         guard hasAccount else { return [] }
         var lines: [String] = []
+        let hot = hottestCallout     // read before the copy of `data.social`
         var s = data.social
         s.burnout = max(0, s.burnout - 0.1)
         let idle = data.day - s.lastPostDay
@@ -246,7 +249,7 @@ extension GameStore {
         let tier = FollowerTier.tier(s.followers)
         // A running series brings sponsors more often (docs/32-short-form-video.md).
         let sponsorChance = 0.12 * (data.shorts.series.isEmpty ? 1 : Balance.seriesSponsorFactor)
-        if tier >= 1, s.offers.count < 3, Double.random(in: 0..<1) < sponsorChance {
+        if tier >= 1, s.offers.count < 3, hot < Balance.calloutSponsorBlockHeat, Double.random(in: 0..<1) < sponsorChance {
             let posts = Int.random(in: 1...3)
             // Follower tier 3: larger sponsor deals (docs/04).
             let pay = max(25, (Double(s.followers) * 0.015 * Double(posts) * (tier >= 3 ? Balance.bigSponsorFactor : 1)).rounded())

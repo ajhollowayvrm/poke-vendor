@@ -44,6 +44,7 @@ extension GameStore {
         s.splitOldPrice()
         s.sealedFactor = factor
         data.cardStore = s
+        storeShelfGouge()
         save()
     }
 

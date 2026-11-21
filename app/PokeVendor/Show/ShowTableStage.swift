@@ -190,6 +190,14 @@ struct DealButtons: View {
                 let market = visitor.item == nil ? visitor.offer : session.marketTotal(visitor)
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
                 flipRow
+                if session.canGiveToKid {
+                    Button { withAnimation { session.giveToKid() } } label: {
+                        Text("Give it to them").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Theme.cyan)
+                    Text("Free. Once a day. Word can get around.").font(.caption).foregroundStyle(Theme.muted)
+                }
                 CounterSlider(market: market, offer: visitor.offer, range: 50...150, startAbove: true,
                               verb: "Counter", passTitle: "Decline", pass: { session.decline() },
                               final: visitor.finalUsed ? nil : { session.finalOffer($0) }) { session.counter($0) }

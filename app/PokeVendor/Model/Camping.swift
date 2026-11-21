@@ -15,6 +15,8 @@ struct CampHaul: Identifiable {
     let id = UUID()
     let store: LocalStore
     let items: [ShelfItem]
+    /// Who stood in line, when a rival did. For the camp screen.
+    var rivalLine: String? = nil
 
     var success: Bool { !items.isEmpty }
 }
@@ -97,10 +99,16 @@ extension GameStore {
         self.arrive(at: store, hour: arrive, lines: false)
         let late = max(0, arrive - Balance.campStart)
         let chance = (Balance.campSuccess * pow(Balance.arrivalKeep, late) + restockBotBonus) * flipperCampFactor
-        guard Double.random(in: 0..<1) < chance else {
-            log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). It sold out before you got in.")
+        let ok = Double.random(in: 0..<1) < chance
+        let met = campRivalLine(store, success: ok)
+        guard ok else {
+            log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). It sold out before you got in.\(met.map { " " + $0.line } ?? "")")
+            if let met {
+                rememberRival(met.rival.id, .rivalTookShelf, note: met.line, byPlayer: false)
+                noteShelfReceipt(met.rival.id, note: "\(met.rival.name) cleared the \(store.rawValue) restock")
+            }
             save()
-            return CampHaul(store: store, items: [])
+            return CampHaul(store: store, items: [], rivalLine: met?.line)
         }
         var r = SeededRandom(seed: UInt64(data.day + 1) &* 7_727 &+ UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0))
         let kinds = ["Elite Trainer Box", "Booster bundle", "Collection", "Tin", "Booster box", "Blister"]
@@ -116,8 +124,11 @@ extension GameStore {
                                    quantity: qty, hot: hot))
         }
         log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). You got in: \(items.count) product\(items.count == 1 ? "" : "s") at MSRP.")
+        if let met {
+            rememberRival(met.rival.id, .playerBeatInLine, note: met.line, byPlayer: true, hostility: Balance.rivalBeatInLineHostility)
+        }
         save()
-        return CampHaul(store: store, items: items)
+        return CampHaul(store: store, items: items, rivalLine: met?.line)
     }
 
     /// Today's restocks, the test ones included.

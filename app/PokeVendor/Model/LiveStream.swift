@@ -636,22 +636,23 @@ extension GameStore {
         scheduleSaleProblems(name: item.name, channel: .whatnot, price: price, insured: false, overstated: false,
                              card: soldCard, sealed: soldSealed)
         if let fake = item.fake {
-            recordBadSale(item: item.name, channel: "Whatnot", price: price, fake: fake, known: item.fakeKnown, refunds: true)
+            recordBadSale(item: item.name, channel: "Whatnot", price: price, fake: fake, known: item.fakeKnown, refunds: true,
+                          sealed: soldSealed != nil)
         }
         log(line, cash: price)
     }
 
     /// A giveaway on stream. What the player paid becomes a cost.
-    func giveAway(_ id: UUID) {
+    func giveAway(_ id: UUID, at place: String = "on stream") {
         if let card = card(id) {
             data.openedPaid += card.paid ?? 0
             data.raw.removeAll { $0.id == id }
             data.slabs.removeAll { $0.id == id }
-            log("Gave away \(card.print.name) on stream.")
+            log("Gave away \(card.print.name) \(place).")
         } else if let item = data.sealed.first(where: { $0.id == id }) {
             data.openedPaid += item.paid
             data.sealed.removeAll { $0.id == id }
-            log("Gave away \(item.name) on stream.")
+            log("Gave away \(item.name) \(place).")
         }
     }
 

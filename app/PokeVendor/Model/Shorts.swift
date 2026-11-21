@@ -318,6 +318,7 @@ extension GameStore {
         // The gambling backlash: a long series with no hit (docs/32-short-form-video.md).
         if !finale, s.spent >= Balance.gamblingSpend, Double.random(in: 0..<1) < Balance.gamblingChance {
             data.social.authenticity = max(0, data.social.authenticity - Balance.gamblingAuthenticity)
+            data.callouts.dramaBait = min(Balance.dramaBaitMax, data.callouts.dramaBait + Balance.dramaBaitGambling)
             log("Comments on your rip short say \"this is just gambling\". It cost you authenticity.")
         }
         if finale {

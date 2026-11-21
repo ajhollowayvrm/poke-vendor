@@ -166,6 +166,15 @@ struct HubView: View {
             }
             .buttonStyle(.plain)
         }
+        // A callout that the player has not answered. One banner at most.
+        let unanswered = store.openCallouts.filter { !$0.acknowledged }
+        if let c = unanswered.first {
+            Button { nav.path.append(.callouts) } label: {
+                Banner(text: "\(store.name(of: c.accuser)) called you out. Heat \(Int(c.heat)). Tap to answer.\(unanswered.count > 1 ? " (\(unanswered.count) open)" : "")",
+                       color: Theme.orange, icon: "megaphone")
+            }
+            .buttonStyle(.plain)
+        }
         // Surprise opportunities: the alert banner (docs/08-ui-direction.md, tap target 5).
         ForEach(store.activeOpportunities) { o in
             Button { nav.path.append(.opportunity(o.id)) } label: {
@@ -252,7 +261,8 @@ struct HubView: View {
             Tile(label: "Followers", value: store.hasAccount ? store.social.followers.formatted() : "Start posting",
                  detail: store.hasAccount ? "Tier \(store.followerTier) · \(store.social.handle ?? "")" : "Social media") { nav.path.append(.social) }
             Tile(label: "Reputation", value: store.reputationName,
-                 detail: store.pendingOffers.isEmpty ? "\(store.data.contacts.count) contacts" : "\(store.pendingOffers.count) new offer\(store.pendingOffers.count == 1 ? "" : "s")") {
+                 detail: !store.activeRecords.isEmpty ? "Busted thread · \(max(0, (store.activeRecords.map(\.untilDay).max() ?? store.day) - store.day + 1)) days"
+                     : store.pendingOffers.isEmpty ? "\(store.data.contacts.count) contacts" : "\(store.pendingOffers.count) new offer\(store.pendingOffers.count == 1 ? "" : "s")") {
                 nav.path.append(.contacts)
             }
         }

@@ -83,6 +83,24 @@ extension Balance {
     static let rivalTookShelfHostility = 0.08
     /// A rival with at least this hostility takes one hot unit off the vendor's cart while the player waits.
     static let rivalAisleHostility = 0.5
+    /// The share of the gap to the base hostility that a rival loses each day.
+    static let rivalHostilityPull = 0.02
+    /// Hostility gained when the player beats a rival in a camp line, and when the follower tier rises (a creator).
+    static let rivalBeatInLineHostility = 0.05
+    static let rivalCreatorTierRise = 0.10
+    /// The chance that a rival flipper stands in a camp line at a store of theirs.
+    static let rivalCampChance = 0.5
+    /// A hostile rival flipper can take a table near the player at a booked show.
+    static let rivalShowMinHostility = 0.35
+    static let rivalShowBase = 0.25
+    static let rivalShowSlope = 0.3
+    /// A buyer pays at most this share less than the player asks for sealed that the rival also lists.
+    static let rivalUndercut = 0.05
+    /// The rival's table at a show: the number of products and the price as a share of market.
+    static let rivalTableItems = 3...5
+    static let rivalTablePrice = 0.95
+    /// A sealed item from a rival's table stays on the watch list for this many days.
+    static let rivalBuyKeepDays = 120
 }
 
 @MainActor
@@ -162,5 +180,73 @@ extension GameStore {
     func noteShelfReceipt(_ id: UUID, note: String) {
         guard Double.random(in: 0..<1) < Balance.rivalReceiptChance else { return }
         noteRivalReceipt(id, note: note)
+    }
+}
+
+@MainActor
+extension GameStore {
+    /// End Day: hostility pulls back to each rival's base. Credibility regains once a week. Creators react when the
+    /// player's follower tier rises. No money moves.
+    func rivalsEndDay() -> [String] {
+        var rivals = data.rivals
+        guard !rivals.isEmpty else { return [] }
+        let tier = hasAccount ? followerTier : 0
+        let rose = tier > data.retail.followerTierMark
+        let weekly = data.day % 7 == 0
+        var lines: [String] = []
+        for i in rivals.indices {
+            rivals[i].hostility += (rivals[i].baseHostility - rivals[i].hostility) * Balance.rivalHostilityPull
+            if weekly { rivals[i].credibility = min(1, rivals[i].credibility + Balance.rivalCredWeekly) }
+            if rose, rivals[i].kind == .creator {
+                rivals[i].hostility = min(1, rivals[i].hostility + Balance.rivalCreatorTierRise)
+            }
+        }
+        if rose, let loudest = rivals.filter({ $0.kind == .creator }).max(by: { $0.hostility < $1.hostility }) {
+            lines.append("\(loudest.name) (\(loudest.handle)) noticed your channel grow. Creators see you as competition now.")
+        }
+        data.rivals = rivals
+        if rose { data.retail.followerTierMark = tier }
+        lines += rivalTableReceipts()
+        return lines
+    }
+
+    /// A sealed item from a rival's show table that the player now knows is fake gives a receipt against that rival.
+    /// One scan here covers every way a fake comes out (a check, a rip, a buyer). An entry ends when it pays a receipt,
+    /// when the item leaves the inventory, or after `rivalBuyKeepDays`.
+    func rivalTableReceipts() -> [String] {
+        let buys = data.retail.rivalBuys
+        guard !buys.isEmpty else { return [] }
+        let byID = Dictionary(data.sealed.map { ($0.id.uuidString, $0) }, uniquingKeysWith: { a, _ in a })
+        let today = data.day
+        var keep: [String: UUID] = [:]
+        var lines: [String] = []
+        for (itemID, rivalID) in buys {
+            guard let item = byID[itemID], today - item.acquiredDay <= Balance.rivalBuyKeepDays else { continue }
+            guard item.isKnownFake, let r = rival(rivalID) else { keep[itemID] = rivalID; continue }
+            // The 30-day gap can block the receipt. Then the entry waits, and no line says that proof exists.
+            if let last = data.callouts.receiptDay[rivalID], today - last < Balance.rivalReceiptGapDays {
+                keep[itemID] = rivalID
+                continue
+            }
+            noteRivalReceipt(rivalID, note: "\(r.name) sold you a resealed \(item.name)")
+            lines.append("You have proof now: \(r.name) sold you a resealed \(item.name). You can call it out.")
+        }
+        data.retail.rivalBuys = keep
+        return lines
+    }
+
+    /// The camp line: who was in line. The same store and day give the same answer.
+    func campRivalLine(_ store: LocalStore, success: Bool) -> (rival: Rival, line: String)? {
+        guard let rival = rivalAt(store), PriceCycle.unit("camp-\(store.rawValue)-\(data.day)") < Balance.rivalCampChance else { return nil }
+        return (rival, success ? "\(rival.name) was behind you in line and left with less."
+                               : "\(rival.name) and two friends were at the front of the line.")
+    }
+
+    /// A hostile rival flipper may follow the player to a booked show.
+    func pickShowRival() -> Rival? {
+        let candidates = data.rivals.filter { $0.kind == .flipper && $0.hostility >= Balance.rivalShowMinHostility }
+        guard let r = candidates.max(by: { $0.hostility < $1.hostility }),
+              Double.random(in: 0..<1) < Balance.rivalShowBase + Balance.rivalShowSlope * r.hostility else { return nil }
+        return r
     }
 }

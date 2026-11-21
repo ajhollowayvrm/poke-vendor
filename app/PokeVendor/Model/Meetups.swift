@@ -167,7 +167,7 @@ extension GameStore {
                                    overstated: overstated, ids: [itemID])
         if let fake {
             recordBadSale(item: m.name, channel: "Facebook Marketplace", price: m.price, fake: fake, known: known,
-                          refunds: pay.refundsFakes)
+                          refunds: pay.refundsFakes, sealed: m.sealed)
         }
         settlePayment(pay, item: m.name, venue: "Facebook Marketplace", price: m.price)
         data.meetups.remove(at: i)

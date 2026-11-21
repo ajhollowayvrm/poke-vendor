@@ -1270,6 +1270,8 @@ final class GameStore {
         lines += lotsEndDay()
         lines += auctionHouseEndDay()
         lines += vendingEndDay()
+        lines += calloutsEndDay()
+        lines += rivalsEndDay()
         let boostDay = data.day
         data.priceBoosts = data.priceBoosts.filter { $0.value >= boostDay }
         syncMarket()
@@ -1583,7 +1585,7 @@ final class GameStore {
                                    paid: paid, slab: slab, overstated: overstated, ids: ids, markets: markets)
         if let fake {
             recordBadSale(item: name, channel: listing.channel.rawValue, price: price, fake: fake, known: known,
-                          refunds: listing.channel.refundsFakes)
+                          refunds: listing.channel.refundsFakes, sealed: sealed)
         } else if !overstated, listing.overstatedCondition != true, price >= Balance.fairDealMinPrice {
             // A clean online sale is good feedback, and good feedback is reputation (docs/21).
             addReputation(Balance.onlineSaleReputation)

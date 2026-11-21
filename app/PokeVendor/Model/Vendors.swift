@@ -251,6 +251,8 @@ struct Vendor: Identifiable, Hashable {
     /// What "Ask for a better rate" added to the trade rate (docs/20-card-shows.md, Trading with vendors).
     var tradeRateBonus = 0.0
     var askedForRate = false
+    /// The named rival who runs this table (Model/Rivals.swift). Runtime only.
+    var rivalID: UUID? = nil
 
     /// Short tags for the floor list, for example "Vintage · Slabs · Sealed".
     var tags: String {

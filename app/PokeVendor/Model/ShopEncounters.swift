@@ -142,7 +142,10 @@ extension GameStore {
         }
         buyCardAtShow(OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, condition: condition),
                       price: price, vendor: "a kid", at: e.shop.rawValue)
-        recordScam(seller: "A kid at \(e.shop.rawValue)", contactID: shopContactID(e.shop), item: print.name)
+        // The lie is a secret. It can come out as a kids callout (docs/35-callouts.md). One act has one path.
+        recordHiddenAct(.lowballKid, weight: max(0.5, min(2, e.market / 50)), note: "\(print.name) at \(e.shop.rawValue)",
+                        witnesses: 3, contactID: shopContactID(e.shop),
+                        refund: ShowSession.round(e.market * (Balance.kidFairShare - Balance.kidLowballShare)))
         return "The kid took \(money(price))."
     }
 

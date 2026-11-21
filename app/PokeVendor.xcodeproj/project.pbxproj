@@ -134,6 +134,7 @@
 		70DF3A3E570528BDFD6AA2D0 /* gym-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = DEFF895D495560C72743EFB4 /* gym-heroes.json */; };
 		72C182746A4405977ED499E5 /* unseen-forces.json in Resources */ = {isa = PBXBuildFile; fileRef = A0F8FE73178F1D0515A4ECD8 /* unseen-forces.json */; };
 		7596F82261D15C4D25D7DA64 /* Condition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAFC1AB6090289298D64A7E6 /* Condition.swift */; };
+		75EC48BEDB2DC3BCA32D8ABA /* CalloutViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186173697205F56B279E1419 /* CalloutViews.swift */; };
 		76C05A5741135E258BF8809F /* Sales.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC5E06D2611E27D5195B7E9 /* Sales.swift */; };
 		76CC8A08745C4BCD5D0BF58F /* ruby-sapphire.json in Resources */ = {isa = PBXBuildFile; fileRef = D9887FEE4EB6935793366540 /* ruby-sapphire.json */; };
 		76DA8D89B34C2DE62DE99897 /* ascended-heroes.json in Resources */ = {isa = PBXBuildFile; fileRef = 3F83F25627755699228CC982 /* ascended-heroes.json */; };
@@ -330,6 +331,7 @@
 		16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mega-evolution.json"; sourceTree = "<group>"; };
 		1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "double-crisis.json"; sourceTree = "<group>"; };
 		17793FF1EF0947404D07714D /* expedition-base-set.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "expedition-base-set.json"; sourceTree = "<group>"; };
+		186173697205F56B279E1419 /* CalloutViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalloutViews.swift; sourceTree = "<group>"; };
 		1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreExpansion.swift; sourceTree = "<group>"; };
 		1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpportunityView.swift; sourceTree = "<group>"; };
 		1B3A5E9B134DA765470B7666 /* Inventory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inventory.swift; sourceTree = "<group>"; };
@@ -834,6 +836,7 @@
 		7F6F6FB8D7BA41D01B439268 /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				186173697205F56B279E1419 /* CalloutViews.swift */,
 				25EDEF884F435109CB2FBF68 /* RecordEpisodeSheet.swift */,
 				3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */,
 				820C299F6D8FD690239ED0CC /* SocialViews.swift */,
@@ -1259,6 +1262,7 @@
 				336B3AF3DB9F360F1F2186A5 /* BoxContents.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
+				75EC48BEDB2DC3BCA32D8ABA /* CalloutViews.swift in Sources */,
 				673A89D5FB03A05FF35F40E7 /* Callouts.swift in Sources */,
 				AE80D65ED6605B15A934D2E7 /* Camping.swift in Sources */,
 				FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */,

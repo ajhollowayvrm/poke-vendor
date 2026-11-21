@@ -312,8 +312,10 @@ extension GameStore {
         }
         unlockedIDs.formUnion(order.loose.map(\.id))
         data.openedPaid += max(0, order.paid - closedPaid)
-        // A product that returns can sell again. Its hot allocation record must record that new sale, not the old one.
-        for i in data.distributor.hotRecords.indices where unlockedIDs.contains(data.distributor.hotRecords[i].itemID) {
+        // A unit that returns closed can sell again, so its hot allocation record must record that new sale. A unit that
+        // the stream opened keeps its outcome (`.retail`), the same as `noteAllocationOpened`.
+        let closedIDs = unlockedIDs.intersection(Set(data.sealed.map(\.id)).union(order.loose.map(\.id)))
+        for i in data.distributor.hotRecords.indices where closedIDs.contains(data.distributor.hotRecords[i].itemID) {
             data.distributor.hotRecords[i].outcome = nil
             data.distributor.hotRecords[i].outcomeDay = nil
         }
@@ -570,9 +572,12 @@ extension GameStore {
         // 5. Prune. Read the cutoffs into locals: a closure on `data.ripShip` must not read `data`.
         let cutoff = today - Balance.ripShipKeepDays
         // An order stays while an act of it is still in the log: Part C needs the order to settle that act.
+        // It also stays while an open callout names it as its source.
         let liveActs = Set(data.hiddenActs.map(\.id))
+        let liveSources = Set(data.callouts.open.compactMap(\.sourceID))
         data.ripShip.orders.removeAll {
             !$0.open && $0.soldDay < cutoff && !($0.lateActID.map(liveActs.contains) ?? false) && !($0.palmActID.map(liveActs.contains) ?? false)
+                && !liveSources.contains($0.id)
         }
         let since = today - 27
         let kept = data.ripShip.grossByDay.filter { $0.key >= since }

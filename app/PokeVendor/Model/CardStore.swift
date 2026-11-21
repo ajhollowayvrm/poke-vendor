@@ -637,7 +637,8 @@ extension GameStore {
         collectSalesTax(on: price, at: storeName)
         addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid, ids: [item.id])
         if let fake = item.fake {
-            recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false)
+            recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false,
+                          sealed: !item.isCard)
         }
         return price
     }

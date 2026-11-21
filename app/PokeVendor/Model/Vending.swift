@@ -411,7 +411,7 @@ extension GameStore {
                 data.demand.items[vend.item.name, default: 0] += 1
                 if let fake = vend.item.fake {
                     recordBadSale(item: vend.item.name, channel: venue, price: vend.price, fake: fake,
-                                  known: vend.item.fakeKnown == true, refunds: false)
+                                  known: vend.item.fakeKnown == true, refunds: false, sealed: true)
                 }
             }
             if sold > 0 {

@@ -169,11 +169,14 @@ extension GameStore {
         var lines: [String] = []
         var due = data.dealStories.filter { $0.day <= today }
         if today % 7 == 0, Double.random(in: 0..<1) < Balance.storyRandomWeekly {
-            let bad = reputationTier >= 2 && Bool.random()
-            due.append(DealStory(day: today, good: !bad, viral: false,
-                                 text: bad ? "A rival vendor is telling people that your prices are inflated."
-                                           : "A regular vouched for you in a local Discord."))
+            if reputationTier >= 2 && Bool.random() {
+                // The bad branch is now the callout of one named rival, or nothing (docs/35-callouts.md).
+                if let line = randomRivalStory() { lines.append(line) }
+            } else {
+                due.append(DealStory(day: today, good: true, viral: false, text: "A regular vouched for you in a local Discord."))
+            }
         }
+        var cool = 0.0
         for story in due {
             // A random story is small: reputation only, no followers (docs/30-haggling-and-deal-reputation.md).
             let random = !data.dealStories.contains(story)
@@ -183,6 +186,7 @@ extension GameStore {
                 rep = story.good ? Balance.storyRandomRep : -Balance.storyRandomRep
             } else if story.good {
                 rep = story.viral ? Balance.storyGoodViralRep : Balance.storyGoodRep
+                cool += story.viral ? Balance.viralGoodStoryHeatCut : Balance.goodStoryHeatCut
                 if hasAccount {
                     let gain = story.viral ? max(Balance.storyViralFollowerMin, Int(Double(data.social.followers) * Balance.storyViralFollowerShare))
                                            : Balance.storyGoodFollowers
@@ -203,6 +207,7 @@ extension GameStore {
             log(text)
         }
         data.dealStories.removeAll { $0.day <= today }
+        if cool > 0 { coolCallouts(by: cool) }
         return lines
     }
 }

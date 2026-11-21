@@ -354,7 +354,8 @@ extension GameStore {
     func promote(name: String, kind: ContactKind, interest: Interest?, points: Int) -> String? {
         guard data.contacts.count < Balance.maxContacts, !data.contacts.contains(where: { $0.name == name }) else { return nil }
         let id = "met:\(UUID().uuidString.prefix(8))"
-        data.contacts.append(Contact(id: id, name: name, kind: kind, points: points, interests: interest.map { [$0] } ?? [],
+        let start = max(0, points - recordPenalty)      // read before the append (exclusivity rule)
+        data.contacts.append(Contact(id: id, name: name, kind: kind, points: start, interests: interest.map { [$0] } ?? [],
                                      atLocalShows: true, atRegionalShows: true))
         log("\(name) wants to keep in touch. Add them to your contact book in Contacts.")
         save()

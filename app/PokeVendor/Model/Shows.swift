@@ -30,6 +30,8 @@ struct CardShow: Codable, Identifiable, Hashable {
     var promoted: Bool?
     /// A better table spot, from reputation Trusted and up (docs/04). Optional, so old saves still load.
     var goodSpot: Bool?
+    /// A rival flipper took a nearby table (Model/Rivals.swift). Optional, so old saves still load.
+    var rivalID: UUID?
 
     var endDay: Int { startDay + size.days - 1 }
     var lastBookingDay: Int { startDay - size.bookingCloses }
@@ -148,6 +150,10 @@ extension GameStore {
         data.shows[i].attended.append(data.day - show.startDay)
         if !show.booked {
             addLedger(-show.size.entryFee, .showFees, "Entry · \(show.name)")
+        }
+        if show.booked, data.shows[i].rivalID == nil, let rival = pickShowRival() {
+            data.shows[i].rivalID = rival.id
+            rememberRival(rival.id, .rivalUndercutAtShow, note: "\(rival.name) took a table near yours at \(show.name)", byPlayer: false)
         }
         rollCarBreakIn(trip: show.name)
         save()
@@ -746,6 +752,11 @@ final class ShowSession {
     let dayIndex: Int
     var hasTable: Bool { venue.hasTable }
     let store: GameStore
+    /// The rival at a nearby table, and the in-print sealed items of the player that the rival also lists.
+    let rival: Rival?
+    let rivalItems: Set<UUID>
+    /// The hottest open callout when the session opened. The visitors read it, not `store.data`.
+    private let heatAtOpen: Double
 
     var phase: Phase {
         didSet { if phase == .summary, oldValue != .summary { rollTheft() } }
@@ -816,8 +827,19 @@ final class ShowSession {
                           hasFloor: true, hasTable: show.booked, showID: show.id,
                           crowd: show.size == .regional ? .regionalShow : .localShow)
         store.seedContacts()
-        self.init(venue: venue, store: store, show: show,
-                  vendors: VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show)),
+        var vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show))
+        // A rival flipper sets up a table of hot sealed. Part of it is resealed (the plug fake rate).
+        if let id = show.rivalID, let rival = store.rival(id) {
+            // The cheap tests come first: `isInPrint` and `isHot` read the market, and the catalog is large.
+            let pool = SetLibrary.catalog.filter { $0.msrp != nil && !$0.isStoreExclusive && Balance.bigStoreKinds.contains($0.kind) && $0.isInPrint && $0.isHot() }
+            let items = pool.shuffled().prefix(Int.random(in: Balance.rivalTableItems)).map {
+                VendorItem(goods: .sealed($0), price: ShowSession.round($0.market * Balance.rivalTablePrice), market: $0.market)
+            }
+            var table = Vendor(name: "\(rival.name) (rival)", kind: .sealedDealer, items: Array(items))
+            table.rivalID = id
+            vendors.append(table)
+        }
+        self.init(venue: venue, store: store, show: show, vendors: vendors,
                   regulars: store.attendingRegulars(show).map(\.id).shuffled())
     }
 
@@ -835,6 +857,9 @@ final class ShowSession {
         startMinute = start
         closeMinute = min((venue.close - venue.open) * 60, start + venue.hours * 60)
         let stock = venue.kind == .store ? store.storeStock : store.showStock
+        rival = show?.rivalID.flatMap { store.rival($0) }
+        rivalItems = rival == nil ? [] : Set(stock.sealed.filter { SetLibrary.product($0.productID)?.isInPrint == true }.map(\.id))
+        heatAtOpen = store.hottestCallout
         // PC items come only when the player packs them.
         bring = Set(stock.cards.filter { !$0.pc }.map(\.id) + stock.sealed.filter { !$0.pc }.map(\.id))
         self.vendors = vendors
@@ -843,7 +868,8 @@ final class ShowSession {
             // A recurring vendor prices better for a player they know.
             let bonus = store.level(self.vendors[i].contactID).priceBonus
             // Some of what is for sale is fake. A contact the player knows carries less risk.
-            let source = store.fakeSource(contact: self.vendors[i].contactID, fallback: venue.fakeSource)
+            let source = self.vendors[i].rivalID != nil ? FakeSource.plug
+                                                       : store.fakeSource(contact: self.vendors[i].contactID, fallback: venue.fakeSource)
             for j in self.vendors[i].items.indices {
                 if bonus > 0 { self.vendors[i].items[j].price = Self.round(self.vendors[i].items[j].price * (1 - bonus)) }
                 self.vendors[i].items[j].rollFake(source: source, tired: store.eyeFactor)
@@ -1015,6 +1041,11 @@ final class ShowSession {
     func openTable() {
         if !opened, venue.kind != .store { store.useTableSupplies() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
+        // The price is set now. A hot in-print sealed item at a high ask is a gouge, even if it never sells.
+        let productIDs = Dictionary(store.data.sealed.map { ($0.id, $0.productID) }, uniquingKeysWith: { a, _ in a })
+        store.noteGouge(table.filter { $0.kind == .sealed && !$0.pc }.map {
+            SealedSale(productID: productIDs[$0.id] ?? nil, name: $0.name, price: asking($0), market: $0.market)
+        })
         if venue.tableRules {
             // A guard: the load must fit the bins, whatever path built it.
             let fitted = filled([], from: table)
@@ -1100,6 +1131,10 @@ final class ShowSession {
         rollGoodsFake(&visitor)
         visitor.firstOffer = visitor.intent == .trade ? openingValuation(visitor) : visitor.offer
         maybeProposeFlip(&visitor)
+        if heatAtOpen >= Balance.calloutCrowdHeat, visitor.intent != .sell, Double.random(in: 0..<1) < Balance.calloutCrowdChance {
+            visitor.patience = max(0, visitor.patience - 1)
+            visitor.line = "Aren't you the one from that thread? " + visitor.line
+        }
         return visitor
     }
 
@@ -1224,6 +1259,13 @@ final class ShowSession {
             }
         }
         if type == .vintageFan { line = "I've been hunting for one of these. " + line }
+        if let rival, !item.pc, rivalItems.contains(item.id) {
+            let theirs = Self.round(asking(item) * (1 - Balance.rivalUndercut))
+            if top > theirs {
+                top = theirs
+                line = "\(rival.name) has this two tables down for \(money(theirs)). " + line
+            }
+        }
         top = max(0.25, top)
         // A PC item: a collector can pay a premium for it. A flipper, a kid, or a grading hunter does not
         // (docs/20-card-shows.md, PC items).
@@ -1452,7 +1494,7 @@ final class ShowSession {
                 table.removeAll { $0.id == one.id }
                 if let fake = one.fake {
                     store.recordBadSale(item: one.name, channel: venue.name, price: part, fake: fake, known: one.fakeKnown,
-                                        refunds: pay.refundsFakes, contactID: v.contactID)
+                                        refunds: pay.refundsFakes, contactID: v.contactID, sealed: one.kind == .sealed)
                 }
             }
             store.settlePayment(pay, item: names, venue: venue.name, price: v.offer)
@@ -1471,7 +1513,7 @@ final class ShowSession {
             store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name)
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
-                                    refunds: false, contactID: v.contactID)
+                                    refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
             }
             let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
             trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
@@ -1819,7 +1861,7 @@ final class ShowSession {
             // A fake that the seller did not catch can come out later, as with any trade.
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
-                                    refunds: false, contactID: v.contactID)
+                                    refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
             }
             table.removeAll { $0.id == item.id }
             bring.remove(item.id)
@@ -1918,6 +1960,25 @@ final class ShowSession {
         guard let v = current else { return }
         note = "\(v.name) moved on."
         finish(minutes: .random(in: 2...5))
+    }
+
+    /// The player can give a kid the item they wanted, for free (docs/35-callouts.md, The kid gift). Once a day.
+    var canGiveToKid: Bool {
+        guard let v = current, v.type == .kid, v.intent == .buy, let item = v.item, v.extra == nil else { return false }
+        return item.market >= Balance.kidGiftMinValue && item.market <= Balance.kidGiftMaxValue && !item.fakeKnown
+            && !item.showcase && store.data.callouts.kidGiftDay != store.day
+    }
+
+    func giveToKid() {
+        guard canGiveToKid, let v = current, let item = v.item else { return }
+        store.settleOnlineListing(item.id, name: item.name)       // the same step as `sellAtShow`
+        store.giveAway(item.id, at: "to a kid at \(venue.name)")
+        table.removeAll { $0.id == item.id }
+        sold.append(("\(item.name) (gift to a kid)", 0))           // shows in the summary and the vlog
+        store.kidGift(name: v.name, venue: venue.name)
+        note = "The kid could not believe it. The parent took a photo."
+        finish(minutes: .random(in: 3...6))
+        Haptics.hit()
     }
 
     func finish(minutes: Double) {
@@ -2031,6 +2092,10 @@ final class ShowSession {
         }
         buyGoods(item.goods, price: item.price, from: vendor.name, fake: item.fake, looksOff: item.looksOff,
                  contentsKey: item.id.uuidString, caseUnits: item.caseUnits)
+        // An item from a rival's table goes on the watch list. A fake that comes out later is a receipt against the rival.
+        if let rivalID = vendor.rivalID, case .sealed = item.goods, let bought = justBought {
+            store.data.retail.rivalBuys[bought.id.uuidString] = rivalID
+        }
         store.recordDeal(vendor.contactID, what: "Bought \(item.name)", price: item.price, market: item.market ?? item.price,
                          slug: goodsSlug(item.goods))
         // Mystery packs do not run out. Everything else leaves the table.
@@ -2176,7 +2241,7 @@ final class ShowSession {
         for item in mine {
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: vendor.name, price: tradeValue(item, at: vendors[v]), fake: fake,
-                                    known: item.fakeKnown, refunds: false, contactID: vendor.contactID)
+                                    known: item.fakeKnown, refunds: false, contactID: vendor.contactID, sealed: item.kind == .sealed)
             }
         }
         let theirIDs = Set(theirs.map(\.id))

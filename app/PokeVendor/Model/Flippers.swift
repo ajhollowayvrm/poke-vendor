@@ -53,10 +53,48 @@ extension Balance {
     /// The after-holiday dip is deeper when the pressure is at or above this value on its first day.
     static let winterSellOffPressure = 0.6
     static let winterSellOffScale = 1.5
+
+    /// A hot in-print sealed item posted at this many times its market or more is a gouge (a hidden act). It does not
+    /// need to sell. Posted prices are rounded, so a price within `gougeRounding` dollars of the line counts.
+    static let gougeRatio = 1.25
+    static let gougeRounding = 0.5
+}
+
+/// One sealed item that the player posts at a price. `noteGouge` reads a list of them.
+struct SealedSale {
+    let productID: String?
+    let name: String
+    let price: Double
+    let market: Double
 }
 
 @MainActor
 extension GameStore {
+    /// A gouge: hot in-print sealed that the player posts far above its market. The caller collects the posts in a
+    /// local array and calls this once, never inside a closure on `data`. At most one act each day.
+    func noteGouge(_ posts: [SealedSale]) {
+        guard !posts.isEmpty, data.retail.gougeDay != data.day else { return }
+        var worst: SealedSale?
+        for post in posts where post.market > 0 && post.price >= Balance.gougeRatio * post.market - Balance.gougeRounding {
+            guard let product = SetLibrary.product(post.productID), product.isInPrint, product.isHot() else { continue }
+            if worst == nil || post.price / post.market > (worst.map { $0.price / $0.market } ?? 0) { worst = post }
+        }
+        guard let worst else { return }
+        data.retail.gougeDay = data.day
+        recordHiddenAct(.priceGouge, weight: max(0.5, min(2, worst.price / worst.market - 1)),
+                        note: "\(worst.name) at \(money(worst.price))", witnesses: 3)
+    }
+
+    /// The own store shelf: checks the sealed items at the posted shelf price. It runs when the player sets the sealed
+    /// price, and each night while the price stays up.
+    func storeShelfGouge() {
+        guard let s = data.cardStore, s.sealedPrice >= Balance.gougeRatio - 0.05, data.retail.gougeDay != data.day else { return }
+        let posts = storeShelf().filter { !$0.isCard && !$0.consigned }.map {
+            SealedSale(productID: $0.productKey, name: $0.name, price: shelfPrice($0), market: $0.market)
+        }
+        noteGouge(posts)
+    }
+
     /// End Day for the flipper market: dumps, pressure, strictness, heat, the MSRP step, and the winter scale.
     /// Returns the report lines. Ends with `syncMarket()`, because dumps and the step move prices.
     func flippersEndDay() -> [String] {

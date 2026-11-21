@@ -89,8 +89,8 @@ struct CampView: View {
         VStack(alignment: .leading, spacing: 14) {
             Text(haul.success ? "You got in" : "Sold out").font(.title2.bold())
             Text(haul.success
-                 ? "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue). The shelf is yours before the scalpers. Everything is at MSRP."
-                 : "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue), and the stock was gone before you reached the shelf.")
+                 ? "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue). \(haul.rivalLine ?? "The shelf is yours before the scalpers.") Everything is at MSRP."
+                 : "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue), and the stock was gone before you reached the shelf. \(haul.rivalLine ?? "")")
                 .font(.subheadline)
                 .foregroundStyle(Theme.muted)
             if haul.success {

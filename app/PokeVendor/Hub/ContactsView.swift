@@ -10,6 +10,7 @@ struct ContactsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 reputationBox
+                calloutsRow
                 bookBox
                 suppliersBox
                 offersBox
@@ -43,6 +44,21 @@ struct ContactsView: View {
             Text("Fair deals raise it, and paying fair to a seller who does not know what they have raises it most. Scams that come out, fakes, and missed show days lower it. Strangers read it: they pay a little more, ask a little less, and more sellers come to your table.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
+        }
+    }
+
+    /// The path to callouts for a player with no social account.
+    @ViewBuilder
+    private var calloutsRow: some View {
+        let open = store.openCallouts.count
+        if open > 0 || !store.activeRecords.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                RecordBadge()
+                NavigationLink(value: AppRoute.callouts) {
+                    ChevronRow(icon: "megaphone", title: "Callouts · \(open) open", detail: "Read and answer", accent: open > 0)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 

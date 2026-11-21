@@ -112,8 +112,6 @@ extension Balance {
     /// A bad sale goes public with this chance, plus 10% for each reputation tier and each follower tier.
     static let publicScamBase = 0.30
     static let publicScamTierStep = 0.10
-    static let publicScamFollowerLoss = 0.05
-    static let publicScamAuthenticityCost = 0.10
     static let fakeSoldReputationCost = 40
     static let fakeSoldContactCost = 20
     static let shopFakeStandingCost = 20
@@ -121,6 +119,13 @@ extension Balance {
     static let fakeCaughtReputationCost = 10
     static let fakeCaughtContactCost = 10
 }
+
+#if DEBUG
+extension GameStore {
+    /// Tests only: forces the public post of a sold fake.
+    static var forcePublicScam: Bool?
+}
+#endif
 
 /// The rolls for fakes. The rates come from `Balance`.
 enum Counterfeit {
@@ -327,11 +332,20 @@ extension GameStore {
     // MARK: - Selling a fake
 
     /// A sale of a fake. Rolls whether the buyer finds out. `refunds` is true on a platform that refunds the buyer.
+    /// `sealed` is true when the item is a resealed product. When the buyer does not find a fake that the player knew,
+    /// the sale becomes a hidden act: a third party can still find it (docs/35-callouts.md). A buyer who finds it
+    /// already costs reputation in `counterfeitsEndDay`, so that sale records no act.
     func recordBadSale(item: String, channel: String, price: Double, fake: FakeTier, known: Bool, refunds: Bool,
-                       contactID: String? = nil, shop: LocalStore? = nil) {
+                       contactID: String? = nil, shop: LocalStore? = nil, sealed: Bool = false) {
         var chance = Balance.fakeFoundChance[fake.rawValue]
         if known { chance += Balance.knownFakeFoundBonus }
-        guard Double.random(in: 0..<1) < chance else { return }
+        guard Double.random(in: 0..<1) < chance else {
+            if known {
+                recordHiddenAct(sealed ? .sellResealed : .counterfeitSold, weight: max(0.5, min(2, price / 100)),
+                                note: "\(item) on \(channel)", contactID: contactID, refund: price)
+            }
+            return
+        }
         data.badSales.append(BadSale(item: item, channel: channel, price: price, contactID: contactID, shop: shop, known: known,
                                      refunds: refunds, dayFound: data.day + Int.random(in: Balance.fakeFoundDays)))
     }
@@ -353,14 +367,20 @@ extension GameStore {
                 data.shops[shop.rawValue] = state
             }
             let publicChance = Balance.publicScamBase + Balance.publicScamTierStep * Double(reputationTier + followerTier)
-            if Double.random(in: 0..<1) < publicChance {
+            #if DEBUG
+            let goesPublic = GameStore.forcePublicScam ?? (Double.random(in: 0..<1) < publicChance)
+            #else
+            let goesPublic = Double.random(in: 0..<1) < publicChance
+            #endif
+            // The post is a product integrity callout. This sale already took the reputation and the contact points
+            // above, so the callout takes none (`repPaid`, no `contactID`). Its heat can still cost followers at the end.
+            if goesPublic, let callout = startCallout(.productIntegrity, truth: true, receipts: true,
+                                                      heat: sale.known ? 75 : 60, accuser: .person("The buyer"),
+                                                      text: "The buyer of your \(sale.item) posted that it was a fake.",
+                                                      force: true, contactID: nil, refund: sale.refunds ? 0 : sale.price,
+                                                      repPaid: true) {
                 line += " They posted about it. Word is getting around."
-                if hasAccount {
-                    let lost = Int(Double(data.social.followers) * Balance.publicScamFollowerLoss)
-                    data.social.followers = max(0, data.social.followers - lost)
-                    data.social.authenticity = max(0, data.social.authenticity - Balance.publicScamAuthenticityCost)
-                    if lost > 0 { line += " You lost \(lost) followers." }
-                }
+                lines.append(callout)
             }
             lines.append(line)
         }

@@ -54,6 +54,35 @@ struct FlipperMarketBox: View {
                     .font(.subheadline)
                     .foregroundStyle(days > 0 ? Theme.orange : Theme.muted)
             }
+            RivalsBox()
+        }
+    }
+}
+
+/// The rivals that the player has met: name, kind, mood, and the newest meeting (docs/proposals/sealed-product, Part A 2.3).
+struct RivalsBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let met = store.data.rivals.filter { $0.lastSeenDay >= 0 }
+        if !met.isEmpty {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Rivals").font(.subheadline.weight(.medium))
+                ForEach(met) { r in
+                    let mood = r.hostility < 0.3 ? ("Neutral", Theme.muted) : r.hostility < 0.6 ? ("Wary", Theme.orange) : ("Hostile", Color.red)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack {
+                            Text(r.name).font(.subheadline)
+                            Text(r.handle).font(.caption).foregroundStyle(Theme.muted)
+                            Spacer()
+                            Text(mood.0).font(.caption.monospaced()).foregroundStyle(mood.1)
+                        }
+                        Text(r.kind == .creator ? "Creator" : "Flipper · " + r.homeStores.map(\.rawValue).joined(separator: ", "))
+                            .font(.caption).foregroundStyle(Theme.muted)
+                        if let last = r.memory.last { Text(last.note).font(.caption).foregroundStyle(Theme.muted) }
+                    }
+                }
+            }
         }
     }
 }

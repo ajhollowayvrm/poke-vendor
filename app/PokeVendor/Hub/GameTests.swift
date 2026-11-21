@@ -35,6 +35,7 @@ final class GameTests {
         timed("boxes", boxes)
         timed("series", seriesJoin)
         timed("market", market)
+        timed("callouts", callouts)
         timed("sealed", sealedFoundation)
         timed("cases", cases)
         timed("distro", distro)
@@ -319,6 +320,387 @@ final class GameTests {
         check(session.canFlip, "league night has no coin flip")
         let buyer = Visitor(type: .collector, name: "Test", intent: .buy, item: item, limit: 500, offer: 5, patience: 2, line: "")
         check(session.flipFull(buyer) == nil, "a PC item can go to a coin flip")
+    }
+
+    // MARK: - Callouts and rivals (docs/proposals/sealed-product, Part C section 12 and Part A phase 6)
+
+    /// No full End Day here. It calls the hooks that it needs, once each. `days()` runs the full steps.
+    private func callouts() {
+        /// A clean slate for the callout state, with no new run. A new run costs about 80 ms.
+        func reset() {
+            store.data.callouts = CalloutState()
+            store.data.hiddenActs = []
+            store.data.badSales = []
+            store.data.scams = []
+            store.data.dealStories = []
+        }
+        // 1. Counter, then deny is blocked. Counter, then make it right pays $40 once and takes the counter gain back.
+        fresh()
+        guard let rid = store.data.rivals.first(where: { $0.kind == .flipper })?.id else { return check(false, "no flipper rival to test") }
+        let followers = store.data.social.followers
+        if let id = store.testCallout(.greed, truth: true, receipts: false, heat: 40, accuser: .rival(.rival(rid)), refund: 40) {
+            store.replyToCallout(id, .counter)
+            check(store.data.social.followers > followers, "a counter-callout gave no followers")
+            check(store.callout(id).flatMap { store.replyBlock($0, .deny) } != nil, "a deny was allowed after a counter")
+            let cash = store.cash
+            store.replyToCallout(id, .makeRight)
+            check(abs(cash - store.cash - 40) < 0.005 && store.data.social.followers == followers,
+                  "make it right did not cost exactly $40 and take back the counter gain")
+            // The callout is now ending. A second make-it-right cannot pay again.
+            let paid = store.cash
+            store.replyToCallout(id, .makeRight)
+            check(store.cash == paid, "make it right paid twice")
+        } else {
+            check(false, "could not open the counter test callout")
+        }
+
+        // 2. A baseless callout of the player's own cannot be countered.
+        reset()
+        if let id = store.testCallout(.smear, truth: true, receipts: true, heat: 40, accuser: .rival(.rival(rid))) {
+            check(store.callout(id).flatMap { store.replyBlock($0, .counter) } != nil, "a smear callout could be countered")
+        } else {
+            check(false, "could not open the smear callout")
+        }
+
+        // 3. Make it right halves the fade cost. A viral kids callout still leaves a record. A new contact starts lower.
+        reset()
+        store.addReputation(100)
+        if let id = store.testCallout(.kids, truth: true, receipts: false, heat: 75) {
+            store.replyToCallout(id, .makeRight)
+            store.testSettle(id)
+            check(store.data.callouts.closed.last?.repApplied == 6 && store.activeRecords.count == 1,
+                  "make it right on a viral kids callout did not cost 6 reputation and leave one record")
+            let contact = store.promote(name: "Record Test", kind: .collector, interest: nil, points: 20)
+            check(store.data.contacts.first { $0.id == contact }?.points == 15, "a record did not lower the start points of a new contact")
+        } else {
+            check(false, "could not open the kids callout")
+        }
+
+        // 4. The cap: a fourth callout joins an open true callout. A forced callout still opens. A claim with no act, and
+        // nothing true to join, drops.
+        reset()
+        for _ in 0..<Balance.calloutMaxOpen { store.testCallout(.greed, truth: true, receipts: false, heat: 40) }
+        let hotBefore = store.hottestCallout
+        check(store.testCallout(.greed, truth: true, receipts: false, heat: 40) == nil && store.data.callouts.open.count == Balance.calloutMaxOpen
+              && store.hottestCallout > hotBefore, "a callout at the cap did not add its heat to an open one")
+        store.startCallout(.greed, truth: true, receipts: false, accuser: .person("Test"), text: "Forced.", force: true)
+        check(store.data.callouts.open.count == Balance.calloutMaxOpen + 1, "a forced callout did not open past the cap")
+        reset()
+        for _ in 0..<Balance.calloutMaxOpen { store.testCallout(.greed, truth: false, receipts: false, heat: 40) }
+        check(store.testCallout(.greed, truth: false, receipts: false, heat: 40) == nil && store.data.callouts.open.count == Balance.calloutMaxOpen
+              && store.data.callouts.open.allSatisfy { $0.heat == 40 }, "a false callout at the cap joined a false callout")
+
+        // 4b. A full cap with a denied false callout: an act that comes out opens its own callout. It never joins the
+        // denied one, so it does not vanish and does not end as won.
+        if let denied = store.data.callouts.open.first?.id {
+            store.replyToCallout(denied, .deny)
+            let heatDenied = store.callout(denied)?.heat
+            let act = store.recordHiddenAct(.shelfBuyout, weight: 1, note: "test")
+            if let a = store.data.hiddenActs.first(where: { $0.id == act }), store.openCallout(from: a) != nil {
+                let own = store.data.callouts.open.first { $0.actID == act }
+                check(own != nil && own?.truth == true && store.data.callouts.open.count == Balance.calloutMaxOpen + 1
+                      && store.callout(denied)?.heat == heatDenied, "an act at a full cap with a denied callout joined it or vanished")
+                if let own { store.testSettle(own.id) }
+                check(store.data.callouts.closed.last?.repApplied == Balance.storyBadRep, "a true callout that opened at a full cap ended as won")
+            } else {
+                check(false, "the act did not open a callout")
+            }
+        } else {
+            check(false, "no callout to deny")
+        }
+
+        // 5. The kid lowball is a hidden act. It is not a scam record.
+        reset()
+        let scams = store.data.scams.count
+        // The encounter picks a random card and can fail, so try again.
+        if let e = (0..<20).lazy.compactMap({ _ in self.store.makeShopEncounter(.castle, kind: .kidWithHit) }).first {
+            store.lowballKid(e)
+            check(store.data.scams.count == scams && store.data.hiddenActs.filter { $0.kind == .lowballKid }.count == 1,
+                  "the kid lowball did not record exactly one act and no scam")
+        } else {
+            check(false, "could not make the kid encounter")
+        }
+
+        // 6. A sold fake that goes public: one reputation cost, no followers lost at once, one callout that costs no reputation at the end.
+        reset()
+        store.addReputation(100)
+        GameStore.forcePublicScam = true
+        defer { GameStore.forcePublicScam = nil }
+        store.data.badSales.append(BadSale(item: "Test", channel: "eBay", price: 100, known: true, refunds: true, dayFound: store.day))
+        let rep = store.data.reputation
+        let fans = store.data.social.followers
+        _ = store.counterfeitsEndDay()
+        GameStore.forcePublicScam = nil
+        check(rep - store.data.reputation == Balance.fakeSoldReputationCost && store.data.social.followers == fans
+              && store.data.callouts.open.count == 1 && store.data.callouts.open.first?.repPaid == true,
+              "a public fake post did not cost exactly 40 reputation and open one paid callout")
+        if let id = store.data.callouts.open.first?.id {
+            store.testSettle(id)
+            check(store.data.callouts.closed.last?.repApplied == 0, "a public fake post took a second reputation cost at the end")
+        }
+
+        // 7. A resealed sale records a bad sale or a hidden act, never both.
+        reset()
+        var sawAct = false, sawSale = false, both = 0
+        for _ in 0..<300 where !(sawAct && sawSale) {
+            let sales = store.data.badSales.count, acts = store.data.hiddenActs.count
+            store.recordBadSale(item: "Test box", channel: "eBay", price: 80, fake: .convincing, known: true, refunds: true, sealed: true)
+            let dSales = store.data.badSales.count - sales, dActs = store.data.hiddenActs.count - acts
+            if dSales + dActs != 1 { both += 1 }
+            if dSales == 1 { sawSale = true }
+            if dActs == 1 { sawAct = true }
+        }
+        check(both == 0 && sawAct && sawSale && store.data.hiddenActs.allSatisfy { $0.kind == .sellResealed },
+              "a resealed sale did not record exactly one bad sale or one act")
+
+        // 8. The kid gift: free, once a day, and it books what the player paid.
+        reset()
+        if let print = prismatic.first(where: { ($0.market ?? 0) >= 5 && ($0.market ?? 0) <= 30 }) {
+            let a = OwnedCard(print: print, setSlug: "prismatic-evolutions", acquired: .now, paid: 12, ripID: nil, acquiredDay: store.day)
+            let b = OwnedCard(print: print, setSlug: "prismatic-evolutions", acquired: .now, paid: 3, ripID: nil, acquiredDay: store.day)
+            store.data.raw += [a, b]
+            let items = store.showItems((cards: [a, b], sealed: []))
+            let venue = Venue(kind: .leagueNight, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+            let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+            func kid(_ item: ShowItem) -> Visitor {
+                Visitor(type: .kid, name: "Kid", intent: .buy, item: item, limit: 20, offer: 5, patience: 2, line: "")
+            }
+            // `showItems` can reorder equal items, so find each card by its ID.
+            if let itemA = items.first(where: { $0.id == a.id }), let itemB = items.first(where: { $0.id == b.id }) {
+                session.testSeat(kid(itemA))
+                let cash = store.cash, paid = store.data.openedPaid
+                check(session.canGiveToKid, "a kid could not get a gift")
+                session.giveToKid()
+                check(!store.data.raw.contains { $0.id == a.id } && store.cash == cash && abs(store.data.openedPaid - paid - 12) < 0.005,
+                      "the kid gift did not remove the card for free and book its cost")
+                session.testSeat(kid(itemB))
+                check(!session.canGiveToKid, "a second kid gift in one day was allowed")
+            } else {
+                check(false, "could not make the kid gift items")
+            }
+        } else {
+            check(false, "no card for the kid gift")
+        }
+
+        // 9. A late order that Whatnot charged back is made right with the goodwill sum only. Whatnot pays the buyer once.
+        reset()
+        if let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }),
+           let item = store.addTestProduct(blister.id),
+           let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+            _ = store.beginRipShipRip(o.id, ripID: UUID())
+            store.finishRipShip(o.id)
+            if let k = store.data.ripShip.orders.firstIndex(where: { $0.id == o.id }) {
+                let act = store.recordHiddenAct(.unshippedOrder, weight: 1, note: "test", revealDay: store.day, refund: o.price, sourceID: o.id)
+                store.data.ripShip.orders[k].lateActID = act
+            }
+            _ = store.calloutsEndDay()
+            let late = store.data.callouts.open.first { $0.sourceID == o.id }
+            check(late?.actKind == .unshippedOrder && late?.truth == true, "a late order act did not open a callout on its reveal day")
+            store.refundRipShipOrder(o.id, reason: .chargeback)
+            if let late {
+                let refunds = store.data.ledger.filter { $0.category == .refund && $0.label.hasPrefix("Whatnot refund") }.count
+                let cash = store.cash
+                store.replyToCallout(late.id, .makeRight)
+                check(refunds == 1 && abs(cash - store.cash - store.lateGoodwill(o.price)) < 0.005,
+                      "make it right on a refunded late order did not pay only the goodwill sum")
+            }
+        } else {
+            check(false, "could not make the late order")
+        }
+
+        // 10. Rivals (Part A phase 6): the hostility pull, the weekly credibility, the creator reaction, and the show rival.
+        fresh()
+        guard let creator = store.data.rivals.first(where: { $0.kind == .creator }), let flipper = store.data.rivals.first(where: { $0.kind == .flipper }) else {
+            return check(false, "no rivals for the rival checks")
+        }
+        while store.data.day % 7 != 0 || store.data.day == 0 { store.data.day += 1 }
+        if let i = store.data.rivals.firstIndex(where: { $0.id == creator.id }) {
+            store.data.rivals[i].hostility = creator.baseHostility + 0.3
+            store.data.rivals[i].credibility = 0.5
+        }
+        store.data.retail.followerTierMark = max(0, store.followerTier - 1)
+        let lines = store.rivalsEndDay()
+        let after = store.rival(creator.id)
+        check(after.map { abs($0.credibility - 0.55) < 0.0001 } == true, "a rival did not regain credibility on the weekly day")
+        check(after.map { $0.hostility > creator.baseHostility + 0.3 + Balance.rivalCreatorTierRise - 0.02 } == true
+              && lines.contains { $0.contains("noticed your channel grow") }, "a creator rival did not react when the follower tier rose")
+        check(store.data.retail.followerTierMark == store.followerTier, "the follower tier mark did not move")
+        for i in store.data.rivals.indices { store.data.rivals[i].hostility = 0.1 }
+        check((0..<30).allSatisfy { _ in store.pickShowRival() == nil }, "a calm rival followed the player to a show")
+        // A buy from a rival's table goes on the watch list. A fake that comes out of it gives a receipt, once.
+        // (The full show floor takes about a second to build, so this uses a hand-made table. `days()` builds a real one.)
+        let sealedPick = SetLibrary.catalog.first { $0.kind == "Blister" && $0.market > 0 }
+        if let sealedPick {
+            var rivalTable = Vendor(name: "\(flipper.name) (rival)", kind: .sealedDealer,
+                                    items: [VendorItem(goods: .sealed(sealedPick), price: 10, market: sealedPick.market)])
+            rivalTable.rivalID = flipper.id
+            let venue = Venue(kind: .leagueNight, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+            let session = ShowSession(venue: venue, store: store, vendors: [rivalTable], regulars: [])
+            let cash = store.cash
+            session.buy(rivalTable.items[0], from: rivalTable)
+            check(store.cash < cash && store.data.retail.rivalBuys.count == 1, "a buy from a rival table was not put on the watch list")
+            if let id = store.data.retail.rivalBuys.keys.first, let n = store.data.sealed.firstIndex(where: { $0.id.uuidString == id }) {
+                store.data.sealed[n].fake = .convincing
+                store.data.sealed[n].fakeKnown = true
+                store.data.callouts.receiptDay[flipper.id] = nil
+                let proof = store.rivalTableReceipts()
+                check(proof.count == 1 && store.data.retail.rivalBuys.isEmpty && store.receipts(against: flipper.id).count == 1,
+                      "a found fake from a rival table did not give exactly one receipt")
+                check(store.rivalTableReceipts().isEmpty, "a rival table receipt paid twice")
+            } else {
+                check(false, "the rival table item is missing")
+            }
+        } else {
+            check(false, "no product for the rival table")
+        }
+
+        // 11. Calling out a rival: a receipt makes it true. Without one, the heat lands on the player. The cooldown stops a farm.
+        fresh()
+        guard let target = store.data.rivals.first?.id else { return }
+        let rep0 = store.data.reputation
+        let out = store.calloutRival(target)
+        check(out.contains("no proof") && store.data.reputation == rep0 && store.openCallouts.count == 1, "a callout with no proof did not backfire")
+        check(store.playerCalloutBlock(target) != nil, "a player callout had no cooldown")
+        store.noteRivalReceipt(target, note: "test")
+        store.data.callouts.playerCalloutDay[target] = nil
+        let rep1 = store.data.reputation
+        store.calloutRival(target)
+        check(store.data.reputation - rep1 == Balance.playerCalloutRep && store.receipts(against: target).isEmpty, "a callout with proof gave no reputation, or kept its receipt")
+
+        // 14. Make it right on a palm pays `palmRefundDue` once and returns the cards. A palm found through the log is banned
+        // once at peak 80 or more. A palm caught on camera gets only Part B's ban. `unshippedOrder` and `palmedHit` open past a full cap.
+        reset()
+        store.data.ripShip = RipShipState()
+        GameStore.forcePalmCaught = false
+        defer { GameStore.forcePalmCaught = nil }
+        let blister = SetLibrary.catalog.first { $0.kind == "Blister" && $0.packs == 3 && $0.market > 0 }
+        let big = prismatic.max { ($0.market ?? 0) < ($1.market ?? 0) }
+        func rippedOrder() -> RipShipOrder? {
+            guard let blister, let item = store.addTestProduct(blister.id),
+                  let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) else { return nil }
+            _ = store.beginRipShipRip(o.id, ripID: UUID())
+            store.finishRipShip(o.id)
+            return store.data.ripShip.orders.first { $0.id == o.id }
+        }
+        if let big, let blister, let item = store.addTestProduct(blister.id),
+           let o = store.createRipShipOrder(itemID: item.id, price: 20, buyer: "Jess", buyerContactID: nil, auction: false) {
+            let pid = UUID()
+            _ = store.beginRipShipRip(o.id, ripID: pid)
+            var hit = OwnedCard(print: big, setSlug: "prismatic-evolutions", acquired: .now, paid: nil, ripID: pid, acquiredDay: store.day)
+            hit.status = .soldToViewer(orderID: o.id)
+            store.data.raw.append(hit)
+            store.notePalm(orderID: o.id, ripID: pid, print: big, value: big.market ?? 0)
+            store.finishRipShip(o.id)
+            if let act = store.data.hiddenActs.first(where: { $0.kind == .palmedHit && $0.sourceID == o.id }) {
+                store.openCallout(from: act)
+                let due = store.palmRefundDue(o.id)
+                let cash = store.cash
+                if let c = store.data.callouts.open.first(where: { $0.sourceID == o.id }) {
+                    store.replyToCallout(c.id, .makeRight)
+                    let back = store.data.ripShip.orders.first { $0.id == o.id }
+                    check(abs(cash - store.cash - due) < 0.005 && due > 20 && back?.cards.contains { $0.id == hit.id } == true
+                          && !store.data.raw.contains { $0.id == hit.id } && back?.refunded == true,
+                          "make it right on a palm did not pay the price plus the card once and return the card")
+                    let after = store.cash
+                    store.replyToCallout(c.id, .makeRight)
+                    check(store.cash == after, "make it right on a palm paid twice")
+                } else {
+                    check(false, "the palm act opened no callout")
+                }
+            } else {
+                check(false, "the palm recorded no act")
+            }
+        } else {
+            check(false, "could not make the palm order")
+        }
+
+        // 14b. Make it right on an open late order ships it and pays only the goodwill sum.
+        reset()
+        if let o = rippedOrder() {
+            let act = store.recordHiddenAct(.unshippedOrder, weight: 1, note: "test", refund: o.price, sourceID: o.id)
+            if let k = store.data.ripShip.orders.firstIndex(where: { $0.id == o.id }) { store.data.ripShip.orders[k].lateActID = act }
+            if let a = store.data.hiddenActs.first(where: { $0.id == act }), store.openCallout(from: a) != nil,
+               let c = store.data.callouts.open.first(where: { $0.sourceID == o.id }) {
+                let cash = store.cash, hour = store.data.hour
+                store.replyToCallout(c.id, .makeRight)
+                let live = store.data.ripShip.orders.first { $0.id == o.id }
+                check(live?.shipped == true && live?.refunded == false && abs(cash - store.cash - store.lateGoodwill(o.price)) < 0.005
+                      && abs(store.data.hour - hour - 10.0 / 60) < 0.0001 && !store.data.hiddenActs.contains { $0.id == act },
+                      "make it right on an open late order did not ship it and pay only the goodwill sum")
+            } else {
+                check(false, "the late order opened no callout")
+            }
+        } else {
+            check(false, "could not make the late order for make it right")
+        }
+
+        // 14c. A palm from the log that peaks at 80 or more is banned once. A caught palm gets only Part B's ban.
+        reset()
+        store.data.ripShip = RipShipState()
+        store.data.activity = []
+        store.startCallout(.fairness, truth: true, receipts: true, heat: 90, accuser: .person("Jess"), text: "Log palm.", force: true,
+                           actID: UUID(), actKind: .palmedHit)
+        if let id = store.data.callouts.open.last?.id { store.testSettle(id) }
+        let bans = store.data.activity.filter { $0.text.hasPrefix("Whatnot banned you from streams until") }.count
+        check(bans == 1 && store.data.ripShip.bannedUntil == store.day + Balance.palmBanDays, "a palm from the log was not banned exactly once for 56 days")
+        store.data.ripShip = RipShipState()
+        store.startCallout(.fairness, truth: true, receipts: true, heat: 90, accuser: .person("Jess"), text: "Caught palm.", force: true,
+                           actKind: .palmedHit)
+        if let id = store.data.callouts.open.last?.id { store.testSettle(id) }
+        check(store.data.ripShip.bannedUntil == nil, "a caught palm got a second ban from the callout")
+
+        // 14d. A late order and a palm open their own callout past a full cap.
+        reset()
+        for _ in 0..<Balance.calloutMaxOpen { store.testCallout(.fairness, truth: true, receipts: false, heat: 40) }
+        let lateAct = store.recordHiddenAct(.unshippedOrder, weight: 1, note: "test", refund: 20)
+        let palmAct = store.recordHiddenAct(.palmedHit, weight: 1.5, note: "test", refund: 40)
+        for id in [lateAct, palmAct] {
+            if let a = store.data.hiddenActs.first(where: { $0.id == id }) { store.openCallout(from: a) }
+        }
+        check(store.data.callouts.open.count == Balance.calloutMaxOpen + 2
+              && store.data.callouts.open.contains { $0.actID == lateAct } && store.data.callouts.open.contains { $0.actID == palmAct },
+              "a late order or a palm did not open its own callout past a full cap")
+
+        // 13. A gouge: hot in-print sealed posted at 1.25 times market or more records one act each day, and nothing else does.
+        reset()
+        store.data.retail.gougeDay = -1
+        if let hot = SetLibrary.catalog.first(where: { $0.msrp != nil && !$0.isStoreExclusive && $0.isInPrint && $0.isHot() }) {
+            let fair = SealedSale(productID: hot.id, name: hot.name, price: hot.market, market: hot.market)
+            let high = SealedSale(productID: hot.id, name: hot.name, price: hot.market * 2, market: hot.market)
+            store.noteGouge([fair])
+            check(store.data.hiddenActs.isEmpty, "a post at market recorded a gouge")
+            store.noteGouge([fair, high])
+            store.noteGouge([high])
+            check(store.data.hiddenActs.filter { $0.kind == .priceGouge }.count == 1 && store.data.retail.gougeDay == store.day,
+                  "a gouge did not record exactly one act in a day")
+        } else {
+            check(false, "no hot product for the gouge check")
+        }
+        // 13b. On the store shelf: a hot in-print item at 1.35 times market is a gouge when the price is set, even with no sale.
+        // A second post the same day adds none. A price under the line adds none.
+        reset()
+        store.data.retail.gougeDay = -1
+        store.testOpenCardStore(.stripMall, term: 1)
+        if let hot = SetLibrary.catalog.first(where: { $0.msrp != nil && !$0.isStoreExclusive && $0.isInPrint && $0.isHot() }),
+           let item = store.addTestProduct(hot.id) {
+            store.stockStore([item.id])
+            store.setSealedPrice(1.2)
+            check(!store.data.hiddenActs.contains { $0.kind == .priceGouge }, "a shelf price of 120% recorded a gouge")
+            store.setSealedPrice(1.35)
+            check(store.data.hiddenActs.filter { $0.kind == .priceGouge }.count == 1, "a hot item at 1.35 times market on the shelf recorded no gouge")
+            store.setSealedPrice(1.5)
+            check(store.data.hiddenActs.filter { $0.kind == .priceGouge }.count == 1, "a second post on the same day recorded a second gouge")
+            store.setSealedPrice(Balance.storeDefaultSealedPrice)
+        } else {
+            check(false, "no hot product for the shelf gouge check")
+        }
+
+        // 12. A good story cools every open callout.
+        fresh()
+        if let id = store.testCallout(.greed, truth: false, receipts: false, heat: 40) {
+            store.coolCallouts(by: Balance.goodStoryHeatCut)
+            check(store.callout(id)?.heat == 30, "a good story did not cool an open callout")
+        }
     }
 
     // MARK: - Look inside a box (docs/12-acquiring-product.md)
@@ -705,7 +1087,8 @@ final class GameTests {
         store.data.retail.pressureLog[3] = 0.4
         store.data.retail.strictness["Target"] = ChainStrictness(level: 2)
         store.data.ripShip.grossByDay[2] = 50
-        check(store.data.callouts.open.count == 1 && store.data.rivals.first?.memory.count == 1, "the stubs did not write")
+        // A callout from a named rival also puts one memory on that rival (phase 6).
+        check(store.data.callouts.open.count == 1 && store.data.rivals.first?.memory.count == 2, "the stubs did not write")
         guard let saved = try? JSONEncoder().encode(store.data),
               let loaded = try? JSONDecoder().decode(GameData.self, from: saved) else {
             return check(false, "the sealed fields did not encode and decode")
@@ -1436,6 +1819,29 @@ final class GameTests {
             return check(false, "the retail fields did not encode and decode")
         }
         check(loaded.retail == r && loaded.rivals == store.data.rivals && loaded.flipperPressure == 0.73, "a save and a load lost a retail field")
+
+        // Callouts: a save keeps the log and the callouts, and an old save with neither key loads with both empty.
+        store.recordHiddenAct(.shelfBuyout, weight: 1.2, note: "test", witnesses: 4, contactID: "shop:Cardboard Castle", revealDay: 9, refund: 7)
+        store.startCallout(.fairness, truth: true, receipts: true, accuser: .rival(.shop(.castle)), text: "Test callout.")
+        store.data.callouts.shopCredibility["Cardboard Castle"] = 0.6
+        store.data.callouts.records = [CalloutRecord(day: 1, untilDay: 91, type: .kids, text: "Test.")]
+        store.data.callouts.kidGiftDay = 3
+        guard let saved2 = try? JSONEncoder().encode(store.data), let loaded2 = try? JSONDecoder().decode(GameData.self, from: saved2) else {
+            return check(false, "the callout fields did not encode and decode")
+        }
+        check(loaded2.hiddenActs == store.data.hiddenActs && loaded2.callouts == store.data.callouts && !loaded2.hiddenActs.isEmpty,
+              "a save and a load lost callouts")
+        if var json = (try? JSONSerialization.jsonObject(with: saved2)) as? [String: Any] {
+            json["hiddenActs"] = nil
+            json["callouts"] = nil
+            if let old = try? JSONSerialization.data(withJSONObject: json), let oldLoaded = try? JSONDecoder().decode(GameData.self, from: old) {
+                check(oldLoaded.hiddenActs.isEmpty && oldLoaded.callouts == CalloutState(), "an old save did not load with no callouts")
+            } else {
+                check(false, "an old save without callouts did not decode")
+            }
+        } else {
+            check(false, "could not read the save as JSON")
+        }
     }
 
     /// One End Day, the way the player plays it.
@@ -1775,6 +2181,34 @@ final class GameTests {
         store.data.retail.drawings.append(DrawingEntry(chain: .walmart, productID: onlineProduct?.id ?? "", drawDay: 2, price: 10))
         store.data.retail.drawingWins.append(DrawingWin(chain: .walmart, productID: onlineProduct?.id ?? "", price: 10, claimUntil: 1))
         store.data.retail.alertTier = .allChains
+        // T10 (phase 6): open callouts, hidden acts, receipts, and rival memories, so every callout closure runs on a full array.
+        let forcedAct = store.recordHiddenAct(.shelfBuyout, weight: 1, note: "test", revealDay: store.day + 1)
+        store.recordHiddenAct(.lowballKid, weight: 2, note: "test", witnesses: 50)
+        store.recordHiddenAct(.unshippedOrder, weight: 1, note: "test", refund: 20)
+        var deniedFalse: UUID?
+        if let id = store.testCallout(.greed, truth: false, receipts: false, heat: 40) {
+            store.replyToCallout(id, .deny)
+            deniedFalse = id
+        }
+        store.testCallout(.fairness, truth: true, receipts: true, heat: 60, accuser: .rival(.rival(store.data.rivals[0].id)))
+        guard let creatorID = store.data.rivals.first(where: { $0.kind == .creator })?.id,
+              let flipperID = store.data.rivals.first(where: { $0.kind == .flipper })?.id else { return check(false, "no rivals in the days test") }
+        store.data.callouts.rivalReceipts = [RivalReceipt(key: .rival(flipperID), day: -100, note: "old")]
+        store.data.callouts.records = [CalloutRecord(day: -80, untilDay: 5, type: .kids, text: "old record")]
+        store.data.callouts.shopCredibility["Cardboard Castle"] = 0.5
+        store.data.callouts.dramaBait = 0.3
+        store.data.dealStories.append(DealStory(day: 1, good: true, viral: false, text: "Test good story."))
+        // A sealed item from a rival's table that is now known to be fake: the End Day scan turns it into one receipt.
+        if let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.market > 0 }), var fakeItem = store.addTestProduct(blister.id) {
+            fakeItem.fake = .convincing
+            fakeItem.fakeKnown = true
+            fakeItem.status = .arriving(daysLeft: 50, from: "Test")       // in transit, so no test sale or rip can take it
+            if let k = store.data.sealed.firstIndex(where: { $0.id == fakeItem.id }) { store.data.sealed[k] = fakeItem }
+            store.data.retail.rivalBuys[fakeItem.id.uuidString] = creatorID
+        }
+        // The booked show of day 0 has a rival, so its session builds a rival table, and the camp and show rival code runs.
+        if let k = store.data.shows.firstIndex(where: { $0.covers(store.day) }) { store.data.shows[k].rivalID = flipperID }
+        var rivalTable = false
         var shows = 0
         for day in 0..<14 {
             if day == 1, let start = store.startStoreRun([.walmart]),
@@ -1782,7 +2216,9 @@ final class GameTests {
                 store.buyShelf(item, at: .walmart, credit: false)
             }
             if day == 0, store.canGoToShowToday, let started = store.startShowDay() {
-                play(ShowSession(show: started, store: store))
+                let session = ShowSession(show: started, store: store)
+                rivalTable = session.vendors.contains { $0.rivalID == flipperID } && session.rival?.id == flipperID
+                play(session)
                 shows += 1
             }
             if day % 4 == 2, let s = store.startCounter() { play(s) }
@@ -1799,6 +2235,15 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        check(rivalTable, "a rival at a booked show set up no table")
+        // The callout steps settled. The forced act opened exactly one true callout. The denied false one closed at no cost.
+        let everyCallout = store.data.callouts.open + store.data.callouts.closed
+        check(everyCallout.filter { $0.actID == forcedAct && $0.truth }.count == 1, "the act with a fixed day did not open exactly one true callout")
+        check(store.data.callouts.closed.first { $0.id == deniedFalse }.map { $0.repApplied == 0 } == true, "a denied false callout did not close at no cost")
+        check(store.data.callouts.open.allSatisfy { $0.heat >= 0 && $0.heat <= 100 }, "a callout heat left 0...100")
+        check(!store.data.callouts.rivalReceipts.contains { $0.day == -100 }, "an old receipt against a rival stayed")
+        check(store.data.callouts.rivalReceipts.contains { $0.key == .rival(creatorID) } && store.data.retail.rivalBuys.isEmpty,
+              "a known fake from a rival's table did not give its receipt in End Day")
         // The Rip & Ship steps settled: nothing is still waiting for a rip, the late order was cancelled with one strike, and the old data left.
         check(!store.data.ripShip.orders.contains { $0.state == .sold && $0.open } && !store.data.ripShip.orders.contains { $0.soldDay == -40 }
               && store.data.ripShip.grossByDay[-40] == nil, "a Rip & Ship order did not settle, or the old data stayed, in 14 days")
@@ -1846,6 +2291,15 @@ final class GameTests {
             return store.createRipShipOrder(itemID: item.id, price: price, buyer: "Jess", buyerContactID: nil, auction: false)
         }
         func live(_ id: UUID) -> RipShipOrder? { store.data.ripShip.orders.first { $0.id == id } }
+        /// Removes a test order and every item that carries its ID (the product, the hit cards, the palmed cards, and bulk), so End Day cannot see them.
+        func dropOrder(_ id: UUID) {
+            let palmed = Set(store.data.ripShip.orders.first { $0.id == id }?.palmedCardIDs ?? [])
+            store.data.ripShip.orders.removeAll { $0.id == id }
+            store.data.raw.removeAll { palmed.contains($0.id) }
+            store.data.sealed.removeAll { if case .soldToViewer(let o) = $0.status { return o == id }; return false }
+            store.data.raw.removeAll { if case .soldToViewer(let o) = $0.status { return o == id }; return false }
+            store.data.bulk.removeAll { $0.shipOrder == id }
+        }
         func refunds() -> [LedgerEntry] { store.data.ledger.filter { $0.category == .refund && $0.label.hasPrefix("Whatnot refund") } }
         /// A Rip & Ship order that already ripped nothing, as if its stream rip ended at once.
         func rippedOrder(daysAgo: Int = 0) -> RipShipOrder? {
@@ -1984,7 +2438,7 @@ final class GameTests {
                 let acts = store.data.hiddenActs.filter { $0.sourceID == o.id }
                 check(live(o.id)?.palmCaught == true && acts.isEmpty && live(o.id)?.palmActID == nil,
                       "two palms in one order left a secret act next to a caught palm")
-                store.data.ripShip.orders.removeAll { $0.id == o.id }       // End Day must not settle this test order
+                dropOrder(o.id)       // End Day must not settle this test order
             } else {
                 check(false, "could not make the two-palm order")
             }
@@ -1995,7 +2449,7 @@ final class GameTests {
             for _ in 0..<2 { addHit(o, pid); store.notePalm(orderID: o.id, ripID: pid, print: big, value: 10) }
             let acts = store.data.hiddenActs.filter { $0.sourceID == o.id }
             check(acts.count == 1 && abs((acts.first?.refund ?? 0) - (o.price + 20)) < 0.005, "two palms did not share one act with the full refund")
-            store.data.ripShip.orders.removeAll { $0.id == o.id }
+            dropOrder(o.id)
         } else {
             check(false, "could not make the shared-act order")
         }
@@ -2168,14 +2622,16 @@ final class GameTests {
         store.addReputation(400)
         GameStore.forcePalmCaught = true
         let repBefore = store.data.reputation
-        let calloutsBefore = store.data.callouts.open.count
+        // End Day can also open callouts for secret acts of earlier tests. A caught palm has no act, so count only those.
+        func caughtCallouts() -> Int { store.data.callouts.open.filter { $0.actKind == .palmedHit && $0.actID == nil }.count }
+        let palmCalloutsBefore = caughtCallouts()
         if let (caught, _) = palmedOrder() {
             check(caught.palmCaught && !store.data.hiddenActs.contains { $0.kind == .palmedHit && $0.sourceID == caught.id },
                   "a palm on camera recorded a secret act")
             store.report = nil
             store.endDay()
             check(repBefore - store.data.reputation >= Balance.palmFoundReputation && store.whatnotBanned
-                  && store.data.callouts.open.count == calloutsBefore + 1 && store.data.callouts.open.last?.actKind == .palmedHit,
+                  && caughtCallouts() == palmCalloutsBefore + 1,
                   "a palm on camera did not cost reputation, ban Whatnot, and open one callout")
         } else {
             check(false, "could not make the caught palm order")

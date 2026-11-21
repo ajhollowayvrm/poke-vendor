@@ -34,6 +34,7 @@ struct SocialHubView: View {
                         .controlSize(.large)
                     }
                     ShortsSection()
+                    if !store.data.callouts.open.isEmpty || !store.activeRecords.isEmpty { CalloutsSection() }
                     inbox
                     if !store.saleTips.isEmpty { tips }
                     if !store.social.analytics { analyticsOffer }

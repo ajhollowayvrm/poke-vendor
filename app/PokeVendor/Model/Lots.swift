@@ -147,7 +147,7 @@ extension GameStore {
         for item in lot.sealed {
             guard let fake = item.fake else { continue }
             recordBadSale(item: item.name, channel: lot.channel.rawValue, price: price * realMarket(of: item) / market, fake: fake,
-                          known: item.isKnownFake, refunds: lot.channel.refundsFakes)
+                          known: item.isKnownFake, refunds: lot.channel.refundsFakes, sealed: true)
         }
         return line
     }
