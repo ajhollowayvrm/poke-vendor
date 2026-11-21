@@ -37,6 +37,7 @@ final class GameTests {
         timed("market", market)
         timed("sealed", sealedFoundation)
         timed("cases", cases)
+        timed("retail", retail)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -887,6 +888,184 @@ final class GameTests {
         store.syncMarket()
     }
 
+    /// Sealed product phase 2: limits, the vendor batch and its drain, heat and bans, the club, the dump cap, and the
+    /// save of every retail field (docs/proposals/sealed-product, Part A 7.1: T1, T2, T3, T7, T11).
+    private func retail() {
+        fresh()
+        let pool = SetLibrary.catalog.filter { $0.isInPrint && $0.msrp != nil && !$0.isStoreExclusive && Balance.bigStoreKinds.contains($0.kind) }
+        let hot = pool.filter { $0.isHot() }
+        guard hot.count >= 3, let cold = pool.first(where: { !$0.isHot() }) else { return check(false, "the retail test has no hot or cold product") }
+
+        // T1: limits. Target allows 1 of a hot item a day.
+        let target = ShelfItem(id: "t1", product: hot[0], price: 1, quantity: 6, hot: true)
+        check(store.buyShelf(target, at: .target, credit: false), "the first hot buy at Target failed")
+        check(!store.buyShelf(target, at: .target, credit: false), "a second hot buy at Target passed the limit of 1")
+        // Walmart allows 5 items a visit. A second visit adds heat for the first buy.
+        store.arrive(at: .walmart, hour: 12)
+        let walmart = ShelfItem(id: "t1w", product: cold, price: 1, quantity: 8)
+        var passed = 0
+        for _ in 0..<6 where store.buyShelf(walmart, at: .walmart, credit: false) { passed += 1 }
+        check(passed == 5, "Walmart sold \(passed) items in one visit, not 5")
+        let heat = store.data.scalperHeat
+        store.arrive(at: .walmart, hour: 13)
+        check(store.buyShelf(walmart, at: .walmart, credit: false), "a buy on a second Walmart visit failed")
+        check(abs(store.data.scalperHeat - heat - Balance.heatRepeatVisit) < 0.001, "a buy on a second visit did not add exactly the repeat-visit heat")
+        // The club sells to members only. One hot item a day.
+        let club = ShelfItem(id: "t1c", product: hot[1], price: 1, quantity: 4, hot: true)
+        let club2 = ShelfItem(id: "t1d", product: hot[2], price: 1, quantity: 4, hot: true)
+        check(!store.buyShelf(club, at: .club, credit: false), "the club sold to a non-member")
+        let cash = store.cash
+        check(store.joinClub() && abs(cash - store.cash - Balance.clubFee) < 0.001, "joining the club did not charge exactly the fee")
+        check(store.buyShelf(club, at: .club, credit: false), "a member could not buy a hot item at the club")
+        check(!store.buyShelf(club2, at: .club, credit: false), "the club sold a second hot item on one day")
+
+        // T2: a batch does not change when a set leaves print later, and a bought unit never comes back.
+        fresh()
+        let slot = store.vendorSlot(.walmart)
+        var d = store.day
+        while d % 7 != slot.weekday { d += 1 }
+        let seed = store.data.marketSeed
+        let first = Market.batch(.walmart, vendorDay: d, seed: seed)
+        check(!first.isEmpty && first == Market.batch(.walmart, vendorDay: d, seed: seed), "one vendor day gave two different batches")
+        if let lead = first.first {
+            store.data.printChanges.append(PrintChange(slug: lead.product.homeSlug, day: d + 1, announcedDay: d + 1, inPrint: false, jump: 0.2))
+            store.syncMarket()
+            check(Market.batch(.walmart, vendorDay: d, seed: seed) == first, "a later print change changed a batch on the shelf")
+        }
+        store.data.day = d
+        store.syncMarket()
+        store.arrive(at: .walmart, hour: slot.hour)
+        let atVendor = store.shelf(at: .walmart, hour: slot.hour)
+        check(atVendor.allSatisfy { $0.quantity == $0.batchQuantity }, "the vendor hour showed a drained batch")
+        var rising = 0
+        var last = Dictionary(uniqueKeysWithValues: atVendor.map { ($0.id, $0.quantity) })
+        for hour in [slot.hour + 1, 15, 18, 21] where hour > slot.hour {
+            for item in store.shelf(at: .walmart, hour: hour) {
+                if item.quantity > (last[item.id] ?? 0) { rising += 1 }
+                last[item.id] = item.quantity
+            }
+        }
+        check(rising == 0, "a later hour showed more units than an earlier hour")
+        if let item = atVendor.first(where: { $0.quantity > 0 }), store.buyShelf(item, at: .walmart, credit: false) {
+            // A real End Day: the bought unit must stay bought, and it must count once.
+            store.report = nil
+            if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }
+            store.endDay()
+            let next = store.shelf(at: .walmart, hour: 8).first { $0.id == item.id }
+            check(next != nil && store.data.retail.batchBought[item.id]?.count == 1
+                  && store.shelfLeft(next!) == max(0, next!.quantity - 1), "a bought batch unit came back the next day")
+        } else {
+            check(false, "could not buy a batch unit at the vendor hour")
+        }
+        // GameStop marks up hot product, and the club sells only club product.
+        var markedUp = true, clubOnly = true
+        for day in 0..<14 {
+            for item in Market.batch(.gamestop, vendorDay: day, seed: seed) where item.hot {
+                if item.price < Market.retail((item.product.retailMSRP(day: day) ?? 0) * Balance.gameStopHotMarkup.lowerBound) - 0.01 { markedUp = false }
+            }
+            for item in Market.batch(.club, vendorDay: day, seed: seed) where !item.product.isClubExclusive { clubOnly = false }
+        }
+        check(markedUp, "a hot GameStop item was not marked up")
+        check(clubOnly, "the club batch holds a product that is not for the club")
+        // Strictness 3 hides hot items. Strictness 4 closes the shelf.
+        store.data.retail.strictness["Walmart"] = ChainStrictness(level: 3, lastChange: store.day)
+        check(!store.shelf(at: .walmart, hour: 20).contains { $0.hot }, "a strictness 3 shelf still holds hot items")
+        store.data.retail.strictness["Walmart"] = ChainStrictness(level: 4, lastChange: store.day, closedUntil: store.day + 21)
+        check(store.shelf(at: .walmart, hour: 20).isEmpty && store.limitRule(.walmart).closed, "a strictness 4 chain still sells cards")
+
+        // T3: a single hot buy at the limit adds a little heat and records no act. A buyout adds heat, records the
+        // act, and starts a ban at 10.
+        fresh()
+        store.data.retail.storeHeat["Target"] = 8
+        let acts = store.data.hiddenActs.count
+        check(store.buyShelf(ShelfItem(id: "t3a", product: hot[0], price: 1, quantity: 3, hot: true), at: .target, credit: false),
+              "a hot buy at Target failed")
+        check(abs((store.data.retail.storeHeat["Target"] ?? 0) - (8 + Balance.heatLimitHit)) < 0.001 && store.data.hiddenActs.count == acts,
+              "a hot buy at the limit changed the heat by the wrong amount or recorded an act")
+        // The limit heat counts once for each chain each day.
+        store.addTestCash(10)
+        _ = store.buyShelf(ShelfItem(id: "t3a2", product: hot[1], price: 1, quantity: 3, hot: true), at: .target, credit: false)
+        check(abs((store.data.retail.storeHeat["Target"] ?? 0) - (8 + Balance.heatLimitHit)) < 0.001,
+              "a second limit hit at one chain on one day added heat again")
+        store.data.retail.storeHeat["Walmart"] = 9.5
+        store.arrive(at: .walmart, hour: 12)
+        let box = ShelfItem(id: "t3b", product: hot[1], price: 1, quantity: 2, hot: true)
+        check(store.buyShelf(box, at: .walmart, credit: false), "the first Walmart buy failed")
+        check(store.data.retail.bannedUntil["Walmart"] == nil, "one unit started a ban")
+        check(store.buyShelf(box, at: .walmart, credit: false), "the buy that empties the item failed")
+        check(store.isBanned(.walmart) && store.data.hiddenActs.contains { $0.kind == .shelfBuyout }
+              && store.data.hiddenActs.contains { $0.kind == .storeBan }, "a buyout at 9.5 heat did not start a ban and record its acts")
+        check(!store.buyShelf(ShelfItem(id: "t3c", product: cold, price: 1, quantity: 2), at: .walmart, credit: false), "a banned chain sold cards")
+        check(store.campBlock(.walmart) != nil, "a banned chain allowed a camp")
+
+        // T7: the reprint and the dump together never cut more than 45%, and the cap never raises a price.
+        check(abs(PriceCycle.capDump(jumps: 0.65, dump: 0.8) - 0.55) < 1e-9, "capDump did not cap the cut at 45%")
+        check(abs(PriceCycle.capDump(jumps: 1.2, dump: 0.9) - 1.08) < 1e-9, "capDump changed a dump over a rise")
+        check(abs(PriceCycle.capDump(jumps: 0.42, dump: 0.9) - 0.42) < 1e-9, "capDump raised a price")
+
+        // A dump lowers the price of its products by its peak at the end of the fall. A save from before the dump has none
+        // of its fields.
+        let before = hot[0].marketPrice(day: store.day + 14)
+        store.data.marketEvents.append({
+            var event = MarketEvent(kind: .flipperDump, subject: "test", title: "Test dump.", startDay: store.day, days: 134, peak: -0.15)
+            event.products = [hot[0].id]
+            event.fallDays = 14
+            return event
+        }())
+        store.syncMarket()
+        check(hot[0].marketPrice(day: store.day + 14) <= before * 0.9, "a flipper dump did not lower the price of its product")
+        store.data.marketEvents.removeAll()
+        store.syncMarket()
+        let oldEvent = Data(#"{"id":"\#(UUID().uuidString)","kind":"hype","subject":"X","title":"T","startDay":1,"days":5,"peak":0.2}"#.utf8)
+        check((try? JSONDecoder().decode(MarketEvent.self, from: oldEvent)) != nil, "a market event from an old save did not decode")
+
+        // T11: a save keeps every retail field, the rivals, and the pressure.
+        fresh()
+        guard let rival = store.data.rivals.first, let item = SetLibrary.catalog.first else { return check(false, "no rival or product") }
+        store.rememberRival(rival.id, .rivalTookShelf, note: "test", byPlayer: false, hostility: 0.1)
+        var r = RetailState()
+        r.pressureLog = [3: 0.4]
+        r.seenEvents = [UUID()]
+        r.strictness = ["Target": ChainStrictness(level: 2, lastChange: 5, closedUntil: 9, lastIncident: "A test incident.")]
+        r.incidentBoost = ["Target": 0.03]
+        r.storeHeat = ["Walmart": 4.5]
+        r.bannedUntil = ["GameStop": 12]
+        r.heatHintShown = ["Walmart": 1]
+        r.visits = ["Walmart": 2]
+        r.visitBought = ["Walmart": 3]
+        r.visitHotBought = ["Walmart": 1]
+        r.checkoutVisit = ["Walmart": 1]
+        r.visitProductBought = ["Walmart|x": 2]
+        r.visitLines = ["v0-Walmart-x": "Gone."]
+        r.batchBought = ["v0-Walmart-x": BatchBuy(vendorDay: 0, count: 2, emptied: true)]
+        r.rivalTaken = ["v0-Walmart-y": BatchBuy(vendorDay: 0, count: 1)]
+        r.seenSlot = ["Walmart": 2]
+        r.rivalBuys = ["item": rival.id]
+        r.clubUntil = 300
+        r.clubHotDay = 4
+        r.drawings = [DrawingEntry(chain: .walmart, productID: item.id, drawDay: 2, price: 5)]
+        r.drawingWins = [DrawingWin(chain: .walmart, productID: item.id, price: 5, claimUntil: 3)]
+        r.dropOrders = [DropOrder(itemID: UUID(), source: "Target.com", name: "Test", rollDay: 2, chance: 0.1, refund: 5, bot: true)]
+        r.targetAttempts = 1
+        r.targetAttemptDay = 2
+        r.alertTier = .oneChain
+        r.alertStore = .target
+        r.alertStartDay = 7
+        r.msrpStepDay = 120
+        r.winterScales = [2029: 1.5]
+        r.missingShipments = [MissingShipment(name: "Test", noticeDay: 2, refundDay: 9, refund: 10)]
+        r.followerTierMark = 2
+        r.gougeDay = 6
+        r.ripHereWeek = ["Cardboard Castle": 3]
+        r.limitHeatDay = ["Target": 4]
+        store.data.retail = r
+        store.data.flipperPressure = 0.73
+        guard let saved = try? JSONEncoder().encode(store.data), let loaded = try? JSONDecoder().decode(GameData.self, from: saved) else {
+            return check(false, "the retail fields did not encode and decode")
+        }
+        check(loaded.retail == r && loaded.rivals == store.data.rivals && loaded.flipperPressure == 0.73, "a save and a load lost a retail field")
+    }
+
     /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.
     /// End Day touches every system, so an exclusivity crash shows up here (memory: the exclusivity trap).
     private func days() {
@@ -927,8 +1106,30 @@ final class GameTests {
         store.stockStore(Set(pick.cards.prefix(4).map(\.id) + pick.sealed.prefix(4).map(\.id)))
         store.addTestShow(.local)
 
+        // T10: retail state that is not empty, so every closure in the new End Day hooks runs on a full array.
+        let dumped = SetLibrary.catalog.filter { $0.isInPrint && $0.isHot() }.prefix(3).map(\.id)
+        store.data.marketEvents.append({
+            var event = MarketEvent(kind: .flipperDump, subject: "test", title: "Test dump.", startDay: 0, days: 134, peak: -0.15)
+            event.products = Array(dumped)
+            event.fallDays = 14
+            return event
+        }())
+        store.data.retail.batchBought["old-batch"] = BatchBuy(vendorDay: -20, count: 1)
+        store.data.retail.batchBought["new-batch"] = BatchBuy(vendorDay: 12, count: 1)
+        store.data.retail.rivalTaken["old-taken"] = BatchBuy(vendorDay: -20, count: 1)
+        store.data.retail.pressureLog[-30] = 0.4
+        store.data.retail.storeHeat["Walmart"] = 3
+        store.data.retail.incidentBoost["Target"] = 0.02
+        store.data.retail.bannedUntil["GameStop"] = 2
+        store.data.retail.strictness["Target"] = ChainStrictness(level: 1, lastChange: -89)
+        store.data.retail.seenEvents = [UUID()]
+        for rival in store.data.rivals { store.rememberRival(rival.id, .other, note: "test", byPlayer: false) }
         var shows = 0
         for day in 0..<14 {
+            if day == 1, let start = store.startStoreRun([.walmart]),
+               let item = store.shelf(at: .walmart, hour: start).first(where: { store.shelfLeft($0) > 0 && store.limitLeft($0, at: .walmart) > 0 }) {
+                store.buyShelf(item, at: .walmart, credit: false)
+            }
             if day == 0, store.canGoToShowToday, let started = store.startShowDay() {
                 play(ShowSession(show: started, store: store))
                 shows += 1
@@ -947,6 +1148,15 @@ final class GameTests {
             store.endDay()
         }
         check(shows == 1, "the booked test show did not start")
+        // T6: the pressure stays in its range, and the old retail entries are pruned.
+        check(Balance.pressureRange.contains(store.data.flipperPressure) && !store.data.retail.pressureLog.keys.contains { $0 < store.day - Balance.pressureLogDays },
+              "the flipper pressure left its range or the pressure log kept an old day")
+        check(store.data.retail.batchBought["old-batch"] == nil && store.data.retail.batchBought["new-batch"] != nil
+              && store.data.retail.rivalTaken["old-taken"] == nil, "End Day did not prune old batch entries")
+        check(!store.data.retail.winterScales.isEmpty, "the first winter did not lock its scale")
+        // An incident can raise Target again later, so the check reads the day of the last change.
+        check((store.data.retail.strictness["Target"]?.lastChange ?? -89) > -89 && store.data.retail.bannedUntil["GameStop"] == nil,
+              "a strictness level or a ban did not end with its time")
         check(store.series(.ripUntil) == nil, "a series with no episodes did not die")
         let inStock = store.machines.reduce(0) { $0 + $1.stock.count }
         let out = store.machines.reduce(0) { $0 + $1.soldCount + $1.stolenCount + $1.returnedCount }

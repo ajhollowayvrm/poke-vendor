@@ -10,6 +10,13 @@ extension HubView {
             GameTests(store: store).run()
             return
         }
+        // Balance aid: `-retailsim <days> [honest|flipper]` plays End Day with every hook and prints the retail state
+        // each week (Hub/RetailSim.swift). It replaces the save.
+        if let i = args.firstIndex(of: "-retailsim") {
+            let days = i + 1 < args.count ? Int(args[i + 1]) ?? 365 : 365
+            RetailSim(store: store, flipper: args.contains("flipper")).run(days: days)
+            return
+        }
         // Screenshot aid: `-regular` makes every contact Regular first.
         if args.contains("-regular") { store.testMakeRegular() }
         if let i = args.firstIndex(of: "-route"), i + 1 < args.count {
@@ -115,7 +122,9 @@ extension HubView {
             while Market.shelf(.castle, day: store.day).isEmpty { store.endDay() }
             store.report = nil
             if store.worksToday { store.callInSick() }
-            if store.startStoreRun([.castle, .target]) { nav.storeRun = StoreRunSession(stops: [.castle, .target]) }
+            if let start = store.startStoreRun([.castle, .target]) {
+                nav.storeRun = StoreRunSession(stops: [.castle, .target], startHour: start)
+            }
         }
         // Screenshot aid: `-series` runs both daily series, so a sealed item shows Record & Rip.
         if args.contains("-series") {

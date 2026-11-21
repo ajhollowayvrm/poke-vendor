@@ -22,9 +22,12 @@ struct StoreRunPlanner: View {
                                     .font(.title3)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(s.rawValue).font(.subheadline.weight(.medium))
-                                    Text(s.isGameShop ? "Game shop · near market · \(store.standing(s).rawValue) · credit \(money(store.shop(s).credit))" : "Big store · MSRP · stock is rare")
+                                    Text(detail(s))
                                         .font(.caption.monospaced())
                                         .foregroundStyle(Theme.muted)
+                                    ForEach(tags(s), id: \.text) { tag in
+                                        Text(tag.text).font(.caption.monospaced()).foregroundStyle(tag.color)
+                                    }
                                 }
                                 Spacer()
                                 Text("40m").font(.caption.monospaced()).foregroundStyle(Theme.muted)
@@ -36,6 +39,11 @@ struct StoreRunPlanner: View {
                             Button("Shop") { nav.path.append(.shop(s)) }
                                 .buttonStyle(.bordered)
                                 .controlSize(.small)
+                        } else if s.isClub, !store.isClubMember {
+                            Button(store.data.retail.clubUntil == nil ? "Join" : "Renew") { store.joinClub() }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .disabled(!store.canAfford(Balance.clubFee))
                         }
                     }
                     .padding(12)
@@ -49,11 +57,11 @@ struct StoreRunPlanner: View {
 
             let start = store.slot(for: hours)
             Button {
-                guard store.startStoreRun(chosen) else {
+                guard let start = store.startStoreRun(chosen) else {
                     message = "You do not have \(formatHours(hours)) free today."
                     return
                 }
-                nav.storeRun = StoreRunSession(stops: chosen)
+                nav.storeRun = StoreRunSession(stops: chosen, startHour: start)
                 chosen = []
             } label: {
                 Text(chosen.isEmpty ? "Select stores" :
@@ -66,12 +74,37 @@ struct StoreRunPlanner: View {
             .disabled(chosen.isEmpty || start == nil)
         }
     }
+
+    /// The detail line of a stop in the planner.
+    private func detail(_ s: LocalStore) -> String {
+        if s.isGameShop { return "Game shop · near market · \(store.standing(s).rawValue) · credit \(money(store.shop(s).credit))" }
+        if s.isClub {
+            return store.isClubMember ? "Member until \(GameCalendar.date(store.data.retail.clubUntil ?? store.day).text)"
+                                      : "Members only · \(money(Balance.clubFee)) a year"
+        }
+        return "Big store · MSRP · \(store.limitText(s))" + (s == .gamestop ? " · hot items over MSRP" : "")
+    }
+
+    private func tags(_ s: LocalStore) -> [(text: String, color: Color)] {
+        guard !s.isGameShop else { return [] }
+        var out: [(text: String, color: Color)] = []
+        let level = store.strictness(s)
+        if level.level > 0 { out.append(("Strict · level \(level.level)", Theme.orange)) }
+        if store.isBanned(s) {
+            out.append(("Refused until \(GameCalendar.date(store.data.retail.bannedUntil[s.rawValue] ?? store.day).text)", Theme.orange))
+        }
+        if level.level >= 4 { out.append(("Card sales stopped", Theme.orange)) }
+        if let w = store.data.retail.seenSlot[s.rawValue] { out.append(("Vendor day: \(GameStore.weekdays[w]) (you saw it)", Theme.cyan)) }
+        return out
+    }
 }
 
 /// The run goes stop by stop: the shelf, then buy or move on. A summary closes the run.
 struct StoreRunView: View {
     @Environment(GameStore.self) private var store
     let stops: [LocalStore]
+    /// The hour that the run started. Stop `i` arrives after `i` drives.
+    let startHour: Double
     let onClose: () -> Void
     @State private var index = 0
     @State private var useCredit = false
@@ -103,14 +136,38 @@ struct StoreRunView: View {
         .onChange(of: index) { _, _ in rollEncounter() }
     }
 
+    private func arrival(_ i: Int) -> Double { startHour + Double(i) * store.storeStopHours }
+
     private func stopView(_ s: LocalStore) -> some View {
-        let shelf = Market.shelf(s, day: store.day, discount: store.shopDiscount(s))
+        let shelf = store.shelf(at: s, hour: arrival(index))
+        let rule = store.limitRule(s)
         return ScrollView {
             VStack(spacing: 14) {
                 HStack {
                     Text(s.rawValue).font(.title2.bold())
                     Spacer()
                     Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                }
+                if !s.isGameShop {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(store.limitText(s)) · here at \(GameStore.clock(arrival(index)))")
+                            .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        if let hint = store.heatHint(s) { Text(hint).font(.caption).foregroundStyle(Theme.orange) }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    if rule.closed {
+                        Banner(text: store.isBanned(s) ? "The \(s.rawValue) staff refuse to sell you cards." : "\(s.rawValue) stopped in-store card sales.",
+                               color: Theme.orange)
+                    } else if s.isClub && !store.isClubMember {
+                        HStack {
+                            Banner(text: "The club sells to members only.", color: Theme.orange)
+                            Button("Join · \(money(Balance.clubFee))") { store.joinClub() }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .disabled(!store.canAfford(Balance.clubFee))
+                        }
+                    }
+                    if let notice = store.retailNotice { Banner(text: notice, color: Theme.orange) }
                 }
                 if s.isGameShop {
                     HStack {
@@ -134,12 +191,14 @@ struct StoreRunView: View {
                 }
                 DetailBox(title: "The shelf") {
                     if shelf.isEmpty {
-                        Text("The shelf is empty. This stop is a bust.").font(.subheadline).foregroundStyle(Theme.muted)
+                        Text(s.isGameShop ? "The shelf is empty. This stop is a bust." : "No card product on the shelf now.")
+                            .font(.subheadline).foregroundStyle(Theme.muted)
                     }
                     ForEach(SetLibrary.grouped(shelf, by: { $0.product.homeSlug }), id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "shelf") {
                             ForEach(group.items) { item in
                                 let left = store.shelfLeft(item)
+                                let allowed = store.limitLeft(item, at: s)
                                 HStack(spacing: 10) {
                                     RemoteCardImage(url: item.product.image.flatMap(URL.init(string:)), name: "", upright: false)
                                         .aspectRatio(contentMode: .fit)
@@ -148,14 +207,24 @@ struct StoreRunView: View {
                                         .frame(width: 44, height: 56)
                                         // The front box on the shelf: the copy that the player buys next.
                                         .looksInside(item.product) {
-                                            BoxContents.draw(item.product, key: BoxContents.shelfKey(item.id, copy: store.data.shelfBought[item.id] ?? 0))
+                                            BoxContents.draw(item.product, key: BoxContents.shelfKey(item.id, copy: store.shelfCopy(item)))
                                         }
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(item.product.name).font(.subheadline).lineLimit(2)
-                                        Text("\(left) left · mkt \(money(item.product.market))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                        HStack(spacing: 6) {
+                                            Text(item.product.name).font(.subheadline).lineLimit(2)
+                                            if item.hot { HotTag() }
+                                        }
+                                        Text(shelfCaption(item, left: left, allowed: allowed, game: s.isGameShop))
+                                            .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                        if item.batchDay != nil, left == 0 {
+                                            Text(store.data.retail.batchBought[item.id]?.emptied == true ? "You took the last one."
+                                                 : store.data.retail.visitLines[item.id] ?? "Sold out.")
+                                                .font(.caption).foregroundStyle(Theme.orange)
+                                        }
                                     }
                                     Spacer()
-                                    Button(money(item.price)) {
+                                    Button(left == 0 ? "Gone" : money(item.price)) {
+                                        store.retailNotice = nil
                                         if store.buyShelf(item, at: s, credit: useCredit && s.isGameShop) {
                                             spent += item.price
                                             bought.append(item.product.name)
@@ -163,16 +232,22 @@ struct StoreRunView: View {
                                     }
                                     .primaryButton()
                                     .controlSize(.small)
-                                    .disabled(left == 0)
+                                    .disabled(left == 0 || allowed == 0)
                                 }
                             }
                         }
                     }
                 }
+                if !s.isGameShop {
+                    Text("Hot items: limit 1 at most chains. They sell out within hours, and staff remember who clears them.")
+                        .font(.caption).foregroundStyle(Theme.muted)
+                }
                 if s.isGameShop {
                     SellToShopBox(shop: s)
                 }
                 Button {
+                    store.retailNotice = nil
+                    if index + 1 < stops.count { store.arrive(at: stops[index + 1], hour: arrival(index + 1)) }
                     index += 1
                     useCredit = false
                 } label: {
@@ -184,6 +259,11 @@ struct StoreRunView: View {
             }
             .padding(16)
         }
+    }
+
+    private func shelfCaption(_ item: ShelfItem, left: Int, allowed: Int, game: Bool) -> String {
+        game ? "\(left) left · mkt \(money(item.product.market))"
+             : "\(left) left · limit \(allowed) · mkt \(money(item.product.market))"
     }
 
     private func rollEncounter() {

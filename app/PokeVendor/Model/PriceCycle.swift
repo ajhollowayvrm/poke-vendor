@@ -16,6 +16,9 @@ struct MarketEvent: Codable, Identifiable, Hashable {
         case characterProduct
         /// The character's products sell out at stores. Sealed product with the character in its name rises.
         case characterSellOut
+        /// Flippers sell hot in-print sealed of a set after a reprint or a correction meets high pressure
+        /// (Model/Flippers.swift).
+        case flipperDump
     }
 
     /// True when the event moves card prices. The other kinds move sealed prices.
@@ -30,9 +33,19 @@ struct MarketEvent: Codable, Identifiable, Hashable {
     let days: Int
     /// The change at the top of the event, for example 0.4 for +40%.
     let peak: Double
+    /// A flipper dump: the products it moves (catalog IDs), and the days of the fall before the recovery.
+    var products: [String]? = nil
+    var fallDays: Int? = nil
 
     /// A fast move for the first fifth of the event, then a slow fade.
     func factor(day: Int) -> Double {
+        if kind == .flipperDump, let fall = fallDays {
+            let t = day - startDay
+            guard t >= 0, t < days else { return 1 }
+            // The fall starts on the first day, so the news list shows the dump on the day of its report line.
+            if t < fall { return 1 + peak * Double(t + 1) / Double(max(fall, 1)) }
+            return 1 + peak * (1 - Double(t - fall) / Double(max(days - fall, 1)))
+        }
         let t = Double(day - startDay) / Double(max(days, 1))
         guard t >= 0, t < 1 else { return 1 }
         return 1 + peak * (t < 0.2 ? t / 0.2 : (1 - t) / 0.8)
@@ -416,11 +429,16 @@ enum PriceCycle {
         func growth(_ range: ClosedRange<Double>) -> Double { range.lowerBound + r * (range.upperBound - range.lowerBound) }
         let days = printDays(slugs, day: d)
         let era = SetLibrary.info(slug)?.era ?? ""
+        let jumps = printJumps(slug, product: id, day: d)
+        var dump = 1.0
+        for event in events where event.kind == .flipperDump && event.products?.contains(id) == true {
+            dump *= event.factor(day: d)
+        }
         var factor = sealedIndex(day: d)
             * exp(walk(key, tier: .sealed, day: d))
             * pow(1 + growth(Balance.sealedGrowthInPrint), days.inPrint / 364)
             * pow(1 + growth(Balance.sealedGrowthOutOfPrint(era: era)), days.outOfPrint / 364)
-            * printJumps(slug, product: id, day: d)
+            * capDump(jumps: jumps, dump: dump)
             * seasonSealedPrice(day: d)
             * msrpLift(slugs: slugs, id: id, slug: slug, day: d)
         for event in events {
@@ -431,6 +449,12 @@ enum PriceCycle {
             }
         }
         return clamp(factor)
+    }
+
+    /// The reprint and the dump together never cut more than `flipperDumpCap` (45%). The cap never raises a price:
+    /// when the reprints alone already cut more, the dump adds nothing.
+    static func capDump(jumps: Double, dump: Double) -> Double {
+        dump < 1 ? min(jumps, max(1 - Balance.flipperDumpCap, jumps * dump)) : jumps
     }
 
     static func price(_ base: Double, _ factor: Double) -> Double {
@@ -486,7 +510,7 @@ extension GameStore {
         let day = data.day
         data.marketEvents.removeAll { day - $0.startDay >= $0.days }
         var lines: [String] = []
-        if data.marketEvents.count < Balance.marketEventsMax, Double.random(in: 0..<1) < Balance.marketEventChance,
+        if data.marketEvents.filter({ $0.kind != .flipperDump }).count < Balance.marketEventsMax, Double.random(in: 0..<1) < Balance.marketEventChance,
            var event = rollMarketEvent() {
             // The price tracker sees the chatter first: the news comes days before the prices move.
             if hasUpgrade(.priceTracker) {

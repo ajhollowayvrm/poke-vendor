@@ -68,7 +68,7 @@ struct HubView: View {
             StreamSetupView(plan: request.plan)
         }
         .fullScreenCover(item: $nav.storeRun) { session in
-            StoreRunView(stops: session.stops) { nav.storeRun = nil }
+            StoreRunView(stops: session.stops, startHour: session.startHour) { nav.storeRun = nil }
                 .saleReceipts()
         }
         .sheet(item: Binding(get: { store.report }, set: { store.report = $0 })) { report in

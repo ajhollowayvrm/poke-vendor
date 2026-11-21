@@ -44,7 +44,7 @@ extension GameStore {
     var postedRestocks: [Restock] {
         var out: [Restock] = []
         let cycle = data.day / Balance.restockCycleDays
-        for store in LocalStore.allCases where !store.isGameShop {
+        for store in LocalStore.allCases where store.isBigStore {
             for c in [cycle, cycle + 1] {
                 let d = restockDay(store, cycle: c)
                 if d >= data.day, d - data.day <= Balance.restockNotice { out.append(Restock(store: store, day: d)) }
@@ -56,7 +56,7 @@ extension GameStore {
     var restocksToday: [Restock] { postedRestocks.filter { $0.day == data.day } }
 
     func restockEntries(day: Int) -> [CalendarEntry] {
-        LocalStore.allCases.filter { !$0.isGameShop }.compactMap { store in
+        LocalStore.allCases.filter(\.isBigStore).compactMap { store in
             let d = restockDay(store, cycle: day / Balance.restockCycleDays)
             guard d == day, d - data.day <= Balance.restockNotice else { return nil }
             return CalendarEntry(kind: .restock, title: "\(store.rawValue) restock", detail: "Doors at \(GameStore.clock(Balance.campStart)) · camp for \(formatHours(Balance.campHours))")
@@ -67,6 +67,10 @@ extension GameStore {
 
     /// Why the player cannot camp now, or nil.
     func campBlock(_ store: LocalStore) -> String? {
+        if isBanned(store) {
+            return "Staff refuse you card sales until \(GameCalendar.date(data.retail.bannedUntil[store.rawValue] ?? data.day).text)"
+        }
+        if let until = strictness(store).closedUntil, until >= data.day { return "\(store.rawValue) stopped in-store card sales" }
         if campedToday(store) { return "Done for today" }
         guard let start = slot(for: Balance.campHours) else { return "Not enough time today" }
         if start > Balance.campStart + 3 { return worksToday ? "You work today · call in sick or book time off" : "Too late · the line formed at \(GameStore.clock(Balance.campStart))" }
@@ -81,8 +85,10 @@ extension GameStore {
         let suffix = "-\(data.day)"
         data.campedDays.append("\(store.rawValue)\(suffix)")
         data.campedDays.removeAll { !$0.hasSuffix(suffix) }
+        // A camp is a visit. It has no batch shelf, so it writes no rival lines.
+        self.arrive(at: store, hour: arrive, lines: false)
         let late = max(0, arrive - Balance.campStart)
-        let chance = Balance.campSuccess * pow(Balance.arrivalKeep, late) + restockBotBonus
+        let chance = (Balance.campSuccess * pow(Balance.arrivalKeep, late) + restockBotBonus) * flipperCampFactor
         guard Double.random(in: 0..<1) < chance else {
             log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). It sold out before you got in.")
             save()
@@ -95,8 +101,11 @@ extension GameStore {
         for i in 0..<r.int(Balance.campProducts) where !options.isEmpty {
             let p = options[r.int(0...(options.count - 1))]
             if items.contains(where: { $0.product.id == p.id }) { continue }
+            let hot = p.isHot()
+            if hot && limitRule(store).hotByDrawing { continue }
+            let qty = min(r.int(Balance.campQuantity), campCap(store, hot: hot))
             items.append(ShelfItem(id: "camp-\(data.day)-\(store.rawValue)-\(i)", product: p, price: p.retailMSRP() ?? p.market,
-                                   quantity: r.int(Balance.campQuantity)))
+                                   quantity: qty, hot: hot))
         }
         log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). You got in: \(items.count) product\(items.count == 1 ? "" : "s") at MSRP.")
         save()

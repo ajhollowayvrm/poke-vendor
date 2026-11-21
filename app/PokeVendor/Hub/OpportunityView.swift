@@ -93,25 +93,37 @@ struct CampView: View {
                  : "\(formatHours(Balance.campHours)) in line at \(haul.store.rawValue), and the stock was gone before you reached the shelf.")
                 .font(.subheadline)
                 .foregroundStyle(Theme.muted)
+            if haul.success {
+                Text(store.limitText(haul.store)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                if let hint = store.heatHint(haul.store) { Text(hint).font(.caption).foregroundStyle(Theme.orange) }
+            }
+            if let notice = store.retailNotice { Banner(text: notice, color: Theme.orange) }
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(haul.items) { item in
                         let left = store.shelfLeft(item)
+                        let allowed = store.limitLeft(item, at: haul.store)
                         HStack(spacing: 12) {
                             ProductImage(url: item.product.image, setName: item.product.name)
                                 .frame(width: 48, height: 66)
                                 .clipShape(RoundedRectangle(cornerRadius: 3))
                             VStack(alignment: .leading, spacing: 3) {
-                                Text(item.product.name).font(.subheadline.weight(.semibold)).lineLimit(2)
-                                Text("MSRP \(money(item.price)) · mkt \(money(item.product.market)) · \(left) left")
+                                HStack(spacing: 6) {
+                                    Text(item.product.name).font(.subheadline.weight(.semibold)).lineLimit(2)
+                                    if item.hot { HotTag() }
+                                }
+                                Text("MSRP \(money(item.price)) · mkt \(money(item.product.market)) · \(left) left · limit \(allowed)")
                                     .font(.caption.monospaced())
                                     .foregroundStyle(Theme.muted)
                             }
                             Spacer()
-                            Button(left > 0 ? money(item.price) : "Gone") { store.buyShelf(item, at: haul.store, credit: false) }
-                                .primaryButton()
-                                .controlSize(.small)
-                                .disabled(left == 0 || !store.canAfford(item.price))
+                            Button(left > 0 ? money(item.price) : "Gone") {
+                                store.retailNotice = nil
+                                store.buyShelf(item, at: haul.store, credit: false)
+                            }
+                            .primaryButton()
+                            .controlSize(.small)
+                            .disabled(left == 0 || allowed == 0 || !store.canAfford(item.price))
                         }
                         .padding(10)
                         .background(Theme.surface)
@@ -125,5 +137,6 @@ struct CampView: View {
         }
         .padding(20)
         .background(Theme.surface.ignoresSafeArea())
+        .onDisappear { store.retailNotice = nil }
     }
 }

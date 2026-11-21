@@ -35,6 +35,8 @@ enum AppRoute: Hashable {
 struct StoreRunSession: Identifiable {
     let id = UUID()
     let stops: [LocalStore]
+    /// The hour that the run started. Each stop arrives later by the drive time (Model/Retail.swift).
+    let startHour: Double
 }
 
 struct ShowDaySession: Identifiable {

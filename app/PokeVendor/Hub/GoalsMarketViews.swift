@@ -43,6 +43,7 @@ struct MarketView: View {
                     Text("The market goes through booms, corrections, and steady times. Cards of $1 or more move a little most days. Out of print, older sets gain value each year, and the oldest sealed gains the most.")
                         .font(.caption).foregroundStyle(Theme.muted)
                 }
+                FlipperMarketBox()
                 DetailBox(title: "Season") {
                     HStack(spacing: 0) {
                         StatCell(label: PriceCycle.monthName(), value: PriceCycle.seasonName() ?? "No season")

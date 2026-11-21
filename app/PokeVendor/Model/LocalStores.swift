@@ -4,15 +4,19 @@ import Foundation
 enum LocalStore: String, CaseIterable, Codable, Hashable {
     case target = "Target", walmart = "Walmart", bestBuy = "Best Buy", gamestop = "GameStop"
     case barnes = "Barnes & Noble", castle = "Cardboard Castle", topDeck = "Top Deck Games"
+    /// The club store (Model/Retail.swift). Last, so the older seeds keep their salts.
+    case club = "Warehouse club"
 
     var isGameShop: Bool { self == .castle || self == .topDeck }
-    /// A big chain store with a card aisle. Phase 2 of the sealed product plan adds `&& !isClub`.
-    var isBigStore: Bool { !isGameShop }
+    var isClub: Bool { self == .club }
+    /// A big chain store with a card aisle and a posted camp restock.
+    var isBigStore: Bool { !isGameShop && !isClub }
     /// Each stop adds its drive and its visit (docs/16-time-and-day.md). A better car makes it shorter
     /// (`GameStore.storeStopHours`).
     static let baseHours = 40.0 / 60.0
     var hours: Double { Self.baseHours }
-    var stockChance: Double { isGameShop ? 0.92 : 0.12 }
+    /// Game shops only. A big store and the club use vendor days (Model/Retail.swift).
+    var stockChance: Double { 0.92 }
 }
 
 /// One thing on a store shelf, at MSRP.
@@ -20,7 +24,14 @@ struct ShelfItem: Identifiable, Hashable {
     let id: String
     let product: Product
     let price: Double
+    /// For a batch item: the units on the shelf at the visit hour, before the player's own buys.
     let quantity: Int
+    /// The vendor day of a big-store or club batch item. Nil for a game shop, camp, or machine item.
+    var batchDay: Int? = nil
+    /// Hot on the vendor day: the market is `Balance.hotProductRatio` times the MSRP or more.
+    var hot = false
+    /// The units in the batch before any drain.
+    var batchQuantity = 0
 }
 
 /// Something a game shop bought from a local seller: often vintage or older, and sometimes a real find.
@@ -95,32 +106,16 @@ extension Balance {
 
 @MainActor
 extension Market {
-    /// `discount` is the relationship price bonus at a game shop (docs/21-relationships-and-reputation.md).
+    /// A game shop's daily shelf. `discount` is the relationship price bonus (docs/21-relationships-and-reputation.md).
+    /// A big store and the club use `GameStore.shelf(at:hour:)` (Model/Retail.swift).
     static func shelf(_ store: LocalStore, day: Int, discount: Double = 0) -> [ShelfItem] {
+        guard store.isGameShop else { return [] }
         let salt = UInt64(LocalStore.allCases.firstIndex(of: store) ?? 0) + 11
         var r = SeededRandom(seed: UInt64(day + 1) &* 15_485_863 &+ salt &* 3_571)
         guard r.double(0...1) < store.stockChance else { return [] }
-        if store.isGameShop {
-            return gameShopShelf(store, day: day, &r).map {
-                ShelfItem(id: $0.id, product: $0.product, price: retail($0.price * (1 - discount)), quantity: $0.quantity)
-            }
+        return gameShopShelf(store, day: day, &r).map {
+            ShelfItem(id: $0.id, product: $0.product, price: retail($0.price * (1 - discount)), quantity: $0.quantity)
         }
-        let kinds = ["Booster pack", "Blister", "Tin", "Booster bundle", "Elite Trainer Box", "Collection"]
-        let options = SetLibrary.catalog.filter {
-            $0.isInPrint &&
-            kinds.contains($0.kind) && $0.msrp != nil && !$0.isClubExclusive && $0.packs <= 11
-        }
-        guard !options.isEmpty else { return [] }
-        let count = r.int(1...2)
-        var out: [ShelfItem] = []
-        for i in 0..<count {
-            let p = options[r.int(0...(options.count - 1))]
-            if out.contains(where: { $0.product.id == p.id }) { continue }
-            let qty = p.packs == 1 ? r.int(2...8) : r.int(1...2)
-            // Big stores sell at MSRP.
-            out.append(ShelfItem(id: "\(day)-\(store.rawValue)-\(i)", product: p, price: p.retailMSRP(day: day) ?? p.market, quantity: qty))
-        }
-        return out
     }
 
     /// A game shop's shelf: mostly new product of every kind, collections and tins too, and some older sealed.

@@ -50,7 +50,7 @@ A cross-part review of revision 2 (`review_r2_cross.md`: 3 blockers, 4 major, 20
 | `RipShipRefund.late` did not exist. Part C uses `.chargeback`. | Part C |
 | `unshippedOrder` and `palmedHit` acts always open their own callout (D-7 extended), so their order can settle. | Part C 2.3 |
 | One plug seizure records one `plugSeized` act. | Part B 4.4 |
-| A hot buy that reaches the chain limit adds 0.7 heat (`heatLimitHit`) with no hidden act. The second sim run showed that D-1 alone left the flipper almost free of bans (1.7 a year). With this rule: about 13.5 a year for the flipper, 0 for every honest strategy. | Part A 1.2, 2.4 |
+| A hot buy that reaches the chain limit adds `heatLimitHit` with no hidden act, at most once per chain per day. Phase 2 tuned it to 1.5 with `-retailsim` (flipper median 13 bans a year; an honest player at the vendor hour peaks near 5 heat, below the ban at 10). The second sim run showed that D-1 alone left the flipper almost free of bans (1.7 a year). With this rule: about 13.5 a year for the flipper, 0 for every honest strategy. | Part A 1.2, 2.4 |
 | `storeRiderRate` 0.006 → 0.03. At 0.006 the rider paid out about 5 times its cost. | 4.2 |
 | `backDoorNoticeChance` 0.15 → 0.25. The cheater's account closes in 76% of runs; honest shop owners get 0 warnings. | Part B 3.6 |
 | Citation, stale-note, and wording fixes (review minors 1 to 20). | all |

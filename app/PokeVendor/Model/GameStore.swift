@@ -271,6 +271,8 @@ struct DayReport: Identifiable {
 final class GameStore {
     var data: GameData
     var report: DayReport?
+    /// A notice from the last buy at a big store or camp: a heat hint or a ban. The view shows it, then clears it.
+    var retailNotice: String?
     /// The route of a top goal the player just reached. It opens the "you made it" screen.
     var madeIt: GoalRoute?
     private var slabsBack: [OwnedCard] = []
@@ -310,6 +312,7 @@ final class GameStore {
         scheduleSales()
         seedContacts()
         seedRivals()
+        seedPressureLog()
     }
 
     // MARK: - Calendar and clock
@@ -563,6 +566,7 @@ final class GameStore {
         scheduleSales()
         seedContacts()
         seedRivals()
+        seedPressureLog()
         save()
     }
 
@@ -806,10 +810,11 @@ final class GameStore {
 
     func standing(_ store: LocalStore) -> StandingLevel { StandingLevel(points: shop(store).points) }
 
-    /// Starts a store run: the whole trip is one block of time.
-    func startStoreRun(_ stores: [LocalStore]) -> Bool {
+    /// Starts a store run: the whole trip is one block of time. Returns the hour that the run starts, or nil.
+    @discardableResult
+    func startStoreRun(_ stores: [LocalStore]) -> Double? {
         let hours = Double(stores.count) * storeStopHours
-        guard !stores.isEmpty, spendHours(hours) else { return false }
+        guard !stores.isEmpty, let start = slot(for: hours), spendHours(hours) else { return nil }
         for s in stores where s.isGameShop {
             var state = shop(s)
             state.lastVisitDay = data.day
@@ -817,18 +822,33 @@ final class GameStore {
         }
         log("Store run: \(stores.map(\.rawValue).joined(separator: ", ")) (\(formatHours(hours))).")
         rollCarBreakIn(trip: "the store run")
+        arrive(at: stores[0], hour: start)
         save()
-        return true
+        return start
     }
 
-    func shelfLeft(_ item: ShelfItem) -> Int { item.quantity - (data.shelfBought[item.id] ?? 0) }
+    func shelfLeft(_ item: ShelfItem) -> Int {
+        if item.batchDay != nil {
+            let mine = data.retail.batchBought[item.id]?.count ?? 0
+            let rival = data.retail.rivalTaken[item.id]?.count ?? 0
+            return max(0, item.quantity - mine - rival)
+        }
+        return item.quantity - (data.shelfBought[item.id] ?? 0)
+    }
+
+    /// The copy of a shelf item that the player takes next: the front box (`BoxContents.shelfKey`).
+    func shelfCopy(_ item: ShelfItem) -> Int {
+        item.batchDay != nil ? data.retail.batchBought[item.id]?.count ?? 0 : data.shelfBought[item.id] ?? 0
+    }
 
     @discardableResult
     func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
-        guard shelfLeft(item) > 0, pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
+        guard shelfLeft(item) > 0, limitLeft(item, at: store) > 0,
+              pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
         // The player takes the front box: the copy that the look-inside view showed.
-        let key = BoxContents.shelfKey(item.id, copy: data.shelfBought[item.id] ?? 0)
+        let key = BoxContents.shelfKey(item.id, copy: shelfCopy(item))
         data.shelfBought[item.id, default: 0] += 1
+        if !store.isGameShop { notePurchase(item, at: store) }
         recordDeal(shopContactID(store), what: "Bought \(item.product.name)", price: item.price, market: item.product.market,
                    slug: item.product.homeSlug)
         var bought = SealedItem(setSlug: item.product.homeSlug, name: item.product.name, packs: item.product.packs, paid: item.price,
@@ -1176,11 +1196,13 @@ final class GameStore {
         syncMarket()
         lines += printEndDay()
         lines += marketEndDay()
+        lines += flippersEndDay()
         data.sickToday = false
         data.boughtToday = []
         data.shelfBought = [:]
         data.pokemonCenterAttempted = false
         if data.day % 7 == 0 { data.weekBought = [] }
+        resetRetailDay()
         lines += decayStanding()
         if GameCalendar.isNewYear(data.day) { data.sickDaysLeft = job?.sickDays ?? Balance.sickDaysPerYear }
 
@@ -1274,7 +1296,7 @@ final class GameStore {
                 }
             case .listed(let listing):
                 if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name,
-                                       bonus: item.isCaseFresh ? Balance.caseFreshSaleBonus : 1) {
+                                       bonus: item.isCaseFresh ? Balance.caseFreshSaleBonus : 1, productID: item.productID) {
                     lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid,
                                               fake: item.fake, known: item.isKnownFake, sealedItem: item))
                     continue
@@ -1472,8 +1494,10 @@ final class GameStore {
     /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
     var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
 
-    func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String, bonus: Double = 1) -> Double? {
+    func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String, bonus: Double = 1,
+                  productID: String? = nil) -> Double? {
         let demand = channelDemand(listing.channel) * itemDemand(name) * PriceCycle.seasonDemand(sealed: sealed)
+            * flipperSaleFactor(productID, channel: listing.channel)
         let reach = reachSaleFactor * demand * bonus
         let market = rawMarket * itemPriceFactor(name)
         switch listing.channel {

@@ -79,6 +79,8 @@ extension Balance {
     static let rivalBaseHostility = 0.15...0.35
     /// The chance of a receipt on each "rival took the stock" line.
     static let rivalReceiptChance = 0.05
+    /// The hostility that a rival gains when the player takes the last units of a batch at the rival's store.
+    static let rivalTookShelfHostility = 0.08
 }
 
 @MainActor
