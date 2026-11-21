@@ -13,6 +13,32 @@ Code base: commit `503ff3c`. `M` = `app/PokeVendor/Model`. Line numbers are from
 | `part-b-cases-distro-ripship.md` | Proposals 3.1 to 3.7 (cases), 4.1 to 4.8 (distributor and plug), 5.1 to 5.7 (Rip & Ship). |
 | `part-c-callouts.md` | Proposals 6.1 to 6.9 (the hidden-act log, callouts, replies, the record, the kid gift). |
 
+## Revision 2
+
+Revision 1 went through three code reviews and a Monte Carlo simulation (2,000 runs × 365 days × 4 player strategies). The reviews found 8 blockers, 26 major findings, and 64 minor findings. The simulation found 8 balance problems. Revision 2 fixes all of them. The evidence is in `research_notes/Sealed product code proposal/`: `review_part_a.md`, `review_part_b.md`, `review_part_c_integration.md`, `sim_report.md`, `sim_sealed.py`, and `r2_decisions.md`. Each part file starts with a "Revision 2 changes" table.
+
+The cross-part decisions of revision 2 (`r2_decisions.md`, D-1 to D-17) are now in this file:
+
+| ID | Decision | Section |
+|---|---|---|
+| D-1 | Buyout heat and `shelfBuyout` only when the player's buy empties the item | 1.1 |
+| D-2 | One weight table for hidden acts (Part C 1.4) | 1.1 |
+| D-3 | Hot allocation stays at 1 case a week; Rip & Ship, vending, and the counter count as shelf sales | Part B |
+| D-4 | One refund path for a Rip & Ship order; "make it right" ships a late order | 1.7 |
+| D-5 | A day-7 cancel is a chargeback with Whatnot strikes | 1.7 |
+| D-6 | A palm refund pays the order price plus the card's value | Part C |
+| D-7 | Forced callouts pass the cap; extra acts add heat, never vanish | Part C |
+| D-8 | `RivalKey` for named rivals and game shops | 1.3 |
+| D-9 | Phase 0 stubs cover every cross-part call | 7 |
+| D-10 | Rival receipts come from the model, at 5% | 1.3 |
+| D-11 | A drawing win waits 2 days for the player to claim it | Part A |
+| D-12 | Missing shipment names: `learnIn`, `missingShipmentRefundDays` | 1.5 |
+| D-13 | 17 simulation values | 3 |
+| D-14 | Store break-in values; a store stock rider on the policy | 4.2 |
+| D-15 | `ItemStatus.openedAtShop` | 4.1 |
+| D-16 | `-retailsim <days>` | 7 |
+| D-17 | The top review improvements in each part | parts |
+
 **Rule: where a part file disagrees with this file, this file wins.** The merge already made these edits in the part files:
 
 - Part A: `limitBuyout` is now `shelfBuyout`, `repeatVisit` is now `limitEvasion`, and `checkoutBot` is now `botCheckout`.
@@ -43,7 +69,7 @@ The owner of each case:
 
 | Case | Owner | Where it is recorded |
 |---|---|---|
-| `shelfBuyout` | A | `buyShelf`, a hot buy that uses up the chain limit |
+| `shelfBuyout` | A | `buyShelf`, when the player's buy empties a hot item and the player bought 2 or more of it in the visit (D-1). A normal buy at the limit is not a secret. |
 | `limitEvasion` | A | the first buy on a second visit to one chain on one day |
 | `botCheckout` | A | each bot attempt at the Pokemon Center or Target.com |
 | `storeBan` | A | a chain bans the player |
@@ -71,20 +97,26 @@ Record a gouge when the player sells hot in-print sealed at a high markup at a v
 - **Exclusivity:** collect the sold items in a local array inside the sale loop. Record the act after the loop. Do not record it inside a closure on `data`.
 - **Constant:** `Balance.gougeRatio = 1.5` in `M/Flippers.swift`.
 
-### 1.3 Rivals: one ID type and one credibility value
+### 1.3 Rivals: one key type and one credibility value
 
-Part A owns `Rival`. Its `id` is a `UUID`. Part C wrote `String`. Change Part C as follows:
+Part A owns `Rival`. Its `id` is a `UUID`. Game shops can also act as rivals, and they have no `UUID`. So Part C uses a key with two cases (D-8):
+
+```swift
+/// A rival that can post callouts: a named rival (Part A) or a rival game shop.
+enum RivalKey: Codable, Hashable {
+    case rival(UUID)
+    case shop(LocalStore)
+}
+```
 
 | Part C item | Change |
 |---|---|
-| `Accuser.rival(String)` and the second `case rival(String)` | `case rival(UUID)` |
-| `RivalReceipt.rivalID: String` | `UUID` |
-| `RivalView.id: String` | `UUID` |
-| `CalloutState.rivalCredibility: [String: Double]` | **Delete.** Use `Rival.credibility` (Part A). Remove its decoder line. |
-| `credibility(_ rivalID: String)` | `func credibility(_ id: UUID) -> Double { rival(id)?.credibility ?? 1 }` |
-| `loseCredibility` | Call `changeRivalCredibility(id, by: -amount)`. Clamp the result at `Balance.rivalCredFloor` (0.25). Add the floor to Part A's clamp. |
-| The weekly `+rivalCredWeekly` loop in `rivalCalloutsWeekly` | Move it into Part A's `rivalsEndDay()`, once each week (`data.day % 7 == 0`). |
-| `RivalKind` | Use `Rival.Kind`. The cases are `.flipper` and `.creator`. |
+| `Accuser.rival(String)` | `case rival(RivalKey)` |
+| `RivalReceipt.rivalID: String`, `RivalView.id: String` | `RivalKey` |
+| `CalloutState.rivalCredibility: [String: Double]` | Replace with `shopCredibility: [String: Double]` for game shops only (key `LocalStore.rawValue`). Named rivals use `Rival.credibility` (Part A). |
+| `credibility(_:)`, `loseCredibility(_:...)` | Take a `RivalKey` and switch: `.rival(id)` reads or writes through `rival(id)` and `changeRivalCredibility(id, by:)`; `.shop(s)` uses `shopCredibility`. Clamp at `Balance.rivalCredFloor` (0.25). |
+| The weekly `+rivalCredWeekly` regain | Part A's `rivalsEndDay()` regains named rivals once a week. Part C's weekly roll regains game shops. |
+| `RivalKind` | Use `Rival.Kind` (`.flipper`, `.creator`). |
 
 Part A adds the function that Part C asked for, in `M/Rivals.swift`:
 
@@ -98,7 +130,7 @@ Part A adds the function that Part C asked for, in `M/Rivals.swift`:
 
 Part C must call `rememberRival(id, .rivalCalledOut, note:, byPlayer: false)` when a rival opens a callout. Part C must call `rememberRival(id, .calloutEnded, note:, byPlayer: <player won>)` when a rival callout settles.
 
-Part A calls Part C's `noteRivalReceipt(_ id: UUID, note: String)` with a 30% chance on each "a rival already cleared this shelf" line (memory kind `.rivalTookShelf`).
+Part A calls Part C's `noteRivalReceipt(_ id: UUID, note: String)` with a 5% chance when a rival cleared a shelf (memory kind `.rivalTookShelf`). The model rolls it once a visit in `buyShelf` or the visit start, never in a view (D-10). A rival line shows only when the rival took the stock, never when the player bought the last unit.
 
 ### 1.4 The hot test and retail MSRP: one definition
 
@@ -112,7 +144,7 @@ Part A calls Part C's `noteRivalReceipt(_ id: UUID, note: String)` with a 30% ch
 Part B rewrites `buyWholesale` to deliver cases. Keep Part A's missing-shipment rule in it:
 
 1. Roll `Balance.wholesaleMissingChance` (0.01) once for each order, after the fill roll and after the charge.
-2. On a hit, create no items. Call `registerMissingShipment(name: <order name>, refund: <total charged>, dueIn: Balance.missingRefundDays)`.
+2. On a hit, create no items. Call `registerMissingShipment(name: <order name>, refund: <total charged>, learnIn: Balance.wholesaleDeliveryDays)`. `learnIn` is the day the player learns that the order is lost. The refund comes `Balance.missingShipmentRefundDays` (14) days after that (D-12).
 3. The existing 12% short-ship roll still applies to an order that arrives.
 
 ### 1.6 The show ban and cases
@@ -121,7 +153,14 @@ A case item keeps the `productID` of its unit product. `bannedAtShow` (Part A se
 
 ### 1.7 Whatnot ban and refunds
 
-Part B provides `banFromWhatnot(days:reason:)` and `refundRipShipOrder(_:reason:)`. Part C's "make it right" on an `unshippedOrder` act calls `refundRipShipOrder(sourceID)` when `sourceID` points to an open order. Otherwise it pays the act's `refund`. The refund retires the act, so it cannot pay twice.
+Part B provides `banFromWhatnot(days:reason:)` and `refundRipShipOrder(_:reason:)`.
+
+- `refundRipShipOrder` is the only function that pays a buyer the order price back. `RipShipOrder.refunded` stops a second payment (D-4).
+- "Make it right" on an `unshippedOrder` callout calls `shipRipShipOrders([orderID])` when the order is still open, and pays a goodwill sum of 10% of the price (minimum $5). When the order was already refunded, it pays only the goodwill sum. It never calls `refundRipShipOrder`.
+- "Make it right" on a `palmedHit` callout calls `returnPalmedCards(orderID)` and pays `palmRefundDue(orderID)`: the order price plus the card's market value, or only the card's value when a chargeback already refunded the price (D-6).
+- A true `palmedHit` callout that peaks at heat 80 or more also calls `banFromWhatnot(days: 56, ...)`, the same ban as a palm caught on camera.
+- A ship or a refund retires the act with `retireHiddenAct(id, force: true)`, exposed or not. A forced retire halves the heat of the open callout.
+- The Whatnot cancel on day 7 is a chargeback from the player's cash. The player keeps the product. Each cancel is a Whatnot strike: 2 strikes in 60 days give a 4-week ban, and 3 in 120 days end Rip & Ship for the run (D-5).
 
 ### 1.8 `GameData`: one block of new fields
 
@@ -185,6 +224,10 @@ AJ approved the report as a whole. The parts found these smaller choices. The pl
 | D6 | Repeat-visit heat (Part A) | Only a buy on a second visit adds heat. A visit to look adds nothing. | Any second visit adds heat. |
 | D7 | First night of a hidden act (Part C 8.2) | An act can come out on the night it happens. | One quiet night first. |
 | D8 | Per-audience reputation | Not built. One reputation number stays. | A later change can add it with no change to the callout object. |
+| D9 | Buyout heat (review A, M1) | Heat and `shelfBuyout` only when the player's buy empties the item (D-1). | At most once per chain per day. |
+| D10 | Simulation values (D-13) | All 17 recommended values are adopted. | — |
+| D11 | Shop owner hot margin | `storeWholesaleMarketFloor` stays 0.5. The sim shows about $120k a year of hot margin, but the sim has no demand limit. Check it with `-retailsim`. | 0.6 cuts it to about $77k. |
+| D12 | Plug return | `plugMarketFloor` stays 0.65. The plug stays a strict loss for a player with legal access, and the only route for a player without it. | 0.55 makes it close to the secondary wholesaler. |
 
 **Memory note for AJ.** After phase 2, the price refresh needs one more step: run `tools/export/cases.py` after `catalog.py`. The memory entry `project_price_refresh.md` belongs to AJ, so AJ must approve the change.
 
@@ -202,16 +245,17 @@ Real basis: a retailer removed the wrap and cut the pack corners, so it could se
 |---|---|
 | `M/LocalStores.swift`, `ShelfItem` | Add `var ripHere = false`. `ShelfItem` is runtime only, so there is no save change. |
 | `M/LocalStores.swift`, `Market.shelf(_:day:discount:)` (L97) | Add a parameter `ripHere: Product? = nil`. When it is set and the shop has stock today, append one `ShelfItem` for it at `product.retailMSRP()`, quantity 1, `ripHere: true`. |
-| `M/LocalStores.swift`, the caller of `Market.shelf` | Pick the product with a seeded random choice from `SetLibrary.catalog` where `isInPrint`, `isHot()`, and the kind is in `Balance.bigStoreKinds`. Pass it only when `StandingLevel(points:) >= .regular` and `data.retail.ripHereWeek[store.rawValue] != data.day / 7`. |
+| `M/LocalStores.swift`, the caller of `Market.shelf` | Pick the product with a seeded random choice from `SetLibrary.catalog` where `isInPrint`, `isHot()`, `!isStoreExclusive`, and the kind is in `Balance.bigStoreKinds`. Pass it only when the shop standing has `points >= 30` (Regular; `StandingLevel` is not `Comparable`) and `data.retail.ripHereWeek[store.rawValue] != data.day / 7`. |
 | `M/Retail.swift`, `RetailState` | Add `var ripHereWeek: [String: Int] = [:]` and its decoder line. |
-| `M/Inventory.swift`, `SealedItem` | Add `var mustRip: Bool?`. It must be Optional (Part B section 1.1, save rule). Add the key to `CodingKeys`. |
-| The game shop buy path | On a buy of a `ripHere` item: set `mustRip = true` on the new `SealedItem`, and set `ripHereWeek[store] = data.day / 7`. The view then opens the rip flow at once. |
-| Every sell, list, shelf, vend, split, and Rip & Ship pick action | Hide the action when `item.mustRip == true`. Add one guard in the shared `canSell`-style check, so a new path cannot skip it. |
+| `M/Inventory.swift`, `ItemStatus` | Add `case openedAtShop`. Its `tag` is "OPENED · RIP IT". Add it to every exhaustive `switch` over `ItemStatus` (the compiler lists them). An old save has no such status. (D-15) |
+| The game shop buy path | On a buy of a `ripHere` item: create the `SealedItem` with `status = .openedAtShop`, and set `ripHereWeek[store] = data.day / 7`. The view then opens the rip flow at once. |
+| Sell, list, shelf, vend, split, and Rip & Ship paths | No change. They offer only items with no status, so they skip the item. The review counted 9 such paths. A status covers all of them, and any new path that follows the same rule. |
+| The rip flow (`Rip/`, `RipModel.swift`) | Accept an item with status `.openedAtShop`, the same as an item with no status. |
 | `Inventory/DetailViews.swift` | A row: "Opened at the shop. Rip it to see what is inside." |
 
 **Constants** (`M/Retail.swift`): `ripHereStanding = StandingLevel.regular`, `ripHerePerWeek = 1`.
 
-**Test.** Buy a `ripHere` item. The new item has `mustRip == true`. A sell attempt on it fails. A second `ripHere` item does not show the same week.
+**Test.** Buy a `ripHere` item. The new item has status `.openedAtShop`. It is not in the list that the sell sheet offers. A second `ripHere` item does not show at that shop the same week.
 
 ### 4.2 Store break-in scaled by stored value (phase 7)
 
@@ -224,9 +268,9 @@ Today the own store has only daytime shoplifting (`stealFromStore`, `M/StoreEven
 ```swift
 extension Balance {
     /// Own store break-in at night: the base chance, the stored sealed value that doubles it, and the cap.
-    static let storeBreakInBase = 0.002
-    static let storeBreakInValueScale = 10_000.0
-    static let storeBreakInMax = 0.02
+    static let storeBreakInBase = 0.0005
+    static let storeBreakInValueScale = 25_000.0
+    static let storeBreakInMax = 0.006
     /// Security cameras multiply the chance by this.
     static let storeBreakInCameraFactor = 0.4
     /// The thieves take at most this many sealed items, cases included, and the door repair costs this much.
@@ -239,7 +283,7 @@ extension GameStore {
     /// End Day: a night break-in at the own store. The chance grows with the sealed value inside.
     func storeBreakInEndDay() -> [String] {
         guard let s = data.cardStore, s.isOpen else { return [] }          // use the real "store is open" check
-        let inStore = data.sealed.filter { isInStore($0.status) }          // shelf and back room, cases included
+        let inStore = data.sealed.filter { Self.isInStore($0.status) }          // shelf and back room, cases included
         guard !inStore.isEmpty else { return [] }
         let value = inStore.reduce(0) { $0 + realMarket(of: $1) }
         var chance = min(Balance.storeBreakInMax, Balance.storeBreakInBase * (1 + value / Balance.storeBreakInValueScale))
@@ -261,9 +305,19 @@ extension GameStore {
 
 Use the real names for "store is open" and "item is in the store" from `M/CardStore.swift` and `storeShelf()`. The sort picks the most valuable items, with no random weight, because a break-in crew takes what is worth most.
 
-**Insurance.** The collection policy covers only items in the player's hands (`inHand`, `M/Losses.swift`). Store stock is not covered today. The line does not mention a claim. A store policy is out of scope.
+**Rate.** With $50,000 of sealed stock and no cameras, the nightly chance is 0.0005 × 3 = 0.0015, about 0.55 break-ins a year. With cameras it is about 0.22 a year. Revision 1 gave 4.4 a year, which the review found too high.
 
-**Test.** Set the chance to 1 through a test override. Put one sealed item in the store. After one call, the item is gone, and the ledger has one "Store door repair" entry of 400.
+**Insurance: the store stock rider (D-14).** Today the collection policy covers only items in the player's hands (`inHand`, `M/Losses.swift`). Revision 2 adds an optional rider:
+
+| Item | Change |
+|---|---|
+| `InsuranceState` (`M/Losses.swift` L40) | Add `var storeRider = false`. Synthesized `Decodable` throws on a missing key, so give `InsuranceState` a tolerant decoder in the same style as `RetailState`. |
+| `Balance` | `storeRiderRate = 0.006`: the rider costs 0.6% of the store's sealed value every 28 days, on top of the premium, with the same minimum. |
+| The premium step | Add the rider cost to the premium on the same cycle. |
+| `storeBreakInEndDay`, `stealFromStore` | With the rider, pay a claim on the lost market value at `policyCoverage`, less `policyDeductible`, through the existing claim code. The line names the payout. |
+| The insurance view | A toggle "Cover store stock" with its cost. It shows only when the player has a store. |
+
+**Test.** Set the chance to 1 through a test override. Put one sealed item in the store. After one call, the item is gone, and the ledger has one "Store door repair" entry of 400. Repeat with the rider on: the ledger also has one claim payout of `(value × 0.8) − 25`.
 
 **Doc.** `docs/24-theft-and-insurance.md`: a new "Store break-in" section with the values above. `docs/22-own-store.md`: cameras also cut the break-in chance.
 
@@ -291,18 +345,18 @@ Run `xcodegen generate` in `app/` after you add them.
 
 ## 7. Build order
 
-Each phase ends with `-test`. Build Debug, install it on the booted simulator, then run `xcrun simctl launch --console-pty booted com.ajholloway.pokevendor -test`. Wait for `TEST OK`. After phase 2 and phase 6, also run `-marketsim` to tune the values that rest on no source.
+Each phase ends with `-test`. Build Debug, install it on the booted simulator, then run `xcrun simctl launch --console-pty booted com.ajholloway.pokevendor -test`. Wait for `TEST OK`. The baseline on 2026-11-20 at `a7dd1dd` is `TEST OK: 136 checks in 2789 ms`. After phases 2, 4, and 6, also run `-retailsim 365` and compare its weekly numbers with `research_notes/Sealed product code proposal/sim_report.md` (the tuned column). `-marketsim` runs no End Day hooks, so it cannot tune these systems.
 
 | Phase | Build | From | Why here |
 |---|---|---|---|
-| 0 | The `GameData` block (1.8). Empty stubs of the new types, so the code compiles: `RetailState`, `Rival`, `PlugState`, `RipShipState`, `HiddenAct`, `HiddenActKind` (all 14 cases), `CalloutState`, and a `recordHiddenAct` that only appends. `xcodegen generate`. | All | Every later phase can call the shared API from its first line. |
-| 1 | Case counts (3.1); the case item, price, open action, case fresh (3.2 to 3.4); `cases.py` and `cases.json`; the one hot test and `retailMSRP` (1.4) | B, A 0.3 | Every later system reads cases or the hot test. |
-| 2 | Vendor days and batches (1.1); limits and the camp cap (1.2); pressure (2.1); dump (2.2); heat and bans (2.4); strictness (1.3); GameStop markup (1.6); club (1.7) | A | Pressure drives the shelf drain. Run `-marketsim`. |
-| 3 | Drawings (1.4); cancellations (1.5); bot and Target.com (2.6); alerts (1.8); flip-margin line (2.5) | A | Uses pressure and heat. |
-| 4 | Distributor tiers, application, rep, fill rate, Elite, back door (4.1 to 4.6); missing shipments (1.5 of this file); plug (4.7, 4.8); stranger cases (3.5); back room (3.6) | B, A 3.3 | Needs the case item and pressure. |
+| 0 | The `GameData` block (1.8). The types: `RetailState`, `Rival`, `RivalMemory`, `RivalKey`, `PlugState`, `RipShipState`, `HiddenAct`, `HiddenActKind` (all 14 cases with their values), `CalloutState`. Every cross-part function, with a working body where it is short and a no-op body elsewhere (D-9): Part C `recordHiddenAct`, `retireHiddenAct(_:force:)`, `exposeHiddenAct`, `startCallout` (appends only), `noteRivalReceipt`; Part A `rival`, `rivalAt`, `rememberRival`, `changeRivalCredibility`, `adjustRivalHostility`, `seedRivals` (runs on load); Part B `banFromWhatnot`, `refundRipShipOrder`, `returnPalmedCards`; Part C also owns `RivalKey` and the rival credibility constants. The `-retailsim <days>` launch argument (D-16, Part A). `xcodegen generate`. | All | Every later phase compiles from its first line, and every later phase can be tuned. |
+| 1 | Case counts (3.1); the case item, price, open action, case fresh (3.2 to 3.4); `cases.py` and `cases.json`; the one hot test, `retailMSRP`, and the MSRP step logic (1.4, A 3.4) | B, A 0.3 | Every later system reads cases or the hot test. |
+| 2 | Vendor days and batches (1.1); limits and the camp cap (1.2); pressure (2.1); dump (2.2); heat and bans (2.4); strictness (1.3); GameStop markup (1.6); club (1.7); the winter scale (A 3.5) | A | Pressure drives the shelf drain. Run `-retailsim 365`. |
+| 3 | Drawings (1.4); cancellations (1.5); bot and Target.com (2.6); alerts (1.8); flip-margin line (2.5); "Wait for the vendor" and learned vendor days (A, D-17) | A | Uses pressure and heat. |
+| 4 | Distributor tiers, application, rep, fill rate, Elite, back door (4.1 to 4.6); missing shipments (1.5 of this file); plug (4.7, 4.8); stranger cases (3.5); back room (3.6) | B, A 3.3 | Needs the case item and pressure. Run `-retailsim 365`. |
 | 5 | Rip & Ship (5.1 to 5.7), with `banFromWhatnot` and `refundRipShipOrder` | B | Needs the case item. Records hidden acts. |
-| 6 | Rivals (2.3); the full callout system (6.1 to 6.9); `priceGouge` (1.2 of this file); the rival and credibility fixes (1.3 of this file) | A, C | Reads the hidden acts from phases 2 to 5. Run `-marketsim`. |
-| 7 | Shows that ban in-print sealed; official card machines; the MSRP step; the winter scale (A section 3); the opened-at-MSRP offer and the store break-in (section 4 of this file) | A, integration | Independent. |
+| 6 | Rivals (2.3); the full callout system (6.1 to 6.9); `priceGouge` (1.2 of this file); the rival and credibility fixes (1.3 of this file) | A, C | Reads the hidden acts from phases 2 to 5. Run `-retailsim 365`. |
+| 7 | Shows that ban in-print sealed; official card machines; the rival show table (A section 3); the opened-at-MSRP offer and the store break-in (section 4 of this file) | A, integration | Independent. |
 | 8 | Doc updates from all parts, the two new docs, and the cleanup items (section 8) | All | The docs describe the built code. |
 
 ## 8. Cleanup items
