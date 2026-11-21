@@ -104,7 +104,8 @@ final class RipModel {
     private(set) var resealedMoment: UUID?
 
     init(items: [SealedItem], store: GameStore?, hitsOnly: Bool = false) {
-        queue = items.flatMap { item in
+        // A second guard: no path can rip a closed case.
+        queue = items.filter { !$0.isCase }.flatMap { item in
             let product = item.brokenFrom == nil ? SetLibrary.product(item.productID) : nil
             let unbox = product.map { $0.kind != "Booster pack" || $0.packs > 1 } ?? false
             return (store?.packSlugs(of: item) ?? Array(repeating: item.setSlug, count: item.packs)).map { slug in
@@ -291,6 +292,8 @@ final class RipModel {
 
     /// The cards of one pack, in the physical pack order, front card first.
     private func buildCards(_ queued: QueuedPack?) -> (cards: [RipCard], special: SpecialPack?, resealed: Bool) {
+        // Every pack is an independent draw from its set's pull rates. A case, a case-fresh tag, or a "loaded" rumor never
+        // changes the draw (docs/12-acquiring-product.md, Cases; docs/18-ripping.md).
         let cardSet = SetLibrary.set(queued?.setSlug ?? "prismatic-evolutions")
         let pack = PackBuilder(cardSet: cardSet, forced: Self.forcedSpecial).build()
         Self.forcedSpecial = nil

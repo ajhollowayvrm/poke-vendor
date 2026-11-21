@@ -3,7 +3,7 @@ import Foundation
 // Relationships and reputation (docs/21-relationships-and-reputation.md).
 
 enum ContactKind: String, Codable, CaseIterable {
-    case gameShop, vintageDealer, modernDealer, shopBooth, collector, trader, buyer
+    case gameShop, vintageDealer, modernDealer, shopBooth, collector, trader, buyer, distributorRep, plug
 
     var label: String {
         switch self {
@@ -14,6 +14,8 @@ enum ContactKind: String, Codable, CaseIterable {
         case .collector: "Collector"
         case .trader: "Trader"
         case .buyer: "Buyer"
+        case .distributorRep: "Distributor rep"
+        case .plug: "Plug"
         }
     }
 
@@ -26,8 +28,13 @@ enum ContactKind: String, Codable, CaseIterable {
         case .collector: "person.fill"
         case .trader: "arrow.triangle.swap"
         case .buyer: "bag"
+        case .distributorRep: "building.2.crop.circle"
+        case .plug: "eye.slash"
         }
     }
+
+    /// A supplier line, not a person at a show, a meet, or the counter. It never goes in the contact book.
+    var isSupplier: Bool { self == .distributorRep || self == .plug }
 
     var isVendor: Bool { [.vintageDealer, .modernDealer, .shopBooth].contains(self) }
 
@@ -245,12 +252,12 @@ extension GameStore {
 
     /// People the player dealt with who are not in the book yet. A stranger with no deal and no points stays hidden.
     var knownContacts: [Contact] {
-        data.contacts.filter { !$0.inBook && ($0.deals > 0 || points(of: $0) > 0) }
+        data.contacts.filter { !$0.inBook && !$0.kind.isSupplier && ($0.deals > 0 || points(of: $0) > 0) }
     }
 
     /// A person gives their number at Familiar and up, and only when the book has room.
     func canRegister(_ c: Contact) -> Bool {
-        !c.inBook && StandingLevel(points: points(of: c)).rank >= Balance.registerLevel.rank && bookContacts.count < contactBookSize
+        !c.inBook && !c.kind.isSupplier && StandingLevel(points: points(of: c)).rank >= Balance.registerLevel.rank && bookContacts.count < contactBookSize
     }
 
     func register(_ id: String) {

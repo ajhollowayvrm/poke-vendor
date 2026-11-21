@@ -1886,6 +1886,8 @@ final class ShowSession {
             justBought = nil
             return nil
         }
+        // A case opens first. It would cost one rip time for every pack of the case.
+        guard !item.isCase else { return nil }
         justBought = nil
         spend(Double(max(1, item.packs)) * 2)
         return item

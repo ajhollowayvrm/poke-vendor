@@ -79,6 +79,8 @@ struct StatusBox: View {
                     Button("Take it back") { store.takeBackFromStore([id]) }
                         .buttonStyle(.bordered)
                 }
+            case .soldToViewer:
+                Text("Sold to a viewer on Rip & Ship. It ships to them.").font(.subheadline)
             case .atAuctionHouse(let a):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("At \(a.house.rawValue) · auction on day \(a.auctionDay + 1)").font(.subheadline)
@@ -421,6 +423,8 @@ struct SealedDetailView: View {
     @State private var sell: SellRequest?
     @State private var lot: SellRequest?
     @State private var key: String?
+    @State private var caseRequest: CaseRequest?
+    @State private var confirmOpen = false
 
     /// The item, or the next item of its stack after this one leaves.
     private var resolved: SealedItem? {
@@ -435,7 +439,7 @@ struct SealedDetailView: View {
                 VStack(spacing: 14) {
                     ProductImage(url: product?.image, setName: SetLibrary.set(item.setSlug).name)
                         .frame(width: 220, height: 220)
-                        .looksInside(item.brokenFrom == nil ? product : nil) { store.packSlugs(of: item) }
+                        .looksInside(item.brokenFrom == nil && !item.isCase ? product : nil) { store.packSlugs(of: item) }
                         .shadow(color: .black.opacity(0.5), radius: 10, y: 6)
                     VStack(spacing: 4) {
                         Text(item.name).font(.title3.bold()).multilineTextAlignment(.center)
@@ -450,14 +454,19 @@ struct SealedDetailView: View {
                                 .font(.caption.monospaced())
                                 .foregroundStyle(product.isInPrint ? Theme.muted : Theme.green)
                         }
-                        Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
+                        Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id,
+                             caseUnits: item.caseUnits, caseFresh: item.isCaseFresh)
                     }
                     DetailBox(title: "Contents") {
-                        if item.brokenFrom == nil, let product, product.isAssorted {
+                        if let product, let units = item.caseUnits {
+                            Text("\(units) × \(product.name)").font(.subheadline.weight(.semibold))
+                        }
+                        if item.brokenFrom == nil, let product, product.isAssorted, !item.isCase {
                             // The box does not say which packs it holds. The look-inside view shows the front packs.
                             Text("\(product.packs) assorted booster packs. Tap the box to look inside.").font(.subheadline)
                         } else {
-                            let slugs = store.packSlugs(of: item)
+                            // A case lists the contents of one unit. The line above says how many units.
+                            let slugs = item.isCase ? (product?.packSlugs ?? []) : store.packSlugs(of: item)
                             let counts = Dictionary(grouping: slugs, by: { $0 }).map { ($0.key, $0.value.count) }
                                 .sorted { $0.1 > $1.1 }
                             ForEach(counts, id: \.0) { slug, n in
@@ -483,7 +492,7 @@ struct SealedDetailView: View {
                             StatCell(label: "Sealed market", value: money(store.market(of: item)))
                             StatCell(label: "Paid", value: money(item.paid))
                             if store.hasUpgrade(.evReadout), let product {
-                                let ev = store.expectedValue(of: product)
+                                let ev = store.expectedValue(of: product) * Double(item.caseUnits ?? 1)
                                 StatCell(label: "Open EV", value: money(ev), color: ev >= store.market(of: item) ? Theme.green : Theme.orange)
                             }
                         }
@@ -492,6 +501,7 @@ struct SealedDetailView: View {
                                 .font(.caption2).foregroundStyle(Theme.muted)
                         }
                     }
+                    if let product, let units = item.caseUnits { caseOpenBox(item, product: product, units: units) }
                     if item.fake != nil || !item.source.hasPrefix("Test") {
                         AuthenticityBox(cardID: item.id, fake: item.fake, known: item.isKnownFake, verified: item.isVerified,
                                         status: item.status, sealed: true, eyeball: store.eyeballWarning(item),
@@ -529,8 +539,40 @@ struct SealedDetailView: View {
             }
             .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
             .sheet(item: $lot) { LotSheet(ids: $0.ids) }
+            .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         } else {
             GoneView()
+        }
+    }
+
+    /// The "Open the case" button, and what opening gives and costs.
+    @ViewBuilder private func caseOpenBox(_ item: SealedItem, product: Product, units: Int) -> some View {
+        let caseMarket = store.realMarket(of: item)
+        let unitsMarket = product.market * Double(units)
+        let premium = caseMarket - unitsMarket
+        let openable: Bool = {
+            switch item.status {
+            case nil, .inStore: true
+            default: false
+            }
+        }()
+        DetailBox(title: "Open the case") {
+            Text("You get \(units) sealed \(product.name) at \(money(product.market)) each. The case trades at \(money(caseMarket)). "
+                 + "The \(units) units trade at \(money(unitsMarket)). "
+                 + (premium > 0 ? "Opening ends the case premium." : "Opening adds \(money(-premium)) of value."))
+                .font(.subheadline)
+            if item.onlineListing != nil {
+                Text("End the listing to open the case.").font(.caption).foregroundStyle(Theme.orange)
+            } else if openable {
+                Button("Open the case") {
+                    if premium > Balance.caseOpenConfirmPremium { confirmOpen = true } else { caseRequest = CaseRequest(source: .closed(item.id)) }
+                }
+                .primaryButton()
+                .confirmationDialog("Opening loses \(money(premium)) of case premium. You cannot close the case again.",
+                                    isPresented: $confirmOpen, titleVisibility: .visible) {
+                    Button("Open the case", role: .destructive) { caseRequest = CaseRequest(source: .closed(item.id)) }
+                }
+            }
         }
     }
 

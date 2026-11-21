@@ -70,11 +70,13 @@ struct ShowDayView: View {
                     Spacer()
                     Button("Later") { withAnimation { session.justBought = nil } }
                         .buttonStyle(.bordered)
-                    Button("Rip it now") {
-                        if let ready = session.ripJustBought() { rip = RipSession(items: [ready]) }
+                    if !item.isCase {
+                        Button("Rip it now") {
+                            if let ready = session.ripJustBought() { rip = RipSession(items: [ready]) }
+                        }
+                        .primaryButton()
+                        .tint(Theme.cyan)
                     }
-                    .primaryButton()
-                    .tint(Theme.cyan)
                 }
                 .controlSize(.small)
                 .padding(12)

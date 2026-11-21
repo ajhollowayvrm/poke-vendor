@@ -453,7 +453,7 @@ extension GameStore {
     private func storeRegulars() -> [String] {
         var r = SeededRandom(seed: UInt64(data.day + 1) &* 48_271 &+ 7)
         return data.contacts.filter { c in
-            !c.kind.isVendor && c.kind != .gameShop && r.next() < 0.4
+            !c.kind.isVendor && c.kind != .gameShop && !c.kind.isSupplier && r.next() < 0.4
         }.map(\.id).shuffled()
     }
 
@@ -576,6 +576,8 @@ extension GameStore {
         let known: Bool
         /// A card that a customer left on consignment. The store keeps a cut (`Model/StoreConsignment.swift`).
         var consigned = false
+        /// The item is a trusted case, or it came out of one (Model/Cases.swift). Customers pick it a little more.
+        var caseFresh = false
     }
 
     func storeShelf() -> [StoreShelfItem] {
@@ -586,14 +588,15 @@ extension GameStore {
         }
         let sealed = stock.sealed.map { s in
             StoreShelfItem(id: s.id, name: s.name, market: realMarket(of: s), paid: s.paid, setSlug: s.setSlug, isCard: false,
-                      isPack: s.packs == 1, productKey: s.productID ?? s.name, fake: s.fake, known: s.isKnownFake)
+                      isPack: s.packs == 1, productKey: s.productID ?? s.name, fake: s.fake, known: s.isKnownFake,
+                      caseFresh: s.isCaseFresh)
         }
         return cards + sealed + consignedShelfItems()
     }
 
     /// People look at the better items first, the same as at a show.
     private func pickForCustomer(_ items: [StoreShelfItem], packWeight: Double = 1) -> StoreShelfItem? {
-        let weights = items.map { sqrt(max($0.market, 0.5)) * ($0.isPack ? packWeight : 1) }
+        let weights = items.map { sqrt(max($0.market, 0.5)) * ($0.isPack ? packWeight : 1) * ($0.caseFresh ? Balance.caseFreshSaleBonus : 1) }
         let total = weights.reduce(0, +)
         guard total > 0 else { return items.first }
         var roll = Double.random(in: 0..<total)

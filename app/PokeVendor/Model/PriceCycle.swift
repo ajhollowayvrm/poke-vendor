@@ -164,6 +164,10 @@ enum PriceCycle {
     nonisolated(unsafe) private static var boosts: Set<String> = []
     /// The print changes of each set, oldest first (Model/PrintRuns.swift).
     nonisolated(unsafe) private(set) static var printChanges: [String: [PrintChange]] = [:]
+    /// The day of the MSRP step, and the size of each winter dip (docs/proposals/sealed-product, Part A 3.4 and 3.5).
+    /// `GameStore.syncMarket` sets both. No step and no scale: the old prices.
+    nonisolated(unsafe) private(set) static var msrpStepDay: Int? = nil
+    nonisolated(unsafe) private(set) static var winterScales: [Int: Double] = [:]
     /// The booms and corrections of the run, from day 0 on. The seed makes them, so a save keeps none.
     nonisolated(unsafe) private(set) static var regimes: [MarketRegime] = []
     /// The walk value of each key on every 64th day from the origin (`walk`), and the last value read.
@@ -176,7 +180,8 @@ enum PriceCycle {
     /// The log move at the start of each regime, so a read finds a day's move with no loop over all regimes.
     nonisolated(unsafe) private static var regimeBase: [Double] = []
 
-    static func sync(seed: UInt64, day: Int, events: [MarketEvent], boosts: Set<String>, printChanges: [PrintChange] = []) {
+    static func sync(seed: UInt64, day: Int, events: [MarketEvent], boosts: Set<String>, printChanges: [PrintChange] = [],
+                     msrpStepDay: Int? = nil, winterScales: [Int: Double] = [:]) {
         if seed != self.seed || regimes.isEmpty {
             walkCache = [:]
             checkpoints = [:]
@@ -192,6 +197,8 @@ enum PriceCycle {
         today = day
         self.events = events
         self.boosts = boosts
+        self.msrpStepDay = msrpStepDay
+        self.winterScales = winterScales
         self.printChanges = Dictionary(grouping: printChanges.sorted { $0.day < $1.day }, by: \.slug)
         todayRegimeLog = regimeLog(day)
         todayFastWave = wave(day, period: Balance.marketFastDays, phase: unit("fast"))
@@ -415,6 +422,7 @@ enum PriceCycle {
             * pow(1 + growth(Balance.sealedGrowthOutOfPrint(era: era)), days.outOfPrint / 364)
             * printJumps(slug, product: id, day: d)
             * seasonSealedPrice(day: d)
+            * msrpLift(slugs: slugs, id: id, slug: slug, day: d)
         for event in events {
             switch event.kind {
             case .sealedHype where event.subject == slug: factor *= event.factor(day: d)
@@ -453,7 +461,8 @@ extension GameStore {
     func syncMarket() {
         let day = data.day
         let boosts = Set(data.priceBoosts.filter { $0.value >= day }.keys)
-        PriceCycle.sync(seed: data.marketSeed, day: day, events: data.marketEvents, boosts: boosts, printChanges: data.printChanges)
+        PriceCycle.sync(seed: data.marketSeed, day: day, events: data.marketEvents, boosts: boosts, printChanges: data.printChanges,
+                       msrpStepDay: data.retail.msrpStepDay, winterScales: data.retail.winterScales)
         GameCalendar.sync(startOffset: calendarStartOffset)
     }
 
@@ -531,5 +540,22 @@ extension GameStore {
         }
         return MarketEvent(kind: kind, subject: subject, title: "A big streamer pulled a \(subject). \(subject) cards rise for some weeks.",
                            startDay: day, days: Int.random(in: 14...35), peak: Double.random(in: Balance.marketHype))
+    }
+}
+
+extension PriceCycle {
+    /// 1 before the MSRP step, then 1 + `Balance.msrpStep`.
+    static func msrpFactor(day: Int? = nil) -> Double {
+        guard let step = msrpStepDay, (day ?? today) >= step else { return 1 }
+        return 1 + Balance.msrpStep
+    }
+
+    /// A product in print on the step day gains part of the step in its market price, over `msrpRampDays`.
+    /// The lift stays after the product leaves print, so the price does not jump down then.
+    static func msrpLift(slugs: Set<String>, id: String, slug: String, day: Int) -> Double {
+        guard let step = msrpStepDay, day >= step else { return 1 }
+        let isInPrint = slugs.allSatisfy { inPrint($0, day: step) } || productReprinted(id, slug: slug, day: step)
+        guard isInPrint else { return 1 }
+        return 1 + Balance.msrpStep * Balance.msrpMarketShare * min(1, Double(day - step) / Balance.msrpRampDays)
     }
 }

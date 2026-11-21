@@ -511,7 +511,7 @@ final class GameStore {
 
     /// Identical items stack into one Inventory row.
     func stackKey(_ s: SealedItem) -> String {
-        "\(s.productID ?? s.name)|\(s.setSlug)|\(s.pc)|\(s.status?.tag ?? "")"
+        "\(s.productID ?? s.name)|\(s.caseUnits ?? 0)|\(s.isCaseFresh)|\(s.setSlug)|\(s.pc)|\(s.status?.tag ?? "")"
     }
 
     /// Raw copies stack only when they look the same: the same wear and the same cut reading. The player can then
@@ -641,6 +641,12 @@ final class GameStore {
         return Array(repeating: item.setSlug, count: item.packs)
     }
 
+    /// The Rip & Ship order that an item is sold to, or nil.
+    static func shipOrderID(of item: SealedItem) -> UUID? {
+        if case .soldToViewer(let id) = item.status { return id }
+        return nil
+    }
+
     /// A loose pack out of an opened product. A resealed product's packs are resealed too (docs/14).
     private func loosePack(_ slug: String, from item: SealedItem) -> SealedItem {
         var pack = SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
@@ -649,6 +655,7 @@ final class GameStore {
                               brokenFrom: item.id, acquiredDay: data.day)
         pack.fake = item.fake
         pack.fakeKnown = item.fakeKnown
+        if case .soldToViewer = item.status { pack.status = item.status }
         return pack
     }
 
@@ -658,6 +665,7 @@ final class GameStore {
     func openProduct(_ sourceID: UUID, ripID: UUID) -> [CardPrint] {
         guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
         let item = data.sealed.remove(at: i)
+        let order = Self.shipOrderID(of: item)
         var newIDs: [UUID] = []
         for slug in packSlugs(of: item) {
             let pack = loosePack(slug, from: item)
@@ -668,7 +676,8 @@ final class GameStore {
         if let product = SetLibrary.product(item.productID) {
             let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
             for promo in promos {
-                let card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID, acquiredDay: data.day)
+                var card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID, acquiredDay: data.day)
+                if let order { card.status = .soldToViewer(orderID: order) }
                 newIDs.append(card.id)
                 data.raw.append(card)
                 extras.append(promo.print)
@@ -690,8 +699,11 @@ final class GameStore {
                     save saves: Bool = true) -> [CardPrint] {
         var extras: [CardPrint] = []
         var newIDs: [UUID] = []
+        // A product that a viewer bought on Rip & Ship: its cards stay locked to that order.
+        var order: UUID?
         if let i = data.sealed.firstIndex(where: { $0.id == sourceID }) {
             let item = data.sealed.remove(at: i)
+            order = Self.shipOrderID(of: item)
             var rest = packSlugs(of: item)
             if let first = rest.firstIndex(of: setSlug) { rest.remove(at: first) } else if !rest.isEmpty { rest.removeFirst() }
             for slug in rest {
@@ -702,8 +714,9 @@ final class GameStore {
             if item.brokenFrom == nil, let product = SetLibrary.product(item.productID) {
                 let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
                 for promo in promos {
-                    let card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID,
+                    var card = OwnedCard(print: promo.print, setSlug: item.setSlug, acquired: .now, paid: nil, ripID: ripID,
                                          acquiredDay: data.day)
+                    if let order { card.status = .soldToViewer(orderID: order) }
                     newIDs.append(card.id)
                     data.raw.append(card)
                     extras.append(promo.print)
@@ -711,6 +724,7 @@ final class GameStore {
             }
         } else if let i = data.sealed.firstIndex(where: { $0.brokenFrom == sourceID && $0.setSlug == setSlug })
                     ?? data.sealed.firstIndex(where: { $0.brokenFrom == sourceID }) {
+            order = Self.shipOrderID(of: data.sealed[i])
             data.sealed.remove(at: i)
         }
         data.openedPaid += paidPerPack
@@ -718,19 +732,21 @@ final class GameStore {
         for card in cards {
             guard let print = card.print else { continue }
             if card.isHit {
-                let owned = OwnedCard(print: print, setSlug: setSlug, acquired: .now, paid: nil, ripID: ripID,
+                var owned = OwnedCard(print: print, setSlug: setSlug, acquired: .now, paid: nil, ripID: ripID,
                                       condition: card.condition, acquiredDay: data.day)
+                if let order { owned.status = .soldToViewer(orderID: order) }
                 newIDs.append(owned.id)
                 data.raw.append(owned)
             } else {
                 bulk.append(print)
             }
         }
-        if let i = data.bulk.firstIndex(where: { $0.ripID == ripID && $0.setSlug == setSlug }) {
+        if let i = data.bulk.firstIndex(where: { $0.ripID == ripID && $0.setSlug == setSlug && $0.shipOrder == order }) {
             data.bulk[i].cards += bulk
             newIDs.append(data.bulk[i].id)
         } else if !bulk.isEmpty {
-            let group = BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day)
+            var group = BulkGroup(ripID: ripID, setSlug: setSlug, date: .now, cards: bulk, day: data.day)
+            group.shipOrder = order
             newIDs.append(group.id)
             data.bulk.append(group)
         }
@@ -950,7 +966,7 @@ final class GameStore {
 
     /// With the bulk broker, bulk sells for cash. The broker does not check for fakes.
     func sellBulkForCash(_ id: UUID) {
-        guard hasUpgrade(.bulkBroker), let group = data.bulk.first(where: { $0.id == id }) else { return }
+        guard hasUpgrade(.bulkBroker), let group = data.bulk.first(where: { $0.id == id }), group.shipOrder == nil else { return }
         let cash = bulkCash(group)
         data.bulk.removeAll { $0.id == id }
         addLedger(cash, .sale, "\(group.cards.count) bulk cards · bulk broker")
@@ -960,7 +976,7 @@ final class GameStore {
 
     /// Bulk sells for store credit only.
     func sellBulk(_ id: UUID, at store: LocalStore) {
-        guard let group = data.bulk.first(where: { $0.id == id }) else { return }
+        guard let group = data.bulk.first(where: { $0.id == id }), group.shipOrder == nil else { return }
         // The shop looks through the stack. It pays nothing for a fake it finds, and it remembers who brought it.
         let found = (group.fakes ?? []).filter { _ in Double.random(in: 0..<1) < Balance.bulkFakeFindChance }.count
         let good = 1 - Double(found) / Double(max(group.cards.count, 1))
@@ -1257,7 +1273,8 @@ final class GameStore {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
             case .listed(let listing):
-                if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name) {
+                if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name,
+                                       bonus: item.isCaseFresh ? Balance.caseFreshSaleBonus : 1) {
                     lines.append(completeSale(name: item.name, listing: listing, price: sale, sealed: true, paid: item.paid,
                                               fake: item.fake, known: item.isKnownFake, sealedItem: item))
                     continue
@@ -1455,9 +1472,9 @@ final class GameStore {
     /// Follower tier 3: reach speeds up every sale (docs/04-reputation-and-followers-unlocks.md).
     var reachSaleFactor: Double { hasAccount && followerTier >= 3 ? Balance.reachSaleBonus : 1 }
 
-    func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String) -> Double? {
+    func rollSale(_ listing: Listing, market rawMarket: Double, sealed: Bool, slab: Bool = false, name: String, bonus: Double = 1) -> Double? {
         let demand = channelDemand(listing.channel) * itemDemand(name) * PriceCycle.seasonDemand(sealed: sealed)
-        let reach = reachSaleFactor * demand
+        let reach = reachSaleFactor * demand * bonus
         let market = rawMarket * itemPriceFactor(name)
         switch listing.channel {
         case .ebayAuction:

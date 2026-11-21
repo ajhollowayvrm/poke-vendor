@@ -67,6 +67,8 @@ struct StreamItem: Identifiable, Hashable {
     var cardName: String? = nil
     var grade: SlabGrade? = nil
     var subgrades: [Double]? = nil
+    /// A sealed case. It does not go in a rip.
+    var isCase = false
 }
 
 struct ChatLine: Identifiable, Hashable {
@@ -380,7 +382,7 @@ extension GameStore {
         }
         let sealed = data.sealed.filter { $0.status == nil && !$0.setAside }.map { s in
             StreamItem(id: s.id, name: s.name, market: realMarket(of: s), image: SetLibrary.product(s.productID, in: s.setSlug)?.image,
-                       sealed: true, packs: s.packs, fake: s.fake, fakeKnown: s.isKnownFake)
+                       sealed: true, packs: s.packs, fake: s.fake, fakeKnown: s.isKnownFake, isCase: s.isCase)
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }

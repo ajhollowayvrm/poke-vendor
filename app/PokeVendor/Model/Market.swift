@@ -81,7 +81,7 @@ enum Market {
         return pool.isEmpty ? "prismatic-evolutions" : pool[r.int(0...(pool.count - 1))]
     }
 
-    static func retail(_ x: Double) -> Double {
+    nonisolated static func retail(_ x: Double) -> Double {
         x >= 5 ? x.rounded(.down) + 0.99 : (x * 100).rounded() / 100
     }
 
@@ -118,7 +118,7 @@ enum Market {
             }
         case .pokemonCenter:
             let dropKinds = products.filter { ["Booster bundle", "Elite Trainer Box", "Collection", "Tin"].contains($0.kind) && !$0.isClubExclusive }
-            if let p = dropKinds.isEmpty ? nil : dropKinds[r.int(0...(dropKinds.count - 1))], let msrp = p.msrp {
+            if let p = dropKinds.isEmpty ? nil : dropKinds[r.int(0...(dropKinds.count - 1))], let msrp = p.retailMSRP(day: day) {
                 out.append(StoreOffer(id: id(0), store: store, item: .product(p, p.homeSlug), price: msrp, shipping: 0,
                                       deliveryDays: delivery, note: "Drop · one attempt"))
             }

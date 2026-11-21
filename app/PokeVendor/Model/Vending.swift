@@ -233,7 +233,7 @@ extension GameStore {
 
     /// The sealed items that can go in a machine: in hand, not in the PC, and not a known fake.
     var vendableSealed: [SealedItem] {
-        data.sealed.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake }
+        data.sealed.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.caseUnits == nil }
     }
 
     /// The machine price of a sealed item at a markup.

@@ -50,6 +50,7 @@
 		20ACDC2AD6EFF4506C4CFB33 /* journey-together.json in Resources */ = {isa = PBXBuildFile; fileRef = A54CEBF267C5CF60E282DE79 /* journey-together.json */; };
 		20BDD6C4DF69AA6B6AFD2C47 /* ShopEncounters.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2DF2F13CFBE2D91FD804A1 /* ShopEncounters.swift */; };
 		2219F859C69DE0AD1A553DB2 /* unified-minds.json in Resources */ = {isa = PBXBuildFile; fileRef = 523FF8E1BB432FAD50BF5AD9 /* unified-minds.json */; };
+		24360DE64A16F01FBB205261 /* cases.json in Resources */ = {isa = PBXBuildFile; fileRef = D5A73274FF00A599902EDFFF /* cases.json */; };
 		24B7295DAED7B8FBA18B44A5 /* RipModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFEB00B5E3B98AFB182E5118 /* RipModel.swift */; };
 		2506F5C420DBA9C5171C4523 /* gym-heroes-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = CCDC5BC3CF78F1FEF20BBAA9 /* gym-heroes-1st-edition.json */; };
 		26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E94D7F70903BA100DDFBA0F /* burning-shadows.json */; };
@@ -58,6 +59,7 @@
 		2A110313E4DF48760D91C70F /* StashPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857F4F4DEEC4862AB44F347B /* StashPanel.swift */; };
 		2AF9A223A3257CE3B7510D1B /* hidden-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 8FC50C93732086290DFAC1F5 /* hidden-legends.json */; };
 		2C4D39E63CD069D24D99D501 /* roaring-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = BCFB88631EA718ED0E77E2CE /* roaring-skies.json */; };
+		2C508A8D9AEF8E80B5B1731B /* Cases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473D1EAA69AF94C328AA4929 /* Cases.swift */; };
 		2C680DA90FA527CB6B61BBDF /* breakpoint.json in Resources */ = {isa = PBXBuildFile; fileRef = E7E9769BEE2452CE9114E599 /* breakpoint.json */; };
 		2DA14E7BA1560F6058013971 /* StoreCredit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */; };
 		2E0650596BCA2527E709DADE /* SlabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46393BDB097F065796D9D1CD /* SlabViews.swift */; };
@@ -75,6 +77,7 @@
 		3980A2AFBCBDAFBF70481AE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4C3DE0AE86F620B2D63227E /* Assets.xcassets */; };
 		3A2216BFA141DA811D78FCC5 /* RipCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */; };
 		3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCAA7018CABF3E161025536 /* CoinFlipView.swift */; };
+		3B1B4327CBD56622839E5A5C /* CaseOpenSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EF564C070D1FD83CA14733 /* CaseOpenSheet.swift */; };
 		3D01B88A9651DBBA86DF0092 /* white-flare.json in Resources */ = {isa = PBXBuildFile; fileRef = 917BD5729F252442572920DA /* white-flare.json */; };
 		3E9EC0E13D52E88235067DDA /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 33CED089D9AD4D92AB2AAA7C /* catalog.json */; };
 		403146ABA26241C2139E9290 /* Shorts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD99836073CF32159E62094 /* Shorts.swift */; };
@@ -376,6 +379,7 @@
 		459FE3BD9876271D53A9CD87 /* destamp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = destamp.json; sourceTree = "<group>"; };
 		46393BDB097F065796D9D1CD /* SlabViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlabViews.swift; sourceTree = "<group>"; };
 		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
+		473D1EAA69AF94C328AA4929 /* Cases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cases.swift; sourceTree = "<group>"; };
 		4755B9D1944633247C22C671 /* Counterfeits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counterfeits.swift; sourceTree = "<group>"; };
 		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
 		49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnboxView.swift; sourceTree = "<group>"; };
@@ -490,6 +494,7 @@
 		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
 		A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fossil-1st-edition.json"; sourceTree = "<group>"; };
 		A54CEBF267C5CF60E282DE79 /* journey-together.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "journey-together.json"; sourceTree = "<group>"; };
+		A6EF564C070D1FD83CA14733 /* CaseOpenSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseOpenSheet.swift; sourceTree = "<group>"; };
 		A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-magma-vs-team-aqua.json"; sourceTree = "<group>"; };
 		A7B821E5FBD06698D7A362DE /* hidden-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-fates.json"; sourceTree = "<group>"; };
 		A8AFC53B64CB50A5F4C542D2 /* Lots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lots.swift; sourceTree = "<group>"; };
@@ -532,6 +537,7 @@
 		D0A2E7965BD452ED910DD1B7 /* Callouts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Callouts.swift; sourceTree = "<group>"; };
 		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
 		D3C180A062FEB64E1EB184FD /* legends-awakened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legends-awakened.json"; sourceTree = "<group>"; };
+		D5A73274FF00A599902EDFFF /* cases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cases.json; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
 		D79C5589F2211F09E31C1FB2 /* primal-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "primal-clash.json"; sourceTree = "<group>"; };
 		D85667450A30BCA2B91E3829 /* Camping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camping.swift; sourceTree = "<group>"; };
@@ -617,6 +623,7 @@
 			isa = PBXGroup;
 			children = (
 				FF5188F9BDD662DDFD44100F /* AuctionViews.swift */,
+				A6EF564C070D1FD83CA14733 /* CaseOpenSheet.swift */,
 				00A495B059EBDAB98021771B /* CollectionViews.swift */,
 				7FA6BD5CF2C4595D324B6FA6 /* ConditionViews.swift */,
 				544120DEF70C6BCBC2EF918A /* DetailViews.swift */,
@@ -825,6 +832,7 @@
 				D0A2E7965BD452ED910DD1B7 /* Callouts.swift */,
 				D85667450A30BCA2B91E3829 /* Camping.swift */,
 				3553A3A890986D3D87A796A8 /* CardStore.swift */,
+				473D1EAA69AF94C328AA4929 /* Cases.swift */,
 				086CD5486126C0FE54AF794E /* Collections.swift */,
 				FAFC1AB6090289298D64A7E6 /* Condition.swift */,
 				3284779D32F44C664EE1950F /* Consignment.swift */,
@@ -908,6 +916,7 @@
 		A45715057FF8BD97B10D1027 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D5A73274FF00A599902EDFFF /* cases.json */,
 				33CED089D9AD4D92AB2AAA7C /* catalog.json */,
 				459FE3BD9876271D53A9CD87 /* destamp.json */,
 				383520ADD17820B56C2198FB /* set-index.json */,
@@ -1081,6 +1090,7 @@
 				A2BAE1FE55F4408A11D999E0 /* brilliant-stars.json in Resources */,
 				26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */,
 				DCAB7F71458A848ECE4C2955 /* call-of-legends.json in Resources */,
+				24360DE64A16F01FBB205261 /* cases.json in Resources */,
 				3E9EC0E13D52E88235067DDA /* catalog.json in Resources */,
 				EFFE245540550F3FE1FB6701 /* celebrations.json in Resources */,
 				C7F13CF3236CA8E43886D612 /* celestial-storm.json in Resources */,
@@ -1230,6 +1240,8 @@
 				FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */,
 				916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */,
 				85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */,
+				3B1B4327CBD56622839E5A5C /* CaseOpenSheet.swift in Sources */,
+				2C508A8D9AEF8E80B5B1731B /* Cases.swift in Sources */,
 				3A68CE1ED539CB1AAE1C6303 /* CoinFlipView.swift in Sources */,
 				195C11923ACA6B27DE48E506 /* CollectionBuyViews.swift in Sources */,
 				B13E1AE5766E1D27A21A8FB9 /* CollectionViews.swift in Sources */,

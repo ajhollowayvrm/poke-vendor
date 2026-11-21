@@ -183,7 +183,7 @@ extension GameStore {
     func meetRegulars(_ kind: MeetKind) -> [String] {
         var r = SeededRandom(seed: UInt64(data.day + 1) &* 92_821 &+ UInt64(kind.weekday) &* 131)
         return data.contacts.filter { c in
-            guard !c.kind.isVendor, c.kind != .gameShop else { return false }
+            guard !c.kind.isVendor, c.kind != .gameShop, !c.kind.isSupplier else { return false }
             let roll = r.next()
             return kind == .tradingCircle ? roll < 0.7 : (c.atLocalShows && roll < 0.5)
         }.map(\.id).shuffled()

@@ -118,7 +118,7 @@ extension Market {
             if out.contains(where: { $0.product.id == p.id }) { continue }
             let qty = p.packs == 1 ? r.int(2...8) : r.int(1...2)
             // Big stores sell at MSRP.
-            out.append(ShelfItem(id: "\(day)-\(store.rawValue)-\(i)", product: p, price: p.msrp ?? p.market, quantity: qty))
+            out.append(ShelfItem(id: "\(day)-\(store.rawValue)-\(i)", product: p, price: p.retailMSRP(day: day) ?? p.market, quantity: qty))
         }
         return out
     }

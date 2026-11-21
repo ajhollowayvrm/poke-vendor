@@ -74,6 +74,8 @@ final class AppNav {
     var stream: StreamCover?
 
     func startRip(_ items: [SealedItem], hitsOnly: Bool = false, recording: [SeriesFormat] = []) {
+        // A closed case opens first (Model/Cases.swift). It never goes into a rip.
+        let items = items.filter { !$0.isCase }
         guard !items.isEmpty else { return }
         rip = RipSession(items: items, hitsOnly: hitsOnly && recording.isEmpty, recording: recording)
     }

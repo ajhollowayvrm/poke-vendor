@@ -86,6 +86,14 @@ enum SetLibrary {
         return products
     }()
 
+    /// Real case prices (tools/export/cases.py). Missing file: no real case prices, and the factor table sets them.
+    static let caseListings: [String: CaseListing] = {
+        guard let url = Bundle.main.url(forResource: "cases", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let list = try? JSONDecoder().decode([CaseListing].self, from: data) else { return [:] }
+        return Dictionary(list.map { ($0.product, $0) }, uniquingKeysWith: { a, _ in a })
+    }()
+
     static func product(_ id: String?, in slug: String = "") -> Product? {
         guard let id else { return nil }
         return catalog.first { $0.id == id }
@@ -401,6 +409,9 @@ enum ItemStatus: Codable, Hashable {
     case inStore(since: Int)
     /// At an auction house until its catalog auction (docs/15-selling.md, Auction houses).
     case atAuctionHouse(AuctionConsignment)
+    /// A viewer bought this product on a Rip & Ship stream. The player must open it on that stream (Model/RipShip.swift).
+    /// Loose packs and pulled cards of the product keep this status until they move to the order.
+    case soldToViewer(orderID: UUID)
 
     /// A listing that the player can take down: any listing except a running eBay auction.
     var isRemovableListing: Bool {
@@ -419,6 +430,7 @@ enum ItemStatus: Codable, Hashable {
         case .consigned(let c): "CONSIGNED · \(c.shop.rawValue.uppercased())"
         case .inStore: "IN YOUR STORE"
         case .atAuctionHouse(let a): "AT \(a.house.rawValue.uppercased()) · DAY \(a.auctionDay + 1)"
+        case .soldToViewer: "SOLD · SHIPS TO A VIEWER"
         }
     }
 }
@@ -582,11 +594,24 @@ struct SealedItem: Codable, Identifiable, Hashable {
     /// The packs of an assorted box, front first, when the player saw them before the purchase (`BoxContents`).
     /// Nil: the packs come from the item's own ID.
     var contents: [String]?
+    // A new field must be Optional. This type decodes inside an array, and one bad item drops the whole array.
+    /// A sealed case of this many units of `productID` (docs/12-acquiring-product.md, Cases). Nil: one unit.
+    /// `packs` holds the packs of the whole case, and `name` says "Case of N".
+    var caseUnits: Int?
+    /// The unit came out of a trusted sealed case, or it is a trusted case: no one searched it. Nil: no tag.
+    var caseFresh: Bool?
+    /// The player checked the tape and the label of this case. The check runs once.
+    var caseChecked: Bool?
+    /// The plug order that this item came from (Model/Plug.swift). Units from an opened plug case keep it.
+    var grayOrder: UUID?
 
     enum CodingKeys: String, CodingKey {
         case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
-        case fake, fakeKnown, verified, onlineListing, contents
+        case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, grayOrder
     }
+
+    var isCase: Bool { caseUnits != nil }
+    var isCaseFresh: Bool { caseFresh == true }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
     var isVerified: Bool { verified == true }
@@ -610,6 +635,9 @@ struct BulkGroup: Codable, Identifiable, Hashable {
     var wearFactor: Double?
     /// Fakes that the player moved here. A shop can find them when it buys the bulk.
     var fakes: [FakeTier]?
+    // A new field must be Optional. This type decodes inside an array.
+    /// The Rip & Ship order that these cards belong to. Nil: the player owns them.
+    var shipOrder: UUID?
 
     var value: Double { cards.reduce(0) { $0 + ($1.market ?? 0) } * (wearFactor ?? 1) }
 
@@ -632,6 +660,7 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case storeOverhead = "Store overhead", supplies = "Supplies", paymentFees = "Payment fees", insurance = "Insurance"
         case loan = "Loans", interest = "Interest and fees", businessInterest = "Business interest"
         case businessCosts = "Business costs", auctionFees = "Auction fees", creatorPayouts = "Creator payouts"
+        case grayMarket = "Gray market"
     }
 
     var id = UUID()

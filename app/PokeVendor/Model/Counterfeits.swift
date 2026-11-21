@@ -38,6 +38,8 @@ enum FakeSource: Hashable {
     /// The game shop display case and buy-ins.
     case shopCase
     case wholesale
+    /// The gray plug (Model/Plug.swift).
+    case plug
 
     var rate: Double {
         switch self {
@@ -50,6 +52,7 @@ enum FakeSource: Hashable {
         case .stranger: Balance.fakeRateStranger
         case .contact(let level): level.rank <= 1 ? Balance.fakeRateFamiliar : Balance.fakeRateRegular
         case .shopCase: Balance.fakeRateShopCase
+        case .plug: Balance.fakeRatePlug
         }
     }
 }
@@ -80,6 +83,9 @@ extension Balance {
     static let fakeRateFamiliar = 0.02
     static let fakeRateRegular = 0.005
     static let fakeRateShopCase = 0.01
+    /// The plug. `Counterfeit.rate` halves a sealed rate and multiplies hot product (over 2 × MSRP) by 1.5, so 0.055
+    /// gives about 4.1% for each hot case.
+    static let fakeRatePlug = 0.055
     /// Sealed product is resealed less often than a single is faked.
     static let fakeRateSealedFactor = 0.5
     /// Vintage is faked the most. Older sets a little more than new ones.
@@ -234,6 +240,9 @@ extension GameStore {
 
     /// The market value of a card as if it were real: what a buyer who does not know pays.
     func realMarket(of item: SealedItem) -> Double {
+        if let units = item.caseUnits, let product = SetLibrary.product(item.productID) {
+            return CaseMath.market(product, units: units)
+        }
         if let product = SetLibrary.product(item.productID, in: item.setSlug) { return product.market }
         return (SetLibrary.set(item.setSlug).packCost ?? 0) * Double(item.packs) * (1 + (PriceCycle.index() - 1) * 0.6)
     }
@@ -302,12 +311,12 @@ extension GameStore {
 
     /// Throws a known fake away. It is worth nothing, and selling it is a scam.
     func discardFake(_ id: UUID) {
-        if let card = card(id), card.isKnownFake {
+        if let card = card(id), card.isKnownFake, card.status == nil {
             data.openedPaid += card.paid ?? 0
             data.raw.removeAll { $0.id == id }
             data.slabs.removeAll { $0.id == id }
             log("Threw away the fake \(card.print.name).")
-        } else if let item = data.sealed.first(where: { $0.id == id }), item.isKnownFake {
+        } else if let item = data.sealed.first(where: { $0.id == id }), item.isKnownFake, item.status == nil {
             data.openedPaid += item.paid
             data.sealed.removeAll { $0.id == id }
             log("Threw away the resealed \(item.name).")

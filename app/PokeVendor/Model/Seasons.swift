@@ -69,8 +69,15 @@ extension PriceCycle {
 
     /// The factor on the price of sealed product. Singles keep their price. Only their demand moves.
     static func seasonSealedPrice(day: Int? = nil) -> Double {
-        let w = weekOfYear(day: day)
-        return 1 + Balance.seasonWinterSealedPrice.value(week: w) + Balance.seasonHolidaySealedPrice.value(week: w)
+        let d = day ?? today
+        let w = weekOfYear(day: d)
+        let winter = Balance.seasonWinterSealedPrice.value(week: w) * (winterScales.isEmpty ? 1 : (winterScales[winterKey(day: d, week: w)] ?? 1))
+        return 1 + winter + Balance.seasonHolidaySealedPrice.value(week: w)
+    }
+
+    /// The year of the winter dip's center. The dip starts in late December, so a late week counts for the next year.
+    static func winterKey(day: Int, week: Double) -> Int {
+        GameCalendar.date(day).year + (week > Balance.weeksPerYear / 2 ? 1 : 0)
     }
 
     /// The factor on the customers of the player's store: the mean of the sealed and the singles demand.

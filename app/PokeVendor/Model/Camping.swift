@@ -95,7 +95,7 @@ extension GameStore {
         for i in 0..<r.int(Balance.campProducts) where !options.isEmpty {
             let p = options[r.int(0...(options.count - 1))]
             if items.contains(where: { $0.product.id == p.id }) { continue }
-            items.append(ShelfItem(id: "camp-\(data.day)-\(store.rawValue)-\(i)", product: p, price: p.msrp ?? p.market,
+            items.append(ShelfItem(id: "camp-\(data.day)-\(store.rawValue)-\(i)", product: p, price: p.retailMSRP() ?? p.market,
                                    quantity: r.int(Balance.campQuantity)))
         }
         log("Camped the \(store.rawValue) restock for \(formatHours(Balance.campHours)). You got in: \(items.count) product\(items.count == 1 ? "" : "s") at MSRP.")

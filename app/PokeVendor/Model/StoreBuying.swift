@@ -113,13 +113,13 @@ extension GameStore {
     // MARK: - Bulk box
 
     /// Bulk groups in Inventory that the player can move to the box.
-    var movableBulk: [BulkGroup] { data.bulk }
+    var movableBulk: [BulkGroup] { data.bulk.filter { $0.shipOrder == nil } }
 
     func moveBulkToBox(_ ids: Set<UUID>) {
         guard var s = data.cardStore else { return }
-        let groups = data.bulk.filter { ids.contains($0.id) }
+        let groups = data.bulk.filter { ids.contains($0.id) && $0.shipOrder == nil }
         guard !groups.isEmpty else { return }
-        data.bulk.removeAll { ids.contains($0.id) }
+        data.bulk.removeAll { ids.contains($0.id) && $0.shipOrder == nil }
         s.source.bulkBox += groups
         data.cardStore = s
         let count = groups.reduce(0) { $0 + $1.cards.count }

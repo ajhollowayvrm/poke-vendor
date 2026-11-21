@@ -42,7 +42,11 @@ extension Balance {
     static let wholesaleShortChance = 0.12
     static let wholesaleShortShare = 0.6...0.9
     static let wholesaleDeliveryDays = 5
-    static let caseSizes: [String: Int] = ["Booster box": 6, "Elite Trainer Box": 10, "Booster bundle": 12, "Booster pack": 36]
+    /// Units in one distributor case, by product kind (research_notes/Sealed product and flipper play/cases.md, section 1).
+    /// "Booster pack" is the 144-pack sleeved booster case. Read `caseSize(for:)`, not this table: it applies the pack
+    /// count and name rules first.
+    static let caseSizes: [String: Int] = ["Booster box": 6, "Elite Trainer Box": 10, "Booster bundle": 25, "Booster pack": 144,
+                                           "Blister": 24, "Build & Battle": 10, "Collection": 6, "Tin": 6]
     /// A split prices each box at this share of market.
     static let splitPriceShare = 0.85
     static let splitInvitesPerWeek = [0, 0, 0, 1, 2]
@@ -66,16 +70,17 @@ extension GameStore {
         guard wholesaleOpen else { return [] }
         var r = SeededRandom(seed: UInt64(data.day / 7 + 1) &* 57_559 &+ 909)
         let options = SetLibrary.catalog.filter {
-            $0.isInPrint && Balance.caseSizes[$0.kind] != nil && $0.msrp != nil && !$0.isStoreExclusive
+            $0.isInPrint && Balance.wholesaleKinds.contains($0.kind) && CaseMath.units($0) != nil && $0.msrp != nil
+                && !$0.isStoreExclusive
         }
         var out: [WholesaleOffer] = []
         for i in 0..<8 where !options.isEmpty {
             let p = options[r.int(0...(options.count - 1))]
             if out.contains(where: { $0.product.id == p.id }) { continue }
-            let size = Balance.caseSizes[p.kind] ?? 6
+            let size = CaseMath.units(p) ?? 6
             let floor = p.market * (hasStoreAccount ? Balance.storeWholesaleMarketFloor : Balance.wholesaleMarketFloor)
             out.append(WholesaleOffer(id: "w\(data.day / 7)-\(i)", product: p, caseSize: size,
-                                      unitPrice: Market.retail(max((p.msrp ?? p.market) * wholesaleDiscountNow, floor))))
+                                      unitPrice: Market.retail(max((p.retailMSRP() ?? p.market) * wholesaleDiscountNow, floor))))
         }
         return out.sorted { $0.casePrice > $1.casePrice }
     }
@@ -100,10 +105,13 @@ extension GameStore {
             log("The distributor is short on \(offer.product.name). It ships \(boxes) of \(ordered) and refunds \(money(refund)).", cash: refund)
         }
         for _ in 0..<boxes {
-            data.sealed.append(SealedItem(setSlug: offer.product.homeSlug, name: offer.product.name, packs: offer.product.packs,
-                                          paid: offer.unitPrice, acquired: .now, source: "Wholesale", productID: offer.product.id,
-                                          status: .arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor"),
-                                          acquiredDay: data.day))
+            var item = SealedItem(setSlug: offer.product.homeSlug, name: offer.product.name, packs: offer.product.packs,
+                                  paid: offer.unitPrice, acquired: .now, source: "Wholesale", productID: offer.product.id,
+                                  status: .arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor"),
+                                  acquiredDay: data.day)
+            // The distributor broke the case, and no one searched the boxes (Model/Cases.swift).
+            item.caseFresh = true
+            data.sealed.append(item)
         }
         recordWholesale(offer, cases: cases, total: total)
         log("Ordered \(cases) case\(cases == 1 ? "" : "s") of \(offer.product.name) from the distributor for \(money(total)). It arrives in \(Balance.wholesaleDeliveryDays) days.",
@@ -134,10 +142,13 @@ extension GameStore {
         addLedger(-total, .wholesale, "\(boxes) box\(boxes == 1 ? "" : "es") · case split with \(split.organizer)")
         data.splits[i].mine += boxes
         for _ in 0..<boxes {
-            data.sealed.append(SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: split.pricePerBox,
-                                          acquired: .now, source: "Case split with \(split.organizer)", productID: product.id,
-                                          status: .arriving(daysLeft: max(1, split.arrivesDay - data.day), from: "the case split"),
-                                          acquiredDay: data.day))
+            var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: split.pricePerBox,
+                                  acquired: .now, source: "Case split with \(split.organizer)", productID: product.id,
+                                  status: .arriving(daysLeft: max(1, split.arrivesDay - data.day), from: "the case split"),
+                                  acquiredDay: data.day)
+            // The boxes come from one factory case that no one searched.
+            item.caseFresh = true
+            data.sealed.append(item)
         }
         log("Took \(boxes) box\(boxes == 1 ? "" : "es") in \(split.organizer)'s case split for \(money(total)). It arrives on day \(split.arrivesDay + 1).",
             cash: -total)
@@ -164,7 +175,9 @@ extension GameStore {
             invites += 1
         }
         guard invites > 0 else { return lines }
-        let options = SetLibrary.catalog.filter { ["Booster box", "Elite Trainer Box"].contains($0.kind) && $0.market > 0 }
+        let options = SetLibrary.catalog.filter {
+            ($0.kind == "Elite Trainer Box" || ($0.kind == "Booster box" && $0.packs == 36)) && $0.market > 0
+        }
         let organizers = data.contacts.filter { $0.kind.isVendor && level($0.id).rank >= StandingLevel.regular.rank }.map(\.name)
             + ["Marcus", "Priya", "Dev", "Olivia"]
         for i in 0..<invites {

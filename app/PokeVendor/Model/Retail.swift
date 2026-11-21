@@ -137,3 +137,36 @@ extension Balance {
     /// The flipper system (Model/Flippers.swift) uses it from phase 2.
     static let pressureStart = 0.5
 }
+
+extension Balance {
+    /// The MSRP step (Part A 3.4): the rise of the retail price, the share of it that reaches the market price of
+    /// in-print sealed, and the days that share takes. Phase 2 adds the chance and the notice time.
+    static let msrpStep = 0.125
+    static let msrpMarketShare = 0.6
+    static let msrpRampDays = 30.0
+}
+
+extension Product {
+    /// In print on a given day. The batch uses the vendor day, so a print change later in the week does not change
+    /// a batch that is already on the shelf. `isInPrint` stays for the reads of today.
+    func inPrint(on day: Int) -> Bool {
+        Set(mix.map(\.slug)).allSatisfy { PriceCycle.inPrint($0, day: day) }
+            || PriceCycle.productReprinted(id, slug: homeSlug, day: day)
+    }
+
+    /// The market price on a day.
+    func marketPrice(day: Int? = nil) -> Double { PriceCycle.price(baseMarket, marketFactor(day: day)) }
+
+    /// The retail price at a big store and the Pokemon Center, and the base of the wholesale price. Before the MSRP
+    /// step it is the catalog MSRP, with no rounding. On and after the step day it is the stepped MSRP, rounded.
+    func retailMSRP(day: Int? = nil) -> Double? {
+        let f = PriceCycle.msrpFactor(day: day)
+        return f == 1 ? msrp : msrp.map { Market.retail($0 * f) }
+    }
+
+    /// Hot: the market on the day is `Balance.hotProductRatio` times the MSRP or more.
+    func isHot(day: Int? = nil) -> Bool {
+        guard let m = retailMSRP(day: day), m > 0 else { return false }
+        return marketPrice(day: day) >= m * Balance.hotProductRatio
+    }
+}

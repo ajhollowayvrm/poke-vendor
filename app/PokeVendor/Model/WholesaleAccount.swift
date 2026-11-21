@@ -36,8 +36,7 @@ extension GameStore {
     var distributorSpent: Double { data.distributor.spent }
 
     func isHot(_ product: Product) -> Bool {
-        guard let msrp = product.msrp, msrp > 0 else { return false }
-        return product.market >= msrp * Balance.hotProductRatio
+        product.isHot()
     }
 
     /// The cases of this product that a store account can buy in a week.

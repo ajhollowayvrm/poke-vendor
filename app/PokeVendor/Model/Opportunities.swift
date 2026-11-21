@@ -279,14 +279,16 @@ extension GameStore {
             save()
             return .done("The estate sale on \(sale.address) is on your calendar. It starts tomorrow at \(GameStore.clock(sale.kind.open)).")
         case .bulkBuyer:
-            guard !data.bulk.isEmpty else { return .failed("You have no bulk left.") }
+            // Bulk that belongs to a Rip & Ship order is not the player's to sell.
+            let own = data.bulk.filter { $0.shipOrder == nil }
+            guard !own.isEmpty else { return .failed("You have no bulk left.") }
             guard spendHours(o.hours) else { return .failed("Not enough time today.") }
-            let count = data.bulk.reduce(0) { $0 + $1.cards.count }
-            let fakes = data.bulk.reduce(0) { $0 + ($1.fakes?.count ?? 0) }
+            let count = own.reduce(0) { $0 + $1.cards.count }
+            let fakes = own.reduce(0) { $0 + ($1.fakes?.count ?? 0) }
             // The offer was for `o.cards` cards. The teacher pays the same rate for the bulk the player has now.
             let pay = o.cards.map { ShowSession.round(o.price * Double(count) / Double(max(1, $0))) } ?? o.price
-            let groups = Dictionary(data.bulk.map { ($0.id, $0.value) }, uniquingKeysWith: { a, _ in a })
-            data.bulk.removeAll()
+            let groups = Dictionary(own.map { ($0.id, $0.value) }, uniquingKeysWith: { a, _ in a })
+            data.bulk.removeAll { $0.shipOrder == nil }
             addLedger(pay, .sale, "\(count) bulk cards · a card club")
             addReceipt(name: "\(count) bulk cards", venue: "A card club", price: pay, net: pay, paid: nil,
                        ids: Array(groups.keys), markets: groups)

@@ -38,7 +38,7 @@ struct WholesaleView: View {
                             .looksInside(offer.product) { nil }
                         VStack(alignment: .leading, spacing: 4) {
                             Text(offer.product.name).font(.subheadline.weight(.medium)).lineLimit(2)
-                            Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · MSRP \(money(offer.product.msrp ?? 0)) · mkt \(money(offer.product.market))")
+                            Text("Case of \(offer.caseSize) · \(money(offer.unitPrice)) each · MSRP \(money(offer.product.retailMSRP() ?? 0)) · mkt \(money(offer.product.market))")
                                 .font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             if let left {
                                 Text("Allocation this week: \(left) of \(store.wholesaleCap(offer.product)) case\(store.wholesaleCap(offer.product) == 1 ? "" : "s") left\(store.isHot(offer.product) ? " · hot product" : "")")

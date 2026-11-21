@@ -36,6 +36,7 @@ final class GameTests {
         timed("series", seriesJoin)
         timed("market", market)
         timed("sealed", sealedFoundation)
+        timed("cases", cases)
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
@@ -720,6 +721,170 @@ final class GameTests {
         store.data = oldLoaded
         store.seedRivals()
         check(store.data.rivals.count == 5, "a load did not seed the rivals of an old save")
+    }
+
+    /// Sealed product phase 1: real case counts, the case item and its price, opening a case, case fresh, the one hot
+    /// test, and the MSRP step (docs/proposals/sealed-product, Part B sections 1 and 2, Part A 3.4).
+    private func cases() {
+        fresh()
+        let catalog = SetLibrary.catalog
+
+        // Case counts. The first catalog product of each rule gives the check.
+        func size(_ what: String, _ want: Int?, _ find: (Product) -> Bool) {
+            guard let p = catalog.first(where: find) else { return check(false, "the catalog has no \(what)") }
+            check(Balance.caseSize(for: p) == want, "\(what) \(p.name) has case size \(Balance.caseSize(for: p).map(String.init) ?? "nil"), not \(want.map(String.init) ?? "nil")")
+        }
+        size("Elite Trainer Box", 10) { $0.kind == "Elite Trainer Box" && !$0.name.contains("Pokemon Center") && !$0.name.contains("Pokémon Center") && !$0.isClubExclusive }
+        size("Pokemon Center ETB", 4) { $0.kind == "Elite Trainer Box" && ($0.name.contains("Pokemon Center") || $0.name.contains("Pokémon Center")) && !$0.isClubExclusive }
+        size("6-pack bundle", 25) { $0.kind == "Booster bundle" && $0.packs == 6 && !$0.isClubExclusive }
+        size("single pack", 144) { $0.kind == "Booster pack" && $0.packs == 1 && !$0.name.contains("Fun Pack") && !$0.isClubExclusive }
+        size("36-pack box", 6) { $0.kind == "Booster box" && $0.packs == 36 && !$0.isClubExclusive && !$0.name.contains("Enhanced") }
+        size("3-pack blister", 24) { $0.kind == "Blister" && $0.packs == 3 }
+        size("Mini Tin", 10) { $0.kind == "Tin" && $0.name.contains("Mini Tin") && !$0.isClubExclusive }
+        size("Ultra-Premium collection", 4) { $0.kind == "Collection" && $0.name.contains("Ultra-Premium") && !$0.isClubExclusive }
+        size("art bundle", nil) { $0.kind == "Booster pack" && $0.name.contains("Art Bundle") }
+        size("half box", nil) { $0.name.contains("Half Booster Box") }
+        size("Fun Pack", nil) { $0.name.contains("Fun Pack") }
+        size("master carton", nil) { $0.name.contains("Master Carton") }
+        size("[Set of 2] product", nil) { $0.name.contains("[Set of 2]") }
+        size("[Set of N] product", nil) { $0.name.contains("[Set of") }
+        check(Balance.caseSizes["Booster bundle"] == 25 && Balance.caseSizes["Booster pack"] == 144, "the bundle or pack case size is old")
+
+        // The distributor offers whole cases of the new sizes, and its units carry the case-fresh tag.
+        store.addReputation(400)
+        let offers = store.wholesaleOffers
+        check(!offers.isEmpty && offers.allSatisfy { $0.caseSize == CaseMath.units($0.product) }, "a wholesale offer has a case size that the case rules do not give")
+        check(offers.filter { $0.product.kind == "Booster bundle" }.allSatisfy { $0.caseSize == 25 }, "a wholesale bundle case is not 25")
+        if let offer = offers.filter({ $0.casePrice >= Balance.wholesaleMinOrder && $0.casePrice < 15_000 }).min(by: { $0.casePrice < $1.casePrice }) {
+            check(store.buyWholesale(offer, cases: 1) == nil, "the wholesale test order failed")
+            let units = store.data.sealed.filter { $0.source == "Wholesale" }
+            check(!units.isEmpty && units.allSatisfy { $0.isCaseFresh && $0.fake == nil }, "a distributor unit is not case fresh")
+        } else {
+            check(false, "the wholesale test has no cheap offer")
+        }
+
+        // A case and a unit never share a stack.
+        guard let etb = catalog.first(where: { $0.kind == "Elite Trainer Box" && $0.market > 0 && !$0.isStoreExclusive }) else {
+            return check(false, "no Elite Trainer Box for the case test")
+        }
+        store.data.sealed.removeAll()
+        let caseID = store.testCase(etb, units: 10, fresh: true)
+        let unit = SealedItem(setSlug: etb.homeSlug, name: etb.name, packs: etb.packs, paid: 30, acquired: .now, source: "Test", productID: etb.id)
+        guard let caseItem = store.data.sealed.first(where: { $0.id == caseID }) else { return check(false, "testCase added no case") }
+        check(store.stackKey(caseItem) != store.stackKey(unit), "a case and a unit of one product share a stack")
+        check(caseItem.packs == etb.packs * 10 && caseItem.isCase && caseItem.name == CaseMath.name(etb, units: 10), "the case item has the wrong packs or name")
+
+        // The case price: a real cases.json row, else the factor table. realMarket(of:) is the one choke point.
+        check(!SetLibrary.caseListings.isEmpty, "cases.json did not load")
+        check(abs(store.realMarket(of: caseItem) - CaseMath.market(etb, units: 10)) < 0.001, "realMarket(of:) does not use the case price")
+        if let plain = catalog.first(where: { SetLibrary.caseListings[$0.id] == nil && Balance.caseSize(for: $0) != nil && $0.market > 0 }),
+           let n = Balance.caseSize(for: plain) {
+            check(abs(CaseMath.market(plain, units: n) - plain.market * Double(n) * CaseMath.factor(plain)) < 0.01, "a case with no real price does not use the factor")
+        } else {
+            check(false, "no product without a real case row")
+        }
+        if let real = catalog.first(where: { SetLibrary.caseListings[$0.id] != nil }), let row = SetLibrary.caseListings[real.id] {
+            check(abs(CaseMath.market(real, units: row.units) - PriceCycle.price(row.market, real.marketFactor())) < 0.01, "a case with a real row does not use its price")
+            check(CaseMath.units(real) == row.units, "CaseMath.units does not read the real row first")
+        } else {
+            check(false, "no product with a real case row")
+        }
+
+        // Opening a case: every unit, the paid amount, and the value are kept.
+        let paidBefore = caseItem.paid
+        let valueBefore = store.marketValue
+        let premium = store.casePremium(caseItem)
+        let ids = store.openCase(caseID)
+        let opened = store.data.sealed.filter { $0.productID == etb.id }
+        check(ids.count == 10 && opened.count == 10 && !store.data.sealed.contains { $0.id == caseID }, "opening a case gave \(ids.count) units")
+        check(opened.allSatisfy { $0.caseUnits == nil && $0.isCaseFresh && $0.fake == nil }, "a unit from a case is not a plain case-fresh unit")
+        check(abs(opened.reduce(0) { $0 + $1.paid } - paidBefore) < 0.005, "the units of a case do not add up to its paid amount")
+        // Opening ends the case premium and nothing else: the inventory value falls by exactly that premium.
+        check(abs((valueBefore - store.marketValue) - premium) < 0.01, "opening a case changed the value by \(valueBefore - store.marketValue), not its premium \(premium)")
+        // A case-fresh unit and a plain unit of one product do not share a row.
+        var plain = opened[0]
+        plain.caseFresh = nil
+        check(store.stackKey(plain) != store.stackKey(opened[0]), "a case-fresh unit shares a stack with a plain unit")
+
+        // A resealed case gives resealed units. A case sold to a viewer opens only for its own order.
+        let reseal = store.testCase(etb, units: 4, fresh: false)
+        if let i = store.data.sealed.firstIndex(where: { $0.id == reseal }) { store.data.sealed[i].fake = .convincing }
+        let resealed = store.openCase(reseal)
+        check(resealed.count == 4 && store.data.sealed.filter { resealed.contains($0.id) }.allSatisfy { $0.fake == .convincing && !$0.isCaseFresh },
+              "a resealed case did not give resealed units")
+        let sold = store.testCase(etb, units: 4, fresh: true)
+        if let i = store.data.sealed.firstIndex(where: { $0.id == sold }) { store.data.sealed[i].status = .soldToViewer(orderID: UUID()) }
+        check(store.openCase(sold).isEmpty && store.data.sealed.contains { $0.id == sold }, "a case sold to a viewer opened for no order")
+
+        // A product sold to a viewer keeps its loose packs and promo cards locked to the order.
+        let order = UUID()
+        var locked = SealedItem(setSlug: etb.homeSlug, name: etb.name, packs: etb.packs, paid: 30, acquired: .now, source: "Test", productID: etb.id)
+        locked.status = .soldToViewer(orderID: order)
+        store.data.sealed.append(locked)
+        store.openProduct(locked.id, ripID: UUID())
+        let packs = store.data.sealed.filter { $0.brokenFrom == locked.id }
+        check(packs.count == etb.packs && packs.allSatisfy { $0.status == .soldToViewer(orderID: order) }, "a loose pack of a sold product lost its lock")
+        check(store.data.raw.filter { $0.status != nil }.allSatisfy { $0.status == .soldToViewer(orderID: order) }, "a promo card of a sold product has the wrong status")
+
+        // The one hot test: with no MSRP step, retailMSRP and isHot equal the old definition for every product.
+        check(PriceCycle.msrpStepDay == nil, "the MSRP step is set before the test")
+        var hotDiffs = 0
+        for p in catalog {
+            let oldHot = (p.msrp ?? 0) > 0 && p.market >= (p.msrp ?? 0) * Balance.hotProductRatio
+            if p.retailMSRP() != p.msrp || p.isHot() != oldHot || store.isHot(p) != oldHot { hotDiffs += 1 }
+        }
+        check(hotDiffs == 0, "retailMSRP or isHot differs from the old rule for \(hotDiffs) products")
+
+        // The MSRP step: the retail price rises 12.5% and rounds. The market share ramps in over 30 days, for in-print product only.
+        guard let hot = catalog.first(where: { $0.isInPrint && ($0.msrp ?? 0) > 0 }), let out = catalog.first(where: { !$0.isInPrint && ($0.msrp ?? 0) > 0 }) else {
+            return check(false, "no products for the MSRP step test")
+        }
+        let day = store.data.day
+        store.data.retail.msrpStepDay = day
+        store.syncMarket()
+        check(PriceCycle.msrpFactor() == 1.125 && PriceCycle.msrpFactor(day: day - 1) == 1, "msrpFactor is not 1.125 from the step day on")
+        check(hot.retailMSRP() == Market.retail((hot.msrp ?? 0) * 1.125), "retailMSRP did not step")
+        let slugs = Set(hot.mix.map(\.slug))
+        check(abs(PriceCycle.msrpLift(slugs: slugs, id: hot.id, slug: hot.homeSlug, day: day) - 1) < 1e-12, "the lift is not 1 on the step day")
+        check(abs(PriceCycle.msrpLift(slugs: slugs, id: hot.id, slug: hot.homeSlug, day: day + 30) - (1 + 0.125 * 0.6)) < 1e-12, "the lift is not 7.5% after 30 days")
+        check(abs(PriceCycle.msrpLift(slugs: slugs, id: hot.id, slug: hot.homeSlug, day: day + 60) - (1 + 0.125 * 0.6)) < 1e-12, "the lift grows after its ramp")
+        check(PriceCycle.msrpLift(slugs: Set(out.mix.map(\.slug)), id: out.id, slug: out.homeSlug, day: day + 30) == 1, "an out-of-print product got the lift")
+        store.data.retail.msrpStepDay = nil
+        store.syncMarket()
+        check(PriceCycle.msrpFactor() == 1 && hot.retailMSRP() == hot.msrp, "clearing the MSRP step did not restore the price")
+
+        // The case-fresh bonus multiplies the reach of an online sale. A zero bonus never sells, and a huge one always does.
+        let listing = Listing(channel: .tcgplayer, price: etb.market, dayListed: store.data.day, insured: false)
+        var never = 0, always = 0
+        for _ in 0..<50 {
+            if store.rollSale(listing, market: etb.market, sealed: true, name: etb.name, bonus: 0) != nil { never += 1 }
+            if store.rollSale(listing, market: etb.market, sealed: true, name: etb.name, bonus: 1e9) != nil { always += 1 }
+        }
+        check(never == 0 && always == 50, "the rollSale bonus did not scale the reach (\(never), \(always))")
+
+        // The card club buys only the player's own bulk. Bulk that belongs to a Rip & Ship order stays.
+        let bulkCards = Array(prismatic.prefix(5))
+        var ordered = BulkGroup(ripID: UUID(), setSlug: "prismatic-evolutions", date: .now, cards: bulkCards, day: store.day)
+        ordered.shipOrder = UUID()
+        store.data.bulk = [BulkGroup(ripID: UUID(), setSlug: "prismatic-evolutions", date: .now, cards: bulkCards, day: store.day), ordered]
+        let club = Opportunity(kind: .bulkBuyer, postedDay: store.day, day: store.day, title: "Test teacher", detail: "",
+                               hours: 0, price: 10, cards: 100)
+        store.data.opportunities.append(club)
+        _ = store.acceptOpportunity(club.id)
+        check(store.data.bulk.count == 1 && store.data.bulk[0].shipOrder != nil, "the card club took bulk that belongs to an order")
+        store.data.bulk = []
+
+        // The winter scale deepens the after-holiday dip only when a scale is set.
+        let winterDay = 10
+        let week = PriceCycle.weekOfYear(day: winterDay)
+        let base = PriceCycle.seasonSealedPrice(day: winterDay)
+        let dip = Balance.seasonWinterSealedPrice.value(week: week)
+        store.data.retail.winterScales[PriceCycle.winterKey(day: winterDay, week: week)] = 1.5
+        store.syncMarket()
+        let scaled = PriceCycle.seasonSealedPrice(day: winterDay)
+        check(dip != 0 && abs((scaled - base) - dip * 0.5) < 1e-9, "a winter scale of 1.5 did not deepen the dip by half")
+        store.data.retail.winterScales = [:]
+        store.syncMarket()
     }
 
     /// Plays 14 days: a booked show, the store counter, meets, vending machines, an auction fake, a rip, and End Day.

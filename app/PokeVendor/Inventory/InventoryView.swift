@@ -45,6 +45,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     case all = "All", free = "No status"
     case onTheWay = "On the way", arriving = "Arriving", atGrader = "At grader", authenticating = "Authenticating"
     case listed = "Listed", consigned = "Consigned", inStore = "In your store", atAuction = "At auction"
+    case soldToViewer = "Sold to a viewer"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -67,6 +68,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         case .consigned: return self == .consigned
         case .inStore: return self == .inStore
         case .atAuctionHouse: return self == .atAuction
+        case .soldToViewer: return self == .soldToViewer
         case nil: return false
         }
     }
@@ -90,6 +92,8 @@ struct InventoryView: View {
     @State private var gradeIDs: GradeRequest?
     @State private var lotIDs: SellRequest?
     @State private var confirmBulk = false
+    @State private var caseRequest: CaseRequest?
+    @State private var confirmOpenAll = false
 
     init(startTab: InventoryTab = .sealed) {
         _tab = State(initialValue: startTab)
@@ -182,6 +186,15 @@ struct InventoryView: View {
         .sheet(item: $lotIDs) { request in
             LotSheet(ids: request.ids)
         }
+        .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
+    }
+
+    /// Opens every case with one save, then shows one summary.
+    private func openAll(_ ids: [UUID]) {
+        var units: [UUID] = []
+        for id in ids { units += store.openCase(id, save: false) }
+        store.save()
+        caseRequest = CaseRequest(source: .opened(units: units, title: "\(ids.count) cases opened"))
     }
 
     // MARK: - Pieces
@@ -199,6 +212,23 @@ struct InventoryView: View {
         HStack {
             if tab != .bulk && tab != .grading { filterMenu }
             Spacer()
+            if tab == .sealed, !selecting {
+                // The player holds 2 or more closed cases: open them in one step, with one summary.
+                let cases = store.data.sealed.filter { $0.isCase && !$0.pc && $0.status == nil && $0.onlineListing == nil }
+                let premium = cases.reduce(0) { $0 + store.casePremium($1) }
+                if cases.count >= 2 {
+                    Button {
+                        if premium > Balance.caseOpenConfirmPremium { confirmOpenAll = true } else { openAll(cases.map(\.id)) }
+                    } label: {
+                        Label("Open all cases", systemImage: "shippingbox").font(.subheadline)
+                    }
+                    .foregroundStyle(Theme.cyan)
+                    .confirmationDialog("Opening loses \(money(premium)) of case premium. You cannot close the cases again.",
+                                        isPresented: $confirmOpenAll, titleVisibility: .visible) {
+                        Button("Open all cases", role: .destructive) { openAll(cases.map(\.id)) }
+                    }
+                }
+            }
             if tab == .raw, !selecting {
                 // Cards that make no money on TCGplayer after the fees and the shipping.
                 let losers = store.unprofitableRaw
@@ -265,6 +295,13 @@ struct InventoryView: View {
                             rowButton(stack.ids, route: .sealed(stack.id)) {
                                 SealedRow(item: stack.items[0], market: store.market(of: stack.items[0]), count: stack.items.count,
                                           paid: stack.items.reduce(0) { $0 + $1.paid })
+                            }
+                            .contextMenu {
+                                if stack.items[0].isCase, stack.items[0].status == nil, stack.items[0].onlineListing == nil {
+                                    Button("Open the case", systemImage: "shippingbox") {
+                                        caseRequest = CaseRequest(source: .closed(stack.items[0].id))
+                                    }
+                                }
                             }
                         }
                     }
@@ -454,7 +491,7 @@ struct InventoryView: View {
         case .sealed: sealedInHand.count
         case .raw: rawInHand.count
         case .slabs: slabsInHand.count
-        case .bulk: store.data.bulk.count
+        case .bulk: store.data.bulk.filter { $0.shipOrder == nil }.count
         case .grading: atGrading.count
         }
     }
@@ -496,8 +533,8 @@ struct InventoryView: View {
 
     private var sortedBulk: [BulkGroup] {
         switch sort {
-        case .value, .psa10: store.data.bulk.sorted { $0.value > $1.value }
-        default: store.data.bulk.sorted { $0.date > $1.date }
+        case .value, .psa10: store.data.bulk.filter { $0.shipOrder == nil }.sorted { $0.value > $1.value }
+        default: store.data.bulk.filter { $0.shipOrder == nil }.sorted { $0.date > $1.date }
         }
     }
 }
@@ -586,7 +623,8 @@ struct ItemActions<Extra: View>: View {
         let aside = all.contains { isSetAside($0) }
         let free = !ids.isEmpty && !all.contains { store.hasStatus($0) } && !aside
         ActionGrid {
-            if kind == .sealed {
+            // A closed case opens first. It has no rip tiles.
+            if kind == .sealed && (all.isEmpty || !all.allSatisfy({ id in store.data.sealed.first { $0.id == id }?.isCase == true })) {
                 ActionTile(title: "Rip", icon: "scissors", filled: true) { run { nav.startRip(sealed(ids)) } }
                     .disabled(!free)
                 // One swipe opens every pack, and the stack holds only the hit slots (docs/18, Hits only).
@@ -772,9 +810,14 @@ struct Tags: View {
     var fakeKnown = false
     var verified = false
     var id: UUID?
+    /// A sealed case: its unit count, and the trusted-case tag (Model/Cases.swift).
+    var caseUnits: Int?
+    var caseFresh = false
 
     var body: some View {
         HStack(spacing: 4) {
+            if let caseUnits { Tag(text: "CASE ×\(caseUnits)", color: Theme.orange) }
+            if caseFresh { Tag(text: "CASE FRESH") }
             if pc { Tag(text: "PC", color: Theme.green) }
             if let id, store.isChallengeItem(id) { Tag(text: "CHALLENGE", color: Theme.cyan) }
             if let status { Tag(text: status.tag, color: Theme.orange) }
@@ -807,7 +850,8 @@ struct SealedRow: View {
                 Text(count > 1 ? "\(money(market)) each" : "\(item.packs) pack\(item.packs == 1 ? "" : "s")")
                     .font(.caption.monospaced())
                     .foregroundStyle(Theme.muted)
-                Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id)
+                Tags(pc: item.pc, status: item.status, fake: item.fake, fakeKnown: item.isKnownFake, verified: item.isVerified, id: item.id,
+                     caseUnits: item.caseUnits, caseFresh: item.isCaseFresh)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {

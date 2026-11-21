@@ -211,7 +211,7 @@ struct StreamView: View {
             HStack(spacing: 8) {
                 action("Show a card", "rectangle.portrait.on.rectangle.portrait", enabled: !session.items.isEmpty) { pick = .show }
                 action("Talk to chat", "bubble.left.and.bubble.right", enabled: true) { session.talk() }
-                action("Rip", "sparkles", enabled: session.items.contains(where: \.sealed)) { pick = .rip }
+                action("Rip", "sparkles", enabled: session.items.contains { $0.sealed && !$0.isCase }) { pick = .rip }
             }
             HStack(spacing: 8) {
                 action("Give away", "gift", enabled: !session.items.isEmpty) { pick = .giveaway }
@@ -252,7 +252,7 @@ struct StreamPickSheet: View {
     @State private var percent: Double = 100
 
     private var items: [StreamItem] {
-        mode == .rip ? session.items.filter(\.sealed) : session.items
+        mode == .rip ? session.items.filter { $0.sealed && !$0.isCase } : session.items
     }
 
     private var title: String {
