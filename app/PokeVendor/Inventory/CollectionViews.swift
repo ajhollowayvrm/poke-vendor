@@ -19,6 +19,7 @@ struct PCSection: View {
                 EmptyTab(text: "Your PC is empty. Select items in Inventory and tap PC. PC items can go to shows and meets, "
                              + "and every deal on them carries a \(Int((Balance.pcPremium - 1) * 100))% premium.")
             }
+            FoldAllButton(list: "pc", keys: (cards.isEmpty ? [] : [FoldKey.title("Cards")]) + (sealed.isEmpty ? [] : [FoldKey.title("Sealed")]))
             if !cards.isEmpty {
                 TitledGroup(title: "Cards", count: cards.count, list: "pc") {
                     ForEach(stacks(cards, key: store.stackKey)) { stack in

@@ -23,6 +23,7 @@ struct VendorTradeSheet: View {
                 Text("Trade with \(vendor.name)").font(.title3.bold()).padding(16)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 10) {
+                        FoldAllButton(list: "trade", keys: [FoldKey.title("From their table"), FoldKey.title("From your stock")])
                         TitledGroup(title: "From their table", count: theirs.count, list: "trade") {
                             ForEach(theirs) { item in
                                 pick(selected: getting.contains(item.id), toggle: { flip(item.id, in: &get) }) {

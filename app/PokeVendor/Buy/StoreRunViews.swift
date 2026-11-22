@@ -243,7 +243,9 @@ struct StoreRunView: View {
                         Text(s.isGameShop ? "The shelf is empty. This stop is a bust." : "No card product on the shelf now.")
                             .font(.subheadline).foregroundStyle(Theme.muted)
                     }
-                    ForEach(SetLibrary.grouped(shelf, by: { $0.product.homeSlug }), id: \.slug) { group in
+                    let groups = SetLibrary.grouped(shelf, by: { $0.product.homeSlug })
+                    FoldAllButton(list: "shelf", keys: groups.map { FoldKey.set($0.slug) })
+                    ForEach(groups, id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "shelf") {
                             ForEach(group.items) { item in
                                 let left = store.shelfLeft(item)

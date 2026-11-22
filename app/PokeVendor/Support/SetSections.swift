@@ -16,11 +16,58 @@ final class FoldedGroups {
         UserDefaults.standard.set(Array(groups), forKey: "folded.\(list)")
     }
 
+    /// True when every one of the groups is folded.
+    func allFolded(_ groups: [String], in list: String) -> Bool {
+        let folded = load(list)
+        return groups.allSatisfy { folded.contains($0) }
+    }
+
+    /// Folds or unfolds all of the groups. The other groups of the list keep their folds.
+    func setFolded(_ groups: [String], in list: String, _ on: Bool) {
+        var current = load(list)
+        if on { current.formUnion(groups) } else { current.subtract(groups) }
+        folded[list] = current
+        UserDefaults.standard.set(Array(current), forKey: "folded.\(list)")
+    }
+
     private func load(_ list: String) -> Set<String> {
         if let groups = folded[list] { return groups }
         let groups = Set(UserDefaults.standard.stringArray(forKey: "folded.\(list)") ?? [])
         folded[list] = groups
         return groups
+    }
+}
+
+/// The fold key of a group. `SetGroup` uses the set slug, and `TitledGroup` uses its title.
+enum FoldKey {
+    static func set(_ slug: String) -> String { slug }
+    static func title(_ title: String) -> String { "title:" + title }
+}
+
+/// "Collapse all" folds every group of a list on the screen. When all of them are folded, it reads "Expand all".
+/// It shows only when the list has two groups or more.
+struct FoldAllButton: View {
+    let list: String
+    /// The fold keys of the groups on the screen (`FoldKey`).
+    let keys: [String]
+
+    var body: some View {
+        if keys.count > 1 {
+            let all = FoldedGroups.shared.allFolded(keys, in: list)
+            HStack {
+                Spacer()
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) { FoldedGroups.shared.setFolded(keys, in: list, !all) }
+                } label: {
+                    Label(all ? "Expand all" : "Collapse all", systemImage: all ? "chevron.down.2" : "chevron.up.2")
+                }
+                .font(.caption.weight(.semibold))
+                .buttonStyle(.borderless)
+                .tint(Theme.cyan)
+            }
+            .padding(.horizontal, 12)
+            .padding(.top, 6)
+        }
     }
 }
 
@@ -34,7 +81,7 @@ struct SetGroup<Content: View>: View {
 
     var body: some View {
         let info = SetLibrary.info(slug)
-        FoldingGroup(key: slug, list: list,
+        FoldingGroup(key: FoldKey.set(slug), list: list,
                      title: info?.name ?? SetLibrary.set(slug).name,
                      detail: [info?.series, info?.year].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "),
                      count: count, content: content)
@@ -49,7 +96,7 @@ struct TitledGroup<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        FoldingGroup(key: "title:" + title, list: list, title: title, detail: "", count: count, content: content)
+        FoldingGroup(key: FoldKey.title(title), list: list, title: title, detail: "", count: count, content: content)
     }
 }
 

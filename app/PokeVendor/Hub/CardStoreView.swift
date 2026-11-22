@@ -236,12 +236,14 @@ struct CardStoreView: View {
                 Text("The shelves are empty. Empty shelves turn customers away.").font(.caption).foregroundStyle(Theme.orange)
             }
             let cards = items.filter { $0.kind == .card }
+            let groups = SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug })
+            FoldAllButton(list: "store", keys: (cards.isEmpty ? [] : [FoldKey.title("In the cases")]) + groups.map { FoldKey.set($0.slug) })
             if !cards.isEmpty {
                 TitledGroup(title: "In the cases", count: cards.count, list: "store") {
                     ForEach(cards) { stockRow($0) }
                 }
             }
-            ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
+            ForEach(groups, id: \.slug) { group in
                 SetGroup(slug: group.slug, count: group.items.count, list: "store") {
                     ForEach(group.items) { stockRow($0) }
                 }
@@ -526,12 +528,14 @@ struct StockShelvesSheet: View {
                             .font(.caption.weight(.semibold))
                         }
                         let cards = items.filter { $0.kind == .card }
+                        let groups = SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug })
+                        FoldAllButton(list: "stock", keys: (cards.isEmpty ? [] : [FoldKey.title("Singles and slabs")]) + groups.map { FoldKey.set($0.slug) })
                         if !cards.isEmpty {
                             TitledGroup(title: "Singles and slabs", count: cards.count, list: "stock") {
                                 ForEach(cards) { pickRow($0) }
                             }
                         }
-                        ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
+                        ForEach(groups, id: \.slug) { group in
                             SetGroup(slug: group.slug, count: group.items.count, list: "stock") {
                                 ForEach(group.items) { pickRow($0) }
                             }

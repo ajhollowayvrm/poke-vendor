@@ -67,12 +67,15 @@ struct SetupStage: View {
                     }
                     if session.venue.limitsLoad { loadBox(items, used: used) }
                     let cards = items.filter { $0.kind == .card }
+                    let sealedGroups = SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug })
+                    FoldAllButton(list: "show", keys: (cards.isEmpty ? [] : [FoldKey.title("Singles and slabs")])
+                                  + sealedGroups.map { FoldKey.set($0.slug) })
                     if !cards.isEmpty {
                         TitledGroup(title: "Singles and slabs", count: cards.count, list: "show") {
                             ForEach(cards) { item in bringRow(item, items: items, used: used) }
                         }
                     }
-                    ForEach(SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug }), id: \.slug) { group in
+                    ForEach(sealedGroups, id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "show") {
                             ForEach(group.items) { item in bringRow(item, items: items, used: used) }
                         }

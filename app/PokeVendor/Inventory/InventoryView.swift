@@ -291,7 +291,9 @@ struct InventoryView: View {
                     EmptyTab(text: filter != .all ? "No sealed product matches the filter." : "No sealed product. Buy some online from the hub.")
                 }
                 // Sealed product shows by set, newest set first. The sort order holds inside each set.
-                ForEach(SetLibrary.grouped(stacks(items, key: store.stackKey), by: { $0.items[0].setSlug }), id: \.slug) { group in
+                let groups = SetLibrary.grouped(stacks(items, key: store.stackKey), by: { $0.items[0].setSlug })
+                FoldAllButton(list: "inventory.sealed", keys: groups.map { FoldKey.set($0.slug) })
+                ForEach(groups, id: \.slug) { group in
                     SetGroup(slug: group.slug, count: group.items.reduce(0) { $0 + $1.items.count }, list: "inventory.sealed") {
                         ForEach(group.items) { stack in
                             rowButton(stack.ids, route: .sealed(stack.id)) {

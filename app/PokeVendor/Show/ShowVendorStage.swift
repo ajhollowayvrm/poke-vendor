@@ -17,6 +17,23 @@ struct VendorStage: View {
         }
     }
 
+    /// The fold keys of the groups on the screen now, for "Collapse all".
+    private func vendorFoldKeys(saved: Bool) -> [String] {
+        var keys: [String] = []
+        if saved { keys.append(FoldKey.title("Saved for you")) }
+        if vendor.items.contains(where: \.firstLook) { keys.append(FoldKey.title("First look · for you, before the table opens")) }
+        if tab == .sealed {
+            let shown = vendor.items.filter { inAisle($0, .sealed) && !$0.firstLook }
+            if shown.contains(where: { if case .mystery = $0.goods { return true }; return false }) { keys.append(FoldKey.title("Mystery packs")) }
+            var slugs: [String] = []
+            for item in shown {
+                if case .sealed(let p) = item.goods, !slugs.contains(p.homeSlug) { slugs.append(p.homeSlug) }
+            }
+            keys += slugs.map(FoldKey.set)
+        }
+        return keys
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -46,6 +63,7 @@ struct VendorStage: View {
                         }
                     }
                     let saved = session.saved(at: vendor)
+                    FoldAllButton(list: "show", keys: vendorFoldKeys(saved: !saved.isEmpty))
                     if !saved.isEmpty {
                         TitledGroup(title: "Saved for you", count: saved.count, list: "show") {
                             ForEach(saved) { item in

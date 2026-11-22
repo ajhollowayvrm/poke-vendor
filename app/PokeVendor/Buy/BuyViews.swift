@@ -130,7 +130,9 @@ struct StoreView: View {
                         .framed()
                 }
                 VStack(spacing: 0) {
-                    ForEach(SetLibrary.grouped(offers, by: { $0.setSlug }), id: \.slug) { group in
+                    let groups = SetLibrary.grouped(offers, by: { $0.setSlug })
+                    FoldAllButton(list: "store", keys: groups.map { FoldKey.set($0.slug) })
+                    ForEach(groups, id: \.slug) { group in
                         SetGroup(slug: group.slug, count: group.items.count, list: "store") {
                             ForEach(group.items) { offer in
                                 OfferRow(offer: offer, bought: store.data.boughtToday.contains(offer.id),
