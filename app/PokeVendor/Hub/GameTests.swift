@@ -28,6 +28,7 @@ final class GameTests {
         timed("psa", psaBills)
         timed("upcharges", psaUpcharges)
         timed("resubmit", crackAndResubmit)
+        timed("reseal", resealFiller)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -341,6 +342,14 @@ final class GameTests {
         check(back.filter { $0.fake == nil }.allSatisfy { ($0.grade?.rank ?? 0) >= psa9.rank }, "a crossover lowered a grade")
         check(back.first { $0.id == cards[3].id }?.isKnownFake == true, "a grader missed a fake slab")
         check(!store.data.ledger.contains { $0.pending && $0.category == .grading }, "a resubmit order is still pending")
+    }
+
+    /// A resealed pack holds junk from other sets, never a card of its own set, and never a hit.
+    private func resealFiller() {
+        let filler = RipModel.resealFiller(not: "prismatic-evolutions")
+        check(!filler.isEmpty, "a resealed pack has no filler")
+        check(!filler.contains { $0.setSlug == "prismatic-evolutions" }, "a resealed pack holds a card of its own set")
+        check(filler.allSatisfy { ["Common", "Uncommon"].contains($0.rarity) && ($0.market ?? 0) < 1 }, "a resealed pack holds a hit")
     }
 
     // MARK: - Opportunities and flips

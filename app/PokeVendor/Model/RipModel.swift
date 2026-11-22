@@ -365,17 +365,29 @@ final class RipModel {
             cards[0] = RipCard(print: card, energy: nil)
         }
         #endif
-        // A resealed product was opened and searched. Every hit is gone, and filler took its place.
+        // A resealed product was opened and searched. Every hit is gone, and junk from a bulk box took its place:
+        // commons and uncommons from other sets, so the pack does not match its wrapper (docs/14-counterfeit-risk.md).
         let resealed = queued.flatMap { store?.fakeOf(sourceID: $0.sourceID) } != nil
         if resealed {
             special = nil
-            let filler = cardSet.prints.filter { ["Common", "Uncommon"].contains($0.rarity) && ($0.market ?? 0) < 1 }
+            let filler = Self.resealFiller(not: cardSet.slug)
             cards = cards.map { card in
                 guard card.isHit, let print = filler.randomElement() else { return card }
                 return RipCard(print: print, energy: nil)
             }
         }
         return (cards, special, resealed)
+    }
+
+    /// The junk in a resealed pack: commons and uncommons under $1 from 3 random other sets. Falls back to the
+    /// pack's own set only when no other set has any.
+    static func resealFiller(not slug: String) -> [CardPrint] {
+        func junk(_ s: String) -> [CardPrint] {
+            SetLibrary.set(s).prints.filter { ["Common", "Uncommon"].contains($0.rarity) && ($0.market ?? 0) < 1 }
+        }
+        let others = SetLibrary.index.map(\.slug).filter { $0 != slug && !SetLibrary.isFirstEdition($0) }.shuffled()
+        let pool = others.prefix(3).flatMap(junk)
+        return pool.isEmpty ? junk(slug) : pool
     }
 
     /// Hits only: opens every product and every pack left in the queue at once. The cards outside the hit

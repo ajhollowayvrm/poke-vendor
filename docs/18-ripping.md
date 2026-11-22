@@ -76,8 +76,9 @@ no stop rule. The player turns every hit by hand, face up.
   the summary, the Raw tab, and the bulk group still count them.
 - **Skip all** puts every card left in the stack on the pile and goes
   to the rip summary.
-- A resealed pack holds only filler, so none of its cards go in the
-  stack. The resealed banner still shows.
+- A resealed pack holds only filler: commons and uncommons under $1
+  from 3 random other sets, so the cards do not match the wrapper. None
+  of its cards go in the stack. The resealed banner still shows.
 - A live stream has no Hits only, because the viewers want to see
   every card.
 
