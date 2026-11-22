@@ -338,6 +338,16 @@ in steps of 0.5. The real sales data holds 15 of them (PSA 6 to 10, CGC
   at the same grade and at each lower grade. See
   [13-sets.md](13-sets.md#1st-edition-and-unlimited).
 
+**Each printing gets its own slab sales.** A card with a Normal and a
+Reverse holo printing gets the eBay sales of each printing from PPT
+`salesByPrinting` (`run_sales` in `tools/export/rip_set.py`). The
+listed printing, usually the Reverse holo, gets its own sales. The other
+printing gets all the sales minus the listed sales. When that remainder
+is not a clean set of sales, it keeps the sales of all the printings.
+Before 2026-11-22, both printings got the mixed sales, so a Reverse holo
+slab of an old set showed the price of the Normal slab. AJ chose to keep
+every split price as PPT gives it, also the very high ones.
+
 Each print in a set file has the optional list `gradedReal`: the keys
 with a real price. Every other key is an estimate. A print also has
 `marketEstimated` when the raw price is an estimate. An old file has

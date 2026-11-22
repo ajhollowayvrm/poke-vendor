@@ -18,7 +18,8 @@ slots, the 1st Edition prints with their 1st Edition prices, and the 1st Edition
 Edition scan for these sets, so an Unlimited print whose image has a patch in Resources/destamp.json gets "#destamp" on
 its image URL, and the app lays the patch over the stamp (tools/images/destamp.py).
 
-A card with two runs gets the eBay sales of its own run (run_sales), and the prices of the two runs keep their order:
+A card with two printings or more (two runs, or Normal and Reverse holo) gets the eBay sales of its own printing
+(run_sales). The prices of the two runs keep their order:
 1st Edition at or above Unlimited (run_order). A raw price from a played copy is not used (near_mint).
 
 tools/export/catalog.py writes the sealed products.
@@ -206,16 +207,18 @@ def two_runs(pc):
 
 
 def ebay_sales(pc, printing=None):
-    """The eBay sales by grade of a PPT card. A card with two print runs gets the sales of the run of `printing`
-    (run_sales). The sales of all the printings mix the two runs, and a 1st Edition slab sells for about 2x an
-    Unlimited slab."""
+    """The eBay sales by grade of a PPT card. A card with two printings or more gets the sales of `printing`
+    (run_sales). The sales of all the printings mix them: a 1st Edition slab sells for about 2x an Unlimited slab, and
+    a Reverse holo slab of an old set can sell for 20x a Normal slab (Crystal Guardians Grovyle δ 19, 2026-11-22)."""
     e = ebay_of(pc)
     if printing and two_runs(pc):
         return run_sales(e, printing)
+    if printing and len(pc.get("variants") or {}) > 1:
+        return run_sales(e, printing, keep=True)
     return e.get("salesByGrade") or {}
 
 
-def run_sales(e, printing):
+def run_sales(e, printing, keep=False):
     """The sales by grade of one printing. eBay lists the sales of some printings in `salesByPrinting`, often of
     one printing only. A printing that is not in the list gets the other sales of each grade: the count and the total
     value of all the sales, minus those of the listed printings. A grade with no other sales has no price. With no
@@ -223,7 +226,8 @@ def run_sales(e, printing):
 
     The two lists do not always cover the same days. Then the difference is not a set of real sales, and the grade
     has no price. The check: the average of the other sales must be between the lowest and the highest sale of all
-    the sales."""
+    the sales. With `keep` (Normal and Reverse holo of one run), such a grade keeps the sales of all the printings, as
+    before the split, so the Normal print keeps a real price."""
     every = e.get("salesByGrade") or {}
     listed = e.get("salesByPrinting") or {}
     if printing in listed:
@@ -235,11 +239,11 @@ def run_sales(e, printing):
         others = [(v.get("salesByGrade") or {}).get(g) or {} for v in listed.values()]
         count = (a.get("count") or 0) - sum(o.get("count") or 0 for o in others)
         total = (a.get("totalValue") or 0) - sum(o.get("totalValue") or 0 for o in others)
-        if count < 1 or total <= 0:
-            continue
-        average = total / count
+        average = total / count if count >= 1 and total > 0 else -1
         if (a.get("minPrice") or 0) <= average <= (a.get("maxPrice") or math.inf):
             out[g] = {"averagePrice": average, "count": count}
+        elif keep:
+            out[g] = a
     return out
 
 
