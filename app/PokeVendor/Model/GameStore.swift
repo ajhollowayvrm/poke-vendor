@@ -1407,10 +1407,7 @@ final class GameStore {
             case .atGrader(let company, let tier, let days, let ledgerID):
                 if days <= 1 {
                     if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) {
-                        data.ledger[i].pending = data.raw.contains {
-                            if case .atGrader(_, _, let d, let l) = $0.status, l == ledgerID, $0.id != card.id { return d > 1 }
-                            return false
-                        }
+                        data.ledger[i].pending = gradingOrderOpen(ledgerID, except: card.id)
                     }
                     // PSA holds a finished order until its bill is paid. End Day pays it when the cash covers it. An order
                     // from an older build was paid when it went in, so it has no bill and comes straight back.
@@ -1489,6 +1486,15 @@ final class GameStore {
         }
         for var card in data.slabs where card.status != nil {
             switch card.status {
+            case .atGrader(let company, let tier, let days, let ledgerID):
+                // A resubmitted slab: a review or a crossover (Model/Resubmit.swift).
+                if days <= 1 {
+                    let result = returnResubmitted(&card, company: company, tier: tier, ledgerID: ledgerID)
+                    lines.append(result.line)
+                    if result.changed { slabsBack.append(card) }
+                } else {
+                    card.status = .atGrader(company: company, tier: tier, daysLeft: days - 1, ledgerID: ledgerID)
+                }
             case .atAuctionHouse(let a):
                 let result = advanceAuction(&card, a)
                 if let line = result.line { lines.append(line) }

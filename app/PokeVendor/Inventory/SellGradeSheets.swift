@@ -9,6 +9,8 @@ struct SellSheet: View {
     var startAll = true
     /// True: the items are in the player's store and stay there. The listing is online too (docs/22-own-store.md).
     var alsoOnline = false
+    /// The channel the sheet starts on. Nil: TCGplayer when every item is raw, or eBay.
+    var startChannel: Listing.Channel?
     @State private var channel: Listing.Channel = .tcgplayer
     /// How many items of each stack to list, by the stack's first item.
     @State private var quantity: [UUID: Int] = [:]
@@ -17,6 +19,8 @@ struct SellSheet: View {
     @State private var insured = false
     /// The condition to list each raw stack at, by the stack's first item. The default is the condition the player sees.
     @State private var listedWear: [UUID: Wear] = [:]
+    /// The price the player typed for a stack, by the stack's first item. A typed price wins over the slider.
+    @State private var customPrice: [UUID: Double] = [:]
     @State private var acceptOffers = false
     @State private var autoAcceptOn = false
     @State private var autoDeclineOn = false
@@ -85,7 +89,12 @@ struct SellSheet: View {
     }
 
     private func price(_ line: Line) -> Double {
-        max(0.05, (reference(line) * percent / 100 * 100).rounded() / 100)
+        if let typed = customPrice[line.id] { return typed }
+        return max(0.05, (reference(line) * percent / 100 * 100).rounded() / 100)
+    }
+
+    private func priceBinding(_ line: Line) -> Binding<Double> {
+        Binding(get: { price(line) }, set: { customPrice[line.id] = max(0.05, ($0 * 100).rounded() / 100) })
     }
 
     private var tcgAllowed: Bool { lines.allSatisfy(\.isRaw) }
@@ -149,9 +158,10 @@ struct SellSheet: View {
                             Slider(value: $percent, in: 70...140, step: 1)
                             Text("\(Int(percent))%").font(.body.monospaced()).frame(width: 56, alignment: .trailing)
                         }
-                        Text(channel == .tcgplayer
+                        Text((channel == .tcgplayer
                              ? "At or under the lowest listing sells fast. Each step above it sells far less."
                              : "A price above market waits longer. Listings end after \(Balance.listingDays) days.")
+                             + " The slider sets every item with no typed price. Type a price under an item to set it alone.")
                             .font(.caption)
                             .foregroundStyle(Theme.muted)
                     }
@@ -206,8 +216,29 @@ struct SellSheet: View {
                                     .font(.subheadline)
                             }
                             let each = line.ids.count > 1 ? " each" : ""
+                            if channel != .ebayAuction {
+                                // The player can type a price for each stack. The slider sets the stacks with no typed price.
+                                HStack {
+                                    Text("Price\(each)").font(.subheadline)
+                                    TextField("Price", value: priceBinding(line), format: .currency(code: "USD"))
+                                        .keyboardType(.decimalPad)
+                                        .multilineTextAlignment(.trailing)
+                                        .font(.subheadline.monospaced())
+                                    if customPrice[line.id] != nil {
+                                        Button("Reset") { customPrice[line.id] = nil }
+                                            .font(.caption)
+                                            .buttonStyle(.borderless)
+                                    }
+                                }
+                                let ref = reference(line)
+                                if ref > 0 {
+                                    Text("\(Int((p / ref * 100).rounded()))% of \(channel == .tcgplayer ? "the lowest listing" : "market") (\(money(ref)))\(customPrice[line.id] != nil ? " · your price" : "")")
+                                        .font(.caption2.monospaced())
+                                        .foregroundStyle(customPrice[line.id] != nil ? Theme.cyan : Theme.muted)
+                                }
+                            }
                             HStack {
-                                Text(channel == .ebayAuction ? "Expected \(money(p))\(each)" : "Price \(money(p))\(each)")
+                                if channel == .ebayAuction { Text("Expected \(money(p))\(each)") }
                                 Spacer()
                                 Text("You get about \(money(p - costs.fees - costs.shipping - costs.insurance))\(each)")
                                     .foregroundStyle(Theme.green)
@@ -253,7 +284,11 @@ struct SellSheet: View {
                     .disabled(chosenIDs.isEmpty)
                 }
             }
-            .onAppear { if !tcgAllowed { channel = .ebay } }
+            .onAppear {
+                if let startChannel, startChannel != .tcgplayer || tcgAllowed { channel = startChannel }
+                if !tcgAllowed, channel == .tcgplayer { channel = .ebay }
+            }
+            .onChange(of: channel) { _, _ in customPrice = [:] }
         }
     }
 
@@ -269,7 +304,8 @@ struct SellSheet: View {
     }
 }
 
-/// Send raw cards to a grading company (docs/10-grading.md).
+/// Send raw cards to a grading company (docs/10-grading.md). Slabs go back in their cases: the same company reviews
+/// the grade, and another company crosses the card over (docs/10-grading.md, Crack and resubmit).
 struct GradeSheet: View {
     @Environment(GameStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -277,8 +313,12 @@ struct GradeSheet: View {
     @State private var company: GradingCompany = .psa
     @State private var tierIndex = 0
 
+    /// The slabs to resubmit. Empty when the sheet sends raw cards.
+    private var slabs: [OwnedCard] { store.data.slabs.filter { ids.contains($0.id) && store.canResubmit($0) } }
+
     var body: some View {
-        let cards = store.data.raw.filter { ids.contains($0.id) && $0.status == nil }
+        let resubmit = !slabs.isEmpty
+        let cards = resubmit ? slabs : store.data.raw.filter { ids.contains($0.id) && $0.status == nil }
         let tiers = Balance.gradingTiers[company] ?? []
         let tier = tiers[min(tierIndex, tiers.count - 1)]
         // The PSA membership lowers the fee and the turnaround.
@@ -294,6 +334,9 @@ struct GradeSheet: View {
                     }
                     .pickerStyle(.segmented)
                     Text(companyNote).font(.caption).foregroundStyle(Theme.muted)
+                    if resubmit {
+                        Text(resubmitNote(cards)).font(.caption).foregroundStyle(Theme.cyan)
+                    }
                 }
                 Section("Service") {
                     Picker("Service", selection: $tierIndex) {
@@ -312,7 +355,14 @@ struct GradeSheet: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(card.print.name).font(.subheadline)
-                                RawLooks(condition: card.condition)
+                                if let g = card.grade {
+                                    Text(g.company == company ? "Now \(g.label). Review: the grade goes up or stays."
+                                         : "Now \(g.label). Crosses at \(company.rawValue) \(g.grade.formatted()) or better, or stays.")
+                                        .font(.caption)
+                                        .foregroundStyle(Theme.muted)
+                                } else {
+                                    RawLooks(condition: card.condition)
+                                }
                                 if store.hasUpgrade(.gradeEstimate) {
                                     // The grade estimate service (docs/09-upgrades.md).
                                     let likely = GameStore.likelyGrades(card.condition, company: company)
@@ -327,7 +377,11 @@ struct GradeSheet: View {
                             }
                             Spacer()
                             VStack(alignment: .trailing) {
-                                Text("raw \(money(card.market))\(card.print.marketEstimated == true ? " est." : "")").font(.caption.monospaced())
+                                if card.grade != nil {
+                                    Text("now \(money(card.market))\(card.isGradedEstimated ? " est." : "")").font(.caption.monospaced())
+                                } else {
+                                    Text("raw \(money(card.market))\(card.print.marketEstimated == true ? " est." : "")").font(.caption.monospaced())
+                                }
                                 let tenKey = "\(company.rawValue.lowercased())10"
                                 let ten = card.print.gradedPrice(tenKey)
                                 Text("\(company.rawValue) 10 \(ten.map(money) ?? "—")\(card.print.isGradedEstimated(tenKey) ? " est." : "")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
@@ -365,22 +419,32 @@ struct GradeSheet: View {
                             Text("Unpaid PSA bills: \(money(store.unpaidGradingTotal)).").font(.caption).foregroundStyle(Theme.orange)
                         }
                     }
+                    if !resubmit {
                     Text("Card savers: \(cards.count) needed, \(store.supplyCount(.cardSaver)) in hand. Missing ones cost \(money(SupplyItem.cardSaver.rushPrice)) each.")
                         .font(.caption).foregroundStyle(Theme.muted)
+                    }
                     if !company.billsOnReturn, !store.canAfford(total) {
                         Text("You have \(money(store.cash)). That is not enough.").foregroundStyle(Theme.orange)
                     }
                 }
             }
-            .navigationTitle("Grade")
+            .navigationTitle(resubmit ? "Resubmit" : "Grade")
             .navigationBarTitleDisplayMode(.inline)
             .onChange(of: company) { _, _ in tierIndex = firstUsable(cards: cards.count) }
-            .onAppear { tierIndex = firstUsable(cards: cards.count) }
+            .onAppear {
+                // A resubmit starts at the slabs' own company: a review.
+                if resubmit, let first = cards.first?.grade?.company, cards.allSatisfy({ $0.grade?.company == first }) { company = first }
+                tierIndex = firstUsable(cards: cards.count)
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Submit") {
-                        store.submit(Set(cards.map(\.id)), to: company, tier: tier)
+                        if resubmit {
+                            store.resubmit(Set(cards.map(\.id)), to: company, tier: tier)
+                        } else {
+                            store.submit(Set(cards.map(\.id)), to: company, tier: tier)
+                        }
                         dismiss()
                     }
                     .disabled(cards.isEmpty || block != nil || (!company.billsOnReturn && !store.canAfford(total)))
@@ -402,6 +466,18 @@ struct GradeSheet: View {
     /// The first level of the company that the player can use.
     private func firstUsable(cards: Int) -> Int {
         (Balance.gradingTiers[company] ?? []).firstIndex { tierBlock($0, cards: cards) == nil } ?? 0
+    }
+
+    /// What a resubmit to this company does to the slabs.
+    private func resubmitNote(_ cards: [OwnedCard]) -> String {
+        let same = cards.filter { $0.grade?.company == company }.count
+        if same == cards.count {
+            return "Review: \(company.rawValue) looks at the card again in its slab. The grade goes up or stays. It never goes down. You pay the fee either way."
+        }
+        if same == 0 {
+            return "Crossover: \(company.rawValue) grades the card in its old slab. At the same grade or better, it moves to a \(company.rawValue) slab. If not, it comes back in its old slab. You pay the fee either way."
+        }
+        return "\(same) slab\(same == 1 ? " is" : "s are") \(company.rawValue): a review. The others cross over at the same grade or better. You pay the fee either way."
     }
 
     private var companyNote: String {

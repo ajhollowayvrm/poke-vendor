@@ -77,7 +77,7 @@ extension GameStore {
     func gradingBillsEndDay() -> [String] {
         var lines: [String] = []
         var atGrader: Set<UUID> = []
-        for card in data.raw {
+        for card in data.raw + data.slabs {
             if case .atGrader(_, _, _, let id) = card.status { atGrader.insert(id) }
         }
         var newlyHeld: Set<UUID> = []

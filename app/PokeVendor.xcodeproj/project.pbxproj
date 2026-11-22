@@ -307,6 +307,7 @@
 		F905C1398E75C747E47A1439 /* StreamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AB0D2FABBE0297520AD440 /* StreamView.swift */; };
 		FBD484D14432E620994F0A0B /* HitEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523EE1F5C13F88A7FDA88127 /* HitEffects.swift */; };
 		FCAD9164775A3F88F8F0FE00 /* Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9881C74F0228AC7C882E6679 /* Payments.swift */; };
+		FD0F3CC36A227B7B37433E4F /* Resubmit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF84B18F04BA2E67662A34FD /* Resubmit.swift */; };
 		FEA35C320FDFF001C8BA3998 /* CardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3553A3A890986D3D87A796A8 /* CardStore.swift */; };
 /* End PBXBuildFile section */
 
@@ -519,6 +520,7 @@
 		ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-genesis-1st-edition.json"; sourceTree = "<group>"; };
 		ABEC49B92B688FF0FB93A7E6 /* plasma-freeze.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "plasma-freeze.json"; sourceTree = "<group>"; };
 		AEF22D5F29B5F8AC42F419C3 /* neo-discovery-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-discovery-1st-edition.json"; sourceTree = "<group>"; };
+		AF84B18F04BA2E67662A34FD /* Resubmit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resubmit.swift; sourceTree = "<group>"; };
 		B0187D483A5C15351A60C863 /* RipView+Reveal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RipView+Reveal.swift"; sourceTree = "<group>"; };
 		B1321113F37B7D300C763312 /* PersonalCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalCollection.swift; sourceTree = "<group>"; };
 		B20617D3991981E63F15727B /* vivid-voltage.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "vivid-voltage.json"; sourceTree = "<group>"; };
@@ -891,6 +893,7 @@
 				0892155B07C10C47B42D6134 /* PriceCycle.swift */,
 				E31479E39C7B363F7E989E45 /* PrintRuns.swift */,
 				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
+				AF84B18F04BA2E67662A34FD /* Resubmit.swift */,
 				3F6344A1A670648627BB04E7 /* Retail.swift */,
 				BFDE58CA33D37B69E7FAA730 /* RetailOnline.swift */,
 				7B66D93BC2248EFFB8CA18E2 /* RipCard.swift */,
@@ -1336,6 +1339,7 @@
 				E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */,
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */,
+				FD0F3CC36A227B7B37433E4F /* Resubmit.swift in Sources */,
 				F4572FD4B8BE110711D98967 /* Retail.swift in Sources */,
 				D47785B7D74C27EAA2EAF04E /* RetailOnline.swift in Sources */,
 				0B1D570F7C38939714CB4041 /* RetailSim.swift in Sources */,

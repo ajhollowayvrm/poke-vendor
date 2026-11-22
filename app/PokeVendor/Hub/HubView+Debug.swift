@@ -249,6 +249,20 @@ extension HubView {
             store.addTestProduct("565630")
             nav.path = [.social]
         }
+        // Screenshot aid: `-opensheet resubmit|sell` opens a slab's detail screen with that sheet. "sell" opens
+        // the sell sheet on TCGplayer with three raw cards.
+        if let i = args.firstIndex(of: "-opensheet"), i + 1 < args.count {
+            store.startRun()
+            store.addTestCash(5_000)
+            for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 }).prefix(5) { store.addTestCard(print) }
+            for k in 0..<2 {
+                var card = store.data.raw.removeLast()
+                card.grade = SlabGrade(company: k == 0 ? .psa : .cgc, grade: 9)
+                card.verified = true
+                store.data.slabs.append(card)
+            }
+            if let slab = store.data.slabs.first { nav.path = [.inventory(.slabs), .card(slab.id)] }
+        }
         if let i = args.firstIndex(of: "-lookinside"), i + 1 < args.count {
             store.startRun()
             if let item = store.addTestProduct(args[i + 1]) { nav.path = [.sealed(item.id)] }

@@ -180,7 +180,7 @@ struct InventoryView: View {
         #endif
         .onChange(of: section) { _, _ in finishSelecting() }
         .sheet(item: $sellIDs) { request in
-            SellSheet(ids: request.ids, startAll: request.startAll)
+            SellSheet(ids: request.ids, startAll: request.startAll, startChannel: request.channel)
         }
         .sheet(item: $gradeIDs) { request in
             GradeSheet(ids: request.ids)
@@ -413,12 +413,9 @@ struct InventoryView: View {
             } label: { wideLabel(allChosen ? "Clear" : "Select all \(listable.count)") }
             .buttonStyle(.bordered)
             .disabled(listable.isEmpty)
+            // The sell sheet opens on TCGplayer at the lowest listing. The player can set a price for each card.
             Button {
-                let cards = store.data.raw.filter { chosen.contains($0.id) }
-                let prices = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, GameStore.tcgLowest(for: $0.print, wear: $0.condition.wear)) })
-                let wears = Dictionary(uniqueKeysWithValues: cards.map { ($0.id, $0.condition.wear) })
-                store.list(chosen, channel: .tcgplayer, price: { prices[$0] ?? 0.05 }, auctionDays: nil, insured: false,
-                           wear: { wears[$0] })
+                sellIDs = SellRequest(ids: chosen, channel: .tcgplayer)
                 finishSelecting()
             } label: { wideLabel("List \(chosen.count) on TCGplayer") }
             .primaryButton()
@@ -578,6 +575,8 @@ struct SellRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
     var startAll = true
+    /// The channel the sheet starts on. Nil: TCGplayer when every item is raw, or eBay.
+    var channel: Listing.Channel?
 }
 
 struct GradeRequest: Identifiable {
@@ -609,6 +608,7 @@ struct ItemActions<Extra: View>: View {
     /// Runs after each action. Select mode ends the selection here.
     let done: () -> Void
     let extra: Extra
+    @State private var confirmCrack = false
 
     init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
          done: @escaping () -> Void = {}, @ViewBuilder extra: () -> Extra) {
@@ -668,6 +668,19 @@ struct ItemActions<Extra: View>: View {
                     .disabled(!free)
                 ActionTile(title: "Bulk", icon: "archivebox") { run { store.moveToBulk(ids) } }
                     .disabled(!free)
+            }
+            if kind == .slab {
+                // Crack and resubmit (docs/10-grading.md). The sheet reviews or crosses over the slabs.
+                ActionTile(title: "Resubmit", icon: "arrow.triangle.2.circlepath") { run { present(.grade(ids)) } }
+                    .disabled(!free)
+                ActionTile(title: "Crack", icon: "hammer.circle") { confirmCrack = true }
+                    .disabled(!free)
+                    .confirmationDialog(ids.count == 1 ? "Crack this slab?" : "Crack \(ids.count) slabs?", isPresented: $confirmCrack,
+                                        titleVisibility: .visible) {
+                        Button("Crack", role: .destructive) { run { store.crack(ids) } }
+                    } message: {
+                        Text("The grade is gone for good. The card goes back to Raw. Rarely, the case breaks badly and nicks the card.")
+                    }
             }
             if kind != .sealed { masterSetTile }
             if store.series(.pnl) != nil {

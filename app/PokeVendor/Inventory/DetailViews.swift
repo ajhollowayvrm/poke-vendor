@@ -244,8 +244,21 @@ struct CardDetailView: View {
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle(card.print.name)
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear { if key == nil { key = store.stackKey(card) } }
-            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
+            .onAppear {
+                if key == nil { key = store.stackKey(card) }
+                #if DEBUG
+                // Screenshot aid: `-opensheet` (Hub/HubView+Debug.swift).
+                let args = ProcessInfo.processInfo.arguments
+                if let i = args.firstIndex(of: "-opensheet"), i + 1 < args.count {
+                    switch args[i + 1] {
+                    case "resubmit": grade = GradeRequest(ids: Set(store.data.slabs.map(\.id)))
+                    case "sell": sell = SellRequest(ids: Set(store.data.raw.map(\.id)), channel: .tcgplayer)
+                    default: break
+                    }
+                }
+                #endif
+            }
+            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll, startChannel: $0.channel) }
             .sheet(item: $grade) { GradeSheet(ids: $0.ids) }
             .sheet(item: $lot) { LotSheet(ids: $0.ids) }
             .sheet(item: $post) { NewPostSheet(request: $0) }
@@ -553,7 +566,7 @@ struct SealedDetailView: View {
                 }
                 #endif
             }
-            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll) }
+            .sheet(item: $sell) { SellSheet(ids: $0.ids, startAll: $0.startAll, startChannel: $0.channel) }
             .sheet(item: $lot) { LotSheet(ids: $0.ids) }
             .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         } else {

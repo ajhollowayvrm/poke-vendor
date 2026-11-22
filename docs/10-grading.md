@@ -397,10 +397,25 @@ authentication upgrade — see
 for the full counterfeit mechanic, including why a grading company's
 real/fake call is treated as final.
 
-## Resubmission and appeal
+## Crack and resubmit
 
-Out of scope for now, not planned soon. A returned grade is final —
-there is no in-game path to appeal or resubmit a card for a second
-opinion. This keeps the grading result a real, committed-to outcome of
-the risk/variance design, rather than something a player can grind
-around.
+AJ asked for this on 2026-11-22. It replaces the old rule that a returned grade is final. Code:
+`Model/Resubmit.swift`.
+
+- **Crack.** The Crack tile on a slab breaks the case. The card goes back to Raw with its true hidden
+  condition. The grade is gone for good. A grader already checked the card, so it stays verified. A
+  crack nicks a corner or an edge by 0.5 on 3% of cards (`GameStore.crackDamageChance`). The player
+  can then grade the raw card again at any company, with the normal fee and card saver.
+- **Resubmit.** The Resubmit tile sends the slab in its case. The grade sheet takes the slab. The fee,
+  the days, PSA billing, and PSA upcharges are the same as for a raw card. A slab needs no card saver.
+- **Review (the same company).** The company grades the card again. The slab takes the new grade only
+  when it is higher. A review never lowers a grade.
+- **Crossover (another company).** The new company grades the card in its old slab. The card moves to
+  the new slab at the same grade number or better. If not, it comes back in its old slab.
+- **The order of grades.** A Black Label and a Pristine 10 are above a plain 10 (`SlabGrade.rank`).
+- **The fee stays paid** in every case. A grader flags a fake slab, and the fee stays paid.
+- **Only a free slab** can be cracked or resubmitted: no status, and not in the PC, a master set, or
+  the showcase.
+
+**Why the fee is the limit:** the worst subgrade still caps the grade, so a resubmit gains only the
+grader's random spread. Each try costs the full fee and days.

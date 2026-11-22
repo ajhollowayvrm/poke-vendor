@@ -454,7 +454,7 @@ extension GameStore {
             out.append(CalendarEntry(kind: .delivery, title: "Delivery", detail: names.prefix(2).joined(separator: ", ")
                                      + (names.count > 2 ? " and \(names.count - 2) more" : "")))
         }
-        let grading = data.raw.filter {
+        let grading = (data.raw + data.slabs).filter {
             if case .atGrader(_, _, let d, _) = $0.status { return d == offset }
             return false
         }

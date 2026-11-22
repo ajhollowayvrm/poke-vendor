@@ -27,6 +27,7 @@ final class GameTests {
         timed("listings", listings)
         timed("psa", psaBills)
         timed("upcharges", psaUpcharges)
+        timed("resubmit", crackAndResubmit)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -286,6 +287,60 @@ final class GameTests {
         check(store.payGradingBill(bill.id), "the PSA bill did not pay")
         check(abs(before - store.cash - fee) < 0.01, "paying PSA took \(money(before - store.cash)), not \(money(fee))")
         check(store.gradingBills.isEmpty && store.heldCards(bill.id).isEmpty, "paid PSA cards are still held")
+    }
+
+    // MARK: - Crack and resubmit (docs/10-grading.md, Crack and resubmit)
+
+    /// A crack moves the card to Raw with no grade. A review never lowers a grade. A crossover moves the slab only at
+    /// the same grade or better. A grader flags a fake slab. The CGC fee leaves when the slabs go in.
+    private func crackAndResubmit() {
+        let psa9 = SlabGrade(company: .psa, grade: 9)
+        check(!psa9.accepts(SlabGrade(company: .psa, grade: 9)), "a review changed a slab at the same grade")
+        check(!psa9.accepts(SlabGrade(company: .psa, grade: 8)), "a review lowered a grade")
+        check(psa9.accepts(SlabGrade(company: .cgc, grade: 9)), "a crossover at the same grade did not cross")
+        check(!psa9.accepts(SlabGrade(company: .cgc, grade: 8.5)), "a crossover crossed at a lower grade")
+        check(!SlabGrade(company: .bgs, grade: 10, blackLabel: true).accepts(SlabGrade(company: .bgs, grade: 10)),
+              "a review took a Black Label down to a plain 10")
+
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(4) { store.addTestCard(print) }
+        var cards = Array(store.data.raw.suffix(4))
+        guard cards.count == 4, let express = Balance.gradingTiers[.cgc]?.first else { return check(false, "the resubmit test has no cards") }
+        let ids = Set(cards.map(\.id))
+        for i in cards.indices {
+            cards[i].grade = psa9
+            cards[i].verified = true
+        }
+        cards[3].fake = FakeTier.allCases.first
+        store.data.raw.removeAll { ids.contains($0.id) }
+        store.data.slabs += cards
+
+        // Crack: the card leaves Slabs and goes to Raw with no grade.
+        store.crack([cards[0].id])
+        let cracked = store.data.raw.first { $0.id == cards[0].id }
+        check(cracked?.grade == nil && cracked?.verified == true, "a cracked card is not a verified raw card")
+        check(!store.data.slabs.contains { $0.id == cards[0].id }, "a cracked slab stayed in Slabs")
+
+        // Crossover to CGC: the fee leaves now, and each slab comes back with a grade at least as good, or the old one.
+        let sent = Set(cards.dropFirst().map(\.id))
+        let before = store.cash
+        store.resubmit(sent, to: .cgc, tier: express)
+        let fee = store.gradingFee(express, .cgc) * Double(sent.count)
+        check(abs(before - store.cash - fee) < 0.01, "a CGC resubmit took \(money(before - store.cash)), not \(money(fee))")
+        check(store.data.slabs.filter { sent.contains($0.id) }.allSatisfy(\.isAtGrader), "a resubmitted slab is not at the grader")
+        store.crack(sent)
+        check(store.data.slabs.filter { sent.contains($0.id) }.count == sent.count, "a slab at the grader was cracked")
+        for i in store.data.slabs.indices {
+            if case .atGrader(let company, let name, _, let id) = store.data.slabs[i].status {
+                store.data.slabs[i].status = .atGrader(company: company, tier: name, daysLeft: 1, ledgerID: id)
+            }
+        }
+        nextDay()
+        let back = store.data.slabs.filter { sent.contains($0.id) }
+        check(back.count == sent.count && back.allSatisfy { $0.status == nil }, "a resubmitted slab did not come back")
+        check(back.filter { $0.fake == nil }.allSatisfy { ($0.grade?.rank ?? 0) >= psa9.rank }, "a crossover lowered a grade")
+        check(back.first { $0.id == cards[3].id }?.isKnownFake == true, "a grader missed a fake slab")
+        check(!store.data.ledger.contains { $0.pending && $0.category == .grading }, "a resubmit order is still pending")
     }
 
     // MARK: - Opportunities and flips

@@ -79,6 +79,17 @@ The game models this as a listing ladder for each card:
 The player's choice is simple and hard: undercut the ladder and sell
 fast for less, or list higher and wait, possibly forever.
 
+**Prices on the sell sheet.** AJ asked for this on 2026-11-22.
+
+- The slider sets a share of the lowest listing (TCGplayer) or of the
+  market (eBay, Facebook Marketplace) for every item.
+- Each item has its own price field. A typed price wins over the slider
+  for that item. The line under the field shows the price as a share of
+  the reference. Reset gives the item back to the slider.
+- A change of channel clears the typed prices.
+- "List N on TCGplayer" in Raw select mode opens the sell sheet on
+  TCGplayer. The default is 100% of the lowest listing, as before.
+
 ## eBay
 
 The strongest channel for graded slabs. It also sells sealed product
