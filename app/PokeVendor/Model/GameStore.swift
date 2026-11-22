@@ -294,6 +294,27 @@ final class GameStore {
         }
     }
 
+    /// The prints of the set files, by set and print, for `refreshPrices`.
+    private static var printIndex: [String: [String: CardPrint]] = [:]
+
+    /// A saved card keeps a copy of its print, with the prices of the set file on the day it came in. When it loads,
+    /// it takes the prices of the set file now, so a price fix reaches the cards the player owns. The image stays, so
+    /// the stamp patch stays. A promo has no set file, so it keeps its prices.
+    private static func refreshPrices(_ card: inout OwnedCard) {
+        guard let slug = card.print.setSlug else { return }
+        if printIndex[slug] == nil {
+            var index: [String: CardPrint] = [:]
+            for p in SetLibrary.set(slug).prints { index[p.num + "|" + p.name + "|" + p.variant] = p }
+            printIndex[slug] = index
+        }
+        let old = card.print
+        guard var fresh = printIndex[slug]?[old.num + "|" + old.name + "|" + old.variant] else { return }
+        fresh.image = old.image
+        fresh.setSlug = slug
+        fresh.priceKey = old.priceKey
+        card.print = fresh
+    }
+
     init() {
         url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("game.json")
@@ -304,11 +325,15 @@ final class GameStore {
             // Cards from before the set price effects learn their set. A promo is not in its set file, so it stays nil.
             for i in saved.raw.indices { Self.fillSetSlug(&saved.raw[i]) }
             for i in saved.slabs.indices { Self.fillSetSlug(&saved.slabs[i]) }
+            // Every card takes the prices of the set files now (refreshPrices).
+            for i in saved.raw.indices { Self.refreshPrices(&saved.raw[i]) }
+            for i in saved.slabs.indices { Self.refreshPrices(&saved.slabs[i]) }
             // The cards that wait in a Rip & Ship order come back to Raw on a refund, so they get the same repair.
             for k in saved.ripShip.orders.indices {
                 for i in saved.ripShip.orders[k].cards.indices {
                     Destamp.migrate(&saved.ripShip.orders[k].cards[i])
                     Self.fillSetSlug(&saved.ripShip.orders[k].cards[i])
+                    Self.refreshPrices(&saved.ripShip.orders[k].cards[i])
                 }
             }
             // A store from before the application keeps its distributor account.
