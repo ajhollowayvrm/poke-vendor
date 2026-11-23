@@ -17,6 +17,30 @@ extension HubView {
             RetailSim(store: store, flipper: args.contains("flipper"), shop: args.contains("shop")).run(days: days)
             return
         }
+        // Speed aid: `-bench` fills a big save and times the hub's storage and auction numbers.
+        if args.contains("-bench") {
+            store.startRun()
+            let prints = SetLibrary.set("prismatic-evolutions").prints
+            for i in 0..<3000 { store.data.raw.append(OwnedCard(print: prints[i % prints.count], setSlug: "prismatic-evolutions", acquired: .now, paid: nil, ripID: nil)) }
+            for _ in 0..<300 { _ = store.addTestProduct("565630") }
+            store.refreshLots()
+            func time(_ name: String, _ f: () -> Any) {
+                let t = Date()
+                for _ in 0..<20 { _ = f() }
+                print("BENCH \(name): \(String(format: "%.2f", Date().timeIntervalSince(t) * 1000 / 20)) ms")
+            }
+            time("homeSpaceUsed") { store.homeSpaceUsed }
+            time("storageUsed") { store.storageUsed }
+            time("openLots+views") { store.openLots.map { store.lotView($0) } }
+            time("raw+slabs concat") { (store.data.raw + store.data.slabs).count }
+            time("calendar 42 days") { let scan = store.calendarScan(); return (0..<42).map { store.calendarEntries(day: store.day + $0, scan: scan) }.count }
+            time("eventEntries 42") { (0..<42).map { store.eventEntries(day: store.day + $0) }.count }
+            time("ripShip 42") { (0..<42).map { store.ripShipCalendarEntries(day: store.day + $0) }.count }
+            time("auctionHouseEntries 42") { (0..<42).map { store.auctionHouseEntries(day: store.day + $0) }.count }
+            time("lotEntries 42") { (0..<42).map { store.lotEntries(day: store.day + $0) }.count }
+            fflush(stdout)
+            return
+        }
         // Screenshot aid: `-regular` makes every contact Regular first.
         if args.contains("-regular") { store.testMakeRegular() }
         if let i = args.firstIndex(of: "-route"), i + 1 < args.count {

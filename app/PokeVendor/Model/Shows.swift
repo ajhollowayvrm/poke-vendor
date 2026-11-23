@@ -407,8 +407,46 @@ extension GameStore {
 
     // MARK: - Calendar
 
-    /// Everything on one day of the calendar.
-    func calendarEntries(day: Int) -> [CalendarEntry] {
+    /// The items on their way, by days from today, and the auction ends, by day. One pass over the items, so a calendar
+    /// of many days does not scan the whole collection for each day.
+    struct CalendarScan {
+        var onTheWay: [Int: [String]] = [:]
+        var grading: [Int: Int] = [:]
+        var authenticating: [Int: Int] = [:]
+        var arriving: [Int: Int] = [:]
+        var auctionEnds: [Int: Int] = [:]
+    }
+
+    func calendarScan() -> CalendarScan {
+        var scan = CalendarScan()
+        var cardsOnTheWay: [Int: [String]] = [:]
+        func note(_ status: ItemStatus?) {
+            switch status {
+            case .atGrader(_, _, let d, _): scan.grading[d, default: 0] += 1
+            case .atAuthenticator(let d, _): scan.authenticating[d, default: 0] += 1
+            case .arriving(let d, _): scan.arriving[d, default: 0] += 1
+            case .listed(let l): if let end = l.auctionEndDay { scan.auctionEnds[end, default: 0] += 1 }
+            default: break
+            }
+        }
+        for item in data.sealed {
+            if case .onTheWay(let d, _) = item.status { scan.onTheWay[d, default: []].append(item.name) }
+            if case .arriving(let d, _) = item.status { scan.arriving[d, default: 0] += 1 }
+            if case .listed(let l) = item.status, let end = l.auctionEndDay { scan.auctionEnds[end, default: 0] += 1 }
+        }
+        for list in [data.raw, data.slabs] {
+            for card in list {
+                if case .onTheWay(let d, _) = card.status { cardsOnTheWay[d, default: []].append(card.print.name) }
+                note(card.status)
+            }
+        }
+        // Sealed names first, then cards, as before.
+        for (d, names) in cardsOnTheWay { scan.onTheWay[d, default: []] += names }
+        return scan
+    }
+
+    /// Everything on one day of the calendar. A calendar of many days passes one `scan` for all of them.
+    func calendarEntries(day: Int, scan: CalendarScan? = nil) -> [CalendarEntry] {
         var out: [CalendarEntry] = []
         let weekday = day % 7
         if weekday < 5, let job, !data.jobState.timeOffBooked.contains(day) {
@@ -445,50 +483,24 @@ extension GameStore {
         out += ripShipCalendarEntries(day: day)
         let offset = day - data.day
         guard offset > 0 else { return out }
-        let arriving = data.sealed.filter { if case .onTheWay(let d, _) = $0.status { return d == offset }; return false }
-        let cardsArriving = (data.raw + data.slabs).filter {
-            if case .onTheWay(let d, _) = $0.status { return d == offset }
-            return false
-        }
-        if arriving.count + cardsArriving.count > 0 {
-            let names = arriving.map(\.name) + cardsArriving.map(\.print.name)
+        let scan = scan ?? calendarScan()
+        let names = scan.onTheWay[offset] ?? []
+        if !names.isEmpty {
             out.append(CalendarEntry(kind: .delivery, title: "Delivery", detail: names.prefix(2).joined(separator: ", ")
                                      + (names.count > 2 ? " and \(names.count - 2) more" : "")))
         }
-        let grading = (data.raw + data.slabs).filter {
-            if case .atGrader(_, _, let d, _) = $0.status { return d == offset }
-            return false
-        }
-        if !grading.isEmpty {
+        if let grading = scan.grading[offset], grading > 0 {
             out.append(CalendarEntry(kind: .grading, title: "Grades come back",
-                                     detail: "\(grading.count) card\(grading.count == 1 ? "" : "s")"))
+                                     detail: "\(grading) card\(grading == 1 ? "" : "s")"))
         }
-        let authenticating = (data.raw + data.slabs).filter {
-            if case .atAuthenticator(let d, _) = $0.status { return d == offset }
-            return false
-        }
-        if !authenticating.isEmpty {
+        if let authenticating = scan.authenticating[offset], authenticating > 0 {
             out.append(CalendarEntry(kind: .grading, title: "Authentication comes back",
-                                     detail: "\(authenticating.count) card\(authenticating.count == 1 ? "" : "s")"))
+                                     detail: "\(authenticating) card\(authenticating == 1 ? "" : "s")"))
         }
-        let arriving2 = (data.raw + data.slabs).filter {
-            if case .arriving(let d, _) = $0.status { return d == offset }
-            return false
-        }.count + data.sealed.filter {
-            if case .arriving(let d, _) = $0.status { return d == offset }
-            return false
-        }.count
-        if arriving2 > 0 {
-            out.append(CalendarEntry(kind: .delivery, title: "Arriving", detail: "\(arriving2) item\(arriving2 == 1 ? "" : "s")"))
+        if let arriving = scan.arriving[offset], arriving > 0 {
+            out.append(CalendarEntry(kind: .delivery, title: "Arriving", detail: "\(arriving) item\(arriving == 1 ? "" : "s")"))
         }
-        let auctions = (data.raw + data.slabs).filter {
-            if case .listed(let l) = $0.status { return l.auctionEndDay == day }
-            return false
-        }.count + data.sealed.filter {
-            if case .listed(let l) = $0.status { return l.auctionEndDay == day }
-            return false
-        }.count
-        if auctions > 0 {
+        if let auctions = scan.auctionEnds[day], auctions > 0 {
             out.append(CalendarEntry(kind: .auction, title: "Auction ends", detail: "\(auctions) listing\(auctions == 1 ? "" : "s")"))
         }
         return out

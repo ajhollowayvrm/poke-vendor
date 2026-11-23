@@ -14,6 +14,8 @@ struct CalendarView: View {
                         .buttonStyle(.plain)
                 }
                 let first = store.day - store.weekday
+                // One pass over the items for all the days on the screen.
+                let scan = store.calendarScan()
                 ForEach(0..<6, id: \.self) { w in
                     let start = first + w * 7
                     VStack(alignment: .leading, spacing: 0) {
@@ -24,7 +26,7 @@ struct CalendarView: View {
                             .padding(.bottom, 6)
                         ForEach(start..<(start + 7), id: \.self) { day in
                             if day >= store.day {
-                                DayRow(day: day, today: day == store.day, entries: store.calendarEntries(day: day)) { id in
+                                DayRow(day: day, today: day == store.day, entries: store.calendarEntries(day: day, scan: scan)) { id in
                                     nav.path.append(.show(id))
                                 }
                             }

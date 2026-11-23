@@ -281,10 +281,14 @@ struct HubView: View {
     }
 
     /// The home space and the unit, for the hub row.
-    private var storageDetail: String {
-        let home = store.homeSpaceLimit.map { "home \(store.homeSpaceUsed)/\($0)" } ?? "home \(store.homeSpaceUsed)"
-        guard let size = store.storageSize else { return home }
-        return "\(home) · unit \(store.storageUsed)/\(size.capacity)"
+    /// The home space and the unit, computed once for the row.
+    private var storageSpace: (text: String, over: Bool) {
+        let used = store.homeSpaceUsed
+        let limit = store.homeSpaceLimit
+        let home = limit.map { "home \(used)/\($0)" } ?? "home \(used)"
+        let over = limit.map { used > $0 } ?? false
+        guard let size = store.storageSize else { return (home, over) }
+        return ("\(home) · unit \(store.storageUsed)/\(size.capacity)", over)
     }
 
     /// Your auctions and bids, for the hub row.
@@ -373,13 +377,14 @@ struct HubView: View {
             }
             .buttonStyle(.plain)
             Divider().overlay(Theme.line)
+            let space = storageSpace
             Button { nav.path.append(.storage) } label: {
                 HStack {
-                    Image(systemName: "shippingbox").foregroundStyle(store.homeOverflow > 0 ? Theme.orange : Theme.cyan)
+                    Image(systemName: "shippingbox").foregroundStyle(space.over ? Theme.orange : Theme.cyan)
                     Text("Storage").font(.subheadline)
                     Spacer()
-                    Text(storageDetail).font(.caption.monospaced())
-                        .foregroundStyle(store.homeOverflow > 0 ? Theme.orange : Theme.muted)
+                    Text(space.text).font(.caption.monospaced())
+                        .foregroundStyle(space.over ? Theme.orange : Theme.muted)
                     Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
                 }
                 .contentShape(Rectangle())
