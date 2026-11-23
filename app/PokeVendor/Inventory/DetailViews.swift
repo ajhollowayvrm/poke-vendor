@@ -440,6 +440,8 @@ struct SealedDetailView: View {
     let id: UUID
     @State private var sell: SellRequest?
     @State private var lot: SellRequest?
+    /// Consign to an auction house (sealed product of $1,000 or more).
+    @State private var auctionSealed: AuctionRequest?
     @State private var key: String?
     @State private var caseRequest: CaseRequest?
     @State private var confirmOpen = false
@@ -554,12 +556,18 @@ struct SealedDetailView: View {
                     if item.pc {
                         Text("This item is in your PC. Tap Leave PC to rip or sell it.").font(.caption).foregroundStyle(Theme.muted)
                     }
-                    ItemActions(kind: .sealed, ids: [item.id], stackIDs: Set(mates.map(\.id)), present: present)
+                    ItemActions(kind: .sealed, ids: [item.id], stackIDs: Set(mates.map(\.id)), present: present) {
+                        if store.realMarket(of: item) >= Balance.auctionMinValue {
+                            ActionTile(title: "Auction", icon: "hammer") { auctionSealed = AuctionRequest(id: item.id) }
+                                .disabled(item.status != nil || item.setAside || item.isKnownFake)
+                        }
+                    }
                 }
                 .padding(16)
             }
             .background(Theme.background.ignoresSafeArea())
             .navigationTitle("Sealed")
+            .sheet(item: $auctionSealed) { AuctionConsignSheet(cardID: $0.id) }
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 if key == nil { key = store.stackKey(item) }

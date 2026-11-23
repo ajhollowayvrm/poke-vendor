@@ -101,6 +101,8 @@ extension Balance {
     static let lotHouseCount = 5...8
     static let lotHousePreviewDays = 14
     static let lotHouseMinValue = 1_000.0
+    static let lotHouseSealedShare = 0.4
+    static let lotEbaySealedMax = 2_500.0
     static let lotEbayDelivery = 3
     static let lotHouseDelivery = 7
     /// The share of eBay lots with Buy It Now, and its price as a share of market.
@@ -477,12 +479,13 @@ extension GameStore {
         var goods: VendorGoods?
         var market = 0.0
         var slug: String?
-        if roll < 0.4, let (p, s) = randomPrint(minMarket: 8, maxMarket: 400) {
+        // About a third of eBay lots are sealed product: packs, boxes, and old sealed up to a few thousand dollars.
+        if roll < 0.33, let (p, s) = randomPrint(minMarket: 8, maxMarket: 400) {
             let condition = Condition.secondHand()
             goods = .single(p, slug: s, condition: condition)
             market = (p.market ?? 0) * condition.wear.valueFactor
             slug = s
-        } else if roll < 0.8, let (p, s) = randomPrint(minMarket: 4, maxMarket: 600) {
+        } else if roll < 0.65, let (p, s) = randomPrint(minMarket: 4, maxMarket: 600) {
             let grades: [Double] = [7, 8, 8, 9, 9, 9, 10, 10]
             let company: GradingCompany = Double.random(in: 0..<1) < 0.65 ? .psa : (Bool.random() ? .cgc : .bgs)
             let grade = SlabGrade(company: company, grade: grades.randomElement() ?? 9)
@@ -490,7 +493,7 @@ extension GameStore {
             market = OwnedCard(print: p, setSlug: s, acquired: .now, paid: nil, ripID: nil, grade: grade).market
             slug = s
         } else {
-            let sealed = SetLibrary.catalog.filter { $0.market >= 20 && $0.market <= 900 }
+            let sealed = SetLibrary.catalog.filter { $0.market >= 20 && $0.market <= Balance.lotEbaySealedMax }
             if let p = sealed.randomElement() {
                 goods = .sealed(p)
                 market = p.market
@@ -514,6 +517,15 @@ extension GameStore {
     }
 
     private func makeHouseLot(_ house: AuctionHouse, day: Int) -> AuctionLot? {
+        // About 40% of a catalog is high-end sealed product: vintage booster boxes, ETBs, and collections.
+        if Double.random(in: 0..<1) < Balance.lotHouseSealedShare,
+           let p = SetLibrary.catalog.filter({ $0.market >= Balance.lotHouseMinValue }).randomElement() {
+            let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * Balance.auctionBidSpread
+            let rivalTotal = p.market * house.bidderStrength * (1 + spread) * PriceCycle.seasonDemand(sealed: true)
+            let opening = ShowSession.round(p.market * 0.5)
+            return AuctionLot(venue: .house(house), goods: .sealed(p), market: p.market, startDay: data.day, endDay: day,
+                              opening: opening, rivalMax: max(opening * 1.05, ShowSession.round(rivalTotal / (1 + house.buyerPremium))))
+        }
         for _ in 0..<20 {
             guard let (p, s) = randomPrint(minMarket: 40, maxMarket: .infinity) else { return nil }
             let grade = SlabGrade(company: Double.random(in: 0..<1) < 0.75 ? .psa : .bgs, grade: [8, 9, 9, 10, 10].randomElement() ?? 9)

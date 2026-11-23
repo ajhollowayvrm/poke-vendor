@@ -150,9 +150,82 @@ extension GameStore {
         return nil
     }
 
-    /// The mean hammer price of a slab at a house, with today's season, before the bid spread.
-    func expectedHammer(_ house: AuctionHouse, market: Double) -> Double {
-        market * house.bidderStrength * PriceCycle.seasonDemand(sealed: false) / (1 + house.buyerPremium)
+    /// The mean hammer price of a slab or a sealed item at a house, with today's season, before the bid spread.
+    func expectedHammer(_ house: AuctionHouse, market: Double, sealed: Bool = false) -> Double {
+        market * house.bidderStrength * PriceCycle.seasonDemand(sealed: sealed) / (1 + house.buyerPremium)
+    }
+
+    /// The hammer of one auction: the top bid with its spread, less the buyer's premium, to $5.
+    func rollHammer(_ house: AuctionHouse, market: Double, sealed: Bool) -> Double {
+        let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * Balance.auctionBidSpread
+        let topBid = market * house.bidderStrength * (1 + spread) * PriceCycle.seasonDemand(sealed: sealed)
+        return max(1, (topBid / (1 + house.buyerPremium) / 5).rounded() * 5)
+    }
+
+    // MARK: - Sealed product at a house
+
+    /// Why a house does not take the sealed item now, or nil. The same rules as a slab, from the same value.
+    func auctionBlock(_ house: AuctionHouse, sealed item: SealedItem) -> String? {
+        if item.status != nil { return "The item has a status." }
+        if item.setAside { return "The item is set aside." }
+        if item.isKnownFake { return "You know the item is resealed." }
+        if realMarket(of: item) < Balance.auctionMinValue { return "The house takes sealed product of \(money(Balance.auctionMinValue)) or more." }
+        if let until = data.auctionBans[house.rawValue], data.day < until {
+            return "\(house.rawValue) refuses your consignments until day \(until + 1)."
+        }
+        if reputationTier < house.minReputationTier {
+            return "\(house.rawValue) works with \(ReputationTier.names[house.minReputationTier]) sellers and up."
+        }
+        return nil
+    }
+
+    /// Sends a sealed item to an auction house. `ignoreGate` is for the tests only.
+    @discardableResult
+    func consignSealedToAuction(_ id: UUID, house: AuctionHouse, reserveShare: Double?, ignoreGate: Bool = false) -> Bool {
+        guard let i = data.sealed.firstIndex(where: { $0.id == id }) else { return false }
+        let item = data.sealed[i]
+        if !ignoreGate, auctionBlock(house, sealed: item) != nil { return false }
+        guard item.status == nil, data.cash >= Balance.auctionShipping else { return false }
+        let market = realMarket(of: item)
+        let consignment = AuctionConsignment(house: house, consignDay: data.day, auctionDay: nextAuctionDay(house, after: data.day),
+                                             reserve: reserveShare.map { ShowSession.round(market * $0) },
+                                             sellerFee: auctionSellerFee(house, value: market), estimate: market)
+        data.sealed[i].status = .atAuctionHouse(consignment)
+        addLedger(-Balance.auctionShipping, .auctionFees, "Insured shipping to \(house.rawValue) · \(item.name)")
+        log("Sent \(item.name) to \(house.rawValue). Its auction is on day \(consignment.auctionDay + 1).")
+        save()
+        return true
+    }
+
+    /// One End Day step for a sealed item at a house. A resealed item fails the house's check.
+    func advanceAuction(_ item: inout SealedItem, _ a: AuctionConsignment) -> (line: String?, sold: Bool) {
+        let day = data.day
+        if day >= a.consignDay + Balance.auctionIntakeDays, a.checked != true, item.fake != nil {
+            item.fakeKnown = true
+            item.status = .arriving(daysLeft: Balance.auctionReturnDays, from: a.house.rawValue)
+            data.auctionBans[a.house.rawValue] = day + Balance.auctionBanDays
+            addReputation(Balance.auctionFakeReputation)
+            return ("\(a.house.rawValue) found that your \(item.name) was resealed. It sends the item back and refuses your consignments for \(Balance.auctionBanDays) days.", false)
+        }
+        if day >= a.consignDay + Balance.auctionIntakeDays, a.checked != true {
+            var checked = a
+            checked.checked = true
+            item.status = .atAuctionHouse(checked)
+        }
+        guard day >= a.auctionDay else { return (nil, false) }
+        let hammer = rollHammer(a.house, market: realMarket(of: item), sealed: true)
+        if let reserve = a.reserve, hammer < reserve {
+            let fee = (reserve * Balance.auctionReserveFee * 100).rounded() / 100
+            addLedger(-fee, .auctionFees, "\(a.house.rawValue) reserve fee · \(item.name)")
+            item.status = .arriving(daysLeft: Balance.auctionReturnDays, from: a.house.rawValue)
+            return ("Your \(item.name) did not meet its reserve of \(money(reserve)) at \(a.house.rawValue). The top bid was \(money(hammer)). It comes back in \(Balance.auctionReturnDays) days. Reserve fee: \(money(fee)).", false)
+        }
+        let net = (hammer * (1 - a.sellerFee) * 100).rounded() / 100
+        data.auctionPayouts.append(AuctionPayout(day: day + Balance.auctionPayoutDays, amount: net, name: item.name, house: a.house))
+        addReceipt(name: item.name, venue: a.house.rawValue, price: hammer, net: net, paid: item.paid, ids: [item.id], offShelf: true)
+        data.demand.items[item.name, default: 0] += 1
+        addReputation(Balance.onlineSaleReputation)
+        return ("Your \(item.name) sold at \(a.house.rawValue) for \(money(hammer)). After the \(Int((a.sellerFee * 100).rounded()))% seller fee, \(money(net)) comes on day \(day + Balance.auctionPayoutDays + 1).", true)
     }
 
     /// Sends a slab to an auction house. `ignoreGate` is for the tests only.
@@ -225,15 +298,19 @@ extension GameStore {
     /// The calendar entries for the auctions and payouts on a day.
     func auctionHouseEntries(day: Int) -> [CalendarEntry] {
         var out: [CalendarEntry] = []
-        let auctions = data.slabs.compactMap { card -> (OwnedCard, AuctionConsignment)? in
-            if case .atAuctionHouse(let a) = card.status, a.auctionDay == day { return (card, a) }
+        // Slabs and sealed product at the houses, by name.
+        let auctions = data.slabs.compactMap { card -> (String, AuctionConsignment)? in
+            if case .atAuctionHouse(let a) = card.status, a.auctionDay == day { return (card.print.name, a) }
+            return nil
+        } + data.sealed.compactMap { item -> (String, AuctionConsignment)? in
+            if case .atAuctionHouse(let a) = item.status, a.auctionDay == day { return (item.name, a) }
             return nil
         }
         for house in AuctionHouse.allCases {
             let mine = auctions.filter { $0.1.house == house }
             guard !mine.isEmpty else { continue }
             out.append(CalendarEntry(kind: .auction, title: "\(house.rawValue) auction",
-                                     detail: mine.map { $0.0.print.name }.joined(separator: ", ")))
+                                     detail: mine.map { $0.0 }.joined(separator: ", ")))
         }
         for p in data.auctionPayouts where p.day == day {
             out.append(CalendarEntry(kind: .sale, title: "\(p.house.rawValue) payout", detail: "\(money(p.amount)) · \(p.name)"))

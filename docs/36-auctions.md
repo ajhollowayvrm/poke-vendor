@@ -36,8 +36,8 @@ The hub row **Auctions** opens one screen with three tabs.
 
 ## Buying on eBay
 
-- About 10 lots are open at a time. Each lot runs 1 to 7 days. A lot is a raw single (40%), a slab (40%), or sealed
-  product (20%).
+- About 10 lots are open at a time. Each lot runs 1 to 7 days. A lot is a raw single (33%), a slab (32%), or sealed
+  product (35%, from $20 to $2,500).
 - The opening bid is 30% to 60% of the market. The rivals have a hidden top bid: the market × (0.95 ± 0.35) × the season
   factor. 8% of lots have no rival, so the player wins at the opening bid.
 - **Proxy bidding**: the player sets a top bid. The current bid is one step over the other bidder, up to the top bid.
@@ -62,10 +62,11 @@ The hub row **Auctions** opens one screen with three tabs.
 
 ## Buying at the auction houses
 
-- Each house shows a catalog of 5 to 8 slabs worth $1,000 or more. The catalog opens 14 days before the house's
+- Each house shows a catalog of 5 to 8 lots worth $1,000 or more: about 60% slabs and 40% high-end sealed product
+  (vintage booster boxes, ETBs, collections). The catalog opens 14 days before the house's
   catalog day (Goldin the 7th, Heritage the 14th, Fanatics Collect the 21st day of each 28 days).
 - Buying needs no reputation. Consigning still does.
 - The opening bid is half the market. The rivals' top total is the market × the house's bidder strength × (1 ± 0.3)
   × the season factor. Their top hammer is that total ÷ (1 + the buyer's premium).
 - The player pays the hammer, the buyer's premium, and $30 insured shipping. The slab arrives in 7 days.
-- A house checks every slab, so a house lot is never a fake.
+- A house checks every slab and every seal, so a house lot is never a fake.

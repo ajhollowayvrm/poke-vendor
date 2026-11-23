@@ -56,11 +56,17 @@ struct AuctionsView: View {
         }.sorted { ($0.listing.auctionEndDay ?? 0) < ($1.listing.auctionEndDay ?? 0) }
     }
 
-    private var consigned: [(OwnedCard, AuctionConsignment)] {
-        store.data.slabs.compactMap { c in
-            if case .atAuctionHouse(let a) = c.status { return (c, a) }
+    /// Slabs and sealed product at the houses: id, name, route, and the consignment.
+    private var consigned: [(id: UUID, name: String, route: AppRoute, a: AuctionConsignment)] {
+        let slabs = store.data.slabs.compactMap { c -> (id: UUID, name: String, route: AppRoute, a: AuctionConsignment)? in
+            if case .atAuctionHouse(let a) = c.status { return (c.id, "\(c.print.name) \(c.grade?.label ?? "")", .card(c.id), a) }
             return nil
-        }.sorted { $0.1.auctionDay < $1.1.auctionDay }
+        }
+        let sealed = store.data.sealed.compactMap { i -> (id: UUID, name: String, route: AppRoute, a: AuctionConsignment)? in
+            if case .atAuctionHouse(let a) = i.status { return (i.id, i.name, .sealed(i.id), a) }
+            return nil
+        }
+        return (slabs + sealed).sorted { $0.a.auctionDay < $1.a.auctionDay }
     }
 
     @ViewBuilder private var selling: some View {
@@ -75,14 +81,15 @@ struct AuctionsView: View {
         }
         DetailBox(title: "At the auction houses") {
             if consigned.isEmpty {
-                Text("None now. A house takes a slab worth \(money(Balance.auctionMinValue)) or more. Open the slab and tap Auction.")
+                Text("None now. A house takes a slab or sealed product worth \(money(Balance.auctionMinValue)) or more. Open the item and tap Auction.")
                     .font(.subheadline).foregroundStyle(Theme.muted)
             }
-            ForEach(consigned, id: \.0.id) { card, a in
-                Button { nav.path.append(.card(card.id)) } label: {
+            ForEach(consigned, id: \.id) { c in
+                let a = c.a
+                Button { nav.path.append(c.route) } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(card.print.name) \(card.grade?.label ?? "")").font(.subheadline.weight(.medium)).lineLimit(1)
+                            Text(c.name).font(.subheadline.weight(.medium)).lineLimit(1)
                             Text("\(a.house.rawValue) · auction day \(a.auctionDay + 1) · in \(max(0, a.auctionDay - store.day)) days")
                                 .font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         }
@@ -141,7 +148,7 @@ struct AuctionsView: View {
     }
 
     @ViewBuilder private var houses: some View {
-        Text("Big slabs, \(money(Balance.lotHouseMinValue)) and up. Each catalog opens \(Balance.lotHousePreviewDays) days before its auction day. The house checks every slab, so none are fake. You pay the buyer's premium on top of the hammer.")
+        Text("Big slabs and high-end sealed product, \(money(Balance.lotHouseMinValue)) and up. Each catalog opens \(Balance.lotHousePreviewDays) days before its auction day. The house checks every slab and every seal, so none are fake. You pay the buyer's premium on top of the hammer.")
             .font(.caption).foregroundStyle(Theme.muted)
         ForEach(AuctionHouse.allCases) { house in
             let lots = store.houseLots(house)

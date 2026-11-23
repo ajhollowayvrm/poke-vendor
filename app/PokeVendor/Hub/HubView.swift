@@ -295,7 +295,13 @@ struct HubView: View {
             case .atAuctionHouse: true
             default: false
             }
-        }.count + store.data.sealed.filter { if case .listed(let l) = $0.status { return l.auctionEndDay != nil }; return false }.count
+        }.count + store.data.sealed.filter {
+            switch $0.status {
+            case .listed(let l): l.auctionEndDay != nil
+            case .atAuctionHouse: true
+            default: false
+            }
+        }.count
         let mine = store.openLots.filter { $0.playerMax != nil }
         let outbid = mine.filter { !store.lotView($0).playerLeads }.count
         return "\(selling) selling · \(mine.count) bid\(mine.count == 1 ? "" : "s")\(outbid > 0 ? " · \(outbid) outbid" : "")"

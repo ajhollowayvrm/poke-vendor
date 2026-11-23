@@ -1402,6 +1402,11 @@ final class GameStore {
                 } else {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
+            case .atAuctionHouse(let a):
+                // Sealed product at an auction house (Model/AuctionHouse.swift).
+                let result = advanceAuction(&item, a)
+                if let line = result.line { lines.append(line) }
+                if result.sold { continue }
             case .listed(let listing):
                 if let sale = rollSale(listing, market: realMarket(of: item), sealed: true, name: item.name,
                                        bonus: item.isCaseFresh ? Balance.caseFreshSaleBonus : 1, productID: item.productID) {

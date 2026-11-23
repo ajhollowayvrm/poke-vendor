@@ -290,7 +290,10 @@ buyers. A slab sells for more than on eBay on average, but the player
 waits weeks for the money, and the slab cannot come back before its
 auction.
 
-- **What a house takes**: a slab with a market of $1,000 or more. It must
+- **What a house takes**: a slab, or a sealed item, with a market of $1,000 or more. Sealed product uses the sealed
+  season factor. The house checks the seals when the item arrives: a resealed item comes back as a known fake, the
+  player loses 15 reputation, and the house refuses the player for 180 days, the same as a fake slab. The "Auction"
+  button is on the sealed item's detail screen too. It must
   have no status, it must not be in the PC or a master set, and it must
   not be a known fake. The
   button "Consign to an auction house" is on the slab's detail screen.

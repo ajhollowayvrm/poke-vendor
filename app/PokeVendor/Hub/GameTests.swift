@@ -31,6 +31,7 @@ final class GameTests {
         timed("reseal", resealFiller)
         timed("auctions", auctions)
         timed("storage", storage)
+        timed("sealedHouse", sealedAtHouse)
         timed("business", business)
         timed("marketing", marketingChannels)
         timed("ladder", ladder)
@@ -459,6 +460,34 @@ final class GameTests {
         fresh.buyNow = 95
         store.data.auctionLots = [fresh]
         check(store.lotView(fresh).bids == 0 && store.canBuyNow(fresh), "Buy It Now is hidden on the day a lot opens")
+    }
+
+    /// A sealed item of $1,000 or more goes to a house: shipping now, a sale or a return on the auction day. A resealed
+    /// item fails the house's check: it comes back as a known fake, and the house refuses the player.
+    private func sealedAtHouse() {
+        fresh()
+        store.data.reputation = 10_000
+        guard let big = SetLibrary.catalog.first(where: { $0.market >= Balance.auctionMinValue * 1.5 && $0.market < 20_000 }),
+              let item = store.addTestProduct(big.id), let fake = store.addTestProduct(big.id) else { return check(false, "no sealed product of $1,000 or more") }
+        check(store.auctionBlock(.goldin, sealed: item) == nil, "a house refused sealed product of \(money(big.market))")
+        let cash = store.cash
+        check(store.consignSealedToAuction(item.id, house: .goldin, reserveShare: nil), "the sealed consignment was refused")
+        check(abs(cash - store.cash - Balance.auctionShipping) < 0.01, "the house shipping is wrong")
+        if let i = store.data.sealed.firstIndex(where: { $0.id == fake.id }) { store.data.sealed[i].fake = .convincing }
+        check(store.consignSealedToAuction(fake.id, house: .heritage, reserveShare: nil), "the second consignment was refused")
+        // Move both auctions close, just after the house's check, so the test stays fast.
+        for i in store.data.sealed.indices {
+            if case .atAuctionHouse(let c) = store.data.sealed[i].status {
+                store.data.sealed[i].status = .atAuctionHouse(AuctionConsignment(house: c.house, consignDay: c.consignDay,
+                    auctionDay: store.day + Balance.auctionIntakeDays + 1, reserve: nil, sellerFee: c.sellerFee, estimate: c.estimate))
+            }
+        }
+        guard case .atAuctionHouse(let a) = store.data.sealed.first(where: { $0.id == item.id })?.status else { return check(false, "no consignment") }
+        let payouts = store.data.auctionPayouts.count
+        while store.day <= a.auctionDay { nextDay() }
+        check(store.data.auctionPayouts.count == payouts + 1 && !store.data.sealed.contains { $0.id == item.id }, "the sealed item did not sell at the house")
+        check(store.data.sealed.first { $0.id == fake.id }?.isKnownFake == true && store.data.auctionBans[AuctionHouse.heritage.rawValue] != nil,
+              "a resealed item passed the house's check")
     }
 
     // MARK: - Storage unit (docs/37-storage.md)
