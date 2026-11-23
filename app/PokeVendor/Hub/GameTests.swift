@@ -391,6 +391,42 @@ final class GameTests {
         check(abs(cash - store.cash - expected) < 0.01, "a won lot cost \(money(cash - store.cash)), not \(money(expected))")
         check(store.data.slabs.count == slabs + 1, "a won slab did not come")
         check(!store.data.auctionLots.contains { $0.id == win.id || $0.id == lose.id }, "a closed lot stayed open")
+
+        // A tie goes to the rival, who bid first. A top bid one cent over the rival wins at that bid.
+        let tie = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day, opening: 20, rivalMax: 100)
+        let edge = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day, opening: 20, rivalMax: 100)
+        store.data.auctionLots = [tie, edge]
+        store.data.auctionLots[0].playerMax = 100
+        store.data.auctionLots[1].playerMax = 100.01
+        let cashTie = store.cash
+        nextDay()
+        check(abs(cashTie - store.cash - store.lotTotal(edge, hammer: 100.01)) < 0.01,
+              "the tie and the edge cost \(money(cashTie - store.cash)), not one win at \(money(store.lotTotal(edge, hammer: 100.01)))")
+
+        // Top bids hold cash: a second bid that the cash cannot cover with the first is refused.
+        let a = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day + 2, opening: 20, rivalMax: 80)
+        let b = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day + 2, opening: 20, rivalMax: 80)
+        store.data.auctionLots = [a, b]
+        store.addTestCash(store.lotTotal(a, hammer: 150) + 10 - store.cash)
+        check(store.placeBid(a.id, max: 150), "a bid within the cash was refused")
+        check(!store.placeBid(b.id, max: 150), "a bid past the cash that other bids hold was taken")
+
+        // Buy It Now: the price plus shipping, and the lot closes.
+        var bin = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day + 2, opening: 20, rivalMax: 20)
+        bin.buyNow = 90
+        store.data.auctionLots = [bin]
+        store.addTestCash(1_000)
+        let cashBin = store.cash
+        check(store.buyNow(bin.id), "Buy It Now was refused")
+        check(abs(cashBin - store.cash - store.lotTotal(bin, hammer: 90)) < 0.01, "Buy It Now cost \(money(cashBin - store.cash))")
+        check(store.data.auctionLots.isEmpty, "a lot bought with Buy It Now stayed open")
+
+        // A starting bid above what the buyers pay: no sale.
+        store.addTestCard(print)
+        if let high = store.data.raw.last {
+            store.list([high.id], channel: .ebayAuction, price: { _ in 50 }, auctionDays: 3, insured: false, auctionStart: { _ in 1_000_000 })
+            if case .listed(let l) = store.card(high.id)?.status { check(l.auctionFinal == 0, "an auction under its starting bid can sell") }
+        }
     }
 
     // MARK: - Opportunities and flips

@@ -17,8 +17,11 @@ The hub row **Auctions** opens one screen with three tabs.
 
 - The game rolls the final price of an eBay auction when the player lists it (`Listing.auctionFinal`). The odds are the
   same as before: a 5% or more chance of no sale, and a price of the market × (0.95 ± 0.35).
-- Each day the current bid is the final × (0.2 + 0.5 × p²), where p is the share of the auction that has gone by. On
-  the last day the bid jumps to the final, as with a real snipe.
+- Each day the current bid is the final × (0.2 + 0.5 × p²), where p is the share of the auction that has gone by. The
+  last day shows about 70% of the final. At the close the bid jumps to the final, as with a real snipe.
+- **Starting bid**: the sell sheet sets it as a share of the expected price, from $0.99 (0%) to 100%. When the final is
+  under the starting bid, the auction ends with no sale. The row shows "Starts $X" until the first bid.
+- An item in the player's own store that is also on an eBay auction shows in the list too.
 - An auction with no sale shows no bids.
 - An auction from an older build has no final price. End Day rolls it on the last day, as before.
 
@@ -32,9 +35,19 @@ The hub row **Auctions** opens one screen with three tabs.
   A top bid can only go up. The steps follow eBay: $0.25 under $5, up to $250 at $25,000 and more.
 - **Snipes**: the rivals' bid climbs slowly, and the rest comes on the last day. A player who leads early can lose at
   the end.
-- **The win**: the player wins when the top bid is a step or more above the rivals' top bid. The price is one step
-  over the rivals. The player pays the price and shipping. The item arrives in 3 days.
+- **The win**: the higher top bid wins. On a tie, the rival wins, because the rival bid first. The price is one step
+  over the rivals, and never more than the player's top bid. The player pays the price and shipping. The item arrives
+  in 3 days.
+- **Cash held by bids**: a new top bid must fit in the cash less the totals at the player's other top bids.
+- **Outbid alerts**: the morning report says when another bidder passes the player. The hub row counts the lots where
+  the player is outbid.
+- **Buy It Now**: 25% of eBay lots have a Buy It Now price of 100% to 115% of the market. It goes away with the first
+  bid. The player pays the price and shipping, and the lot closes.
+- **Looks off**: when the player's eye catches a fake lot, the row shows "LOOKS OFF". A lot that looked off comes as a
+  known fake.
+- **Calendar**: the day the player's bids close, and each house auction day with an open catalog.
 - **Fakes**: an eBay lot can be a fake, at the eBay rate (see [14-counterfeit-risk.md](14-counterfeit-risk.md)).
+  The player's eye can catch it (Looks off, below).
 - **No cash at the close**: the sale is off, and the player loses 5 reputation. A bid needs the cash for the total at
   the top bid when the player places it.
 

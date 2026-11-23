@@ -96,15 +96,17 @@ extension GameStore {
 
     /// Lists items that are in the store on a channel too. The items stay in the store.
     func listOnline(_ ids: Set<UUID>, channel: Listing.Channel, price: (UUID) -> Double, auctionDays: Int?, insured: Bool,
-                    wear: (UUID) -> Wear? = { _ in nil }) {
+                    wear: (UUID) -> Wear? = { _ in nil }, auctionStart: (UUID) -> Double? = { _ in nil }) {
         let day = data.day
         let trueWear = Dictionary(data.raw.map { ($0.id, $0.condition.wear) }, uniquingKeysWith: { a, _ in a })
         func listing(_ id: UUID) -> Listing {
             let listed = wear(id)
             let overstated = listed.map { w in trueWear[id].map { w.rank < $0.rank } ?? false }
-            return auctionListing(Listing(channel: channel, price: price(id), dayListed: day,
+            var l = Listing(channel: channel, price: price(id), dayListed: day,
                     auctionEndDay: auctionDays.map { day + $0 }, insured: insured, listedWear: listed,
-                    overstatedCondition: overstated), id: id)
+                    overstatedCondition: overstated)
+            if auctionDays != nil { l.auctionStart = auctionStart(id) }
+            return auctionListing(l, id: id)
         }
         var count = 0
         for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) {

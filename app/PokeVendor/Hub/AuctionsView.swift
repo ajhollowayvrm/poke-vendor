@@ -52,13 +52,15 @@ struct AuctionsView: View {
     /// The player's eBay auctions: cards, slabs, and sealed product.
     private var myAuctions: [(id: UUID, name: String, listing: Listing, route: AppRoute)] {
         var out: [(UUID, String, Listing, AppRoute)] = []
+        // An item in the player's own store can be on an eBay auction too: its online listing.
         for c in store.data.raw + store.data.slabs {
-            if case .listed(let l) = c.status, l.auctionEndDay != nil {
-                out.append((c.id, "\(c.print.name)\(c.grade.map { " \($0.label)" } ?? "")", l, .card(c.id)))
-            }
+            let name = "\(c.print.name)\(c.grade.map { " \($0.label)" } ?? "")"
+            if case .listed(let l) = c.status, l.auctionEndDay != nil { out.append((c.id, name, l, .card(c.id))) }
+            if let l = c.onlineListing, l.auctionEndDay != nil { out.append((c.id, name, l, .card(c.id))) }
         }
         for s in store.data.sealed {
             if case .listed(let l) = s.status, l.auctionEndDay != nil { out.append((s.id, s.name, l, .sealed(s.id))) }
+            if let l = s.onlineListing, l.auctionEndDay != nil { out.append((s.id, s.name, l, .sealed(s.id))) }
         }
         return out.sorted { ($0.2.auctionEndDay ?? 0) < ($1.2.auctionEndDay ?? 0) }.map { (id: $0.0, name: $0.1, listing: $0.2, route: $0.3) }
     }
@@ -137,8 +139,13 @@ struct AuctionsView: View {
     // MARK: - Buying
 
     @ViewBuilder private var ebay: some View {
-        Text("Set your top bid. eBay bids for you, one step at a time, up to it. Other bidders often wait for the last day. A lot can be a fake.")
+        Text("Set your top bid. eBay bids for you, one step at a time, up to it. Other bidders often wait for the last day. A lot can be a fake. Buy It Now goes away with the first bid.")
             .font(.caption).foregroundStyle(Theme.muted)
+        let held = store.committedBids()
+        if held > 0 {
+            Text("Your top bids hold \(money(held)) of your cash. A new bid can use \(money(max(0, store.cash - held))).")
+                .font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+        }
         ForEach(store.ebayLots) { lot in lotRow(lot) }
     }
 
@@ -164,7 +171,10 @@ struct AuctionsView: View {
             GoodsImage(item: VendorItem(goods: lot.goods, price: view.bid, market: lot.market), contentsKey: lot.id.uuidString)
                 .frame(width: 44, height: 62)
             VStack(alignment: .leading, spacing: 3) {
-                Text(lot.name).font(.subheadline.weight(.semibold)).lineLimit(2)
+                HStack(spacing: 6) {
+                    Text(lot.name).font(.subheadline.weight(.semibold)).lineLimit(2)
+                    if lot.looksOff == true { Tag(text: "LOOKS OFF", color: Theme.orange) }
+                }
                 GoodsDetail(goods: lot.goods, tool: store.data.centeringTool)
                 Text("mkt \(money(lot.market)) · \(view.bids) bid\(view.bids == 1 ? "" : "s") · \(view.daysLeft == 0 ? "ends tonight" : "\(view.daysLeft)d left")")
                     .font(.caption.monospaced()).foregroundStyle(Theme.muted)
@@ -180,6 +190,13 @@ struct AuctionsView: View {
                 Button(lot.playerMax == nil ? "Bid" : "Raise") { bidLot = lot }
                     .primaryButton()
                     .controlSize(.small)
+                if let price = lot.buyNow, lot.playerMax == nil, view.bids == 0 {
+                    Button("Buy \(money(price))") { store.buyNow(lot.id) }
+                        .buttonStyle(.bordered)
+                        .tint(Theme.green)
+                        .controlSize(.small)
+                        .disabled(!store.canBuyNow(lot))
+                }
             }
         }
         .padding(10)
@@ -205,7 +222,8 @@ struct OwnAuctionRow: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
-                Text(view?.bid.map(money) ?? "No bids").font(.subheadline.monospaced().weight(.semibold))
+                Text(view?.bid.map(money) ?? (listing.auctionStart.map { "Starts \(money($0))" } ?? "No bids"))
+                    .font(.subheadline.monospaced().weight(.semibold))
                     .foregroundStyle(view?.bid == nil ? Theme.muted : Theme.green)
                 Text("mkt \(money(listing.price))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
             }
@@ -241,14 +259,13 @@ struct BidSheet: View {
                         TextField("Top bid", value: $amount, format: .currency(code: "USD"))
                             .keyboardType(.decimalPad)
                             .font(.title3.monospaced())
+                        // Quick picks: the lowest bid, or a share of the market. A pick never goes under the lowest bid.
                         HStack {
-                            ForEach([1.0, 1.1, 1.25], id: \.self) { f in
-                                Button(f == 1 ? "Lowest" : "+\(Int(((f - 1) * 100).rounded()))%") {
-                                    amount = ShowSession.round(f == 1 ? least : max(least, lot.market * f - lot.market + least))
-                                }
-                                .buttonStyle(.bordered)
+                            Button("Lowest") { amount = least }.buttonStyle(.bordered)
+                            ForEach([0.8, 1.0, 1.1], id: \.self) { f in
+                                Button("\(Int((f * 100).rounded()))% mkt") { amount = max(least, ShowSession.round(lot.market * f)) }
+                                    .buttonStyle(.bordered)
                             }
-                            Button("Market") { amount = max(least, ShowSession.round(lot.market)) }.buttonStyle(.bordered)
                         }
                         .font(.caption)
                         Text("If you win at your top bid, you pay \(money(store.lotTotal(lot, hammer: amount)))\(lot.venue.buyerPremium > 0 ? ", with the \(Int((lot.venue.buyerPremium * 100).rounded()))% buyer's premium and shipping" : ", with shipping"). You often win for less: one step over the next bidder.")

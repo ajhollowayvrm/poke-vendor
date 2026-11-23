@@ -55,6 +55,12 @@ struct AuctionLot: Codable, Identifiable, Hashable {
     var fake: FakeTier?
     /// The player's top bid. Nil: the player did not bid.
     var playerMax: Double?
+    /// An eBay Buy It Now price. It goes away with the first bid. Nil: no Buy It Now.
+    var buyNow: Double?
+    /// The player's look by eye caught a fake (docs/14-counterfeit-risk.md).
+    var looksOff: Bool?
+    /// The player led at the last End Day, so the morning report can say when another bidder passes them.
+    var leading: Bool?
 
     var hasRival: Bool { rivalMax > opening }
 
@@ -97,6 +103,9 @@ extension Balance {
     static let lotHouseMinValue = 1_000.0
     static let lotEbayDelivery = 3
     static let lotHouseDelivery = 7
+    /// The share of eBay lots with Buy It Now, and its price as a share of market.
+    static let lotBuyNowChance = 0.25
+    static let lotBuyNowRange = 1.0...1.15
     /// Reputation lost when the player wins a lot and cannot pay.
     static let lotNonPayReputation = -5
 }
@@ -120,7 +129,9 @@ extension GameStore {
     func withAuctionFinal(_ listing: Listing, sealed: Bool, name: String, productID: String?) -> Listing {
         guard listing.channel == .ebayAuction, listing.auctionFinal == nil else { return listing }
         var l = listing
-        l.auctionFinal = rollAuctionFinal(market: listing.price, sealed: sealed, name: name, productID: productID)
+        let final = rollAuctionFinal(market: listing.price, sealed: sealed, name: name, productID: productID)
+        // The bids never reach a starting bid above what the buyers pay: no sale.
+        l.auctionFinal = final >= (listing.auctionStart ?? 0) ? final : 0
         return l
     }
 
@@ -150,7 +161,7 @@ extension GameStore {
         let totalBids = seed.int(3...8) + Int(log10(max(1, final)) * 3)
         let bids = Int((Double(totalBids) * pow(p, 1.4)).rounded())
         guard bids > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: end - data.day) }
-        let bid = max(0.99, (final * (0.2 + 0.5 * p * p) * 100).rounded() / 100)
+        let bid = max(listing.auctionStart ?? 0.99, (final * (0.2 + 0.5 * p * p) * 100).rounded() / 100)
         return OwnAuctionView(bid: bid, bids: bids, watchers: watchers, daysLeft: end - data.day)
     }
 
@@ -200,11 +211,12 @@ extension GameStore {
         var seed = SeededRandom(seed: Self.stableSeed(lot.id))
         let length = max(1, lot.endDay - lot.startDay)
         let p = Double(min(length, max(0, data.day - lot.startDay))) / Double(length)
-        var bids = lot.hasRival ? Int((Double(seed.int(2...9)) * (0.2 + p)).rounded()) : 0
+        // A rival bid above the opening bid is at least one bid.
+        var bids = lot.hasRival ? max(rival > lot.opening ? 1 : 0, Int((Double(seed.int(2...9)) * (0.2 + p)).rounded())) : 0
         let daysLeft = lot.endDay - data.day
         guard let mine = lot.playerMax else { return LotView(bid: rival, bids: bids, playerLeads: false, daysLeft: daysLeft) }
         bids += 1
-        if mine >= rival + Self.bidIncrement(rival) || !lot.hasRival {
+        if mine > rival || !lot.hasRival {
             let bid = lot.hasRival ? min(mine, rival + Self.bidIncrement(rival)) : lot.opening
             return LotView(bid: bid, bids: bids, playerLeads: true, daysLeft: daysLeft)
         }
@@ -231,8 +243,33 @@ extension GameStore {
         let least = minimumBid(lot)
         if max < least - 0.004 { return "The lowest bid you can place is \(money(least))." }
         let total = lotTotal(lot, hammer: max)
-        if total > cash { return "If you win at \(money(max)), you pay \(money(total)). You have \(money(cash))." }
+        let free = cash - committedBids(except: lot.id)
+        if total > free {
+            let held = cash - free
+            return "If you win at \(money(max)), you pay \(money(total)). You have \(money(cash))\(held > 0 ? ", and your other top bids hold \(money(held))" : "")."
+        }
         return nil
+    }
+
+    /// The cash that the player's other top bids can take: the total at each top bid of each open lot.
+    func committedBids(except id: UUID? = nil) -> Double {
+        openLots.filter { $0.id != id }.reduce(0) { sum, lot in sum + (lot.playerMax.map { lotTotal(lot, hammer: $0) } ?? 0) }
+    }
+
+    /// True while the lot offers Buy It Now: an eBay lot with no bid yet.
+    func canBuyNow(_ lot: AuctionLot) -> Bool {
+        guard let price = lot.buyNow, lot.endDay >= data.day, lot.playerMax == nil else { return false }
+        return lotView(lot).bids == 0 && canAfford(lotTotal(lot, hammer: price))
+    }
+
+    /// Buys a lot at its Buy It Now price. The lot closes.
+    @discardableResult
+    func buyNow(_ lotID: UUID) -> Bool {
+        guard let lot = data.auctionLots.first(where: { $0.id == lotID }), let price = lot.buyNow, canBuyNow(lot) else { return false }
+        log(deliver(lot, hammer: price, how: "Bought \(lot.name) on eBay with Buy It Now"), cash: -lotTotal(lot, hammer: price))
+        data.auctionLots.removeAll { $0.id == lotID }
+        save()
+        return true
     }
 
     /// Sets the player's top bid on a lot. A top bid can only go up.
@@ -242,6 +279,7 @@ extension GameStore {
         data.auctionLots[i].playerMax = (max * 100).rounded() / 100
         let lot = data.auctionLots[i]
         let view = lotView(lot)
+        data.auctionLots[i].leading = view.playerLeads
         log(view.playerLeads ? "Bid up to \(money(max)) on \(lot.name) at \(lot.venue.name). You lead at \(money(view.bid))."
                              : "Bid up to \(money(max)) on \(lot.name) at \(lot.venue.name). Another bidder still leads at \(money(view.bid)).")
         save()
@@ -258,6 +296,15 @@ extension GameStore {
             if let line = closeLot(lot) { lines.append(line) }
         }
         data.auctionLots.removeAll { $0.endDay <= today }
+        // Tell the player when another bidder passed them.
+        for i in data.auctionLots.indices where data.auctionLots[i].playerMax != nil {
+            let lot = data.auctionLots[i]
+            let view = lotView(lot)
+            if lot.leading == true, !view.playerLeads {
+                lines.append("You were outbid on \(lot.name) at \(lot.venue.name). The bid is \(money(view.bid)), and it ends \(view.daysLeft == 0 ? "tonight" : "in \(view.daysLeft) day\(view.daysLeft == 1 ? "" : "s")").")
+            }
+            data.auctionLots[i].leading = view.playerLeads
+        }
         refreshLots()
         return lines
     }
@@ -267,7 +314,8 @@ extension GameStore {
     private func closeLot(_ lot: AuctionLot) -> String? {
         guard let mine = lot.playerMax else { return nil }
         let step = Self.bidIncrement(lot.rivalMax)
-        guard !lot.hasRival || mine >= lot.rivalMax + step else {
+        // The higher top bid wins. On a tie, the rival wins: the rival bid first.
+        guard !lot.hasRival || mine > lot.rivalMax else {
             return "You were outbid on \(lot.name) at \(lot.venue.name). It sold for \(money(min(lot.rivalMax, mine + Self.bidIncrement(mine))))."
         }
         let hammer = lot.hasRival ? min(mine, lot.rivalMax + step) : lot.opening
@@ -276,6 +324,14 @@ extension GameStore {
             addReputation(Balance.lotNonPayReputation)
             return "You won \(lot.name) at \(lot.venue.name) for \(money(hammer)), but you could not pay \(money(total)). The sale is off, and your reputation drops."
         }
+        return deliver(lot, hammer: hammer, how: "You won \(lot.name) at \(lot.venue.name)")
+    }
+
+    /// Pays for a lot and puts the item on its way. Returns the line for the report.
+    private func deliver(_ lot: AuctionLot, hammer: Double, how: String) -> String {
+        let total = lotTotal(lot, hammer: hammer)
+        // A fake that the player's eye caught is a known fake when it comes.
+        let known: Bool? = lot.looksOff == true && lot.fake != nil ? true : nil
         addLedger(-total, lot.isSealed ? .sealed : .singles, "\(lot.name) · \(lot.venue.name) auction")
         let arriving = ItemStatus.arriving(daysLeft: lot.venue.deliveryDays, from: lot.venue.name)
         switch lot.goods {
@@ -283,18 +339,21 @@ extension GameStore {
             var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: total, ripID: nil, condition: condition,
                                  acquiredDay: data.day)
             card.fake = lot.fake
+            card.fakeKnown = known
             card.status = arriving
             data.raw.append(card)
         case .slab(let print, let slug, let grade):
             var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: total, ripID: nil, grade: grade,
                                  acquiredDay: data.day)
             card.fake = lot.fake
+            card.fakeKnown = known
             card.status = arriving
             data.slabs.append(card)
         case .sealed(let product):
             var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: total,
                                   acquired: .now, source: "\(lot.venue.name) auction", productID: product.id, acquiredDay: data.day)
             item.fake = lot.fake
+            item.fakeKnown = known
             item.contents = BoxContents.draw(product, key: lot.id.uuidString)
             item.status = arriving
             data.sealed.append(item)
@@ -302,7 +361,7 @@ extension GameStore {
             break
         }
         let premium = lot.venue.buyerPremium > 0 ? ", with the \(Int((lot.venue.buyerPremium * 100).rounded()))% buyer's premium and shipping" : ", with shipping"
-        return "You won \(lot.name) at \(lot.venue.name) for \(money(hammer)). You paid \(money(total))\(premium). It arrives in \(lot.venue.deliveryDays) days."
+        return "\(how) for \(money(hammer)). You paid \(money(total))\(premium). It arrives in \(lot.venue.deliveryDays) days."
     }
 
     /// Fills eBay up to its lot count, and opens each house catalog in its preview window. Safe to call any time.
@@ -320,6 +379,20 @@ extension GameStore {
                 if let lot = makeHouseLot(house, day: day) { data.auctionLots.append(lot) }
             }
         }
+    }
+
+    /// The calendar entries for a day: the player's bids that close, and the house auctions with a catalog.
+    func lotEntries(day: Int) -> [CalendarEntry] {
+        var out: [CalendarEntry] = []
+        let mine = openLots.filter { $0.playerMax != nil && $0.endDay == day }
+        if !mine.isEmpty {
+            out.append(CalendarEntry(kind: .auction, title: "Your bids close",
+                                     detail: mine.prefix(2).map(\.name).joined(separator: ", ") + (mine.count > 2 ? " and \(mine.count - 2) more" : "")))
+        }
+        for house in AuctionHouse.allCases where openLots.contains(where: { $0.venue == .house(house) && $0.endDay == day }) {
+            out.append(CalendarEntry(kind: .auction, title: "\(house.rawValue) catalog auction", detail: "Bid in Auctions"))
+        }
+        return out
     }
 
     /// The house's next catalog day, today or later.
@@ -373,9 +446,14 @@ extension GameStore {
         let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.35
         let rival = noRival ? opening : max(opening * 1.05, market * (0.95 + spread) * PriceCycle.seasonDemand(sealed: goods.isSealedGoods))
         let sealed = goods.isSealedGoods
-        return AuctionLot(venue: .ebay, goods: goods, market: market, startDay: data.day, endDay: data.day + Int.random(in: Balance.lotEbayDays),
-                          opening: opening, rivalMax: ShowSession.round(rival),
-                          fake: Counterfeit.roll(source: .ebay, sealed: sealed, slug: slug, market: market))
+        var lot = AuctionLot(venue: .ebay, goods: goods, market: market, startDay: data.day, endDay: data.day + Int.random(in: Balance.lotEbayDays),
+                             opening: opening, rivalMax: ShowSession.round(rival),
+                             fake: Counterfeit.roll(source: .ebay, sealed: sealed, slug: slug, market: market))
+        if Double.random(in: 0..<1) < Balance.lotBuyNowChance {
+            lot.buyNow = ShowSession.round(market * Double.random(in: Balance.lotBuyNowRange))
+        }
+        if let fake = lot.fake, Counterfeit.eyeballCatches(fake) { lot.looksOff = true }
+        return lot
     }
 
     private func makeHouseLot(_ house: AuctionHouse, day: Int) -> AuctionLot? {

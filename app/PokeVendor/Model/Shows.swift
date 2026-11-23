@@ -438,6 +438,7 @@ extension GameStore {
         }
         out += eventEntries(day: day)
         out += auctionHouseEntries(day: day)
+        out += lotEntries(day: day)
         if day == distributorDecisionDay {
             out.append(CalendarEntry(kind: .store, title: "Distributor decision", detail: "Your hobby account application"))
         }

@@ -394,6 +394,8 @@ struct Listing: Codable, Hashable {
     /// Hidden: the final price of an eBay auction, rolled when the player lists it. 0: it ends with no sale. Nil on an
     /// auction from an older build: End Day rolls it on the last day (Model/AuctionBuying.swift).
     var auctionFinal: Double?
+    /// The starting bid of an eBay auction. The auction ends with no sale when the bids do not reach it. Nil: $0.99.
+    var auctionStart: Double?
 }
 
 enum ItemStatus: Codable, Hashable {

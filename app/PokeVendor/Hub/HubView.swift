@@ -289,8 +289,9 @@ struct HubView: View {
             default: false
             }
         }.count + store.data.sealed.filter { if case .listed(let l) = $0.status { return l.auctionEndDay != nil }; return false }.count
-        let bids = store.openLots.filter { $0.playerMax != nil }.count
-        return "\(selling) selling · \(bids) bid\(bids == 1 ? "" : "s")"
+        let mine = store.openLots.filter { $0.playerMax != nil }
+        let outbid = mine.filter { !store.lotView($0).playerLeads }.count
+        return "\(selling) selling · \(mine.count) bid\(mine.count == 1 ? "" : "s")\(outbid > 0 ? " · \(outbid) outbid" : "")"
     }
 
     private var todayCard: some View {

@@ -16,6 +16,8 @@ struct SellSheet: View {
     @State private var quantity: [UUID: Int] = [:]
     @State private var percent: Double = 100
     @State private var auctionDays = 7
+    /// The starting bid of an auction, as a share of the expected price. 0: $0.99.
+    @State private var startShare: Double = 0
     @State private var insured = false
     /// The condition to list each raw stack at, by the stack's first item. The default is the condition the player sees.
     @State private var listedWear: [UUID: Wear] = [:]
@@ -152,6 +154,17 @@ struct SellSheet: View {
                         }
                         .pickerStyle(.segmented)
                     }
+                    Section("Starting bid") {
+                        HStack {
+                            Slider(value: $startShare, in: 0...100, step: 5)
+                            Text(startShare == 0 ? "$0.99" : "\(Int(startShare))%").font(.body.monospaced()).frame(width: 64, alignment: .trailing)
+                        }
+                        Text(startShare == 0
+                             ? "The bids start at $0.99. Any price can win."
+                             : "The bids start at \(Int(startShare))% of the expected price. If the bids do not reach it, the auction ends with no sale.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
+                    }
                 } else {
                     Section(channel == .tcgplayer ? "Price vs. the lowest listing" : "Price vs. market") {
                         HStack {
@@ -268,12 +281,15 @@ struct SellSheet: View {
                         let days = channel == .ebayAuction ? auctionDays : nil
                         var wears: [UUID: Wear] = [:]
                         for line in lines where line.isRaw { for id in line.ids { wears[id] = wear(line) } }
+                        // The starting bid of each item: a share of its expected price, rounded to the cent.
+                        let share = startShare / 100
+                        let start: (UUID) -> Double? = { id in share > 0 ? snapshot[id].map { ($0 * share * 100).rounded() / 100 } : nil }
                         if alsoOnline {
                             store.listOnline(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
-                                             insured: insured, wear: { wears[$0] })
+                                             insured: insured, wear: { wears[$0] }, auctionStart: start)
                         } else {
                             store.list(Set(chosenIDs), channel: channel, price: { snapshot[$0] ?? 0 }, auctionDays: days,
-                                       insured: insured, wear: { wears[$0] })
+                                       insured: insured, wear: { wears[$0] }, auctionStart: start)
                             if channel == .ebay, acceptOffers {
                                 store.setOfferTerms(Set(chosenIDs), OfferTerms(autoAccept: autoAcceptOn ? autoAccept / 100 : nil,
                                                                                autoDecline: autoDeclineOn ? min(autoDecline, autoAccept - 1) / 100 : nil))
