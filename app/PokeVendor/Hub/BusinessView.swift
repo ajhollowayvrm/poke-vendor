@@ -150,7 +150,105 @@ struct BusinessView: View {
 
 /// The sections that later phases add to the dashboard (marketing, distribution, staff, the floor).
 struct BusinessSections: View {
-    var body: some View { EmptyView() }
+    var body: some View {
+        LevelBox()
+        MarketingBox()
+    }
+}
+
+/// The store level and the XP to the next level.
+struct LevelBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let level = store.storeLevel
+        let next = StoreLevel(rawValue: level.rawValue + 1)
+        DetailBox(title: "Store level") {
+            HStack {
+                Text(level.name).font(.subheadline.weight(.semibold))
+                Spacer()
+                Text("\(Int(store.business.xp)) XP").font(.caption.monospaced())
+            }
+            if let next {
+                SpaceBar(used: Int(store.business.xp - level.xp), capacity: Int(next.xp - level.xp))
+                Text("\(Int(next.xp - store.business.xp)) XP to \(next.name). XP comes from sales (1 for each \(money(Balance.xpPerSales))), events (\(Int(Balance.xpPerEvent)) each), and days with 4.3 stars or more.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            } else {
+                Text("The top level.").font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
+    }
+}
+
+/// The marketing channels: start, stop, the effect, and last week's customers.
+struct MarketingBox: View {
+    @Environment(GameStore.self) private var store
+    @State private var socialLevel = 0
+
+    var body: some View {
+        let m = store.marketing
+        let lastWeek = m.weeks.last
+        DetailBox(title: "Marketing") {
+            HStack {
+                Text("Awareness from marketing").font(.caption)
+                Spacer()
+                Text("+\(Int(store.marketingAwareness.rounded()))").font(.caption.monospaced()).foregroundStyle(Theme.cyan)
+            }
+            Text("Each channel builds while it runs and fades after it stops. More channels at once give less for each dollar.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+            ForEach(MarketingChannel.allCases) { ch in
+                channelRow(ch, m: m, lastWeek: lastWeek)
+            }
+            if let w = lastWeek {
+                Text("Last week: \(money(w.spent)) spent, about \(Int(w.customers.values.reduce(0, +).rounded())) customers from marketing.")
+                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            }
+        }
+    }
+
+    private func channelRow(_ ch: MarketingChannel, m: MarketingState, lastWeek: MarketingWeek?) -> some View {
+        let running = m.running(ch)
+        let effect = m.effect[ch.rawValue] ?? 0
+        let block = store.channelBlock(ch, level: socialLevel)
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Image(systemName: ch.icon).foregroundStyle(running != nil || effect > 0 ? Theme.green : Theme.cyan).frame(width: 22)
+                Text(ch.rawValue).font(.subheadline)
+                Spacer()
+                Text(ch.costText).font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+            }
+            Text(ch.blurb + (ch.targets.isEmpty || ch.targets.count == CustomerType.allCases.count ? "" : " Brings: \(ch.targets.map(\.rawValue).joined(separator: ", ").lowercased()).")
+                ).font(.caption2).foregroundStyle(Theme.muted)
+            HStack {
+                if ch == .social, running == nil {
+                    Picker("Budget", selection: $socialLevel) {
+                        ForEach(0..<3, id: \.self) { Text(money(Balance.mktSocial[$0])).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 200)
+                }
+                if let c = running {
+                    Text("Running since day \(c.startDay + 1)").font(.caption2.monospaced()).foregroundStyle(Theme.green)
+                    Spacer()
+                    Button("Stop") { store.stopChannel(ch) }.buttonStyle(.bordered).controlSize(.small)
+                } else if ch == .maps, m.mapsListed {
+                    Text("Listed").font(.caption2.monospaced()).foregroundStyle(Theme.green)
+                } else {
+                    Spacer()
+                    Button(ch == .window ? "Refresh" : ch == .maps ? "List" : "Start") { store.startChannel(ch, level: socialLevel) }
+                        .buttonStyle(.bordered).controlSize(.small)
+                        .disabled(block != nil)
+                }
+            }
+            if running == nil, let block, !(ch == .maps && m.mapsListed) {
+                Text(block).font(.caption2).foregroundStyle(Theme.orange)
+            }
+            if let n = lastWeek?.customers[ch.rawValue], n >= 0.5 {
+                Text("Last week: about \(Int(n.rounded())) customers").font(.caption2.monospaced()).foregroundStyle(Theme.cyan)
+            }
+        }
+        .padding(.vertical, 4)
+    }
 }
 
 /// The row on the store screen that opens the business dashboard, with the three store numbers.

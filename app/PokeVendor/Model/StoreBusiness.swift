@@ -40,6 +40,40 @@ extension StoreLocation {
     }
 }
 
+/// The store level, from store XP. Each level unlocks more marketing channels and distributor tiers.
+enum StoreLevel: Int, Codable, CaseIterable {
+    case newStore, localFavorite, destination
+
+    var name: String {
+        switch self {
+        case .newStore: "New store"
+        case .localFavorite: "Local favorite"
+        case .destination: "Destination store"
+        }
+    }
+
+    /// The XP the level needs.
+    var xp: Double {
+        switch self {
+        case .newStore: 0
+        case .localFavorite: Balance.levelLocalFavoriteXP
+        case .destination: Balance.levelDestinationXP
+        }
+    }
+
+    static func level(xp: Double) -> StoreLevel { allCases.last { xp >= $0.xp } ?? .newStore }
+}
+
+extension MarketingChannel {
+    /// The store level a channel needs. Nil: any level.
+    var minLevel: StoreLevel? {
+        switch self {
+        case .school, .loyalty: .localFavorite
+        default: nil
+        }
+    }
+}
+
 /// One customer review.
 struct StoreReview: Codable, Hashable, Identifiable {
     var id = UUID()
@@ -70,6 +104,10 @@ struct BusinessState: Codable, Hashable {
     var months: [MonthReview] = []
     /// Customer-type boosts from marketing, as a share added to the location's mix.
     var typeBoost: [CustomerType: Double] = [:]
+    /// Marketing (`Model/StoreMarketing.swift`). Nil: none yet.
+    var marketing: MarketingState?
+    /// Store XP for the store level: sales, events, and a good rating.
+    var xp = 0.0
 
     init() {}
 
@@ -80,6 +118,8 @@ struct BusinessState: Codable, Hashable {
         reviews = try c.decodeIfPresent([StoreReview].self, forKey: .reviews) ?? []
         months = try c.decodeIfPresent([MonthReview].self, forKey: .months) ?? []
         typeBoost = try c.decodeIfPresent([CustomerType: Double].self, forKey: .typeBoost) ?? [:]
+        marketing = try c.decodeIfPresent(MarketingState.self, forKey: .marketing)
+        xp = try c.decodeIfPresent(Double.self, forKey: .xp) ?? 0
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.
@@ -106,6 +146,11 @@ extension Balance {
     static let bizRatingBase = 4.0
     static let bizRatingPrior = 5.0
     static let bizRatingWindow = 40
+    /// Store XP: 1 for each $100 of store sales, 5 for each event day, and 1 for each day with a rating of 4.3 or more.
+    static let levelLocalFavoriteXP = 300.0
+    static let levelDestinationXP = 1_500.0
+    static let xpPerSales = 100.0
+    static let xpPerEvent = 5.0
     /// A collector looks at items of this value or more. An investor pays less over market.
     static let collectorMinValue = 20.0
     static let investorBuyerLimit = 0.90...1.08
@@ -128,12 +173,16 @@ extension GameStore {
 
     var storeRating: Double { business.rating }
 
+    var storeLevel: StoreLevel { StoreLevel.level(xp: business.xp) }
+
     /// The factor of the store numbers on the traffic. It is 1 at the baseline.
     var businessTrafficFactor: Double {
         guard data.cardStore != nil else { return 1 }
         let b = business
         let awareness = 0.6 + b.awareness / 100
-        let rating = 1 + 0.12 * (b.rating - Balance.bizRatingBase)
+        // The maps listing makes the rating count more (Model/StoreMarketing.swift).
+        let weight = (b.marketing?.mapsListed ?? false) ? Balance.mktMapsRatingWeight : 1
+        let rating = 1 + 0.12 * weight * (b.rating - Balance.bizRatingBase)
         let loyalty = 1 + (b.loyalty - Balance.bizLoyaltyBase) / 200
         return max(0.3, awareness * rating * loyalty)
     }
@@ -183,21 +232,35 @@ extension GameStore {
             }
             updateBusiness { b in if b.reviews.count > 60 { b.reviews.removeFirst(b.reviews.count - 60) } }
         }
-        // Awareness falls toward its floor. Events and followers hold it up.
-        let floor = Balance.bizAwarenessFloor + (hasAccount ? Double(followerTier) * Balance.bizAwarenessPerFollowerTier : 0)
+        // Marketing: payments, the effect of each channel, and the weekly report (Model/StoreMarketing.swift).
+        lines += marketingDayEnd(customers: record?.customers ?? 0, revenue: record?.revenue ?? 0)
+        // Awareness falls toward its floor. Events, followers, and marketing hold it up. Marketing pulls it faster.
+        let lift = marketingAwareness
+        let floor = Balance.bizAwarenessFloor + (hasAccount ? Double(followerTier) * Balance.bizAwarenessPerFollowerTier : 0) + lift
+        let pull = lift > 0.5 ? Balance.mktAwarenessPull : Balance.bizAwarenessDrift
         updateBusiness { b in
-            b.awareness += (floor - b.awareness) * Balance.bizAwarenessDrift
+            b.awareness += (floor - b.awareness) * pull
             if eventToday { b.awareness += Balance.bizAwarenessEvent }
             b.awareness = min(100, max(0, b.awareness))
         }
         // Loyalty moves toward a target that the rating and the events set. Empty shelves lower it.
         let eventWeek = (0..<7).contains { d in let e = eventTraffic(day: today - d); return e.tournament + e.league > 0 }
         let fill = stockFill
+        let extraLoyalty = marketingLoyalty
         updateBusiness { b in
-            let target = 20 + (b.rating - 3.5) * 15 + (eventWeek ? 10 : 0)
+            let target = 20 + (b.rating - 3.5) * 15 + (eventWeek ? 10 : 0) + extraLoyalty
             b.loyalty += (target - b.loyalty) * Balance.bizLoyaltyDrift
             if fill < 0.3 { b.loyalty -= 0.5 }
             b.loyalty = min(100, max(0, b.loyalty))
+        }
+        // Store XP and the level.
+        let before = storeLevel
+        let rating = business.rating
+        updateBusiness { b in
+            b.xp += (record?.revenue ?? 0) / Balance.xpPerSales + (eventToday ? Balance.xpPerEvent : 0) + (rating >= 4.3 ? 1 : 0)
+        }
+        if storeLevel != before {
+            lines.append("\(s.name) is a \(storeLevel.name) now. New options open in Business.")
         }
         if let line = monthReviewIfDue(s, today: today) { lines.append(line) }
         return lines
@@ -261,7 +324,11 @@ extension GameStore {
     }
 
     /// The other business costs due in the next 30 days. Later phases add marketing, bills, and staff.
-    var businessForecastCosts: [(label: String, amount: Double)] { [] }
+    var businessForecastCosts: [(label: String, amount: Double)] {
+        var out: [(label: String, amount: Double)] = []
+        if marketingForecast > 0 { out.append(("Marketing", marketingForecast)) }
+        return out
+    }
 
     /// The overhead of 28 days, without the card fees.
     var storeOverheadEstimate: Double {

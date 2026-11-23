@@ -32,6 +32,7 @@ final class GameTests {
         timed("auctions", auctions)
         timed("storage", storage)
         timed("business", business)
+        timed("marketing", marketingChannels)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -523,6 +524,30 @@ final class GameTests {
         check(!store.business.months.isEmpty, "no month-end review after 28 days")
         let r = store.business.rating
         check(r >= 1 && r <= 5, "the rating is \(r)")
+    }
+
+    /// A channel pays now and each week. It builds an effect that lifts awareness, and the effect fades after it stops.
+    /// A channel above the store level is locked. The maps listing happens once.
+    private func marketingChannels() {
+        fresh()
+        openTestStore()
+        for _ in 0..<Balance.storeBuildDays { nextDay() }
+        let cash = store.cash
+        check(store.startChannel(.flyers), "flyers did not start")
+        check(abs(cash - store.cash - Balance.mktFlyers) < 0.01, "flyers cost \(money(cash - store.cash)) to start")
+        check(store.channelBlock(.school) != nil, "a channel above the store level is open")
+        check(store.startChannel(.maps) && !store.startChannel(.maps), "the maps listing is not once")
+        let awareness = store.business.awareness
+        let spent = store.data.ledger.filter { $0.label.hasPrefix("Marketing · Flyers") }.count
+        for _ in 0..<7 { nextDay() }
+        check(store.data.ledger.filter { $0.label.hasPrefix("Marketing · Flyers") }.count == spent + 1, "flyers did not pay the second week")
+        check((store.marketing.effect[MarketingChannel.flyers.rawValue] ?? 0) > 0, "flyers built no effect")
+        check(store.business.awareness > awareness, "marketing did not raise awareness")
+        check(!store.marketing.weeks.isEmpty, "no weekly marketing report")
+        store.stopChannel(.flyers)
+        let effect = store.marketing.effect[MarketingChannel.flyers.rawValue] ?? 0
+        nextDay()
+        check((store.marketing.effect[MarketingChannel.flyers.rawValue] ?? 0) < effect, "a stopped channel did not fade")
     }
 
     // MARK: - Opportunities and flips

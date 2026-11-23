@@ -59,6 +59,7 @@
 		26B8423B936375AEC063BEEB /* burning-shadows.json in Resources */ = {isa = PBXBuildFile; fileRef = 7E94D7F70903BA100DDFBA0F /* burning-shadows.json */; };
 		2771CE9F0B18A7BDD732B7DC /* surging-sparks.json in Resources */ = {isa = PBXBuildFile; fileRef = E389E8E864F1F2802B2B9E76 /* surging-sparks.json */; };
 		290A84E7043308C76B2FD6A9 /* SaleReceiptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DA09FC2EFE76D57AFC6910 /* SaleReceiptView.swift */; };
+		2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C6899A5756FD01A03265AE /* StoreMarketing.swift */; };
 		2A110313E4DF48760D91C70F /* StashPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857F4F4DEEC4862AB44F347B /* StashPanel.swift */; };
 		2AF9A223A3257CE3B7510D1B /* hidden-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 8FC50C93732086290DFAC1F5 /* hidden-legends.json */; };
 		2C4D39E63CD069D24D99D501 /* roaring-skies.json in Resources */ = {isa = PBXBuildFile; fileRef = BCFB88631EA718ED0E77E2CE /* roaring-skies.json */; };
@@ -595,6 +596,7 @@
 		E6189A16D1D0CA7A824D0A89 /* noble-victories.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "noble-victories.json"; sourceTree = "<group>"; };
 		E7E9769BEE2452CE9114E599 /* breakpoint.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = breakpoint.json; sourceTree = "<group>"; };
 		E8745504DED211BC08CC284A /* steam-siege.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "steam-siege.json"; sourceTree = "<group>"; };
+		E9C6899A5756FD01A03265AE /* StoreMarketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreMarketing.swift; sourceTree = "<group>"; };
 		EC719A5C459CB908DDE8EBAB /* rebel-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "rebel-clash.json"; sourceTree = "<group>"; };
 		ED0896EF12DEC3FBF199791C /* boundaries-crossed.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "boundaries-crossed.json"; sourceTree = "<group>"; };
 		EE31EB72099822D32FC17548 /* legendary-treasures.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legendary-treasures.json"; sourceTree = "<group>"; };
@@ -933,6 +935,7 @@
 				1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */,
 				5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */,
 				70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */,
+				E9C6899A5756FD01A03265AE /* StoreMarketing.swift */,
 				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
 				28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */,
 				20D2A072C747DEAB8413196A /* Supplies.swift */,
@@ -1416,6 +1419,7 @@
 				55B053D2C166F0351D6B065F /* StoreExtras.swift in Sources */,
 				0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */,
 				976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */,
+				2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */,
 				4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */,
