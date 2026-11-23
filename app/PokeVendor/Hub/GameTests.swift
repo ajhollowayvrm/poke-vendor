@@ -33,6 +33,7 @@ final class GameTests {
         timed("storage", storage)
         timed("business", business)
         timed("marketing", marketingChannels)
+        timed("ladder", ladder)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -524,6 +525,59 @@ final class GameTests {
         check(!store.business.months.isEmpty, "no month-end review after 28 days")
         let r = store.business.rating
         check(r >= 1 && r <= 5, "the rating is \(r)")
+    }
+
+    /// A tier sets the price. An order on terms costs no cash now and makes a bill. A bill paid late puts the account on
+    /// hold. The quarterly review moves the tier. Big events make an official event store.
+    private func ladder() {
+        fresh()
+        openTestStore()
+        for _ in 0..<Balance.storeBuildDays { nextDay() }
+        store.testApproveDistributor()
+        check(store.hasStoreAccount, "the test store has no account")
+        check(abs(store.wholesaleDiscountNow - Balance.storeWholesaleDiscount) < 0.0001, "a new account does not pay the store price")
+        store.data.distributor.ladderTier = 1
+        check(abs(store.wholesaleDiscountNow - 0.56) < 0.0001, "Preferred does not pay 56%")
+        GameStore.forceWholesaleMissing = false
+        store.setUseTerms(true)
+        GameStore.forceHotFill = 1
+        defer { GameStore.forceHotFill = nil }
+        guard let offer = store.wholesaleOffers.first else {
+            GameStore.forceWholesaleMissing = nil
+            return check(false, "no wholesale offer")
+        }
+        let cash = store.cash
+        let refunds = store.data.ledger.filter { $0.label.hasPrefix("Short shipment refund") }.reduce(0) { $0 + $1.amount }
+        check(store.buyWholesale(offer, cases: 1) == nil, "an order on terms was refused")
+        let refunded = store.data.ledger.filter { $0.label.hasPrefix("Short shipment refund") }.reduce(0) { $0 + $1.amount } - refunds
+        check(abs(store.cash - cash - refunded) < 0.01, "an order on terms took \(money(cash - store.cash)) of cash now")
+        check(abs(store.payablesTotal - offer.casePrice) < 0.01, "the bill is \(money(store.payablesTotal)), not \(money(offer.casePrice))")
+        // Due, and more than the cash: late, and the account goes on hold.
+        guard var bill = store.payables.first else { GameStore.forceWholesaleMissing = nil; return check(false, "no bill") }
+        let real = bill.amount
+        bill = Payable(id: bill.id, amount: store.cash + 1_000_000, label: bill.label, dueDay: store.day)
+        store.data.distributor.payables = [bill]
+        nextDay()
+        check(store.onCreditHold && !store.buyingOnTerms, "a late bill did not put the account on hold")
+        store.data.distributor.payables = [Payable(id: bill.id, amount: real, label: bill.label, dueDay: bill.dueDay, late: true)]
+        nextDay()
+        check(store.payables.isEmpty && !store.onCreditHold, "a late bill was not paid when the cash came")
+        GameStore.forceWholesaleMissing = nil
+
+        // The review: a high score moves the account up. Premier also needs the Destination level.
+        store.data.distributor.ladderTier = 0
+        store.data.distributor.quarterSpentStart = store.data.distributor.spent - 20_000
+        store.data.distributor.quarterEvents = 10
+        store.data.distributor.lateThisQuarter = 0
+        store.data.distributor.lastReviewDay = store.day - Balance.ladderReviewDays
+        nextDay()
+        check(store.ladderTier == .preferred, "a score of \(Int(store.data.distributor.score ?? 0)) did not reach Preferred")
+
+        // Official event store.
+        for _ in 0..<Balance.eventStoreTournaments { store.noteEventForStatus(.tournament, players: 10) }
+        for _ in 0..<Balance.eventStoreLeagues { store.noteEventForStatus(.league, players: 10) }
+        nextDay()
+        check(store.isEventStore, "big events did not make an official event store")
     }
 
     /// A channel pays now and each week. It builds an effect that lifts awareness, and the effect fades after it stops.

@@ -104,7 +104,9 @@ extension GameStore {
         }
         let requested = offer.casePrice * Double(cases)
         guard requested >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
-        guard canAfford(requested) else { return "You need \(money(requested)). You have \(money(cash))." }
+        // A Preferred or Premier account can buy on net-30 terms (Model/DistributionLadder.swift).
+        let onTerms = buyingOnTerms && termsBlock(requested) == nil
+        guard onTerms || canAfford(requested) else { return "You need \(money(requested)). You have \(money(cash))." }
         // 1. The fill roll. Read every value into locals first.
         let hot = isHot(offer.product)
         let fill = hotFillRate(offer.product)
@@ -133,6 +135,7 @@ extension GameStore {
         let total = offer.casePrice * Double(filled)
         let orderName = "\(filled) case\(filled == 1 ? "" : "s") of \(offer.product.name)"
         addLedger(-total, .wholesale, "\(orderName) · Distributor")
+        if onTerms { takeOnTerms(total, label: orderName) }
         // 3. The missing-shipment roll. No items, no hot records, no rep credit, no spend.
         #if DEBUG
         let missing = GameStore.forceWholesaleMissing ?? (Double.random(in: 0..<1) < Balance.wholesaleMissingChance)

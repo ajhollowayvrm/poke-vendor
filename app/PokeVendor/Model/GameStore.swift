@@ -1319,6 +1319,7 @@ final class GameStore {
         lines += ripShipEndDay()
         lines += splitsEndDay()
         lines += distributorEndDay()
+        lines += ladderEndDay()
         lines += plugEndDay()
         lines += meetupsEndDay()
         lines += offersEndDay()

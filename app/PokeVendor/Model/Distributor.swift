@@ -200,6 +200,11 @@ extension GameStore {
         var fill = Balance.fillBase + Balance.fillPressureWeight * (1 - pressure) + Balance.fillRepWeight * rep
         let a = data.distributor
         if hasStoreAccount, a.pushProductID == product.id, a.pushWeek == data.day / 7 { fill += Balance.pushFillBonus }
+        #if DEBUG
+        if let forced = GameStore.forceHotFill { return forced }
+        #endif
+        // Premier gets a better fill on hot product (Model/DistributionLadder.swift).
+        if hasStoreAccount, ladderTier == .premier { fill += Balance.premierHotFill }
         return min(Balance.fillMax, max(0, fill))
     }
 

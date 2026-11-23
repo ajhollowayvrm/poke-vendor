@@ -150,9 +150,17 @@ struct BusinessView: View {
 
 /// The sections that later phases add to the dashboard (marketing, distribution, staff, the floor).
 struct BusinessSections: View {
+    @Environment(GameStore.self) private var store
+
     var body: some View {
         LevelBox()
         MarketingBox()
+        if store.hasStoreAccount { LadderBox() } else if store.data.cardStore != nil {
+            DetailBox(title: "Distribution") {
+                Text("Apply for a hobby distributor account on the distributor screen. With an account, the quarterly review can move you up to Preferred and Premier: lower prices, more cases, and net-30 terms.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+        }
     }
 }
 
@@ -275,5 +283,77 @@ struct BusinessLink: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// The distribution ladder: the tier, the score, the next review, net-30 terms, the bills, and event status.
+struct LadderBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let tier = store.ladderTier
+        DetailBox(title: "Distribution ladder") {
+            HStack {
+                Text(tier.name).font(.subheadline.weight(.semibold))
+                Spacer()
+                Text("\(Int((tier.discount * 100).rounded()))% of MSRP").font(.caption.monospaced())
+            }
+            ForEach(LadderTier.allCases, id: \.rawValue) { t in
+                HStack {
+                    Image(systemName: t.rawValue <= tier.rawValue ? "checkmark.circle.fill" : "circle").foregroundStyle(t.rawValue <= tier.rawValue ? Theme.green : Theme.muted)
+                    Text(t.name).font(.caption)
+                    Spacer()
+                    Text(t == .store ? "\(Int(t.discount * 100))%" : "\(Int(t.discount * 100))% · +\(t.extraCases) case\(t.extraCases == 1 ? "" : "s") · net 30\(t == .premier ? " · better hot fill" : "")")
+                        .font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                }
+            }
+            Text("Preferred needs a score of \(Int(Balance.ladderPreferredScore)). Premier needs \(Int(Balance.ladderPremierScore)) and the Destination store level. Under \(Int(Balance.ladderDropScore)), you drop a tier.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+            Divider().overlay(Theme.line)
+            HStack {
+                Text("Score now").font(.caption)
+                Spacer()
+                Text("\(Int(store.ladderScoreNow.rounded())) of 100").font(.caption.monospaced().weight(.semibold))
+            }
+            ForEach(store.ladderScoreParts, id: \.label) { p in
+                HStack {
+                    Text(p.label).font(.caption2)
+                    Spacer()
+                    Text("\(Int(p.points.rounded()))/\(Int(p.max))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                }
+            }
+            if let review = store.nextLadderReview {
+                Text("The next quarterly review is on day \(review + 1).").font(.caption2).foregroundStyle(Theme.muted)
+            }
+            if tier.creditLimit > 0 {
+                Divider().overlay(Theme.line)
+                Toggle("Buy on net-30 terms", isOn: Binding(get: { store.data.distributor.useTerms == true }, set: { store.setUseTerms($0) }))
+                    .font(.subheadline)
+                Text("Pay 30 days after the order. Credit limit \(money(tier.creditLimit)), \(money(store.payablesTotal)) owed. A late bill puts the account on credit hold and costs score.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            }
+            ForEach(store.payables) { p in
+                HStack {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(p.label).font(.caption).lineLimit(1)
+                        Text(p.late ? "LATE · was due day \(p.dueDay + 1)" : "Due day \(p.dueDay + 1)").font(.caption2.monospaced())
+                            .foregroundStyle(p.late ? Theme.orange : Theme.muted)
+                    }
+                    Spacer()
+                    Button("Pay \(money(p.amount))") { store.payPayable(p.id) }
+                        .buttonStyle(.bordered).controlSize(.small)
+                        .disabled(!store.canAfford(p.amount))
+                }
+            }
+            Divider().overlay(Theme.line)
+            let a = store.data.distributor
+            if store.isEventStore {
+                Label("Official event store: free league promos, and more tournament players.", systemImage: "rosette")
+                    .font(.caption).foregroundStyle(Theme.green)
+            } else {
+                Text("Official event store: \(a.bigTournaments ?? 0)/\(Balance.eventStoreTournaments) tournaments and \(a.bigLeagues ?? 0)/\(Balance.eventStoreLeagues) league days with \(Balance.eventStoreMinPlayers)+ players.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
     }
 }

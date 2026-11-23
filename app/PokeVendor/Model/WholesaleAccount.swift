@@ -39,6 +39,19 @@ struct DistributorAccount: Codable, Hashable {
     var warnings: [Int] = []
     var hotFrozenUntil: Int?
     var closedUntil: Int?
+    // The distribution ladder (Model/DistributionLadder.swift). All optional, so old saves still load.
+    var ladderTier: Int?
+    var score: Double?
+    var lastReviewDay: Int?
+    var payables: [Payable]?
+    var useTerms: Bool?
+    var onTime: Int?
+    var lateThisQuarter: Int?
+    var quarterSpentStart: Double?
+    var quarterEvents: Int?
+    var bigTournaments: Int?
+    var bigLeagues: Int?
+    var eventStore: Bool?
 
     init() {}
 
@@ -67,6 +80,18 @@ struct DistributorAccount: Codable, Hashable {
         warnings = v(.warnings, [])
         hotFrozenUntil = v(.hotFrozenUntil, nil)
         closedUntil = v(.closedUntil, nil)
+        ladderTier = v(.ladderTier, nil)
+        score = v(.score, nil)
+        lastReviewDay = v(.lastReviewDay, nil)
+        payables = v(.payables, nil)
+        useTerms = v(.useTerms, nil)
+        onTime = v(.onTime, nil)
+        lateThisQuarter = v(.lateThisQuarter, nil)
+        quarterSpentStart = v(.quarterSpentStart, nil)
+        quarterEvents = v(.quarterEvents, nil)
+        bigTournaments = v(.bigTournaments, nil)
+        bigLeagues = v(.bigLeagues, nil)
+        eventStore = v(.eventStore, nil)
     }
 }
 
@@ -92,7 +117,8 @@ extension GameStore {
 
     var distributorTier: DistributorTier { hasStoreAccount ? .hobby : wholesaleOpen ? .secondary : .none }
 
-    var wholesaleDiscountNow: Double { hasStoreAccount ? Balance.storeWholesaleDiscount : Balance.wholesaleDiscount }
+    /// A store account pays by its ladder tier (Model/DistributionLadder.swift).
+    var wholesaleDiscountNow: Double { hasStoreAccount ? ladderTier.discount : Balance.wholesaleDiscount }
 
     /// The allocation replaces the minimum order for a hobby account.
     var wholesaleMinOrderNow: Double { hasStoreAccount ? 0 : Balance.wholesaleMinOrder }
@@ -108,6 +134,7 @@ extension GameStore {
     func wholesaleCap(_ product: Product) -> Int {
         guard isHot(product) else {
             return min(Balance.allocationMax, Balance.allocationBase + Int(data.distributor.spent / Balance.allocationStep)) + 1
+                + (hasStoreAccount ? ladderTier.extraCases : 0)
         }
         if hotFrozen { return 0 }
         return Balance.allocationBase + (eliteCaseOpen || eliteCaseUsed(on: product) ? 1 : 0)

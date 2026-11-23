@@ -21,6 +21,7 @@ struct WholesaleView: View {
                         Text("Cash \(money(store.cash))").font(.caption.monospaced())
                     }
                     if store.hasStoreAccount { repBox } else { hobbyBox }
+                    if store.hasStoreAccount { LadderBox() }
                     allocationBox
                     if !store.data.distributor.warnings.isEmpty {
                         Banner(text: "Warnings from your rep: \(store.data.distributor.warnings.count) of 3 in 12 weeks.", color: Theme.orange,

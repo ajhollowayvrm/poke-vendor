@@ -166,6 +166,7 @@
 		85166D520FAE8485D3DEF431 /* CardViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297BD4F44B83A77E160F288F /* CardViews.swift */; };
 		851BFC5E639D0B5F2897F19A /* LookInsideSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1609B9EA9F5FFAD79CFC36D8 /* LookInsideSheet.swift */; };
 		8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42EFBEAABA99A8FAF3BD9E1F /* PokeVendorApp.swift */; };
+		869037DECF6027DF1B3A910D /* DistributionLadder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16FAA4E88A8295FD6A18571D /* DistributionLadder.swift */; };
 		8772A127EDBFD159AEA0AB2F /* Collections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CD5486126C0FE54AF794E /* Collections.swift */; };
 		897A07D0BDDA180C5FBAB178 /* JobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 772DBF76AEF228531662272E /* JobView.swift */; };
 		8A5EBAA0C3FD3D657C581694 /* generations.json in Resources */ = {isa = PBXBuildFile; fileRef = 66B77CF9FA79C477304765CF /* generations.json */; };
@@ -338,6 +339,7 @@
 		15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackBuilder.swift; sourceTree = "<group>"; };
 		1609B9EA9F5FFAD79CFC36D8 /* LookInsideSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookInsideSheet.swift; sourceTree = "<group>"; };
 		16CBB7E6644B3D89DEBD6A19 /* mega-evolution.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mega-evolution.json"; sourceTree = "<group>"; };
+		16FAA4E88A8295FD6A18571D /* DistributionLadder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistributionLadder.swift; sourceTree = "<group>"; };
 		1718AD49ACFAC7CB8765DBE9 /* double-crisis.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "double-crisis.json"; sourceTree = "<group>"; };
 		17793FF1EF0947404D07714D /* expedition-base-set.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "expedition-base-set.json"; sourceTree = "<group>"; };
 		186173697205F56B279E1419 /* CalloutViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalloutViews.swift; sourceTree = "<group>"; };
@@ -877,6 +879,7 @@
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
 				F93E91BC33F28004C994B1EE /* Debt.swift */,
 				531934AE1683B48C6717CC3A /* Demand.swift */,
+				16FAA4E88A8295FD6A18571D /* DistributionLadder.swift */,
 				F01CCED216C743810AE8DAB0 /* Distributor.swift */,
 				689EB4A1DA309507FAA552BA /* Events.swift */,
 				0A9B0564A22D5EBD10731BDC /* Flippers.swift */,
@@ -1311,6 +1314,7 @@
 				D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */,
 				02FDC2C400CC7F8D85AD622F /* Demand.swift in Sources */,
 				E773086037F13A9C2D65807E /* DetailViews.swift in Sources */,
+				869037DECF6027DF1B3A910D /* DistributionLadder.swift in Sources */,
 				0A66AFC65E7CB88B56AD2DEA /* Distributor.swift in Sources */,
 				A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */,
 				7A35C872266C162E6BEC2E3D /* Events.swift in Sources */,

@@ -177,7 +177,10 @@ extension GameStore {
         guard s.clerk || worked > 0, let kind = storeEvent(onWeekday: today % 7, in: s) else { return [] }
         var plan = s.eventPlan
         let hosted = worked > 0
-        let players = rollPlayers(kind, plan, hosted: hosted)
+        var players = rollPlayers(kind, plan, hosted: hosted)
+        // The event locator brings more tournament players to an official event store (Model/DistributionLadder.swift).
+        if kind == .tournament, isEventStore { players = Int((Double(players) * Balance.eventStorePlayers).rounded()) }
+        noteEventForStatus(kind, players: players)
         var line: String
         switch kind {
         case .tournament:
@@ -198,9 +201,10 @@ extension GameStore {
             plan.standing = min(max(moved, Balance.eventStandingRange.lowerBound), Balance.eventStandingRange.upperBound)
         case .league:
             let fees = Double(players) * plan.leagueFee
-            let promo = Double(players) * Balance.leaguePromoCost
+            // An official event store gets the league promos free.
+            let promo = isEventStore ? 0 : Double(players) * Balance.leaguePromoCost
             if fees > 0 { addLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
-            addLedger(-promo, .storeEvents, "League promo cards · \(s.name)")
+            if promo > 0 { addLedger(-promo, .storeEvents, "League promo cards · \(s.name)") }
             record.revenue += fees
             record.costs += promo
             line = "\(players) players came to the \(kind.name) at \(s.name). You gave each one a promo card."
