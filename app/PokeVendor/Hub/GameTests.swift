@@ -31,6 +31,7 @@ final class GameTests {
         timed("reseal", resealFiller)
         timed("auctions", auctions)
         timed("storage", storage)
+        timed("quitJob", quitJobSaves)
         timed("sealedHouse", sealedAtHouse)
         timed("business", business)
         timed("marketing", marketingChannels)
@@ -488,6 +489,22 @@ final class GameTests {
         check(store.data.auctionPayouts.count == payouts + 1 && !store.data.sealed.contains { $0.id == item.id }, "the sealed item did not sell at the house")
         check(store.data.sealed.first { $0.id == fake.id }?.isKnownFake == true && store.data.auctionBans[AuctionHouse.heritage.rawValue] != nil,
               "a resealed item passed the house's check")
+    }
+
+    /// A quit job stays quit after the save loads.
+    private func quitJobSaves() {
+        fresh()
+        guard store.job != nil else { return check(false, "a new run has no job") }
+        store.quitJob()
+        guard let json = try? JSONEncoder().encode(store.data), let loaded = try? JSONDecoder().decode(GameData.self, from: json) else {
+            return check(false, "the save did not round-trip")
+        }
+        check(loaded.jobIndex == nil, "a quit job came back after the save loaded")
+        var never = GameData()
+        never.jobIndex = 0
+        if let json2 = try? JSONEncoder().encode(never), let loaded2 = try? JSONDecoder().decode(GameData.self, from: json2) {
+            check(loaded2.jobIndex == 0, "a job was lost after the save loaded")
+        }
     }
 
     // MARK: - Storage unit (docs/37-storage.md)

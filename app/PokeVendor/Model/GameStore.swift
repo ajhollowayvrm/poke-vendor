@@ -215,6 +215,9 @@ extension GameData {
         lastFreeProductDay = v(.lastFreeProductDay, lastFreeProductDay)
         settings = v(.settings, settings)
         jobState = v(.jobState, jobState)
+        // A save leaves out a nil job, and the default is the first job. A player who quit or was fired has a quit day,
+        // so a save with a quit day and no job means no job. Without this, a quit job came back on every load.
+        if !c.contains(.jobIndex), jobState.quitDay > -1000 { jobIndex = nil }
         splits = v(.splits, splits)
         fbOffers = v(.fbOffers, fbOffers)
         meetups = v(.meetups, meetups)
