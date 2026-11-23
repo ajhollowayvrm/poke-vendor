@@ -197,6 +197,7 @@ extension GameStore {
             if yes {
                 if !hasManager, !spendHours(Balance.partyHours) { line = "You had no time for the party, so you declined." } else {
                     addLedger(Balance.partyFee, .storeEvents, "Birthday party · \(s.name)")
+                    addToTodayRecord(revenue: Balance.partyFee, sold: 0)
                     updateBusiness { $0.loyalty = min(100, $0.loyalty + 2); $0.awareness = min(100, $0.awareness + 1) }
                     line = "Hosted a birthday party for \(money(Balance.partyFee)). The parents will tell their friends."
                 }
@@ -239,6 +240,16 @@ extension GameStore {
         save()
     }
 
+    /// Adds money that came in outside the shelf to today's store record, so the reviews and XP see it.
+    private func addToTodayRecord(revenue: Double, sold: Int) {
+        guard var s = data.cardStore else { return }
+        var record = s.history.last?.day == data.day ? s.history.removeLast() : StoreDay(day: data.day)
+        record.revenue += revenue
+        record.sold += sold
+        s.history.append(record)
+        data.cardStore = s
+    }
+
     private func addReview(_ stars: Int, _ text: String) {
         let review = StoreReview(day: data.day, stars: stars, text: text)
         updateBusiness { $0.reviews.append(review) }
@@ -248,7 +259,9 @@ extension GameStore {
     private func sellToLine() -> Int {
         let items = storeShelf().filter { !$0.isCard }.prefix(3)
         guard let s = data.cardStore else { return 0 }
-        for item in items { _ = sellFromStore(item, price: shelfPrice(item), storeName: s.name) }
+        var revenue = 0.0
+        for item in items { revenue += sellFromStore(item, price: shelfPrice(item), storeName: s.name) }
+        addToTodayRecord(revenue: revenue, sold: items.count)
         return items.count
     }
 

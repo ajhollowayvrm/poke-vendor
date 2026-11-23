@@ -142,6 +142,8 @@ extension GameStore {
     func staffDay(storeName: String) -> (present: Bool, lines: [String]) {
         let list = staff
         guard !list.isEmpty else { return (false, []) }
+        // The standard clerk of an older save has no sick days and no theft: the old numbers.
+        guard data.cardStore?.business?.staff != nil else { return (true, []) }
         var lines: [String] = []
         var absent: [String] = []
         for e in list {

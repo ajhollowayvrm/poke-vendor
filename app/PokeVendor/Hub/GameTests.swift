@@ -449,7 +449,16 @@ final class GameTests {
         if let high = store.data.raw.last {
             store.list([high.id], channel: .ebayAuction, price: { _ in 50 }, auctionDays: 3, insured: false, auctionStart: { _ in 1_000_000 })
             if case .listed(let l) = store.card(high.id)?.status { check(l.auctionFinal == 0, "an auction under its starting bid can sell") }
+            // An auction with no sale ends on its end day, and the item is free again.
+            for _ in 0..<3 { nextDay() }
+            check(store.card(high.id)?.status == nil, "an auction with no sale never ended")
         }
+
+        // On the day a lot opens, a rival has not bid yet, so Buy It Now shows.
+        var fresh = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day + 3, opening: 20, rivalMax: 90)
+        fresh.buyNow = 95
+        store.data.auctionLots = [fresh]
+        check(store.lotView(fresh).bids == 0 && store.canBuyNow(fresh), "Buy It Now is hidden on the day a lot opens")
     }
 
     // MARK: - Storage unit (docs/37-storage.md)
@@ -462,7 +471,9 @@ final class GameTests {
             return check(false, "the storage test has no product")
         }
         check(store.moveToStorage([box.id]) == 0, "an item moved with no unit")
+        let beforeRent = store.cash
         check(store.rentStorage(.small), "a unit could not be rented")
+        check(abs(beforeRent - store.cash - StorageSize.small.rent) < 0.01, "renting the unit did not charge the first month")
         check(store.moveToStorage([box.id]) == 0, "an item moved with no visit")
         let hour = store.data.hour
         check(store.visitStorage(), "a visit was refused")
@@ -562,6 +573,15 @@ final class GameTests {
         check(!store.business.months.isEmpty, "no month-end review after 28 days")
         let r = store.business.rating
         check(r >= 1 && r <= 5, "the rating is \(r)")
+
+        // An older store is legacy: its awareness rests at the baseline, so its traffic stays the same.
+        guard var old = store.data.cardStore else { return }
+        old.business = nil
+        store.data.cardStore = old
+        store.updateBusiness { _ in }
+        check(store.business.legacy, "an older store is not legacy")
+        for _ in 0..<20 { nextDay() }
+        check(store.business.awareness >= Balance.bizAwarenessBase - 0.5, "a legacy store's awareness fell to \(store.business.awareness)")
     }
 
     /// A tier sets the price. An order on terms costs no cash now and makes a bill. A bill paid late puts the account on
@@ -615,6 +635,26 @@ final class GameTests {
         for _ in 0..<Balance.eventStoreLeagues { store.noteEventForStatus(.league, players: 10) }
         nextDay()
         check(store.isEventStore, "big events did not make an official event store")
+
+        // From 40 to 59, a Premier account drops to Preferred.
+        store.data.distributor.ladderTier = 2
+        store.data.distributor.quarterSpentStart = store.data.distributor.spent
+        store.data.distributor.quarterEvents = 0
+        store.data.distributor.lateThisQuarter = 2
+        store.data.distributor.eventStore = false
+        store.data.distributor.lastReviewDay = store.day - Balance.ladderReviewDays
+        nextDay()
+        let score = store.data.distributor.score ?? 0
+        if score >= Balance.ladderDropScore && score < Balance.ladderPreferredScore {
+            check(store.ladderTier == .preferred, "a Premier account kept Premier on a score of \(Int(score))")
+        }
+
+        // Closing the store resets the ladder, so a new store starts again.
+        store.data.distributor.ladderTier = 2
+        store.data.distributor.eventStore = true
+        store.closeStore()
+        nextDay()
+        check(store.data.distributor.ladderTier == nil && store.data.distributor.eventStore == nil, "the ladder carried over a store close")
     }
 
     /// An older store with the clerk keeps the old wage. A hire adds staff and turns the clerk flag on. Each open day

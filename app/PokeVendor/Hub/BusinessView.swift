@@ -92,7 +92,7 @@ struct BusinessView: View {
     /// The costs due in the next 30 days.
     private func forecast(_ s: CardStoreState) -> some View {
         let rentDays = store.daysUntilStoreRent ?? 0
-        let rent = (s.lease?.rent ?? s.location.rent) + store.storeOverheadEstimate
+        let rent = s.rent + store.storeOverheadEstimate
         let wages = store.staffDailyWage * Double(s.openDays.count) * 30 / 7
         let extra = store.businessForecastCosts
         let total = rent + wages + extra.reduce(0) { $0 + $1.amount }

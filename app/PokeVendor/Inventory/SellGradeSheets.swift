@@ -23,6 +23,8 @@ struct SellSheet: View {
     @State private var listedWear: [UUID: Wear] = [:]
     /// The price the player typed for a stack, by the stack's first item. A typed price wins over the slider.
     @State private var customPrice: [UUID: Double] = [:]
+    /// The text in each price field. Each keystroke sets the price, so a price typed with the keyboard still open counts.
+    @State private var priceText: [UUID: String] = [:]
     @State private var acceptOffers = false
     @State private var autoAcceptOn = false
     @State private var autoDeclineOn = false
@@ -95,8 +97,17 @@ struct SellSheet: View {
         return max(0.05, (reference(line) * percent / 100 * 100).rounded() / 100)
     }
 
-    private func priceBinding(_ line: Line) -> Binding<Double> {
-        Binding(get: { price(line) }, set: { customPrice[line.id] = max(0.05, ($0 * 100).rounded() / 100) })
+    private func priceBinding(_ line: Line) -> Binding<String> {
+        Binding(get: { priceText[line.id] ?? String(format: "%.2f", price(line)) },
+                set: { text in
+                    priceText[line.id] = text
+                    let digits = text.filter { $0.isNumber || $0 == "." }
+                    if let value = Double(digits), value > 0 {
+                        customPrice[line.id] = max(0.05, (value * 100).rounded() / 100)
+                    } else {
+                        customPrice[line.id] = nil
+                    }
+                })
     }
 
     private var tcgAllowed: Bool { lines.allSatisfy(\.isRaw) }
@@ -233,12 +244,13 @@ struct SellSheet: View {
                                 // The player can type a price for each stack. The slider sets the stacks with no typed price.
                                 HStack {
                                     Text("Price\(each)").font(.subheadline)
-                                    TextField("Price", value: priceBinding(line), format: .currency(code: "USD"))
+                                    Text("$").font(.subheadline.monospaced()).foregroundStyle(Theme.muted)
+                                    TextField("Price", text: priceBinding(line))
                                         .keyboardType(.decimalPad)
                                         .multilineTextAlignment(.trailing)
                                         .font(.subheadline.monospaced())
                                     if customPrice[line.id] != nil {
-                                        Button("Reset") { customPrice[line.id] = nil }
+                                        Button("Reset") { customPrice[line.id] = nil; priceText[line.id] = nil }
                                             .font(.caption)
                                             .buttonStyle(.borderless)
                                     }
@@ -304,7 +316,11 @@ struct SellSheet: View {
                 if let startChannel, startChannel != .tcgplayer || tcgAllowed { channel = startChannel }
                 if !tcgAllowed, channel == .tcgplayer { channel = .ebay }
             }
-            .onChange(of: channel) { _, _ in customPrice = [:] }
+            .onChange(of: channel) { _, _ in customPrice = [:]; priceText = [:] }
+            .onChange(of: percent) { _, _ in
+                // The slider redraws the prices that the player did not type.
+                for id in priceText.keys where customPrice[id] == nil { priceText[id] = nil }
+            }
         }
     }
 

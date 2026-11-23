@@ -33,8 +33,11 @@ struct StoreShelfControls: View {
                         .font(.caption.monospaced())
                         .foregroundStyle(Theme.muted)
                 }
-                Button("Remove online listing") { store.removeOnlineListing(id) }
-                    .buttonStyle(.bordered)
+                // A running auction cannot come down, as on eBay.
+                if listing.auctionEndDay == nil {
+                    Button("Remove online listing") { store.removeOnlineListing(id) }
+                        .buttonStyle(.bordered)
+                }
             } else {
                 Button("List online too") { sheet = SellRequest(ids: [id], startAll: false) }
                     .buttonStyle(.bordered)

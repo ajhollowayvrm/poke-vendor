@@ -130,3 +130,12 @@ ladder. D: the opening project. E: staff. F: the floor, rivals, and store levels
 - The school club and the loyalty program unlock at Local favorite.
 - The floor setups cost $100 and 1 hour each. A rival move can come at each month-end review (25%).
 - A morning decision comes on 25% of open days. With no answer, the second choice happens (the decision ends).
+- **Legacy stores**: a store that was open before the update is legacy. It keeps the old customer rule (no customer
+  types), its awareness rests at 40, and its standard clerk has no sick days and no theft. So its traffic and sales stay
+  the same.
+- **The ladder starts again with each store**: closing the store resets the tier, the score, and event status. Unpaid
+  bills stay. The first quarter counts from the approval day.
+- **The review**: Premier needs 80 and the Destination level, Preferred needs 60, from 40 to 59 the account keeps at
+  most Preferred, and under 40 it drops one tier.
+- Marketing starts when the store opens. The pre-opening buzz is the tool for the build-out.
+- Absent staff do not run events or sell accessories. Clearance never raises a price.

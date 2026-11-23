@@ -24,6 +24,10 @@ The hub row **Auctions** opens one screen with three tabs.
 - **The morning report** gives the news of each running auction with bids: the bids, the current bid, the watchers, and
   the days left. With more than 3 auctions, one line sums them up.
 - An auction from before the live bids gets its final price when the save loads, so it shows bids too.
+- An auction with no sale ends on its end day, and the item is free again.
+- A running auction of an item in the player's store cannot come down early.
+- The last day shows "ends tonight". On the day a lot opens, no rival has bid yet, so Buy It Now shows. Buy It Now
+  needs the cash that the player's top bids do not hold.
 - **Starting bid**: the sell sheet sets it as a share of the expected price, from $0.99 (0%) to 100%. When the final is
   under the starting bid, the auction ends with no sale. The row shows "Starts $X" until the first bid.
 - An item in the player's own store that is also on an eBay auction shows in the list too.

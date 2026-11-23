@@ -1385,6 +1385,8 @@ final class GameStore {
     private func advanceSealed() -> [String] {
         var lines: [String] = []
         var keepItems: [SealedItem] = []
+        // The storage unit's room, used up as tonight's deliveries go in (Model/Storage.swift).
+        var unitFree = storageFree
         // A case is many boxes. One line for each product, not one for each box.
         var arrived: [(key: String, count: Int)] = []
         func note(_ key: String) {
@@ -1395,7 +1397,7 @@ final class GameStore {
             case .onTheWay(let days, let store):
                 if days <= 1 {
                     // A sealed delivery can go straight to the storage unit (Model/Storage.swift).
-                    item.status = deliveryStatus(for: item)
+                    item.status = deliveryStatus(for: item, free: &unitFree)
                     note("Delivered from \(store.rawValue)\(item.status == .inStorage ? " to your storage unit" : ""): \(item.name)")
                 } else {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
@@ -1417,7 +1419,7 @@ final class GameStore {
                 }
             case .arriving(let days, let from):
                 if days <= 1 {
-                    item.status = deliveryStatus(for: item)
+                    item.status = deliveryStatus(for: item, free: &unitFree)
                     note("Arrived from \(from)\(item.status == .inStorage ? " at your storage unit" : ""): \(item.name)")
                 } else {
                     item.status = .arriving(daysLeft: days - 1, from: from)
@@ -1587,8 +1589,11 @@ final class GameStore {
         return lines
     }
 
+    /// A fixed-price listing ends after its listing days. An auction ends on its end day: when it did not sell then, it
+    /// ends with no sale (its final price is rolled when listed, so it never sells later).
     func listingExpired(_ listing: Listing) -> Bool {
-        listing.auctionEndDay == nil && data.day - listing.dayListed >= Balance.listingDays
+        if let end = listing.auctionEndDay { return data.day >= end }
+        return data.day - listing.dayListed >= Balance.listingDays
     }
 
     func rollSale(_ listing: Listing, card: OwnedCard) -> Double? {

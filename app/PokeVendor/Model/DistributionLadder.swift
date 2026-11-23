@@ -80,7 +80,7 @@ extension GameStore {
     var payables: [Payable] { data.distributor.payables ?? [] }
     var payablesTotal: Double { payables.reduce(0) { $0 + $1.amount } }
     var onCreditHold: Bool { payables.contains { $0.late } }
-    var isEventStore: Bool { data.distributor.eventStore == true && data.cardStore != nil }
+    var isEventStore: Bool { data.distributor.eventStore == true && data.cardStore != nil && data.distributor.approvedDay != nil }
 
     /// True when the next order goes on net-30 terms.
     var buyingOnTerms: Bool { data.distributor.useTerms == true && ladderTier.creditLimit > 0 && !onCreditHold }
@@ -109,13 +109,15 @@ extension GameStore {
 
     /// Pays a bill now.
     @discardableResult
-    func payPayable(_ id: UUID) -> Bool {
+    func payPayable(_ id: UUID, quiet: Bool = false) -> Bool {
         guard let p = payables.first(where: { $0.id == id }), canAfford(p.amount) else { return false }
         addLedger(-p.amount, .wholesale, "Distributor bill · \(p.label)")
         data.distributor.payables = payables.filter { $0.id != id }
         if !p.late { data.distributor.onTime = (data.distributor.onTime ?? 0) + 1 }
-        log("Paid the distributor \(money(p.amount)) for \(p.label).", cash: -p.amount)
-        save()
+        if !quiet {
+            log("Paid the distributor \(money(p.amount)) for \(p.label).", cash: -p.amount)
+            save()
+        }
         return true
     }
 
@@ -160,7 +162,7 @@ extension GameStore {
         // Bills: paid when due if the cash covers them. A bill that cannot be paid is late, and the account goes on hold.
         for p in payables where p.dueDay <= today {
             if canAfford(p.amount) {
-                payPayable(p.id)
+                payPayable(p.id, quiet: true)
                 lines.append("Paid the distributor bill of \(money(p.amount)) for \(p.label).")
             } else if !p.late {
                 data.distributor.payables = payables.map { $0.id == p.id ? Payable(id: $0.id, amount: $0.amount, label: $0.label, dueDay: $0.dueDay, late: true) : $0 }
@@ -174,15 +176,27 @@ extension GameStore {
             data.distributor.eventStore = true
             lines.append("Your store is an official event store now. The distributor sends the league promos free, and the event locator lists your tournaments.")
         }
+        // An account from an older save starts its first quarter now, so the review does not count the whole run.
+        if hasStoreAccount, data.distributor.quarterSpentStart == nil {
+            data.distributor.quarterSpentStart = data.distributor.spent
+            data.distributor.lastReviewDay = today
+        }
         // The quarterly review.
         if let due = nextLadderReview, today >= due {
             let score = ladderScoreNow
             let before = ladderTier
+            // Premier needs 80 and the Destination level. Preferred needs 60. From 40 to 59 an account keeps at most
+            // Preferred. Under 40 it drops one tier.
             var tier = before.rawValue
-            if score >= Balance.ladderPremierScore, storeLevel == .destination { tier = 2 } else if score >= Balance.ladderPreferredScore {
-                tier = max(tier, 1)
-                if tier == 2, score < Balance.ladderPremierScore { tier = 1 }
-            } else if score < Balance.ladderDropScore { tier = max(0, tier - 1) }
+            if score >= Balance.ladderPremierScore, storeLevel == .destination {
+                tier = 2
+            } else if score >= Balance.ladderPreferredScore {
+                tier = 1
+            } else if score >= Balance.ladderDropScore {
+                tier = min(tier, 1)
+            } else {
+                tier = max(0, tier - 1)
+            }
             data.distributor.ladderTier = tier
             data.distributor.score = score
             data.distributor.lastReviewDay = today

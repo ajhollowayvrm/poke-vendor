@@ -26,7 +26,8 @@ The hub row **Storage** shows the home space and the unit.
 | 10×10 | 240 | $160 |
 | 10×20 | 600 | $300 |
 
-- The rent is due on the 1st of each month, with the home rent. Unpaid rent costs reputation, as the other business
+- The first month is paid when the player rents the unit. A bigger unit pays the difference at once. After that, the
+  rent is due on the 1st of each month, with the home rent. Unpaid rent costs reputation, as the other business
   costs do.
 - The player can change the size at any time, if the items fit. The rental can end only when the unit is empty.
 - **A visit** takes **1 hour** of the day: the drive and the loading. For the rest of that day, the player can move items

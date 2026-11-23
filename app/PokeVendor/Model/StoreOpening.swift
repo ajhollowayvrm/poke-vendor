@@ -227,10 +227,11 @@ extension GameStore {
     var investorBuyoutCost: Double { (investor?.invested ?? 0) * Balance.investorBuyout }
 
     func buyOutInvestor() {
-        guard let inv = investor, canAfford(investorBuyoutCost) else { return }
-        addLedger(-investorBuyoutCost, .businessCosts, "Investor buyout")
+        let cost = investorBuyoutCost
+        guard let inv = investor, canAfford(cost) else { return }
+        addLedger(-cost, .businessCosts, "Investor buyout")
         updateBusiness { $0.investor = nil }
-        log("Bought out the investor for \(money(investorBuyoutCost)). They had \(money(inv.paidOut)) in profit shares.", cash: -investorBuyoutCost)
+        log("Bought out the investor for \(money(cost)). They had \(money(inv.paidOut)) in profit shares.", cash: -cost)
         save()
     }
 

@@ -336,14 +336,28 @@ extension GameStore {
         var a = data.distributor
         var approvedNow = false
         if storeGone, a.appliedDay != nil || a.approvedDay != nil {
-            // The account closes with the store. The records, warnings, and penalties stay.
+            // The account closes with the store. The records, warnings, penalties, and unpaid bills stay. The ladder
+            // starts again with the next store (Model/DistributionLadder.swift).
             a.appliedDay = nil
             a.approvedDay = nil
+            a.ladderTier = nil
+            a.score = nil
+            a.lastReviewDay = nil
+            a.quarterSpentStart = nil
+            a.quarterEvents = nil
+            a.lateThisQuarter = nil
+            a.bigTournaments = nil
+            a.bigLeagues = nil
+            a.eventStore = nil
+            a.useTerms = nil
         }
         if let applied = a.appliedDay, a.approvedDay == nil, today >= applied + Balance.distributorReviewDays {
             if built && permit {
                 a.approvedDay = today
                 approvedNow = true
+                // The first quarter counts from the approval, not from the whole run.
+                a.quarterSpentStart = a.spent
+                a.lastReviewDay = today
                 lines.append("The distributor approved your hobby account. You buy at \(Int(Balance.storeWholesaleDiscount * 100))% of MSRP now, with a weekly allocation.")
             } else {
                 a.appliedDay = nil

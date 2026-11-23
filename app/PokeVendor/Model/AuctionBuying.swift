@@ -149,22 +149,24 @@ extension GameStore {
     /// the price climbs to about 70% of the final. At the close it jumps to the final, as with a real snipe.
     func ownAuctionView(_ listing: Listing, id: UUID) -> OwnAuctionView? {
         guard let end = listing.auctionEndDay else { return nil }
+        // The auction sells at the End Day of its last day (end − 1). That day shows "ends tonight" and 70% of the final.
         let length = max(1, end - listing.dayListed)
         let elapsed = min(length, max(0, data.day - listing.dayListed))
-        let p = Double(elapsed) / Double(length)
+        let p = min(1, Double(elapsed + 1) / Double(length))
+        let left = max(0, end - data.day - 1)
         var seed = SeededRandom(seed: Self.stableSeed(id))
         let watchers = Int(Double(seed.int(2...9)) * (0.3 + p) + log10(max(1, listing.price)) * 3)
         guard let final = listing.auctionFinal else {
-            return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: end - data.day)
+            return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: left)
         }
         // No sale: nobody bids.
-        guard final > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers / 2, daysLeft: end - data.day) }
+        guard final > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers / 2, daysLeft: left) }
         let totalBids = seed.int(3...8) + Int(log10(max(1, final)) * 3)
         // After the first night there is always a bid.
         let bids = elapsed == 0 ? 0 : max(1, Int((Double(totalBids) * pow(p, 0.6)).rounded()))
-        guard bids > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: end - data.day) }
+        guard bids > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: left) }
         let bid = max(listing.auctionStart ?? 0.99, (final * (0.3 + 0.4 * p) * 100).rounded() / 100)
-        return OwnAuctionView(bid: bid, bids: bids, watchers: watchers, daysLeft: end - data.day)
+        return OwnAuctionView(bid: bid, bids: bids, watchers: watchers, daysLeft: left)
     }
 
     /// The player's running eBay auctions: name and listing. Cards, slabs, sealed, and the online listings of the store.
@@ -253,7 +255,8 @@ extension GameStore {
     /// The rivals' bid today. On eBay it climbs slowly and the rest comes as a snipe on the last day. At a house the
     /// floor bids climb toward the catalog day.
     private func rivalShown(_ lot: AuctionLot) -> Double {
-        guard lot.hasRival else { return lot.opening }
+        // The rivals bid from the first night. On the day a lot opens, the bid is the opening bid.
+        guard lot.hasRival, data.day > lot.startDay else { return lot.opening }
         let length = max(1, lot.endDay - lot.startDay)
         let p = Double(min(length, max(0, data.day - lot.startDay))) / Double(length)
         let share = lot.venue == .ebay ? 0.3 + 0.45 * p * p : 0.5 + 0.35 * p
@@ -266,7 +269,7 @@ extension GameStore {
         let length = max(1, lot.endDay - lot.startDay)
         let p = Double(min(length, max(0, data.day - lot.startDay))) / Double(length)
         // A rival bid above the opening bid is at least one bid.
-        var bids = lot.hasRival ? max(rival > lot.opening ? 1 : 0, Int((Double(seed.int(2...9)) * (0.2 + p)).rounded())) : 0
+        var bids = lot.hasRival && data.day > lot.startDay ? max(rival > lot.opening ? 1 : 0, Int((Double(seed.int(2...9)) * (0.2 + p)).rounded())) : 0
         let daysLeft = lot.endDay - data.day
         guard let mine = lot.playerMax else { return LotView(bid: rival, bids: bids, playerLeads: false, daysLeft: daysLeft) }
         bids += 1
@@ -313,7 +316,7 @@ extension GameStore {
     /// True while the lot offers Buy It Now: an eBay lot with no bid yet.
     func canBuyNow(_ lot: AuctionLot) -> Bool {
         guard let price = lot.buyNow, lot.endDay >= data.day, lot.playerMax == nil else { return false }
-        return lotView(lot).bids == 0 && canAfford(lotTotal(lot, hammer: price))
+        return lotView(lot).bids == 0 && lotTotal(lot, hammer: price) <= cash - committedBids(except: lot.id)
     }
 
     /// Buys a lot at its Buy It Now price. The lot closes.

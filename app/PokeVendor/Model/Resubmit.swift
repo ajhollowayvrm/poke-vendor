@@ -106,6 +106,8 @@ extension GameStore {
         }
         let new = Self.gradeResult(card.condition, company: company)
         let review = company == old.company
+        // The grader looked at the card and did not flag it.
+        card.verified = true
         guard old.accepts(new) else {
             let why = review ? "\(company.rawValue) kept the grade" : "\(company.rawValue) gave it a \(new.label), so it did not cross over"
             return ("Your \(card.print.name) \(old.label) came back: \(why).", false)
@@ -113,14 +115,16 @@ extension GameStore {
         let before = card.market
         card.grade = new
         card.verified = true
+        var upLine = ""
         if billed, let up = psaUpcharge(tier: tier, value: card.market) {
             addUpcharge(ledgerID, up.fee)
+            upLine = " PSA upcharged it to \(up.tier.name): \(money(up.fee)) more on the bill."
         }
         noteGradeReturn(ledgerID: ledgerID, company: company.rawValue, card: card, before: before)
         if let i = data.ledger.firstIndex(where: { $0.id == ledgerID }) {
             data.ledger[i].label += " · \(card.print.name) \(new.label)"
         }
         let verb = review ? "\(company.rawValue) raised it to" : "it crossed over to"
-        return ("Your \(card.print.name) \(old.label) came back: \(verb) \(new.label), worth \(money(card.market)).", true)
+        return ("Your \(card.print.name) \(old.label) came back: \(verb) \(new.label), worth \(money(card.market)).\(upLine)", true)
     }
 }

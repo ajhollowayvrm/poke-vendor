@@ -108,6 +108,9 @@ struct BusinessState: Codable, Hashable {
     var marketing: MarketingState?
     /// Store XP for the store level: sales, events, and a good rating.
     var xp = 0.0
+    /// A store that was open before the business update. It keeps the old customer rules, and its awareness stays at
+    /// the baseline, so its traffic and sales do not drop.
+    var legacy = false
     /// The opening tasks (`Model/StoreOpening.swift`). Nil: the store is from an older save, and it is open.
     var opening: OpeningPlan?
     var investor: Investor?
@@ -132,6 +135,7 @@ struct BusinessState: Codable, Hashable {
         typeBoost = try c.decodeIfPresent([CustomerType: Double].self, forKey: .typeBoost) ?? [:]
         marketing = try c.decodeIfPresent(MarketingState.self, forKey: .marketing)
         xp = try c.decodeIfPresent(Double.self, forKey: .xp) ?? 0
+        legacy = try c.decodeIfPresent(Bool.self, forKey: .legacy) ?? false
         opening = try c.decodeIfPresent(OpeningPlan.self, forKey: .opening)
         investor = try c.decodeIfPresent(Investor.self, forKey: .investor)
         staff = try c.decodeIfPresent([Employee].self, forKey: .staff)
@@ -186,7 +190,8 @@ extension GameStore {
 
     func updateBusiness(_ change: (inout BusinessState) -> Void) {
         guard var s = data.cardStore else { return }
-        var b = s.business ?? BusinessState()
+        // A store with no business state is from before the update: it is legacy. A new lease sets its own state.
+        var b = s.business ?? { var x = BusinessState(); x.legacy = true; return x }()
         change(&b)
         s.business = b
         data.cardStore = s
@@ -220,8 +225,12 @@ extension GameStore {
         return mix.mapValues { $0 / max(0.001, total) }
     }
 
-    /// One customer's type, from today's mix.
-    func rollCustomerType() -> CustomerType {
+    /// One customer's type, from today's mix. Nil for a legacy store's customer who is not small-budget: the old rule,
+    /// with no type filter.
+    func rollCustomerType() -> CustomerType? {
+        if let s = data.cardStore, s.business?.legacy ?? true {
+            return Double.random(in: 0..<1) < s.location.casualShare ? .casual : nil
+        }
         var roll = Double.random(in: 0..<1)
         for (type, share) in customerMix.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
             if roll < share { return type }
@@ -259,7 +268,9 @@ extension GameStore {
         lines += marketingDayEnd(customers: record?.customers ?? 0, revenue: record?.revenue ?? 0)
         // Awareness falls toward its floor. Events, followers, and marketing hold it up. Marketing pulls it faster.
         let lift = marketingAwareness
-        let floor = Balance.bizAwarenessFloor + (hasAccount ? Double(followerTier) * Balance.bizAwarenessPerFollowerTier : 0) + lift
+        // A legacy store's awareness rests at the baseline, so its traffic does not drop.
+        let rest = (business.legacy ? Balance.bizAwarenessBase : Balance.bizAwarenessFloor)
+        let floor = rest + (hasAccount ? Double(followerTier) * Balance.bizAwarenessPerFollowerTier : 0) + lift
         let pull = lift > 0.5 ? Balance.mktAwarenessPull : Balance.bizAwarenessDrift
         updateBusiness { b in
             b.awareness += (floor - b.awareness) * pull
@@ -332,7 +343,12 @@ extension GameStore {
         let days = s.history.filter { $0.day > today - Balance.rentCycleDays }
         let revenue = days.reduce(0) { $0 + $1.revenue }
         let wages = days.reduce(0) { $0 + $1.costs }
-        let costs = wages + (s.lease?.rent ?? s.location.rent) + storeOverheadEstimate
+        // The rent with the bigger space, the overhead, and the marketing of the window.
+        let marketing = data.ledger.filter {
+            $0.day > today - Balance.rentCycleDays && $0.category == .businessCosts
+                && ($0.label.hasPrefix("Marketing") || $0.label.hasPrefix("Loyalty program") || $0.label.hasPrefix("Pre-opening"))
+        }.reduce(0) { $0 - $1.amount }
+        let costs = wages + s.rent + storeOverheadEstimate + marketing
         let customers = days.reduce(0) { $0 + $1.customers }
         let b = business
         var points = 0

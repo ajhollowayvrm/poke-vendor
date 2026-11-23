@@ -173,8 +173,9 @@ extension GameStore {
     // MARK: - The event at day end
 
     /// Runs the event for today, if there is one. The packs for prizes come out of the store's loose packs.
-    func runStoreEvents(_ s: inout CardStoreState, record: inout StoreDay, worked: Double, today: Int) -> [String] {
-        guard s.clerk || worked > 0, let kind = storeEvent(onWeekday: today % 7, in: s) else { return [] }
+    func runStoreEvents(_ s: inout CardStoreState, record: inout StoreDay, worked: Double, today: Int, staffed: Bool? = nil) -> [String] {
+        // Someone must be there: staff who came in, or the player at the counter.
+        guard (staffed ?? s.clerk) || worked > 0, let kind = storeEvent(onWeekday: today % 7, in: s) else { return [] }
         var plan = s.eventPlan
         let hosted = worked > 0
         var players = rollPlayers(kind, plan, hosted: hosted)

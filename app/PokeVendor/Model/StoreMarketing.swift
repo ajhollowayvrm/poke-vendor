@@ -195,6 +195,7 @@ extension GameStore {
     /// Why the channel cannot start now, or nil.
     func channelBlock(_ channel: MarketingChannel, level: Int = 0) -> String? {
         guard data.cardStore != nil else { return "Open a store first." }
+        if !storeSells(on: data.day) { return "Marketing starts when the store opens. Use the pre-opening buzz now." }
         if channel == .social && !hasAccount { return "Social ads need a social media account." }
         if let need = channel.minLevel, storeLevel.rawValue < need.rawValue { return "Unlocks at store level \(need.name)." }
         if channel == .maps && marketing.mapsListed { return "The store is listed." }
@@ -301,7 +302,8 @@ extension GameStore {
         let effect = marketing.effect.filter { $0.value > 0 }
         let total = effect.values.reduce(0, +)
         if customers > 0, total > 0 {
-            let lift = marketingAwareness / 100
+            // Only the channels with an effect share the customers. The maps listing has its own lasting boost.
+            let lift = (marketingAwareness - (marketing.mapsListed ? Balance.mktMapsAwareness : 0)) / 100
             let brought = Double(customers) * lift / (0.6 + business.awareness / 100)
             updateMarketing { m in
                 for (ch, e) in effect { m.weekCustomers[ch, default: 0] += brought * e / total }

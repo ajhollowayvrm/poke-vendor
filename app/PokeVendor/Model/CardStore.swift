@@ -202,7 +202,8 @@ extension GameStore {
     var cardStore: CardStoreState? { data.cardStore }
 
     /// The store is past its build-out and can open.
-    var storeIsBuilt: Bool { data.cardStore.map { data.day >= $0.openDay } ?? false }
+    /// Soft-opening days count: the store sells (Model/StoreOpening.swift).
+    var storeIsBuilt: Bool { data.cardStore != nil && storeSells(on: data.day) }
 
     /// Every sale over the whole run, after fees.
     var lifetimeSales: Double {
@@ -339,7 +340,7 @@ extension GameStore {
     func setClerk(_ on: Bool) {
         guard var s = data.cardStore, s.clerk != on else { return }
         s.clerk = on
-        var b = s.business ?? BusinessState()
+        var b = s.business ?? { var x = BusinessState(); x.legacy = true; return x }()
         b.staff = on ? [.standard] : []
         s.business = b
         data.cardStore = s
@@ -568,13 +569,13 @@ extension GameStore {
         } else if worked == 0 {
             lines.append("Nobody worked at \(s.name) today, so it stayed closed.")
         }
-        let accessories = storeAccessoryDay(coverage: s.clerk ? 1 : min(1, worked / hours), storeName: s.name,
+        let accessories = storeAccessoryDay(coverage: staffed ? 1 : min(1, worked / hours), storeName: s.name,
                                             casualShare: s.location.casualShare)
         record.revenue += accessories.revenue
         record.sold += accessories.sold
         lines += accessories.lines
-        lines += runStoreEvents(&s, record: &record, worked: worked, today: today)
-        if s.clerk, share > 0, !s.has(.cameras), Double.random(in: 0..<1) < shopliftChance(for: s.location),
+        lines += runStoreEvents(&s, record: &record, worked: worked, today: today, staffed: staffed)
+        if staffed, share > 0, !s.has(.cameras), Double.random(in: 0..<1) < shopliftChance(for: s.location),
            let stolen = stealFromStore() {
             lines.append("Someone walked out of \(s.name) with \(stolen) of your stock. Security cameras stop this.")
         }
@@ -608,14 +609,14 @@ extension GameStore {
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare
             // The other customers come from the location's mix (Model/StoreBusiness.swift).
-            let type: CustomerType = kid ? .kids : player ? .players : rollCustomerType()
-            let casual = type.smallBudget
+            let type: CustomerType? = kid ? .kids : player ? .players : rollCustomerType()
+            let casual = type?.smallBudget ?? false
             var items = storeShelf().filter { !casual || shelfPrice($0) <= Balance.storeCasualBudget }
             switch type {
-            case .collectors:
+            case .collectors?:
                 let better = items.filter { $0.market >= Balance.collectorMinValue }
                 if !better.isEmpty { items = better }
-            case .investors:
+            case .investors?:
                 items = items.filter { !$0.isCard }
             default: break
             }
@@ -623,6 +624,7 @@ extension GameStore {
             let packWeight = (type == .players ? Balance.eventPackWeight : 1) * (impulseRack ? Balance.impulsePackWeight : 1)
             guard let item = pickForCustomer(items, packWeight: packWeight) else { continue }
             // Investors know the market and pay less over it.
+            // (A legacy store's customers have no type: the old rule.)
             let limit = item.market * Double.random(in: type == .investors ? Balance.investorBuyerLimit : Balance.storeBuyerLimit)
             let price = shelfPrice(item)
             guard perceivedPrice(item, price: price) <= limit else { continue }

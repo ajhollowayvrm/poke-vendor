@@ -128,6 +128,10 @@ extension GameStore {
     func rentStorage(_ size: StorageSize) -> Bool {
         guard size != storageSize, storageUsed <= size.capacity else { return false }
         let was = storageSize
+        // The first month is paid when the unit is rented. A bigger unit pays the difference now. The rest is due on the 1st.
+        let due = max(0, size.rent - (was?.rent ?? 0))
+        guard canAfford(due) else { return false }
+        if due > 0 { addLedger(-due, .businessCosts, "Storage unit · \(size.rawValue)") }
         data.storage.size = size
         log(was == nil ? "Rented a \(size.rawValue) storage unit for \(money(size.rent)) a month. Rent is due on the 1st."
                        : "Moved to a \(size.rawValue) storage unit for \(money(size.rent)) a month.")
@@ -226,8 +230,11 @@ extension GameStore {
     }
 
     /// A sealed delivery that arrives today: to the unit when the player chose that and it has room, or home.
-    func deliveryStatus(for item: SealedItem) -> ItemStatus? {
-        guard data.storage.deliverHere, storageSize != nil, space(of: item) <= storageFree else { return nil }
+    /// `free` is the room left tonight. Each delivery that goes in uses it up.
+    func deliveryStatus(for item: SealedItem, free: inout Int) -> ItemStatus? {
+        let need = space(of: item)
+        guard data.storage.deliverHere, storageSize != nil, need <= free else { return nil }
+        free -= need
         return .inStorage
     }
 

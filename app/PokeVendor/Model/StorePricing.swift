@@ -83,8 +83,9 @@ extension GameStore {
     private func shelfPrice(market: Double, id: UUID, sealed: Bool) -> Double {
         guard let s = data.cardStore else { return ShowSession.round(market * Balance.storeDefaultPrice) }
         // Clearance: dead stock at 80% of market (Model/StoreFloor.swift).
-        if isOnClearance(id) { return ShowSession.round(market * Balance.clearanceFactor) }
         let factor = sealed ? s.sealedPrice : slabPrice(id) ?? s.singlesPrice
+        // Clearance never raises a price.
+        if isOnClearance(id) { return ShowSession.round(market * min(factor, Balance.clearanceFactor)) }
         return ShowSession.round(market * factor)
     }
 
@@ -129,6 +130,7 @@ extension GameStore {
     }
 
     func removeOnlineListing(_ id: UUID) {
+        if onlineListing(of: id)?.auctionEndDay != nil { return }
         for i in data.raw.indices where data.raw[i].id == id { data.raw[i].onlineListing = nil }
         for i in data.slabs.indices where data.slabs[i].id == id { data.slabs[i].onlineListing = nil }
         for i in data.sealed.indices where data.sealed[i].id == id { data.sealed[i].onlineListing = nil }
