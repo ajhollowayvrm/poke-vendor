@@ -1275,6 +1275,7 @@ final class GameStore {
         }
         lines += jobEndDay(endedDay: data.day)
         lines += storeDayEnd()
+        lines += businessDayEnd()
         lines += shortsEndDay()
 
         // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).

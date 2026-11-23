@@ -96,6 +96,7 @@
 		489E1B159291A35342874C70 /* fossil-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */; };
 		499CA8C55A4AA22BA14CBCEA /* legend-maker.json in Resources */ = {isa = PBXBuildFile; fileRef = FB1006AA43D16FB5FB572A8A /* legend-maker.json */; };
 		4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */; };
+		4AC5DCD5509DB1181FD37B0D /* BusinessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2912980D091217A46C3EE3E6 /* BusinessView.swift */; };
 		4D1A679475A8125D7E29A1C8 /* SetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4473746B05B5FA0E51C41885 /* SetData.swift */; };
 		4D9FB8FB76885393BDADF1FE /* silver-tempest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A358D246B4A0E231698B762 /* silver-tempest.json */; };
 		4E14652814D639209494DB7F /* lost-origin.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B54A884DC3FCF4D498BA581 /* lost-origin.json */; };
@@ -170,6 +171,7 @@
 		8A7B672CD6647283B94B2B24 /* GameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2383AC5B43DFCF54E5DC0845 /* GameTests.swift */; };
 		8AF22CD0BFF3728035E55B7F /* ultra-prism.json in Resources */ = {isa = PBXBuildFile; fileRef = 40AFA031CD12EA2F8CAF859A /* ultra-prism.json */; };
 		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
+		8B16F2EE84A9528C28BE4EFF /* StoreBusiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472013D63F73FE4662559C4E /* StoreBusiness.swift */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
 		90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31479E39C7B363F7E989E45 /* PrintRuns.swift */; };
 		916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B97517632F808C60DEBC0 /* CardStoreView.swift */; };
@@ -355,6 +357,7 @@
 		262D18A3BB73313344D87826 /* dark-explorers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dark-explorers.json"; sourceTree = "<group>"; };
 		26D896AE01B12460672CC225 /* pokemon-go.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "pokemon-go.json"; sourceTree = "<group>"; };
 		28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreSealedBuylist.swift; sourceTree = "<group>"; };
+		2912980D091217A46C3EE3E6 /* BusinessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusinessView.swift; sourceTree = "<group>"; };
 		292D3A115C43F52F2750F722 /* destined-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "destined-rivals.json"; sourceTree = "<group>"; };
 		29666B46E0F524E81D932375 /* Packing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packing.swift; sourceTree = "<group>"; };
 		297BD4F44B83A77E160F288F /* CardViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViews.swift; sourceTree = "<group>"; };
@@ -398,6 +401,7 @@
 		459FE3BD9876271D53A9CD87 /* destamp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = destamp.json; sourceTree = "<group>"; };
 		46393BDB097F065796D9D1CD /* SlabViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlabViews.swift; sourceTree = "<group>"; };
 		4654062AD9C27065757208C9 /* lost-thunder.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "lost-thunder.json"; sourceTree = "<group>"; };
+		472013D63F73FE4662559C4E /* StoreBusiness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreBusiness.swift; sourceTree = "<group>"; };
 		473D1EAA69AF94C328AA4929 /* Cases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cases.swift; sourceTree = "<group>"; };
 		4755B9D1944633247C22C671 /* Counterfeits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Counterfeits.swift; sourceTree = "<group>"; };
 		47C2425DE26BECB433DCBB49 /* heartgold-soulsilver.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "heartgold-soulsilver.json"; sourceTree = "<group>"; };
@@ -921,6 +925,7 @@
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 				2D3E9F9E012F05AC4B3E9A5B /* Stashes.swift */,
 				3CD4C816D189677908B95C65 /* Storage.swift */,
+				472013D63F73FE4662559C4E /* StoreBusiness.swift */,
 				38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */,
 				9814967BDC613C1BD5438238 /* StoreConsignment.swift */,
 				8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */,
@@ -973,6 +978,7 @@
 			isa = PBXGroup;
 			children = (
 				0ACA603AFD3EFF14E0FB0CBF /* AuctionsView.swift */,
+				2912980D091217A46C3EE3E6 /* BusinessView.swift */,
 				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
 				693B97517632F808C60DEBC0 /* CardStoreView.swift */,
 				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
@@ -1277,6 +1283,7 @@
 				303F88069C720F87B8EB85EE /* AuctionsView.swift in Sources */,
 				7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */,
 				336B3AF3DB9F360F1F2186A5 /* BoxContents.swift in Sources */,
+				4AC5DCD5509DB1181FD37B0D /* BusinessView.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
 				CA23A283D74B6AC2D0C384C7 /* CalendarView.swift in Sources */,
 				75EC48BEDB2DC3BCA32D8ABA /* CalloutViews.swift in Sources */,
@@ -1399,6 +1406,7 @@
 				18D0A389AC8681EB12B78A9B /* Stashes.swift in Sources */,
 				EED71301BCF076AC933B473A /* Storage.swift in Sources */,
 				A78594E3A38DD89AB532C524 /* StorageView.swift in Sources */,
+				8B16F2EE84A9528C28BE4EFF /* StoreBusiness.swift in Sources */,
 				B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */,
 				7DFD60F0D41615FE1621698C /* StoreConsignment.swift in Sources */,
 				2DA14E7BA1560F6058013971 /* StoreCredit.swift in Sources */,

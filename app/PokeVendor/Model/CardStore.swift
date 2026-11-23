@@ -136,6 +136,8 @@ struct CardStoreState: Codable, Hashable {
     var lease: StoreLease?
     /// Consignment, expiring credit, the sealed buylist, and the bigger space (`Model/StoreExtras.swift`). Optional, so old saves still load.
     var extras: StoreExtras?
+    /// The business side: awareness, rating, loyalty, reviews (`Model/StoreBusiness.swift`). Nil: the baseline.
+    var business: BusinessState?
 
     func has(_ fixture: StoreFixture) -> Bool { fixtures.contains(fixture) }
 }
@@ -247,6 +249,10 @@ extension GameStore {
         addLedger(-location.buildout, .storeSetup, "Build-out · \(title)")
         var state = CardStoreState(name: title, location: location, leaseDay: data.day,
                                    openDay: data.day + Balance.storeBuildDays, deposit: rent)
+        // A new store starts unknown (Model/StoreBusiness.swift).
+        var business = BusinessState()
+        business.awareness = Balance.bizAwarenessNew
+        state.business = business
         state.lease = StoreLease(periods: term, endDay: data.day + term * Balance.rentCycleDays, rent: rent)
         data.cardStore = state
         rivalShopsReact()
@@ -423,6 +429,8 @@ extension GameStore {
         if hasAccount { mean *= 1 + Balance.storeFollowerStep * Double(followerTier) }
         if s.has(.sign) { mean *= Balance.signTrafficBonus }
         mean *= PriceCycle.seasonTraffic(day: day)
+        // Awareness, rating, and loyalty (Model/StoreBusiness.swift). 1 at the baseline.
+        mean *= businessTrafficFactor
         if day >= s.openDay, day < s.openDay + Balance.grandOpeningDays { mean *= Balance.grandOpeningBonus }
         let event = eventTraffic(day: day)
         mean += event.tournament + event.league + event.glow
@@ -578,10 +586,21 @@ extension GameStore {
             let roll = Double.random(in: 0..<1)
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare
-            let casual = kid || Double.random(in: 0..<1) < casualShare
-            let items = storeShelf().filter { !casual || shelfPrice($0) <= Balance.storeCasualBudget }
-            guard let item = pickForCustomer(items, packWeight: player ? Balance.eventPackWeight : 1) else { continue }
-            let limit = item.market * Double.random(in: Balance.storeBuyerLimit)
+            // The other customers come from the location's mix (Model/StoreBusiness.swift).
+            let type: CustomerType = kid ? .kids : player ? .players : rollCustomerType()
+            let casual = type.smallBudget
+            var items = storeShelf().filter { !casual || shelfPrice($0) <= Balance.storeCasualBudget }
+            switch type {
+            case .collectors:
+                let better = items.filter { $0.market >= Balance.collectorMinValue }
+                if !better.isEmpty { items = better }
+            case .investors:
+                items = items.filter { !$0.isCard }
+            default: break
+            }
+            guard let item = pickForCustomer(items, packWeight: type == .players ? Balance.eventPackWeight : 1) else { continue }
+            // Investors know the market and pay less over it.
+            let limit = item.market * Double.random(in: type == .investors ? Balance.investorBuyerLimit : Balance.storeBuyerLimit)
             let price = shelfPrice(item)
             guard perceivedPrice(item, price: price) <= limit else { continue }
             revenue += sellFromStore(item, price: price, storeName: storeName)

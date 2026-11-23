@@ -31,6 +31,7 @@ final class GameTests {
         timed("reseal", resealFiller)
         timed("auctions", auctions)
         timed("storage", storage)
+        timed("business", business)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -487,6 +488,41 @@ final class GameTests {
         let fee = store.data.ledger.last { $0.label.hasPrefix("Clutter fee") }
         check(store.data.ledger.filter { $0.label.hasPrefix("Clutter fee") }.count == fees + 1
               && abs((fee?.amount ?? 0) + Double(over) * Balance.clutterFeePerSpace) < 0.01, "the clutter fee is wrong")
+    }
+
+    // MARK: - The store as a business (docs/proposals/store-business.md)
+
+    /// Opens a store at the strip mall: the lease rules met, the lease signed, and the build-out done.
+    private func openTestStore() {
+        store.data.reputation = 10_000
+        store.data.taxes.permit = true
+        store.addLedger(5_000, .sale, "Test sales")
+        store.addTestCash(50_000)
+        store.signLease(.stripMall, term: 6, name: "Test Store")
+    }
+
+    /// A store from an older save has the baseline: every factor is 1. A new store starts unknown, and the grand
+    /// opening raises awareness. Reviews come with customers. A month-end review comes every 28 days.
+    private func business() {
+        fresh()
+        openTestStore()
+        guard var s = store.data.cardStore else { return check(false, "the test store did not open") }
+        check(abs(store.business.awareness - Balance.bizAwarenessNew) < 0.01, "a new store does not start unknown")
+        s.business = nil
+        store.data.cardStore = s
+        check(abs(store.businessTrafficFactor - 1) < 0.0001, "an old store's traffic changed: ×\(store.businessTrafficFactor)")
+        store.updateBusiness { $0.awareness = Balance.bizAwarenessNew }
+        for print in prismatic.filter({ ($0.market ?? 0) > 1 }).prefix(30) { store.addTestCard(print) }
+        store.stockStore(Set(store.data.raw.map(\.id)))
+        store.setClerk(true)
+        let before = store.business.awareness
+        for _ in 0..<(Balance.storeBuildDays) { nextDay() }
+        check(store.business.awareness > before + Balance.bizAwarenessGrandOpening - 2, "the grand opening did not raise awareness")
+        for _ in 0..<Balance.rentCycleDays { nextDay() }
+        check(!store.business.reviews.isEmpty, "a month of customers left no review")
+        check(!store.business.months.isEmpty, "no month-end review after 28 days")
+        let r = store.business.rating
+        check(r >= 1 && r <= 5, "the rating is \(r)")
     }
 
     // MARK: - Opportunities and flips

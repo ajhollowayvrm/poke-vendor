@@ -24,6 +24,7 @@ struct CardStoreView: View {
                                icon: "hammer")
                     }
                     rentBanner(s)
+                    BusinessLink()
                     todayBox(s)
                     numbersBox
                     shelvesBox
