@@ -154,6 +154,7 @@ struct BusinessSections: View {
 
     var body: some View {
         LevelBox()
+        if store.investor != nil { InvestorBox() }
         MarketingBox()
         if store.hasStoreAccount { LadderBox() } else if store.data.cardStore != nil {
             DetailBox(title: "Distribution") {
@@ -353,6 +354,69 @@ struct LadderBox: View {
             } else {
                 Text("Official event store: \(a.bigTournaments ?? 0)/\(Balance.eventStoreTournaments) tournaments and \(a.bigLeagues ?? 0)/\(Balance.eventStoreLeagues) league days with \(Balance.eventStoreMinPlayers)+ players.")
                     .font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
+    }
+}
+
+/// The opening tasks during the build-out (Model/StoreOpening.swift).
+struct OpeningBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        DetailBox(title: "Opening tasks") {
+            ForEach(store.openingTasks) { t in
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: t.done ? "checkmark.circle.fill" : t.required ? "exclamationmark.circle" : "circle")
+                        .foregroundStyle(t.done ? Theme.green : t.required ? Theme.orange : Theme.muted)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(t.title + (t.required ? " · needed to open" : "")).font(.subheadline.weight(.medium))
+                        Text(t.detail).font(.caption).foregroundStyle(Theme.muted)
+                    }
+                    Spacer(minLength: 0)
+                    action(t.id)
+                }
+            }
+            Divider().overlay(Theme.line)
+            Toggle("Soft opening", isOn: Binding(get: { store.openingPlan?.softOpen ?? false }, set: { store.setSoftOpen($0) }))
+                .font(.subheadline)
+            Text("Open \(Balance.softOpenDays) days before the grand opening at \(Int(Balance.softOpenTraffic * 100))% of the traffic. You get the first sales and reviews before the big day. It needs the license and the inspection.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+        }
+    }
+
+    @ViewBuilder private func action(_ id: String) -> some View {
+        let p = store.openingPlan
+        switch id {
+        case "license" where p?.licenseReadyDay == nil:
+            Button("File") { store.fileLicense() }.buttonStyle(.bordered).controlSize(.small)
+                .disabled(!store.canAfford(Balance.licenseFee))
+        case "inspection" where !(p?.inspectionPassed ?? true):
+            Button(p?.inspectionFailed == true ? "Fix & book" : "Book") { store.bookInspection() }.buttonStyle(.bordered).controlSize(.small)
+                .disabled(store.inspectionBlock != nil)
+        case "pos" where !(p?.posDone ?? true):
+            Button("Set up") { store.setupPOS() }.buttonStyle(.bordered).controlSize(.small)
+        case "buzz" where !(p?.buzzDone ?? true):
+            Button("Buy") { store.preOpeningBuzz() }.buttonStyle(.bordered).controlSize(.small)
+                .disabled(!store.canAfford(Balance.buzzCost))
+        default:
+            EmptyView()
+        }
+    }
+}
+
+/// The investor: the money in, the shares paid, and the buyout.
+struct InvestorBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        if let inv = store.investor {
+            DetailBox(title: "Investor") {
+                Text("Invested \(money(inv.invested)). Takes \(Int(inv.share * 100))% of each profitable month. Paid so far: \(money(inv.paidOut)).")
+                    .font(.caption)
+                Button("Buy them out · \(money(store.investorBuyoutCost))") { store.buyOutInvestor() }
+                    .buttonStyle(.bordered)
+                    .disabled(!store.canAfford(store.investorBuyoutCost))
             }
         }
     }

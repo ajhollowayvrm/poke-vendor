@@ -109,8 +109,8 @@ struct CardStoreState: Codable, Hashable {
     let location: StoreLocation
     /// The day the player signed the lease. Rent comes due every 28 days from it.
     let leaseDay: Int
-    /// The grand opening, after the build-out.
-    let openDay: Int
+    /// The grand opening, after the build-out. A missing opening task moves it (Model/StoreOpening.swift).
+    var openDay: Int
     /// The landlord gives it back when the player closes the store, but not after an eviction.
     let deposit: Double
     /// The old store-wide price. Only an old save has it. It counts for singles and sealed until the player sets a price
@@ -233,14 +233,14 @@ extension GameStore {
 
     var storeRequirementsMet: Bool { storeRequirements.allSatisfy(\.met) }
 
-    func canSignLease(_ location: StoreLocation, term: Int) -> Bool {
-        data.cardStore == nil && storeRequirementsMet && canAfford(location.upfront(term: term))
+    func canSignLease(_ location: StoreLocation, term: Int, investor: Bool = false) -> Bool {
+        data.cardStore == nil && storeRequirementsMet && canAfford(location.upfront(term: term) - (investor ? investorMoney(location) : 0))
     }
 
     /// Signs the lease for `term` periods of 28 days: the first rent, the deposit, and the build-out. The store opens
     /// after the build-out. The two game shops notice.
-    func signLease(_ location: StoreLocation, term: Int, name: String) {
-        guard canSignLease(location, term: term) else { return }
+    func signLease(_ location: StoreLocation, term: Int, name: String, investor: Bool = false) {
+        guard canSignLease(location, term: term, investor: investor) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = trimmed.isEmpty ? "Card Corner" : String(trimmed.prefix(30))
         let rent = location.rent(term: term)
@@ -252,6 +252,13 @@ extension GameStore {
         // A new store starts unknown (Model/StoreBusiness.swift).
         var business = BusinessState()
         business.awareness = Balance.bizAwarenessNew
+        // The opening tasks (Model/StoreOpening.swift), and the investor's money.
+        business.opening = OpeningPlan()
+        if investor {
+            let money = investorMoney(location)
+            addLedger(money, .startingCapital, "Investor money · \(title)")
+            business.investor = Investor(invested: money, share: Balance.investorProfitShare)
+        }
         state.business = business
         state.lease = StoreLease(periods: term, endDay: data.day + term * Balance.rentCycleDays, rent: rent)
         data.cardStore = state
@@ -432,6 +439,8 @@ extension GameStore {
         // Awareness, rating, and loyalty (Model/StoreBusiness.swift). 1 at the baseline.
         mean *= businessTrafficFactor
         if day >= s.openDay, day < s.openDay + Balance.grandOpeningDays { mean *= Balance.grandOpeningBonus }
+        // A soft opening runs at part of the traffic (Model/StoreOpening.swift).
+        if isSoftOpenDay(day) { mean *= Balance.softOpenTraffic }
         let event = eventTraffic(day: day)
         mean += event.tournament + event.league + event.glow
         // Empty shelves turn people away. A full store draws a few more.
@@ -442,7 +451,7 @@ extension GameStore {
 
     var storeOpenToday: Bool {
         guard let s = data.cardStore else { return false }
-        return data.day >= s.openDay && s.openDays.contains(weekday)
+        return storeSells(on: data.day) && s.openDays.contains(weekday)
     }
 
     /// The hour the player can start at the counter today. A work day pushes it to the end of the shift.
@@ -455,7 +464,7 @@ extension GameStore {
     /// Why the player cannot work the counter now, or nil when they can.
     var counterBlock: String? {
         guard let s = data.cardStore else { return "You have no store" }
-        if data.day < s.openDay { return "Opens on day \(s.openDay + 1)" }
+        if !storeSells(on: data.day) { return "Opens on day \(s.openDay + 1)" }
         if !s.openDays.contains(weekday) { return "Closed today" }
         if s.counterDay == data.day { return "Done for today" }
         if counterStart > Balance.storeClose - 0.5 {
@@ -516,7 +525,7 @@ extension GameStore {
     func storeDayEnd() -> [String] {
         guard var s = data.cardStore else { return [] }
         let today = data.day
-        if today < s.openDay {
+        if today < s.openDay, !isSoftOpenDay(today) {
             return today + 1 == s.openDay ? ["The build-out is done. \(s.name) has its grand opening tomorrow."] : []
         }
         guard s.openDays.contains(today % 7) else { return [] }

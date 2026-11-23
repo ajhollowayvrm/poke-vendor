@@ -7,6 +7,8 @@ struct CardStoreView: View {
     @Environment(AppNav.self) private var nav
     @State private var name = ""
     @State private var signing: StoreLocation?
+    /// Take an investor at the lease (Model/StoreOpening.swift).
+    @State private var withInvestor = false
     @State private var term = Balance.leaseTerms[0]
     @State private var stocking = false
     @State private var closing = false
@@ -24,6 +26,7 @@ struct CardStoreView: View {
                                icon: "hammer")
                     }
                     rentBanner(s)
+                    if store.openingInProgress { OpeningBox() }
                     BusinessLink()
                     todayBox(s)
                     numbersBox
@@ -54,7 +57,9 @@ struct CardStoreView: View {
         .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(isPresent: $signing),
                             titleVisibility: .visible, presenting: signing) { location in
-            Button("Sign for \(money(location.upfront(term: term)))") { store.signLease(location, term: term, name: name) }
+            Button("Sign for \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0)))") {
+                store.signLease(location, term: term, name: name, investor: withInvestor)
+            }
         } message: { location in
             Text("\(location.name): \(term) periods of 28 days, to day \(store.day + term * Balance.rentCycleDays + 1). You pay the first rent, a deposit, and the build-out now. Rent of \(money(location.rent(term: term))) is due every 28 days, with about \(money(location.fixedOverhead)) of overhead and a \(Int(Balance.cardFeeRate * 100))% card fee. The lease renews on the same terms unless you close in the last \(Balance.leaseNoticeDays) days of a term. If you close sooner, you pay a buyout of up to \(Balance.leaseBuyoutRents) rents, and the landlord keeps the deposit. If you cannot pay, the landlord locks the store and keeps the deposit. Cardboard Castle and Top Deck Games see you as a competitor. Your standing with each goes down by \(Balance.rivalStandingLoss) points, and they do not consign for you while you own a store.")
         }
@@ -118,6 +123,11 @@ struct CardStoreView: View {
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
         }
+        DetailBox(title: "Money to open") {
+            Toggle("Take an investor", isOn: $withInvestor).font(.subheadline)
+            Text("An investor pays \(Int(Balance.investorBuildoutShare * 100))% of the build-out now. In return, they take \(Int(Balance.investorProfitShare * 100))% of each profitable month, until you buy them out for \(Int(Balance.investorBuyout)) times the money.")
+                .font(.caption).foregroundStyle(Theme.muted)
+        }
         ForEach(StoreLocation.allCases, id: \.self) { location in
             DetailBox(title: location.name) {
                 HStack(alignment: .top, spacing: 10) {
@@ -129,11 +139,18 @@ struct CardStoreView: View {
                     StatCell(label: "Build-out", value: money(location.buildout))
                     StatCell(label: "Weekday", value: "~\(Int(location.traffic)) ppl")
                 }
+                // The business plan: who shops there, and the nearest rival.
+                Text(CustomerType.allCases.map { "\($0.rawValue) \(Int(((location.customerMix[$0] ?? 0) * 100).rounded()))%" }.joined(separator: " · "))
+                    .font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                Text(location.rivalNote).font(.caption2).foregroundStyle(Theme.muted)
+                if withInvestor {
+                    Text("The investor pays \(money(store.investorMoney(location))).").font(.caption2.monospaced()).foregroundStyle(Theme.cyan)
+                }
                 Button { signing = location } label: {
-                    Text("Sign the lease · \(money(location.upfront(term: term)))").frame(maxWidth: .infinity)
+                    Text("Sign the lease · \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0)))").frame(maxWidth: .infinity)
                 }
                 .primaryButton()
-                .disabled(!store.canSignLease(location, term: term))
+                .disabled(!store.canSignLease(location, term: term, investor: withInvestor))
             }
         }
     }

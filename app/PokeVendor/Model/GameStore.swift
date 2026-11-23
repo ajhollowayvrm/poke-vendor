@@ -1274,6 +1274,7 @@ final class GameStore {
             addReputation(-5)
         }
         lines += jobEndDay(endedDay: data.day)
+        lines += openingDayEnd()
         lines += storeDayEnd()
         lines += businessDayEnd()
         lines += shortsEndDay()

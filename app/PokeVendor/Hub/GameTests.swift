@@ -34,6 +34,7 @@ final class GameTests {
         timed("business", business)
         timed("marketing", marketingChannels)
         timed("ladder", ladder)
+        timed("opening", opening)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -495,12 +496,46 @@ final class GameTests {
     // MARK: - The store as a business (docs/proposals/store-business.md)
 
     /// Opens a store at the strip mall: the lease rules met, the lease signed, and the build-out done.
-    private func openTestStore() {
+    private func openTestStore(tasksDone: Bool = true, investor: Bool = false) {
         store.data.reputation = 10_000
         store.data.taxes.permit = true
         store.addLedger(5_000, .sale, "Test sales")
         store.addTestCash(50_000)
-        store.signLease(.stripMall, term: 6, name: "Test Store")
+        store.signLease(.stripMall, term: 6, name: "Test Store", investor: investor)
+        // The opening tasks are done, unless the test checks them.
+        if tasksDone {
+            let day = store.day
+            store.updateOpening { $0.licenseReadyDay = day; $0.inspectionPassed = true }
+        }
+    }
+
+    /// A missing license moves the opening. With the tasks done, a soft opening sells before the grand opening. An
+    /// investor pays in at the lease.
+    private func opening() {
+        fresh()
+        openTestStore(tasksDone: false)
+        guard let s = store.cardStore else { return check(false, "the test store did not open") }
+        let planned = s.openDay
+        for _ in 0..<Balance.storeBuildDays { nextDay() }
+        check((store.cardStore?.openDay ?? 0) > planned, "the store opened with no license and no inspection")
+
+        fresh()
+        let cash = store.cash
+        openTestStore(investor: true)
+        guard let s2 = store.cardStore else { return check(false, "the test store did not open") }
+        let paid = cash + 50_000 + 5_000 - store.cash
+        check(abs(paid - (s2.location.upfront(term: 6) - store.investorMoney(s2.location))) < 0.01, "the investor's money did not lower the cost")
+        check(store.investor != nil, "no investor")
+        store.setSoftOpen(true)
+        for print in prismatic.filter({ ($0.market ?? 0) > 1 }).prefix(30) { store.addTestCard(print) }
+        store.stockStore(Set(store.data.raw.map(\.id)))
+        store.setClerk(true)
+        let open = s2.openDay
+        while store.day < open - Balance.softOpenDays { nextDay() }
+        check(store.isSoftOpenDay(store.day) && store.storeOpenToday, "the soft opening did not open the store early")
+        while store.day < open { nextDay() }
+        check((store.cardStore?.history.contains { $0.day < open && $0.customers > 0 }) == true, "the soft opening had no customers")
+        check(store.cardStore?.openDay == open, "the opening moved with the tasks done")
     }
 
     /// A store from an older save has the baseline: every factor is 1. A new store starts unknown, and the grand

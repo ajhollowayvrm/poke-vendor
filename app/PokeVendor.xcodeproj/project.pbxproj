@@ -175,6 +175,7 @@
 		8B087BA3932BE14CFF77D5E6 /* guardians-rising.json in Resources */ = {isa = PBXBuildFile; fileRef = 7F23F60653C3E9407ECEFD30 /* guardians-rising.json */; };
 		8B16F2EE84A9528C28BE4EFF /* StoreBusiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472013D63F73FE4662559C4E /* StoreBusiness.swift */; };
 		8BE6DCC1F148B3943D8C0127 /* PackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11814C73AA917A111DD8EC6A /* PackView.swift */; };
+		9051563439DF4BC0856C9957 /* StoreOpening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */; };
 		90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */ = {isa = PBXBuildFile; fileRef = E31479E39C7B363F7E989E45 /* PrintRuns.swift */; };
 		916AD6EC6D7E3822A7EAA51E /* CardStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 693B97517632F808C60DEBC0 /* CardStoreView.swift */; };
 		918C9CA0CCCFAC311B8E8095 /* flashfire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8331C960F48E73F49D7795EA /* flashfire.json */; };
@@ -432,6 +433,7 @@
 		57BDC5003DC71C23C0479421 /* MasterSets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterSets.swift; sourceTree = "<group>"; };
 		57C938A56BB535142EA1BE4B /* Shows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shows.swift; sourceTree = "<group>"; };
 		5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreExtras.swift; sourceTree = "<group>"; };
+		5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreOpening.swift; sourceTree = "<group>"; };
 		5AD99836073CF32159E62094 /* Shorts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shorts.swift; sourceTree = "<group>"; };
 		5B48285729B6638BC44FA869 /* skyridge.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = skyridge.json; sourceTree = "<group>"; };
 		5B75FBFA8961BCEB1A970A90 /* LiveStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStream.swift; sourceTree = "<group>"; };
@@ -939,6 +941,7 @@
 				5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */,
 				70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */,
 				E9C6899A5756FD01A03265AE /* StoreMarketing.swift */,
+				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
 				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
 				28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */,
 				20D2A072C747DEAB8413196A /* Supplies.swift */,
@@ -1424,6 +1427,7 @@
 				0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */,
 				976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */,
 				2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */,
+				9051563439DF4BC0856C9957 /* StoreOpening.swift in Sources */,
 				4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */,
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */,

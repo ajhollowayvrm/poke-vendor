@@ -108,6 +108,9 @@ struct BusinessState: Codable, Hashable {
     var marketing: MarketingState?
     /// Store XP for the store level: sales, events, and a good rating.
     var xp = 0.0
+    /// The opening tasks (`Model/StoreOpening.swift`). Nil: the store is from an older save, and it is open.
+    var opening: OpeningPlan?
+    var investor: Investor?
 
     init() {}
 
@@ -120,6 +123,8 @@ struct BusinessState: Codable, Hashable {
         typeBoost = try c.decodeIfPresent([CustomerType: Double].self, forKey: .typeBoost) ?? [:]
         marketing = try c.decodeIfPresent(MarketingState.self, forKey: .marketing)
         xp = try c.decodeIfPresent(Double.self, forKey: .xp) ?? 0
+        opening = try c.decodeIfPresent(OpeningPlan.self, forKey: .opening)
+        investor = try c.decodeIfPresent(Investor.self, forKey: .investor)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.
@@ -216,7 +221,7 @@ extension GameStore {
         var lines: [String] = []
         // The grand opening puts the store on the map.
         if today + 1 == s.openDay { updateBusiness { $0.awareness = min(100, $0.awareness + Balance.bizAwarenessGrandOpening) } }
-        guard today >= s.openDay else { return lines }
+        guard storeSells(on: today) else { return lines }
         let record = s.history.last { $0.day == today }
         let event = eventTraffic(day: today)
         let eventToday = event.tournament + event.league > 0
@@ -320,7 +325,8 @@ extension GameStore {
             b.months.append(review)
             if b.months.count > 24 { b.months.removeFirst() }
         }
-        return "Month-end review for \(s.name): grade \(grade). Sales \(money(revenue)), costs \(money(costs)), \(customers) customers."
+        let investorLine = payInvestor(net: net).map { " " + $0 } ?? ""
+        return "Month-end review for \(s.name): grade \(grade). Sales \(money(revenue)), costs \(money(costs)), \(customers) customers.\(investorLine)"
     }
 
     /// The other business costs due in the next 30 days. Later phases add marketing, bills, and staff.
