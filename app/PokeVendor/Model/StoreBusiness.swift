@@ -111,6 +111,10 @@ struct BusinessState: Codable, Hashable {
     /// The opening tasks (`Model/StoreOpening.swift`). Nil: the store is from an older save, and it is open.
     var opening: OpeningPlan?
     var investor: Investor?
+    /// Staff (`Model/StoreStaff.swift`). Nil: an older save, where the clerk flag stands for the standard clerk.
+    var staff: [Employee]?
+    var candidates: [Employee]?
+    var candidatesWeek: Int?
 
     init() {}
 
@@ -125,6 +129,9 @@ struct BusinessState: Codable, Hashable {
         xp = try c.decodeIfPresent(Double.self, forKey: .xp) ?? 0
         opening = try c.decodeIfPresent(OpeningPlan.self, forKey: .opening)
         investor = try c.decodeIfPresent(Investor.self, forKey: .investor)
+        staff = try c.decodeIfPresent([Employee].self, forKey: .staff)
+        candidates = try c.decodeIfPresent([Employee].self, forKey: .candidates)
+        candidatesWeek = try c.decodeIfPresent(Int.self, forKey: .candidatesWeek)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.
@@ -258,6 +265,8 @@ extension GameStore {
             if fill < 0.3 { b.loyalty -= 0.5 }
             b.loyalty = min(100, max(0, b.loyalty))
         }
+        // The staff week: morale and quits.
+        if (today - s.leaseDay) % 7 == 6 { lines += staffWeekEnd(storeName: s.name, openDays: s.openDays.count) }
         // Store XP and the level.
         let before = storeLevel
         let rating = business.rating
@@ -291,6 +300,11 @@ extension GameStore {
         if fill > 0.8 { score += 0.3; reasons.append((0.3, "A great selection.")) }
         if eventToday { score += 0.3; reasons.append((0.3, "The tournament was a lot of fun.")) }
         if s.clerk && s.counterDay != day && !s.has(.pos) { score -= 0.2; reasons.append((-0.2, "Checkout was slow.")) }
+        // Staff who know their cards help (Model/StoreStaff.swift).
+        if s.counterDay != day, let k = staffKnowledge {
+            if k >= 4 { score += 0.3; reasons.append((0.3, "The staff really know their cards.")) }
+            if k <= 2 { score -= 0.3; reasons.append((-0.3, "The staff could not answer my questions.")) }
+        }
         score += (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 1.2
         let stars = max(1, min(5, Int(score.rounded())))
         let text = (stars >= 4 ? reasons.filter { $0.0 > 0 } : reasons.filter { $0.0 < 0 }).randomElement()?.1

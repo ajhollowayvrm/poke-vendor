@@ -335,9 +335,13 @@ extension GameStore {
         save()
     }
 
+    /// Turns the staff on with the standard clerk, or lets every staff member go (Model/StoreStaff.swift).
     func setClerk(_ on: Bool) {
         guard var s = data.cardStore, s.clerk != on else { return }
         s.clerk = on
+        var b = s.business ?? BusinessState()
+        b.staff = on ? [.standard] : []
+        s.business = b
         data.cardStore = s
         log(on ? "Hired a clerk for \(s.name) at \(money(Balance.clerkWage)) a day." : "Let the clerk at \(s.name) go.")
         save()
@@ -530,13 +534,19 @@ extension GameStore {
         }
         guard s.openDays.contains(today % 7) else { return [] }
         var lines: [String] = []
+        // The staff: who comes in, and theft (Model/StoreStaff.swift). The staff can change, so read the store again.
+        let crew = s.clerk ? staffDay(storeName: s.name) : (present: false, lines: [String]())
+        lines += crew.lines
+        let wage = s.clerk ? staffDailyWage : 0
+        s = data.cardStore ?? s
+        let staffed = s.clerk && crew.present
         let worked = s.counterDay == today ? s.counterHours : 0
         let hours = Balance.storeClose - Balance.storeOpen
-        let share = s.clerk ? max(0, 1 - worked / hours) : 0
+        let share = staffed ? max(0, 1 - worked / hours) : 0
         var record = s.history.last?.day == today ? s.history.removeLast() : StoreDay(day: today)
-        if s.clerk {
-            addLedger(-Balance.clerkWage, .wages, "Clerk · \(s.name)")
-            record.costs += Balance.clerkWage
+        if wage > 0 {
+            addLedger(-wage, .wages, "Clerk · \(s.name)")
+            record.costs += wage
         }
         if share > 0 {
             let result = rollStoreSales(share: share, storeName: s.name, casualShare: s.location.casualShare)
@@ -571,6 +581,8 @@ extension GameStore {
         s.history.append(record)
         s.history.removeAll { $0.day < today - 27 }
         s.extras = data.cardStore?.extras
+        s.business = data.cardStore?.business
+        s.clerk = data.cardStore?.clerk ?? s.clerk
         data.cardStore = s
         return lines
     }
@@ -590,7 +602,7 @@ extension GameStore {
         for _ in 0..<customers {
             guard Double.random(in: 0..<1) >= Balance.storeBrowseChance else { continue }
             // The clerk loses some sales that the owner would close.
-            let clerk = data.cardStore?.has(.pos) == true ? Balance.posClerkFactor : Balance.clerkSalesFactor
+            let clerk = (data.cardStore?.has(.pos) == true ? Balance.posClerkFactor : Balance.clerkSalesFactor) * staffSalesFactor
             guard Double.random(in: 0..<1) < clerk * clerkPaymentFactor else { continue }
             let roll = Double.random(in: 0..<1)
             let kid = roll < kidShare

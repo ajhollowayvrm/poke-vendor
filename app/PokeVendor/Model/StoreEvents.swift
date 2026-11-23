@@ -180,6 +180,8 @@ extension GameStore {
         var players = rollPlayers(kind, plan, hosted: hosted)
         // The event locator brings more tournament players to an official event store (Model/DistributionLadder.swift).
         if kind == .tournament, isEventStore { players = Int((Double(players) * Balance.eventStorePlayers).rounded()) }
+        // A manager runs a better event (Model/StoreStaff.swift).
+        if hasManager { players = Int((Double(players) * Balance.managerEventPlayers).rounded()) }
         noteEventForStatus(kind, players: players)
         var line: String
         switch kind {

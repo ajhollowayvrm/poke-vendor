@@ -367,15 +367,7 @@ struct CardStoreView: View {
 
     private func staffBox(_ s: CardStoreState) -> some View {
         DetailBox(title: "Staff and hours") {
-            Toggle(isOn: Binding(get: { s.clerk }, set: { store.setClerk($0) })) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Clerk · \(money(Balance.clerkWage)) a day").font(.subheadline.weight(.medium))
-                    Text("Keeps the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day. Paid only on open days. A clerk sells at your price, a bit less often than you do. The clerk does not haggle, trade, or sell a second item. The clerk buys only through the buylist.")
-                        .font(.caption)
-                        .foregroundStyle(Theme.muted)
-                }
-            }
-            .tint(Theme.cyan)
+            StaffList()
             Text("OPEN DAYS").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted).padding(.top, 4)
             HStack(spacing: 6) {
                 ForEach(0..<7, id: \.self) { d in

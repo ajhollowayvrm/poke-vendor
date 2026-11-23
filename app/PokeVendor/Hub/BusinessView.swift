@@ -93,7 +93,7 @@ struct BusinessView: View {
     private func forecast(_ s: CardStoreState) -> some View {
         let rentDays = store.daysUntilStoreRent ?? 0
         let rent = (s.lease?.rent ?? s.location.rent) + store.storeOverheadEstimate
-        let wages = s.clerk ? Balance.clerkWage * Double(s.openDays.count) * 30 / 7 : 0
+        let wages = store.staffDailyWage * Double(s.openDays.count) * 30 / 7
         let extra = store.businessForecastCosts
         let total = rent + wages + extra.reduce(0) { $0 + $1.amount }
         return DetailBox(title: "Next 30 days") {
@@ -419,5 +419,73 @@ struct InvestorBox: View {
                     .disabled(!store.canAfford(store.investorBuyoutCost))
             }
         }
+    }
+}
+
+/// The staff and this week's candidates (Model/StoreStaff.swift).
+struct StaffList: View {
+    @Environment(GameStore.self) private var store
+    @State private var showCandidates = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Staff keep the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day, and are paid on open days. Staff sell at your price. They do not haggle, trade, or sell a second item, and they buy only through the buylist.")
+                .font(.caption).foregroundStyle(Theme.muted)
+            if store.staff.isEmpty {
+                Text("No staff. The store opens only while you work the counter.").font(.subheadline).foregroundStyle(Theme.orange)
+            }
+            ForEach(store.staff) { e in employeeRow(e, hired: true) }
+            Button(showCandidates ? "Hide candidates" : "Candidates this week (\(store.candidates.count))") { showCandidates.toggle() }
+                .buttonStyle(.bordered).font(.caption)
+            if showCandidates {
+                ForEach(store.candidates) { e in employeeRow(e, hired: false) }
+                Text("New candidates come each Monday. A manager brings \(Int(((Balance.managerEventPlayers - 1) * 100).rounded()))% more event players and watches the others. Up to \(Balance.staffMax) staff.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
+    }
+
+    private func dots(_ label: String, _ n: Int) -> some View {
+        HStack(spacing: 2) {
+            Text(label).font(.caption2).foregroundStyle(Theme.muted).frame(width: 64, alignment: .leading)
+            ForEach(1...5, id: \.self) { i in
+                Circle().fill(i <= n ? Theme.cyan : Theme.line).frame(width: 6, height: 6)
+            }
+        }
+    }
+
+    private func employeeRow(_ e: Employee, hired: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("\(e.name) · \(e.role.rawValue)").font(.subheadline.weight(.medium))
+                Spacer()
+                Text("\(money(e.wage))/h · \(money(e.dailyWage))/day").font(.caption.monospaced())
+            }
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 2) {
+                    dots("Knowledge", e.knowledge)
+                    dots("Sales", e.sales)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    dots("Honesty", e.honesty)
+                    dots("Reliable", e.reliability)
+                }
+            }
+            if hired {
+                HStack {
+                    Text("Morale \(Int(e.morale.rounded()))").font(.caption2.monospaced())
+                        .foregroundStyle(e.morale < Balance.quitMorale + 10 ? Theme.orange : Theme.muted)
+                    Spacer()
+                    Button("Raise +\(money(Balance.raiseStep))/h") { store.giveRaise(e.id) }.buttonStyle(.bordered).controlSize(.small)
+                    Button("Let go", role: .destructive) { store.fire(e.id) }.buttonStyle(.bordered).controlSize(.small)
+                }
+            } else {
+                Button("Hire") { store.hire(e) }.buttonStyle(.bordered).controlSize(.small)
+                    .disabled(store.staff.count >= Balance.staffMax)
+            }
+        }
+        .padding(8)
+        .background(Theme.background)
+        .framed()
     }
 }

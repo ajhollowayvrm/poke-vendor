@@ -35,6 +35,7 @@ final class GameTests {
         timed("marketing", marketingChannels)
         timed("ladder", ladder)
         timed("opening", opening)
+        timed("staff", staffing)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -613,6 +614,32 @@ final class GameTests {
         for _ in 0..<Balance.eventStoreLeagues { store.noteEventForStatus(.league, players: 10) }
         nextDay()
         check(store.isEventStore, "big events did not make an official event store")
+    }
+
+    /// An older store with the clerk keeps the old wage. A hire adds staff and turns the clerk flag on. Each open day
+    /// charges the staff wage. A raise lifts the wage and morale. Letting everyone go turns the flag off.
+    private func staffing() {
+        fresh()
+        openTestStore()
+        guard var s = store.data.cardStore else { return check(false, "the test store did not open") }
+        s.clerk = true
+        s.business?.staff = nil
+        store.data.cardStore = s
+        check(store.staff.count == 1 && abs(store.staffDailyWage - Balance.clerkWage) < 0.01, "an older store's clerk changed its wage")
+        store.setClerk(false)
+        check(store.staff.isEmpty && store.cardStore?.clerk == false, "letting the clerk go left staff")
+        guard let pick = store.candidates.first else { return check(false, "no candidates") }
+        store.hire(pick)
+        check(store.staff.count == 1 && store.cardStore?.clerk == true, "a hire did not staff the store")
+        guard let e = store.staff.first else { return }
+        store.giveRaise(e.id)
+        check(abs((store.staff.first?.wage ?? 0) - e.wage - Balance.raiseStep) < 0.01 && (store.staff.first?.morale ?? 0) > e.morale, "a raise did not lift the wage and morale")
+        for _ in 0..<Balance.storeBuildDays { nextDay() }
+        let wages = store.data.ledger.filter { $0.category == .wages && $0.label.hasPrefix("Clerk ·") }
+        let daily = store.staffDailyWage
+        check(wages.allSatisfy { abs($0.amount + daily) < 0.01 } || store.staff.count != 1, "a day's wage is not the staff wage")
+        store.fire(e.id)
+        check(store.staff.isEmpty && store.cardStore?.clerk == false, "letting everyone go left the clerk flag on")
     }
 
     /// A channel pays now and each week. It builds an effect that lifts awareness, and the effect fades after it stops.

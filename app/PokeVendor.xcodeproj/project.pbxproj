@@ -73,6 +73,7 @@
 		31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */ = {isa = PBXBuildFile; fileRef = 71BFAA4A10360362D9BE2E1C /* base-set-2.json */; };
 		3209FBD08DDC8BAF97DF52E0 /* TaxBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB88AEE87E1970C61F07F /* TaxBox.swift */; };
 		32208ECC539710AD0EA71CAD /* Meets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B263211917DE478A8911439F /* Meets.swift */; };
+		331F96CAD287A16542AE8507 /* StoreStaff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57A043178AAD3F6388A8E3D /* StoreStaff.swift */; };
 		33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */ = {isa = PBXBuildFile; fileRef = 3300530D0D241B426A6EF827 /* supreme-victors.json */; };
 		336B3AF3DB9F360F1F2186A5 /* BoxContents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 915F98D6A385AE0C6AD57D98 /* BoxContents.swift */; };
 		351DC793C3969007906440D0 /* neo-genesis.json in Resources */ = {isa = PBXBuildFile; fileRef = D94C7BEAEDFB974E1CE01EE2 /* neo-genesis.json */; };
@@ -524,6 +525,7 @@
 		A28FE1FAED611C80FC163221 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
 		A3F552694C9F4F5D41E1A6AC /* fossil-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fossil-1st-edition.json"; sourceTree = "<group>"; };
 		A54CEBF267C5CF60E282DE79 /* journey-together.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "journey-together.json"; sourceTree = "<group>"; };
+		A57A043178AAD3F6388A8E3D /* StoreStaff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreStaff.swift; sourceTree = "<group>"; };
 		A6EF564C070D1FD83CA14733 /* CaseOpenSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseOpenSheet.swift; sourceTree = "<group>"; };
 		A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-magma-vs-team-aqua.json"; sourceTree = "<group>"; };
 		A7B821E5FBD06698D7A362DE /* hidden-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-fates.json"; sourceTree = "<group>"; };
@@ -944,6 +946,7 @@
 				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
 				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
 				28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */,
+				A57A043178AAD3F6388A8E3D /* StoreStaff.swift */,
 				20D2A072C747DEAB8413196A /* Supplies.swift */,
 				AB5F86050C95B7226F93873C /* Taxes.swift */,
 				3946D786540E6C06E3BB91E4 /* Upgrades.swift */,
@@ -1432,6 +1435,7 @@
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */,
 				475B860FD55F4C5531477F54 /* StoreShelfControls.swift in Sources */,
+				331F96CAD287A16542AE8507 /* StoreStaff.swift in Sources */,
 				F905C1398E75C747E47A1439 /* StreamView.swift in Sources */,
 				0B3C36D61F4A2B88E17758D1 /* Supplies.swift in Sources */,
 				5FB9D02054882C35C7069D88 /* SuppliesViews.swift in Sources */,
