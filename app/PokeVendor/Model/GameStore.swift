@@ -347,6 +347,7 @@ final class GameStore {
             startRun()
         }
         syncMarket()
+        backfillAuctionFinals()
         scheduleShows()
         scheduleSales()
         seedContacts()
@@ -1320,6 +1321,7 @@ final class GameStore {
         lines += lotsEndDay()
         lines += auctionHouseEndDay()
         lines += auctionLotsEndDay()
+        lines += ownAuctionsEndDay()
         lines += vendingEndDay()
         lines += calloutsEndDay()
         lines += rivalsEndDay()

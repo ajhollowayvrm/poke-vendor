@@ -17,8 +17,13 @@ The hub row **Auctions** opens one screen with three tabs.
 
 - The game rolls the final price of an eBay auction when the player lists it (`Listing.auctionFinal`). The odds are the
   same as before: a 5% or more chance of no sale, and a price of the market × (0.95 ± 0.35).
-- Each day the current bid is the final × (0.2 + 0.5 × p²), where p is the share of the auction that has gone by. The
-  last day shows about 70% of the final. At the close the bid jumps to the final, as with a real snipe.
+- Bids come in from the first night. An auction that sells has at least 1 bid after one night, and most of its bids
+  come early (the count follows p^0.6, where p is the share of the auction that has gone by).
+- Each day the current bid is the final × (0.3 + 0.4 × p). The last day shows about 70% of the final. At the close the
+  bid jumps to the final, as with a real snipe.
+- **The morning report** gives the news of each running auction with bids: the bids, the current bid, the watchers, and
+  the days left. With more than 3 auctions, one line sums them up.
+- An auction from before the live bids gets its final price when the save loads, so it shows bids too.
 - **Starting bid**: the sell sheet sets it as a share of the expected price, from $0.99 (0%) to 100%. When the final is
   under the starting bid, the auction ends with no sale. The row shows "Starts $X" until the first bid.
 - An item in the player's own store that is also on an eBay auction shows in the list too.

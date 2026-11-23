@@ -421,6 +421,22 @@ final class GameTests {
         check(abs(cashBin - store.cash - store.lotTotal(bin, hammer: 90)) < 0.01, "Buy It Now cost \(money(cashBin - store.cash))")
         check(store.data.auctionLots.isEmpty, "a lot bought with Buy It Now stayed open")
 
+        // An auction that sells shows a bid after its first night.
+        store.addTestCard(print)
+        if let live = store.data.raw.last {
+            store.list([live.id], channel: .ebayAuction, price: { _ in 50 }, auctionDays: 3, insured: false)
+            if let i = store.data.raw.firstIndex(where: { $0.id == live.id }), case .listed(var l) = store.data.raw[i].status {
+                l.auctionFinal = 40
+                store.data.raw[i].status = .listed(l)
+            }
+            nextDay()
+            if case .listed(let l) = store.card(live.id)?.status, let view = store.ownAuctionView(l, id: live.id) {
+                check(view.bids >= 1 && (view.bid ?? 0) > 0, "an auction that sells shows no bid after a night")
+            } else {
+                check(false, "a 3-day auction left its listing after one night")
+            }
+        }
+
         // A starting bid above what the buyers pay: no sale.
         store.addTestCard(print)
         if let high = store.data.raw.last {

@@ -51,18 +51,9 @@ struct AuctionsView: View {
 
     /// The player's eBay auctions: cards, slabs, and sealed product.
     private var myAuctions: [(id: UUID, name: String, listing: Listing, route: AppRoute)] {
-        var out: [(UUID, String, Listing, AppRoute)] = []
-        // An item in the player's own store can be on an eBay auction too: its online listing.
-        for c in store.data.raw + store.data.slabs {
-            let name = "\(c.print.name)\(c.grade.map { " \($0.label)" } ?? "")"
-            if case .listed(let l) = c.status, l.auctionEndDay != nil { out.append((c.id, name, l, .card(c.id))) }
-            if let l = c.onlineListing, l.auctionEndDay != nil { out.append((c.id, name, l, .card(c.id))) }
-        }
-        for s in store.data.sealed {
-            if case .listed(let l) = s.status, l.auctionEndDay != nil { out.append((s.id, s.name, l, .sealed(s.id))) }
-            if let l = s.onlineListing, l.auctionEndDay != nil { out.append((s.id, s.name, l, .sealed(s.id))) }
-        }
-        return out.sorted { ($0.2.auctionEndDay ?? 0) < ($1.2.auctionEndDay ?? 0) }.map { (id: $0.0, name: $0.1, listing: $0.2, route: $0.3) }
+        store.ownAuctions().map { a in
+            (id: a.id, name: a.name, listing: a.listing, route: store.data.sealed.contains { $0.id == a.id } ? .sealed(a.id) : .card(a.id))
+        }.sorted { ($0.listing.auctionEndDay ?? 0) < ($1.listing.auctionEndDay ?? 0) }
     }
 
     private var consigned: [(OwnedCard, AuctionConsignment)] {

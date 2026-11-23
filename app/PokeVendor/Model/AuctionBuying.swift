@@ -145,7 +145,8 @@ extension GameStore {
         return listing
     }
 
-    /// The current bid on one of the player's eBay auctions. The bids climb slowly, then jump on the last day.
+    /// The current bid on one of the player's eBay auctions. Bids come in from the first night: most of them early, and
+    /// the price climbs to about 70% of the final. At the close it jumps to the final, as with a real snipe.
     func ownAuctionView(_ listing: Listing, id: UUID) -> OwnAuctionView? {
         guard let end = listing.auctionEndDay else { return nil }
         let length = max(1, end - listing.dayListed)
@@ -159,10 +160,63 @@ extension GameStore {
         // No sale: nobody bids.
         guard final > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers / 2, daysLeft: end - data.day) }
         let totalBids = seed.int(3...8) + Int(log10(max(1, final)) * 3)
-        let bids = Int((Double(totalBids) * pow(p, 1.4)).rounded())
+        // After the first night there is always a bid.
+        let bids = elapsed == 0 ? 0 : max(1, Int((Double(totalBids) * pow(p, 0.6)).rounded()))
         guard bids > 0 else { return OwnAuctionView(bid: nil, bids: 0, watchers: watchers, daysLeft: end - data.day) }
-        let bid = max(listing.auctionStart ?? 0.99, (final * (0.2 + 0.5 * p * p) * 100).rounded() / 100)
+        let bid = max(listing.auctionStart ?? 0.99, (final * (0.3 + 0.4 * p) * 100).rounded() / 100)
         return OwnAuctionView(bid: bid, bids: bids, watchers: watchers, daysLeft: end - data.day)
+    }
+
+    /// The player's running eBay auctions: name and listing. Cards, slabs, sealed, and the online listings of the store.
+    func ownAuctions() -> [(id: UUID, name: String, listing: Listing)] {
+        var out: [(id: UUID, name: String, listing: Listing)] = []
+        for c in data.raw + data.slabs {
+            let name = "\(c.print.name)\(c.grade.map { " \($0.label)" } ?? "")"
+            if case .listed(let l) = c.status, l.auctionEndDay != nil { out.append((c.id, name, l)) }
+            if let l = c.onlineListing, l.auctionEndDay != nil { out.append((c.id, name, l)) }
+        }
+        for s in data.sealed {
+            if case .listed(let l) = s.status, l.auctionEndDay != nil { out.append((s.id, s.name, l)) }
+            if let l = s.onlineListing, l.auctionEndDay != nil { out.append((s.id, s.name, l)) }
+        }
+        return out
+    }
+
+    /// The morning news of the player's eBay auctions: each one with bids, or a summary when there are many.
+    func ownAuctionsEndDay() -> [String] {
+        let running = ownAuctions().compactMap { a -> (String, OwnAuctionView)? in
+            guard let view = ownAuctionView(a.listing, id: a.id), view.bids > 0, let bid = view.bid, bid > 0 else { return nil }
+            return (a.name, view)
+        }
+        guard !running.isEmpty else { return [] }
+        func ends(_ d: Int) -> String { d <= 0 ? "ends tonight" : "\(d) day\(d == 1 ? "" : "s") left" }
+        if running.count > 3 {
+            let bids = running.reduce(0) { $0 + $1.1.bids }
+            let top = running.max { ($0.1.bid ?? 0) < ($1.1.bid ?? 0) }!
+            return ["Your \(running.count) eBay auctions have \(bids) bids. Top: \(top.0) at \(money(top.1.bid ?? 0))."]
+        }
+        return running.map { name, v in
+            "eBay auction, \(name): \(v.bids) bid\(v.bids == 1 ? "" : "s"), now \(money(v.bid ?? 0)), \(v.watchers) watching, \(ends(v.daysLeft))."
+        }
+    }
+
+    /// An auction from before the live bids has no final price. It gets one now, so it shows bids too.
+    func backfillAuctionFinals() {
+        for i in data.raw.indices {
+            if case .listed(let l) = data.raw[i].status, l.auctionEndDay != nil, l.auctionFinal == nil {
+                data.raw[i].status = .listed(auctionListing(l, id: data.raw[i].id))
+            }
+        }
+        for i in data.slabs.indices {
+            if case .listed(let l) = data.slabs[i].status, l.auctionEndDay != nil, l.auctionFinal == nil {
+                data.slabs[i].status = .listed(auctionListing(l, id: data.slabs[i].id))
+            }
+        }
+        for i in data.sealed.indices {
+            if case .listed(let l) = data.sealed[i].status, l.auctionEndDay != nil, l.auctionFinal == nil {
+                data.sealed[i].status = .listed(auctionListing(l, id: data.sealed[i].id))
+            }
+        }
     }
 
     /// A seed that stays the same between launches. `hashValue` changes on each launch.
