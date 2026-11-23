@@ -230,9 +230,9 @@ buylist is the last-resort way to raise cash before rent is due (see
 ## Costs that grow
 
 **Status: built** (`Model/LateGame.swift`). Rent rises by 5% each year. A large
-stock needs a storage unit, and large sales need a bookkeeper. Two large purchases
-are in Upgrades: a warehouse removes the storage unit, and a home ends rent and
-adds upkeep.
+stock needs a storage unit (see [37-storage.md](37-storage.md)), and large sales need
+a bookkeeper. Two large purchases are in Upgrades: a warehouse removes the home space
+limit, and a home ends rent, adds upkeep, and holds more stock.
 
 A job that ends before Friday pays the days worked since the last payday. A
 weekend hire is paid for the whole next week.

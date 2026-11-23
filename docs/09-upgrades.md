@@ -148,7 +148,7 @@ See [06-social-media.md](06-social-media.md) and
 
 | Upgrade | Cost | What it does |
 | --- | --- | --- |
-| Your own warehouse | $90,000 | Room for any amount of stock. No storage unit again. |
+| Your own warehouse | $90,000 | Room for any amount of stock at home. No home space limit (docs/37). |
 | Buy a home | $350,000 | Rent stops for good. Upkeep is $600 every 4 weeks. |
 
 See [16-time-and-day.md](16-time-and-day.md#costs-that-grow).

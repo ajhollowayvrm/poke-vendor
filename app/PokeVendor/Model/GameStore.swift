@@ -156,6 +156,8 @@ struct GameData: Codable {
     var callouts = CalloutState()
     /// Auction lots that the player can bid on: eBay and the house catalogs (Model/AuctionBuying.swift).
     var auctionLots: [AuctionLot] = []
+    /// The storage unit (Model/Storage.swift).
+    var storage = StorageState()
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -258,6 +260,7 @@ extension GameData {
         hiddenActs = v(.hiddenActs, hiddenActs)
         callouts = v(.callouts, callouts)
         auctionLots = v(.auctionLots, auctionLots)
+        storage = v(.storage, storage)
     }
 }
 
@@ -1352,6 +1355,7 @@ final class GameStore {
         if data.gameOver == nil { lines += debtEndDay() }
         if data.gameOver == nil { lines += collectionsEndDay() }
         if data.gameOver == nil { lines += lossesEndDay() }
+        if data.gameOver == nil { lines += storageEndDay() }
         if data.gameOver == nil { lines += storeBreakInEndDay() }
         if data.gameOver == nil { lines += storeGrowthDay() }
         if data.gameOver == nil { lines += businessCostsEndDay() }
@@ -1387,8 +1391,9 @@ final class GameStore {
             switch item.status {
             case .onTheWay(let days, let store):
                 if days <= 1 {
-                    item.status = nil
-                    note("Delivered from \(store.rawValue): \(item.name)")
+                    // A sealed delivery can go straight to the storage unit (Model/Storage.swift).
+                    item.status = deliveryStatus(for: item)
+                    note("Delivered from \(store.rawValue)\(item.status == .inStorage ? " to your storage unit" : ""): \(item.name)")
                 } else {
                     item.status = .onTheWay(daysLeft: days - 1, store: store)
                 }
@@ -1409,8 +1414,8 @@ final class GameStore {
                 }
             case .arriving(let days, let from):
                 if days <= 1 {
-                    item.status = nil
-                    note("Arrived from \(from): \(item.name)")
+                    item.status = deliveryStatus(for: item)
+                    note("Arrived from \(from)\(item.status == .inStorage ? " at your storage unit" : ""): \(item.name)")
                 } else {
                     item.status = .arriving(daysLeft: days - 1, from: from)
                 }

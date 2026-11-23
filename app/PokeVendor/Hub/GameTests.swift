@@ -30,6 +30,7 @@ final class GameTests {
         timed("resubmit", crackAndResubmit)
         timed("reseal", resealFiller)
         timed("auctions", auctions)
+        timed("storage", storage)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -443,6 +444,49 @@ final class GameTests {
             store.list([high.id], channel: .ebayAuction, price: { _ in 50 }, auctionDays: 3, insured: false, auctionStart: { _ in 1_000_000 })
             if case .listed(let l) = store.card(high.id)?.status { check(l.auctionFinal == 0, "an auction under its starting bid can sell") }
         }
+    }
+
+    // MARK: - Storage unit (docs/37-storage.md)
+
+    /// Items move only on a visit day, and only with room. A visit takes the time. A delivery can go to the unit. Items in
+    /// the unit take no home space. The clutter fee charges the spaces over the limit.
+    private func storage() {
+        fresh()
+        guard let box = store.addTestProduct("565630"), let other = store.addTestProduct("565630") else {
+            return check(false, "the storage test has no product")
+        }
+        check(store.moveToStorage([box.id]) == 0, "an item moved with no unit")
+        check(store.rentStorage(.small), "a unit could not be rented")
+        check(store.moveToStorage([box.id]) == 0, "an item moved with no visit")
+        let hour = store.data.hour
+        check(store.visitStorage(), "a visit was refused")
+        check(abs(store.data.hour - hour - Balance.storageVisitHours) < 0.01 || store.data.hour > hour, "a visit took no time")
+        let homeBefore = store.homeSpaceUsed
+        check(store.moveToStorage([box.id]) == 1, "an item did not move in on a visit")
+        check(store.homeSpaceUsed == homeBefore - store.space(of: box), "an item in the unit still takes home space")
+        check(!store.endStorage(), "a unit with items in it was ended")
+        check(!store.rentStorage(.small), "the same size was rented again")
+        check(store.takeFromStorage([box.id]) == 1, "an item did not come home on a visit")
+
+        // A delivery goes to the unit when the player chose that.
+        store.setDeliverToStorage(true)
+        if let i = store.data.sealed.firstIndex(where: { $0.id == other.id }) {
+            store.data.sealed[i].status = .arriving(daysLeft: 1, from: "Test")
+        }
+        nextDay()
+        check(store.data.sealed.first { $0.id == other.id }?.status == .inStorage, "a delivery did not go to the unit")
+        check(store.takeFromStorage([other.id]) == 0, "an item came home with no visit")
+
+        // The clutter fee: each space over the limit costs the fee each night.
+        store.data.storage = StorageState()
+        let limit = store.homeSpaceLimit ?? 0
+        while store.homeSpaceUsed <= limit + 2 { _ = store.addTestProduct("565630") }
+        let over = store.homeOverflow
+        let fees = store.data.ledger.filter { $0.label.hasPrefix("Clutter fee") }.count
+        nextDay()
+        let fee = store.data.ledger.last { $0.label.hasPrefix("Clutter fee") }
+        check(store.data.ledger.filter { $0.label.hasPrefix("Clutter fee") }.count == fees + 1
+              && abs((fee?.amount ?? 0) + Double(over) * Balance.clutterFeePerSpace) < 0.01, "the clutter fee is wrong")
     }
 
     // MARK: - Opportunities and flips

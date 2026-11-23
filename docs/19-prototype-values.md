@@ -765,7 +765,7 @@ See [30-haggling-and-deal-reputation.md](30-haggling-and-deal-reputation.md).
 | Collection goals | $1,000, $10,000, $50,000, $250,000 |
 | Storage unit | On the 1st of each month. 300 items $150, 800 items $400, 2,000 items $900. 10 bulk cards count as 1 item |
 | Bookkeeper | On the 1st of each month. 1.5% of the sales above $25,000 in the month before |
-| Your own warehouse | $90,000. No storage unit |
+| Your own warehouse | $90,000. No home space limit (docs/37) |
 | Buy a home | $350,000. No rent, $600 upkeep every 28 days |
 | Unpaid business cost | Reputation −2 |
 

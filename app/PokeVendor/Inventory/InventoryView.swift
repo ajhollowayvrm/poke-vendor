@@ -47,6 +47,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     case listed = "Listed", consigned = "Consigned", inStore = "In your store", atAuction = "At auction"
     case soldToViewer = "Sold to a viewer"
     case openedAtShop = "Opened · rip it"
+    case inStorage = "In storage"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -71,6 +72,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         case .atAuctionHouse: return self == .atAuction
         case .soldToViewer: return self == .soldToViewer
         case .openedAtShop: return self == .openedAtShop
+        case .inStorage: return self == .inStorage
         case nil: return false
         }
     }

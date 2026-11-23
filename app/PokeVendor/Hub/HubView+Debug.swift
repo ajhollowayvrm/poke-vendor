@@ -95,6 +95,13 @@ extension HubView {
             case "nextshow": nav.path = [.calendar] + (store.upcomingShows.first(where: { $0.startDay > store.day }).map { [.show($0.id)] } ?? [])
             case "sealed": nav.path = [.inventory(.sealed)]
             case "settings": nav.path = [.settings]
+            case "storage":
+                store.startRun()
+                for _ in 0..<4 { _ = store.addTestProduct("565630") }
+                store.rentStorage(.small)
+                store.visitStorage()
+                if let first = store.data.sealed.first { store.moveToStorage([first.id]) }
+                nav.path = [.storage]
             case "auctions", "auctions-ebay", "auctions-houses":
                 AuctionsView.debugTab = args[i + 1] == "auctions-ebay" ? .ebay : args[i + 1] == "auctions-houses" ? .houses : .selling
                 store.addTestCash(5_000)

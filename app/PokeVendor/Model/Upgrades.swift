@@ -135,7 +135,7 @@ enum Upgrade: String, Codable, CaseIterable, Hashable {
         case .foldingCart: "Carry \(Balance.toteSpace[1]) spaces of sealed product to a table instead of \(Balance.toteSpace[0]). A booster box takes \(Balance.space(volume: Balance.boosterBoxVolume))."
         case .dehumidifier: "Cuts the chance of water damage to raw cards in storage by \(Int(((1 - Balance.dehumidifierFactor) * 100).rounded()))%."
         case .fireSafe: "A sealed safe for your cards. Water damage to raw cards in storage cannot happen."
-        case .warehouse: "Room for any amount of stock. You never pay for a storage unit again."
+        case .warehouse: "Room for any amount of stock at home. No home space limit, and no clutter fee."
         case .ownHome: "Rent stops for good, so a missed rent payment can no longer end the run. Upkeep is \(money(Balance.ownHomeUpkeep)) every 4 weeks."
         case .savedSearch: "eBay shows \(Balance.ebayLotCountSaved) collection lots instead of \(Balance.ebayLotCount), and new lots come every day instead of every \(Balance.ebayLotDays) days."
         case .sellerResearch: "Each eBay lot shows whether the seller also sells singles from their lots. Most sellers who call a searched lot \"unsearched\" do."

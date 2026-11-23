@@ -421,6 +421,8 @@ enum ItemStatus: Codable, Hashable {
     /// The player must rip it. No sell, list, shelf, vend, split, or Rip & Ship path offers an item with a status.
     /// Loose packs of the product keep this status until the player rips them.
     case openedAtShop
+    /// In the player's storage unit. A visit to the unit brings it home (Model/Storage.swift).
+    case inStorage
 
     /// A listing that the player can take down: any listing except a running eBay auction.
     var isRemovableListing: Bool {
@@ -441,6 +443,7 @@ enum ItemStatus: Codable, Hashable {
         case .atAuctionHouse(let a): "AT \(a.house.rawValue.uppercased()) · DAY \(a.auctionDay + 1)"
         case .soldToViewer: "SOLD · SHIPS TO A VIEWER"
         case .openedAtShop: "OPENED · RIP IT"
+        case .inStorage: "IN STORAGE"
         }
     }
 }

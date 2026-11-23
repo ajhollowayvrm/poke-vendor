@@ -34,6 +34,7 @@ enum AppRoute: Hashable {
     case shipQueue
     case callouts
     case auctions
+    case storage
 }
 
 struct StoreRunSession: Identifiable {
@@ -127,6 +128,7 @@ extension View {
             case .shipQueue: ShipQueueView()
             case .callouts: CalloutsView()
             case .auctions: AuctionsView()
+            case .storage: StorageView()
             }
         }
     }

@@ -280,6 +280,13 @@ struct HubView: View {
         }
     }
 
+    /// The home space and the unit, for the hub row.
+    private var storageDetail: String {
+        let home = store.homeSpaceLimit.map { "home \(store.homeSpaceUsed)/\($0)" } ?? "home \(store.homeSpaceUsed)"
+        guard let size = store.storageSize else { return home }
+        return "\(home) · unit \(store.storageUsed)/\(size.capacity)"
+    }
+
     /// Your auctions and bids, for the hub row.
     private var auctionDetail: String {
         let selling = (store.data.raw + store.data.slabs).filter {
@@ -354,6 +361,19 @@ struct HubView: View {
                     Text("Auctions").font(.subheadline)
                     Spacer()
                     Text(auctionDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            Divider().overlay(Theme.line)
+            Button { nav.path.append(.storage) } label: {
+                HStack {
+                    Image(systemName: "shippingbox").foregroundStyle(store.homeOverflow > 0 ? Theme.orange : Theme.cyan)
+                    Text("Storage").font(.subheadline)
+                    Spacer()
+                    Text(storageDetail).font(.caption.monospaced())
+                        .foregroundStyle(store.homeOverflow > 0 ? Theme.orange : Theme.muted)
                     Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
                 }
                 .contentShape(Rectangle())

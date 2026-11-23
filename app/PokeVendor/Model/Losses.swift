@@ -87,7 +87,8 @@ extension GameStore {
     private func inHand(_ status: ItemStatus?) -> Bool {
         guard let status else { return true }
         switch status {
-        case .listed, .openedAtShop: return true
+        // The policy covers the storage unit too.
+        case .listed, .openedAtShop, .inStorage: return true
         default: return false
         }
     }
@@ -219,6 +220,9 @@ extension GameStore {
         save()
         return line
     }
+
+    /// Takes items for a theft at the storage unit or at home (Model/Storage.swift).
+    func loseItems(_ ids: Set<UUID>, event: String) -> String { lose(ids, event: event) }
 
     /// One roll at the end of a booked show day: a card or a slab walks off the table. `table` is what is still on it.
     /// `awayShare` is the share of the day that the player spent away from the table (0 to 1).

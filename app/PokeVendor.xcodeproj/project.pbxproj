@@ -200,6 +200,7 @@
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
 		A594A05B05D0A05E3C748B74 /* neo-genesis-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
+		A78594E3A38DD89AB532C524 /* StorageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D439F10D2937F79B968A0331 /* StorageView.swift */; };
 		A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF5188F9BDD662DDFD44100F /* AuctionViews.swift */; };
 		A96D836598F93ED6B092F6B0 /* aquapolis.json in Resources */ = {isa = PBXBuildFile; fileRef = BD567FF6A1AB5571EA47AA26 /* aquapolis.json */; };
 		A99DF683CF20253B0DBA555B /* Showcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8AC9BA20E99FD7B453835C /* Showcase.swift */; };
@@ -292,6 +293,7 @@
 		EDECE585BE210F65109E48BD /* Counterfeits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4755B9D1944633247C22C671 /* Counterfeits.swift */; };
 		EE25610F66D60690F7AE0E00 /* RipSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDA3B83589268718F6EE970 /* RipSettings.swift */; };
 		EEB80B5D9820D375FBB5A972 /* RipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DB2E7EA020C2D7260109C7E /* RipView.swift */; };
+		EED71301BCF076AC933B473A /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD4C816D189677908B95C65 /* Storage.swift */; };
 		EF4BDC3067074B30611134AD /* Meetups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C25C4A7C5553E5A77DE8ACA /* Meetups.swift */; };
 		EFB2115EA9D920286DEF9A6D /* plasma-blast.json in Resources */ = {isa = PBXBuildFile; fileRef = EF7FFEBF9985028B8340B74E /* plasma-blast.json */; };
 		EFFE245540550F3FE1FB6701 /* celebrations.json in Resources */ = {isa = PBXBuildFile; fileRef = FDDB3709D7BFD861D4F66368 /* celebrations.json */; };
@@ -382,6 +384,7 @@
 		3C84ED1C19FE6F6A1F3A067E /* sword-shield.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sword-shield.json"; sourceTree = "<group>"; };
 		3C913785BCCC6A46053CC9E7 /* LateGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LateGame.swift; sourceTree = "<group>"; };
 		3CBB15631162BD3EB2FBA5F2 /* neo-destiny-1st-edition.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-destiny-1st-edition.json"; sourceTree = "<group>"; };
+		3CD4C816D189677908B95C65 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		3DAA9319761EC5C721BCC199 /* southern-islands.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "southern-islands.json"; sourceTree = "<group>"; };
 		3DDA3B83589268718F6EE970 /* RipSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RipSettings.swift; sourceTree = "<group>"; };
 		3F3268F5FC863D9DCC0EA69C /* ShortsViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortsViews.swift; sourceTree = "<group>"; };
@@ -557,6 +560,7 @@
 		D0A2E7965BD452ED910DD1B7 /* Callouts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Callouts.swift; sourceTree = "<group>"; };
 		D24E9F46D8D0F6804E3A974E /* next-destinies.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "next-destinies.json"; sourceTree = "<group>"; };
 		D3C180A062FEB64E1EB184FD /* legends-awakened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legends-awakened.json"; sourceTree = "<group>"; };
+		D439F10D2937F79B968A0331 /* StorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageView.swift; sourceTree = "<group>"; };
 		D5A73274FF00A599902EDFFF /* cases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cases.json; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
 		D79C5589F2211F09E31C1FB2 /* primal-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "primal-clash.json"; sourceTree = "<group>"; };
@@ -916,6 +920,7 @@
 				57C938A56BB535142EA1BE4B /* Shows.swift */,
 				D894A52F7AE73A7EAF8DF6D3 /* Social.swift */,
 				2D3E9F9E012F05AC4B3E9A5B /* Stashes.swift */,
+				3CD4C816D189677908B95C65 /* Storage.swift */,
 				38BFDCD9D1F6132AB9C527A7 /* StoreBuying.swift */,
 				9814967BDC613C1BD5438238 /* StoreConsignment.swift */,
 				8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */,
@@ -983,6 +988,7 @@
 				4BAC90EF53AF2640A15B85AF /* PaymentViews.swift */,
 				FCBCDFCBA704936241278B42 /* RetailSim.swift */,
 				B39FE2287AB7BA7F1781A41B /* SettingsView.swift */,
+				D439F10D2937F79B968A0331 /* StorageView.swift */,
 				6EFEFB53E1A625FF4E962C58 /* StoreEventsBox.swift */,
 				062B034B3D8890FD6A19F10F /* StoreGrowthViews.swift */,
 				7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */,
@@ -1391,6 +1397,8 @@
 				C1CC43A88E2E3D16D54DD9D1 /* SoundFX.swift in Sources */,
 				2A110313E4DF48760D91C70F /* StashPanel.swift in Sources */,
 				18D0A389AC8681EB12B78A9B /* Stashes.swift in Sources */,
+				EED71301BCF076AC933B473A /* Storage.swift in Sources */,
+				A78594E3A38DD89AB532C524 /* StorageView.swift in Sources */,
 				B4523C2769E07A40AC0C28E7 /* StoreBuying.swift in Sources */,
 				7DFD60F0D41615FE1621698C /* StoreConsignment.swift in Sources */,
 				2DA14E7BA1560F6058013971 /* StoreCredit.swift in Sources */,
