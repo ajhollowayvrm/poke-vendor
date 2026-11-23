@@ -14,6 +14,11 @@ overhead, eviction, closing the store, and the reaction of the game shops
 The numbers are
 in [19-prototype-values.md](19-prototype-values.md#your-own-store).
 
+The business side of the store (store numbers, customer types, reviews, marketing, the distribution
+ladder, the opening tasks, staff, the floor, rivals, and store levels) is in
+[proposals/store-business.md](proposals/store-business.md). It starts with the lease. The game before
+the store does not change.
+
 The player starts with no storefront (see
 [01-premise-and-loop.md](01-premise-and-loop.md#starting-point)). A
 store of their own is a late goal. The game shows the goal from day 1,

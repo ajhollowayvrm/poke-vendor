@@ -27,6 +27,7 @@ struct CardStoreView: View {
                     }
                     rentBanner(s)
                     if store.openingInProgress { OpeningBox() }
+                    if store.pendingDecision != nil { DecisionCard() }
                     BusinessLink()
                     todayBox(s)
                     numbersBox

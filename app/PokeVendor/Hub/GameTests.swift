@@ -36,6 +36,7 @@ final class GameTests {
         timed("ladder", ladder)
         timed("opening", opening)
         timed("staff", staffing)
+        timed("floor", floor)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -640,6 +641,44 @@ final class GameTests {
         check(wages.allSatisfy { abs($0.amount + daily) < 0.01 } || store.staff.count != 1, "a day's wage is not the staff wage")
         store.fire(e.id)
         check(store.staff.isEmpty && store.cardStore?.clerk == false, "letting everyone go left the clerk flag on")
+    }
+
+    /// The floor takes two setups and costs money. Clearance sells at 80% of market. A decision does what it says. A price
+    /// war costs traffic only while the singles are over market.
+    private func floor() {
+        fresh()
+        openTestStore()
+        for _ in 0..<Balance.storeBuildDays { nextDay() }
+        let cash = store.cash
+        store.toggleFloor(.impulseRack)
+        check(store.floorSetups == [.impulseRack] && abs(cash - store.cash - Balance.floorChangeCost) < 0.01, "a floor setup did not cost its price")
+        store.data.hour = Balance.dayStart
+        store.toggleFloor(.slabsFront)
+        store.data.hour = Balance.dayStart
+        store.toggleFloor(.playArea)
+        check(store.floorSetups.count <= Balance.floorSetupMax, "the floor took more than \(Balance.floorSetupMax) setups")
+
+        for print in prismatic.filter({ ($0.market ?? 0) > 5 }).prefix(1) { store.addTestCard(print) }
+        guard let card = store.data.raw.last else { return check(false, "no card") }
+        store.stockStore([card.id])
+        store.markDown([card.id])
+        let item = store.storeShelf().first { $0.id == card.id }
+        check(item.map { abs(store.shelfPrice($0) - ShowSession.round($0.market * Balance.clearanceFactor)) < 0.01 } ?? false, "clearance is not 80% of market")
+
+        store.updateBusiness { $0.decision = Decision(kind: .tradeDispute, day: store.day) }
+        let before = store.cash
+        store.answerDecision(true)
+        check(abs(before - store.cash - Balance.disputeRefund) < 0.01 && store.pendingDecision == nil, "the refund decision did not pay the refund")
+
+        let war = RivalMove(kind: .priceWar, rival: "Test", untilDay: store.day + 10)
+        store.updateBusiness { $0.rivals = [war] }
+        guard var s = store.data.cardStore else { return }
+        s.singlesFactor = 1.2
+        store.data.cardStore = s
+        check(store.rivalTrafficFactor < 1, "a price war cost no traffic with high prices")
+        s.singlesFactor = 1.0
+        store.data.cardStore = s
+        check(abs(store.rivalTrafficFactor - 1) < 0.0001, "a price war cost traffic at market prices")
     }
 
     /// A channel pays now and each week. It builds an effect that lifts awareness, and the effect fades after it stops.

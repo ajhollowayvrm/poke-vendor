@@ -182,6 +182,8 @@ extension GameStore {
         if kind == .tournament, isEventStore { players = Int((Double(players) * Balance.eventStorePlayers).rounded()) }
         // A manager runs a better event (Model/StoreStaff.swift).
         if hasManager { players = Int((Double(players) * Balance.managerEventPlayers).rounded()) }
+        // A rival's tournament on the same night (Model/StoreFloor.swift).
+        if kind == .tournament, eventClash { players = Int((Double(players) * Balance.eventClashPlayers).rounded()) }
         noteEventForStatus(kind, players: players)
         var line: String
         switch kind {

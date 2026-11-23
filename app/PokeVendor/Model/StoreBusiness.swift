@@ -115,6 +115,11 @@ struct BusinessState: Codable, Hashable {
     var staff: [Employee]?
     var candidates: [Employee]?
     var candidatesWeek: Int?
+    /// The floor, clearance, today's decision, and rival moves (`Model/StoreFloor.swift`).
+    var floor: [String]?
+    var clearance: [String]?
+    var decision: Decision?
+    var rivals: [RivalMove]?
 
     init() {}
 
@@ -132,6 +137,10 @@ struct BusinessState: Codable, Hashable {
         staff = try c.decodeIfPresent([Employee].self, forKey: .staff)
         candidates = try c.decodeIfPresent([Employee].self, forKey: .candidates)
         candidatesWeek = try c.decodeIfPresent(Int.self, forKey: .candidatesWeek)
+        floor = try c.decodeIfPresent([String].self, forKey: .floor)
+        clearance = try c.decodeIfPresent([String].self, forKey: .clearance)
+        decision = try c.decodeIfPresent(Decision.self, forKey: .decision)
+        rivals = try c.decodeIfPresent([RivalMove].self, forKey: .rivals)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.
@@ -196,7 +205,8 @@ extension GameStore {
         let weight = (b.marketing?.mapsListed ?? false) ? Balance.mktMapsRatingWeight : 1
         let rating = 1 + 0.12 * weight * (b.rating - Balance.bizRatingBase)
         let loyalty = 1 + (b.loyalty - Balance.bizLoyaltyBase) / 200
-        return max(0.3, awareness * rating * loyalty)
+        // Rival moves (Model/StoreFloor.swift).
+        return max(0.3, awareness * rating * loyalty * rivalTrafficFactor)
     }
 
     /// Today's customer mix: the location's mix with the marketing boosts, scaled to 1.
@@ -204,7 +214,8 @@ extension GameStore {
         guard let s = data.cardStore else { return [:] }
         let boost = business.typeBoost
         var mix = s.location.customerMix
-        for t in CustomerType.allCases { mix[t, default: 0] += boost[t] ?? 0 }
+        let floor = floorTypeBoost
+        for t in CustomerType.allCases { mix[t, default: 0] += (boost[t] ?? 0) + (floor[t] ?? 0) }
         let total = mix.values.reduce(0, +)
         return mix.mapValues { $0 / max(0.001, total) }
     }
@@ -276,7 +287,10 @@ extension GameStore {
         if storeLevel != before {
             lines.append("\(s.name) is a \(storeLevel.name) now. New options open in Business.")
         }
+        let monthEnd = (today - s.leaseDay) % Balance.rentCycleDays == Balance.rentCycleDays - 1 && today > s.openDay
         if let line = monthReviewIfDue(s, today: today) { lines.append(line) }
+        // Tomorrow's decision and rival moves (Model/StoreFloor.swift).
+        lines += floorDayEnd(monthEnd: monthEnd)
         return lines
     }
 

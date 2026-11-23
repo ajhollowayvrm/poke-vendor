@@ -153,9 +153,13 @@ struct BusinessSections: View {
     @Environment(GameStore.self) private var store
 
     var body: some View {
+        if store.pendingDecision != nil { DecisionCard() }
         LevelBox()
         if store.investor != nil { InvestorBox() }
+        if !store.rivalMoves.isEmpty { RivalMovesBox() }
         MarketingBox()
+        FloorBox()
+        DetailBox(title: "Staff") { StaffList() }
         if store.hasStoreAccount { LadderBox() } else if store.data.cardStore != nil {
             DetailBox(title: "Distribution") {
                 Text("Apply for a hobby distributor account on the distributor screen. With an account, the quarterly review can move you up to Preferred and Premier: lower prices, more cases, and net-30 terms.")
@@ -487,5 +491,89 @@ struct StaffList: View {
         .padding(8)
         .background(Theme.background)
         .framed()
+    }
+}
+
+/// Today's morning decision (Model/StoreFloor.swift).
+struct DecisionCard: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        if let d = store.pendingDecision {
+            DetailBox(title: "Decision today · \(d.kind.title)") {
+                Text(d.kind.text).font(.subheadline)
+                HStack {
+                    Button(d.kind.yes) { store.answerDecision(true) }.primaryButton()
+                    Button(d.kind.no) { store.answerDecision(false) }.buttonStyle(.bordered)
+                }
+                Text("If you do not choose today, the second choice happens.").font(.caption2).foregroundStyle(Theme.muted)
+            }
+        }
+    }
+}
+
+/// The floor layout and dead stock (Model/StoreFloor.swift).
+struct FloorBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let dead = store.deadStock
+        DetailBox(title: "The floor") {
+            Text("Room for \(Balance.floorSetupMax) setups. Each change costs \(money(Balance.floorChangeCost)) and \(formatHours(Balance.floorChangeHours)) of your time.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+            ForEach(FloorSetup.allCases) { f in
+                let on = store.floorSetups.contains(f)
+                HStack(alignment: .top) {
+                    Image(systemName: on ? "checkmark.square.fill" : "square").foregroundStyle(on ? Theme.green : Theme.muted)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(f.rawValue).font(.subheadline)
+                        Text(f.detail).font(.caption2).foregroundStyle(Theme.muted)
+                        if !on, let block = store.floorBlock(f) { Text(block).font(.caption2).foregroundStyle(Theme.orange) }
+                    }
+                    Spacer()
+                    Button(on ? "Remove" : "Set up") { store.toggleFloor(f) }
+                        .buttonStyle(.bordered).controlSize(.small)
+                        .disabled(!on && store.floorBlock(f) != nil)
+                }
+            }
+            Divider().overlay(Theme.line)
+            Text("DEAD STOCK · \(dead.count)").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            if dead.isEmpty {
+                Text("Nothing has sat \(Balance.deadStockDays) days.").font(.caption).foregroundStyle(Theme.muted)
+            } else {
+                Text("These items sat \(Balance.deadStockDays) days or more. Dead stock ties up cash. A markdown sells them at \(Int(Balance.clearanceFactor * 100))% of market.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
+                ForEach(dead.prefix(8), id: \.id) { d in
+                    HStack {
+                        Text(d.name).font(.caption).lineLimit(1)
+                        Spacer()
+                        Text("\(d.days)d · \(money(d.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                        if store.isOnClearance(d.id) { Tag(text: "CLEARANCE", color: Theme.orange) }
+                    }
+                }
+                let marked = dead.filter { !store.isOnClearance($0.id) }
+                if !marked.isEmpty {
+                    Button("Mark down \(marked.count)") { store.markDown(marked.map(\.id)) }.buttonStyle(.bordered).font(.caption)
+                }
+            }
+        }
+    }
+}
+
+/// Rival moves that run now.
+struct RivalMovesBox: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        DetailBox(title: "Rivals") {
+            ForEach(store.rivalMoves, id: \.self) { m in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(m.kind.title) · \(m.rival)").font(.subheadline)
+                    Text(m.untilDay.map { "Until day \($0 + 1)." } ?? "For good.").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                }
+            }
+            Text("A price war costs customers while your singles are over market. An event clash cuts your tournament players. A new shop takes a few customers for good.")
+                .font(.caption2).foregroundStyle(Theme.muted)
+        }
     }
 }

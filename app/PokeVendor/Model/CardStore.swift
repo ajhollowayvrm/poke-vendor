@@ -619,7 +619,9 @@ extension GameStore {
                 items = items.filter { !$0.isCard }
             default: break
             }
-            guard let item = pickForCustomer(items, packWeight: type == .players ? Balance.eventPackWeight : 1) else { continue }
+            // The impulse rack by the register sells more packs (Model/StoreFloor.swift).
+            let packWeight = (type == .players ? Balance.eventPackWeight : 1) * (impulseRack ? Balance.impulsePackWeight : 1)
+            guard let item = pickForCustomer(items, packWeight: packWeight) else { continue }
             // Investors know the market and pay less over it.
             let limit = item.market * Double.random(in: type == .investors ? Balance.investorBuyerLimit : Balance.storeBuyerLimit)
             let price = shelfPrice(item)
@@ -684,7 +686,7 @@ extension GameStore {
 
     /// Returns what the store earns: the price, or the cut of a consigned card.
     @discardableResult
-    private func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) -> Double {
+    func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) -> Double {
         if item.consigned { return sellConsigned(item, price: price, storeName: storeName) }
         let id = item.id
         settleOnlineListing(id, name: item.name)

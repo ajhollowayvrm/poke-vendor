@@ -1,6 +1,9 @@
 # Proposal: the store as a business sim
 
-**Status: approved by AJ on 2026-11-23** ("I like all this"). Built in phases (see Build order).
+**Status: built** (2026-11-23). AJ approved it ("I like all this"). Code: `Model/StoreBusiness.swift`,
+`Model/StoreMarketing.swift`, `Model/DistributionLadder.swift`, `Model/StoreOpening.swift`, `Model/StoreStaff.swift`,
+`Model/StoreFloor.swift`, `Hub/BusinessView.swift`. Tests: `business`, `marketing`, `ladder`, `opening`, `staff`, and
+`floor` in `Hub/GameTests.swift`.
 
 ## The rule for the whole proposal
 
@@ -120,3 +123,10 @@ grade from A to F and short notes.
 A: store numbers, customer types, reviews, the dashboard, and the month-end review. B: marketing. C: the distribution
 ladder. D: the opening project. E: staff. F: the floor, rivals, and store levels. Each phase is one commit after
 `-test` passes.
+
+## Built notes
+
+- A new store starts at awareness 20 (traffic ×0.80). The grand opening adds 15, and the pre-opening buzz adds 15.
+- The school club and the loyalty program unlock at Local favorite.
+- The floor setups cost $100 and 1 hour each. A rival move can come at each month-end review (25%).
+- A morning decision comes on 25% of open days. With no answer, the second choice happens (the decision ends).

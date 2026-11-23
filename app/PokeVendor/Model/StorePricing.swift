@@ -82,6 +82,8 @@ extension GameStore {
 
     private func shelfPrice(market: Double, id: UUID, sealed: Bool) -> Double {
         guard let s = data.cardStore else { return ShowSession.round(market * Balance.storeDefaultPrice) }
+        // Clearance: dead stock at 80% of market (Model/StoreFloor.swift).
+        if isOnClearance(id) { return ShowSession.round(market * Balance.clearanceFactor) }
         let factor = sealed ? s.sealedPrice : slabPrice(id) ?? s.singlesPrice
         return ShowSession.round(market * factor)
     }

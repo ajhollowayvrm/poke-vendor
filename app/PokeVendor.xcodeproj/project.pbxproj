@@ -114,6 +114,7 @@
 		52BE2F985E530697282DA300 /* ShowTableStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E089FF0AE88998077693F /* ShowTableStage.swift */; };
 		54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3284779D32F44C664EE1950F /* Consignment.swift */; };
 		554EE2F07709E7AF8E971509 /* PackBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D1F5A53A1CE37803DC7C50 /* PackBuilder.swift */; };
+		5592DB3B4D34897040EE314D /* StoreFloor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC9BC5161CF9AD3FDEC9A38 /* StoreFloor.swift */; };
 		55B053D2C166F0351D6B065F /* StoreExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */; };
 		55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49EF347D0CA9A2C689E7D0B9 /* UnboxView.swift */; };
 		5644339FA3071C555DC255FD /* xy.json in Resources */ = {isa = PBXBuildFile; fileRef = B9400ABD48A2925CE3BE6865 /* xy.json */; };
@@ -346,6 +347,7 @@
 		17793FF1EF0947404D07714D /* expedition-base-set.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "expedition-base-set.json"; sourceTree = "<group>"; };
 		186173697205F56B279E1419 /* CalloutViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalloutViews.swift; sourceTree = "<group>"; };
 		1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreExpansion.swift; sourceTree = "<group>"; };
+		1AC9BC5161CF9AD3FDEC9A38 /* StoreFloor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreFloor.swift; sourceTree = "<group>"; };
 		1B1D0C6C4D92155E2CB8CEA3 /* OpportunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpportunityView.swift; sourceTree = "<group>"; };
 		1B3A5E9B134DA765470B7666 /* Inventory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inventory.swift; sourceTree = "<group>"; };
 		1C7164EF8321FE630F15E9C1 /* majestic-dawn.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "majestic-dawn.json"; sourceTree = "<group>"; };
@@ -941,6 +943,7 @@
 				71039722F060097A21B22BB3 /* StoreEvents.swift */,
 				1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */,
 				5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */,
+				1AC9BC5161CF9AD3FDEC9A38 /* StoreFloor.swift */,
 				70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */,
 				E9C6899A5756FD01A03265AE /* StoreMarketing.swift */,
 				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
@@ -1427,6 +1430,7 @@
 				78B92CCF91EC081E4F6E9F6A /* StoreEventsBox.swift in Sources */,
 				40AE7B5A28901732EAC66C43 /* StoreExpansion.swift in Sources */,
 				55B053D2C166F0351D6B065F /* StoreExtras.swift in Sources */,
+				5592DB3B4D34897040EE314D /* StoreFloor.swift in Sources */,
 				0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */,
 				976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */,
 				2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */,

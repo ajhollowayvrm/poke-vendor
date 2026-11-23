@@ -95,6 +95,14 @@ extension HubView {
             case "nextshow": nav.path = [.calendar] + (store.upcomingShows.first(where: { $0.startDay > store.day }).map { [.show($0.id)] } ?? [])
             case "sealed": nav.path = [.inventory(.sealed)]
             case "settings": nav.path = [.settings]
+            case "business", "newstore":
+                store.startRun()
+                store.data.reputation = 10_000
+                store.data.taxes.permit = true
+                store.addTestCash(60_000)
+                store.addLedger(5_000, .sale, "Test sales")
+                store.signLease(.mainStreet, term: 6, name: "Card Corner", investor: true)
+                nav.path = args[i + 1] == "business" ? [.cardStore, .business] : [.cardStore]
             case "storage":
                 store.startRun()
                 for _ in 0..<4 { _ = store.addTestProduct("565630") }
