@@ -333,6 +333,9 @@ auction.
 - **Where the player sees it**: the slab's status box (the house, the
   auction day, the estimate, the fee, and the reserve), the "At auction"
   filter in Inventory, and the Calendar (each auction and each payout).
+- **The Auctions screen** on the hub lists every consigned slab, every
+  eBay auction with its live bid, and the lots to buy. See
+  [36-auctions.md](36-auctions.md).
 
 Confidence: the fees come from a second-hand fee calculator, not from each
 house's own terms. The bidder strengths are design values.

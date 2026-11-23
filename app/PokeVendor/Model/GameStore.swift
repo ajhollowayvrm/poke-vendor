@@ -154,6 +154,8 @@ struct GameData: Codable {
     /// The hidden log of shady acts, and the callouts (Model/Callouts.swift).
     var hiddenActs: [HiddenAct] = []
     var callouts = CalloutState()
+    /// Auction lots that the player can bid on: eBay and the house catalogs (Model/AuctionBuying.swift).
+    var auctionLots: [AuctionLot] = []
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -255,6 +257,7 @@ extension GameData {
         ripShip = v(.ripShip, ripShip)
         hiddenActs = v(.hiddenActs, hiddenActs)
         callouts = v(.callouts, callouts)
+        auctionLots = v(.auctionLots, auctionLots)
     }
 }
 
@@ -1115,9 +1118,10 @@ final class GameStore {
         func listing(_ id: UUID) -> ItemStatus {
             let listed = wear(id)
             let overstated = listed.map { w in trueWear[id].map { w.rank < $0.rank } ?? false }
-            return .listed(Listing(channel: channel, price: price(id), dayListed: day,
+            let l = Listing(channel: channel, price: price(id), dayListed: day,
                             auctionEndDay: auctionDays.map { day + $0 }, insured: insured, listedWear: listed,
-                            overstatedCondition: overstated))
+                            overstatedCondition: overstated)
+            return .listed(auctionListing(l, id: id))
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) { data.raw[i].status = listing(data.raw[i].id) }
         for i in data.slabs.indices where ids.contains(data.slabs[i].id) { data.slabs[i].status = listing(data.slabs[i].id) }
@@ -1314,6 +1318,7 @@ final class GameStore {
         lines += offersEndDay()
         lines += lotsEndDay()
         lines += auctionHouseEndDay()
+        lines += auctionLotsEndDay()
         lines += vendingEndDay()
         lines += calloutsEndDay()
         lines += rivalsEndDay()
@@ -1599,6 +1604,8 @@ final class GameStore {
         switch listing.channel {
         case .ebayAuction:
             guard let end = listing.auctionEndDay, data.day >= end else { return nil }
+            // The final price was rolled when the player listed (Model/AuctionBuying.swift).
+            if let final = listing.auctionFinal { return final > 0 ? final : nil }
             // A season can lift demand above 1. The no-sale chance never falls below its 5% floor.
             if Double.random(in: 0..<1) < 0.05 + max(0, 1 - demand) * 0.6 { return nil }
             let spread = (Double.random(in: -1...1) + Double.random(in: -1...1)) / 2 * 0.35

@@ -94,7 +94,8 @@ struct StatusBox: View {
             case .listed(let listing):
                 VStack(alignment: .leading, spacing: 6) {
                     if let end = listing.auctionEndDay {
-                        Text("Auction on eBay · ends day \(end + 1) · expected near \(money(listing.price))").font(.subheadline)
+                        Text("Auction on eBay · ends day \(end + 1)").font(.subheadline)
+                        OwnAuctionRow(name: "Current bid", listing: listing, id: id)
                     } else {
                         Text("Listed on \(listing.channel.rawValue) for \(money(listing.price))").font(.subheadline)
                         Text("Day \(store.day - listing.dayListed + 1) of \(Balance.listingDays)\(listing.insured ? " · insured" : "")")

@@ -33,6 +33,7 @@ enum AppRoute: Hashable {
     case masterSet(String)
     case shipQueue
     case callouts
+    case auctions
 }
 
 struct StoreRunSession: Identifiable {
@@ -125,6 +126,7 @@ extension View {
             case .loans: LoansView()
             case .shipQueue: ShipQueueView()
             case .callouts: CalloutsView()
+            case .auctions: AuctionsView()
             }
         }
     }

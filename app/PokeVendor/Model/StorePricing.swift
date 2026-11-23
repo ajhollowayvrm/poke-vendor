@@ -102,9 +102,9 @@ extension GameStore {
         func listing(_ id: UUID) -> Listing {
             let listed = wear(id)
             let overstated = listed.map { w in trueWear[id].map { w.rank < $0.rank } ?? false }
-            return Listing(channel: channel, price: price(id), dayListed: day,
+            return auctionListing(Listing(channel: channel, price: price(id), dayListed: day,
                     auctionEndDay: auctionDays.map { day + $0 }, insured: insured, listedWear: listed,
-                    overstatedCondition: overstated)
+                    overstatedCondition: overstated), id: id)
         }
         var count = 0
         for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) {

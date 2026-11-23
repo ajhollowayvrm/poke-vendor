@@ -391,6 +391,9 @@ struct Listing: Codable, Hashable {
     var overstatedCondition: Bool?
     /// The price the player set, before the repricer lowered it. Nil when it never did.
     var startPrice: Double?
+    /// Hidden: the final price of an eBay auction, rolled when the player lists it. 0: it ends with no sale. Nil on an
+    /// auction from an older build: End Day rolls it on the last day (Model/AuctionBuying.swift).
+    var auctionFinal: Double?
 }
 
 enum ItemStatus: Codable, Hashable {

@@ -29,6 +29,7 @@ final class GameTests {
         timed("upcharges", psaUpcharges)
         timed("resubmit", crackAndResubmit)
         timed("reseal", resealFiller)
+        timed("auctions", auctions)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -350,6 +351,46 @@ final class GameTests {
         check(!filler.isEmpty, "a resealed pack has no filler")
         check(!filler.contains { $0.setSlug == "prismatic-evolutions" }, "a resealed pack holds a card of its own set")
         check(filler.allSatisfy { ["Common", "Uncommon"].contains($0.rarity) && ($0.market ?? 0) < 1 }, "a resealed pack holds a hit")
+    }
+
+    // MARK: - Auctions (docs/36-auctions.md)
+
+    /// An eBay auction rolls its final price when listed, and the sale pays that price. A won lot charges one step over
+    /// the rivals plus shipping, and the item arrives. A lost lot charges nothing. A bid under the lowest is refused.
+    private func auctions() {
+        fresh()
+        for print in prismatic.filter({ ($0.market ?? 0) > 20 }).prefix(1) { store.addTestCard(print) }
+        guard let card = store.data.raw.last else { return check(false, "the auction test has no card") }
+        store.list([card.id], channel: .ebayAuction, price: { _ in 50 }, auctionDays: 1, insured: false)
+        guard case .listed(let listing) = store.card(card.id)?.status, let final = listing.auctionFinal else {
+            return check(false, "an eBay auction has no final price")
+        }
+        check(store.ownAuctionView(listing, id: card.id) != nil, "an eBay auction has no live view")
+        let before = store.receipts.count
+        nextDay()
+        if final > 0 {
+            check(store.receipts.count == before + 1 && abs((store.receipts.last?.price ?? 0) - final) < 0.01,
+                  "the auction sold for \(store.receipts.last?.price ?? 0), not its final \(final)")
+        } else {
+            check(store.card(card.id) != nil && store.card(card.id)?.status == nil, "an auction with no sale did not come back")
+        }
+
+        // Buying: the player beats the rival and pays one step over the rival, plus shipping.
+        let print = prismatic.first { ($0.market ?? 0) > 20 } ?? prismatic[0]
+        let goods = VendorGoods.slab(print, slug: "prismatic-evolutions", grade: SlabGrade(company: .psa, grade: 9))
+        let win = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day, opening: 20, rivalMax: 80)
+        let lose = AuctionLot(venue: .ebay, goods: goods, market: 100, startDay: store.day, endDay: store.day, opening: 20, rivalMax: 300)
+        store.data.auctionLots = [win, lose]
+        check(!store.placeBid(win.id, max: 1), "a bid under the lowest was taken")
+        check(store.placeBid(win.id, max: 150), "a good bid was refused")
+        check(store.placeBid(lose.id, max: 150), "a good bid on the second lot was refused")
+        let cash = store.cash
+        let slabs = store.data.slabs.count
+        nextDay()
+        let expected = store.lotTotal(win, hammer: 80 + GameStore.bidIncrement(80))
+        check(abs(cash - store.cash - expected) < 0.01, "a won lot cost \(money(cash - store.cash)), not \(money(expected))")
+        check(store.data.slabs.count == slabs + 1, "a won slab did not come")
+        check(!store.data.auctionLots.contains { $0.id == win.id || $0.id == lose.id }, "a closed lot stayed open")
     }
 
     // MARK: - Opportunities and flips

@@ -280,6 +280,19 @@ struct HubView: View {
         }
     }
 
+    /// Your auctions and bids, for the hub row.
+    private var auctionDetail: String {
+        let selling = (store.data.raw + store.data.slabs).filter {
+            switch $0.status {
+            case .listed(let l): l.auctionEndDay != nil
+            case .atAuctionHouse: true
+            default: false
+            }
+        }.count + store.data.sealed.filter { if case .listed(let l) = $0.status { return l.auctionEndDay != nil }; return false }.count
+        let bids = store.openLots.filter { $0.playerMax != nil }.count
+        return "\(selling) selling · \(bids) bid\(bids == 1 ? "" : "s")"
+    }
+
     private var todayCard: some View {
         DetailBox(title: "Today") {
             Button { nav.path.append(.job) } label: {
@@ -328,6 +341,18 @@ struct HubView: View {
                         Text(storeDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                     }
                     Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            Divider().overlay(Theme.line)
+            Button { nav.path.append(.auctions) } label: {
+                HStack {
+                    Image(systemName: "hammer").foregroundStyle(Theme.cyan)
+                    Text("Auctions").font(.subheadline)
+                    Spacer()
+                    Text(auctionDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                     Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
                 }
                 .contentShape(Rectangle())

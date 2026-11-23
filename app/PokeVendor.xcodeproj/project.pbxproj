@@ -67,6 +67,7 @@
 		2DA14E7BA1560F6058013971 /* StoreCredit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2D4F0B41BB26895C1EE675 /* StoreCredit.swift */; };
 		2E0650596BCA2527E709DADE /* SlabViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46393BDB097F065796D9D1CD /* SlabViews.swift */; };
 		2EBE8E85A966DED3B4517E5F /* shining-legends.json in Resources */ = {isa = PBXBuildFile; fileRef = 074AD82C95C34EEF99B9381E /* shining-legends.json */; };
+		303F88069C720F87B8EB85EE /* AuctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ACA603AFD3EFF14E0FB0CBF /* AuctionsView.swift */; };
 		316BCD989D5985D20682BCED /* ShowSummaryStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723EE92EBE2DE3D2DF2E53AF /* ShowSummaryStage.swift */; };
 		31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */ = {isa = PBXBuildFile; fileRef = 71BFAA4A10360362D9BE2E1C /* base-set-2.json */; };
 		3209FBD08DDC8BAF97DF52E0 /* TaxBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB88AEE87E1970C61F07F /* TaxBox.swift */; };
@@ -99,6 +100,7 @@
 		4D9FB8FB76885393BDADF1FE /* silver-tempest.json in Resources */ = {isa = PBXBuildFile; fileRef = 8A358D246B4A0E231698B762 /* silver-tempest.json */; };
 		4E14652814D639209494DB7F /* lost-origin.json in Resources */ = {isa = PBXBuildFile; fileRef = 3B54A884DC3FCF4D498BA581 /* lost-origin.json */; };
 		4E2A75B7C80B790FD05DD90E /* skyridge.json in Resources */ = {isa = PBXBuildFile; fileRef = 5B48285729B6638BC44FA869 /* skyridge.json */; };
+		4F2D4331FA4C2CE30DCDC6AE /* AuctionBuying.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F98CB3456C827B5A8ED154 /* AuctionBuying.swift */; };
 		4FEBC49138517374635D5204 /* mcdonalds-collection-2021.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F81D985AF93CBEC5505F10E /* mcdonalds-collection-2021.json */; };
 		504DE9EDE44E73F9071E33BA /* PlugViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1B7C470E4DC7731F37066E /* PlugViews.swift */; };
 		5054B1A8694974DC21257E9F /* rising-rivals.json in Resources */ = {isa = PBXBuildFile; fileRef = 617D61638A31A85F3BE630D9 /* rising-rivals.json */; };
@@ -321,6 +323,7 @@
 		0892155B07C10C47B42D6134 /* PriceCycle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceCycle.swift; sourceTree = "<group>"; };
 		0A4E804C9F95960A07F5BA90 /* Rivals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rivals.swift; sourceTree = "<group>"; };
 		0A9B0564A22D5EBD10731BDC /* Flippers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flippers.swift; sourceTree = "<group>"; };
+		0ACA603AFD3EFF14E0FB0CBF /* AuctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionsView.swift; sourceTree = "<group>"; };
 		0F00430F0834556CB005AAA2 /* ShowFloorStage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowFloorStage.swift; sourceTree = "<group>"; };
 		0F522C90FE86AD311AB076F5 /* dragon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dragon.json; sourceTree = "<group>"; };
 		10B789AFBC7E60902CCEA9F3 /* LoansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoansView.swift; sourceTree = "<group>"; };
@@ -541,6 +544,7 @@
 		C2C4C4C911F2B838DDE4AB9E /* phantasmal-flames.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "phantasmal-flames.json"; sourceTree = "<group>"; };
 		C3BCA4C74E6FDCE0E761604E /* WholesaleViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WholesaleViews.swift; sourceTree = "<group>"; };
 		C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dragon-vault.json"; sourceTree = "<group>"; };
+		C4F98CB3456C827B5A8ED154 /* AuctionBuying.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionBuying.swift; sourceTree = "<group>"; };
 		C54A7EE716D8B3165068669F /* crown-zenith.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "crown-zenith.json"; sourceTree = "<group>"; };
 		C7D7A80674367593A62BDC34 /* neo-destiny.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "neo-destiny.json"; sourceTree = "<group>"; };
 		CB1E0ED5929316FCA0813654 /* SuppliesViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViews.swift; sourceTree = "<group>"; };
@@ -849,6 +853,7 @@
 		96C1692A0ED7B2E72EE64380 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				C4F98CB3456C827B5A8ED154 /* AuctionBuying.swift */,
 				FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */,
 				3BE8F9A509ED85647311ACD5 /* Balance.swift */,
 				915F98D6A385AE0C6AD57D98 /* BoxContents.swift */,
@@ -962,6 +967,7 @@
 		DABE85C8B61B1D21C480B476 /* Hub */ = {
 			isa = PBXGroup;
 			children = (
+				0ACA603AFD3EFF14E0FB0CBF /* AuctionsView.swift */,
 				F471F41FA61B19EC6E2D9C66 /* CalendarView.swift */,
 				693B97517632F808C60DEBC0 /* CardStoreView.swift */,
 				1F3BA8BD31DC2985216CD192 /* ContactsView.swift */,
@@ -1259,8 +1265,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF74587E305FC99201C8A2F5 /* AppNav.swift in Sources */,
+				4F2D4331FA4C2CE30DCDC6AE /* AuctionBuying.swift in Sources */,
 				9CB15D4A7DECA40699DFDEA7 /* AuctionHouse.swift in Sources */,
 				A7AE6E1ED427945621321341 /* AuctionViews.swift in Sources */,
+				303F88069C720F87B8EB85EE /* AuctionsView.swift in Sources */,
 				7FF2E8A1C95C51B53DAC8B66 /* Balance.swift in Sources */,
 				336B3AF3DB9F360F1F2186A5 /* BoxContents.swift in Sources */,
 				B1E2A0E44B360C481DC78B78 /* BuyViews.swift in Sources */,
