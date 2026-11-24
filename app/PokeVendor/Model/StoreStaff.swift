@@ -162,7 +162,7 @@ extension GameStore {
                     setStaff(staff.filter { $0.id != thief.id })
                     lines.append("The cameras caught \(thief.name) taking \(money(taken)) from the register. You let them go, and got the money back.")
                 } else {
-                    addLedger(-taken, .wages, "Register short · \(storeName)")
+                    bizLedger(-taken, .wages, "Register short · \(storeName)")
                     lines.append("The register at \(storeName) came up \(money(taken)) short. Someone on the staff took it.")
                 }
             }

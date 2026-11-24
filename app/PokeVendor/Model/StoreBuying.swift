@@ -105,7 +105,7 @@ extension GameStore {
         s.source.creditOwed -= used
         s.useCredit(used)
         data.cardStore = s
-        addLedger(-used, .sale, "Paid with store credit · \(s.name)")
+        bizLedger(-used, .sale, "Paid with store credit · \(s.name)")
         log("Customers paid \(money(used)) of the sales at \(s.name) with store credit.")
         return used
     }
@@ -167,7 +167,7 @@ extension GameStore {
         }
         let revenue = Double(cards) * Balance.bulkBoxPrice
         if cards > 0 {
-            addLedger(revenue, .sale, "Bulk box · \(cards) cards · \(s.name)")
+            bizLedger(revenue, .sale, "Bulk box · \(cards) cards · \(s.name)")
             collectSalesTax(on: revenue, at: s.name)
         }
         return (sold, revenue)
@@ -195,7 +195,7 @@ extension GameStore {
             let credit = storeCreditOffer(cash: cash)
             let takesCredit = src.offerCredit && Double.random(in: 0..<1) < Balance.creditTakeChance && credit >= floor
             guard takesCredit || cash >= floor else { continue }
-            guard cash <= budget, takesCredit || canAfford(cash) else {
+            guard cash <= budget, takesCredit || bizAfford(cash) else {
                 overBudget = true
                 continue
             }
@@ -231,19 +231,19 @@ extension GameStore {
             card.fake = Counterfeit.roll(source: .stranger, sealed: false, slug: slug, market: print.market ?? 0)
             card.acquiredDay = data.day
             data.raw.append(card)
-            if credit == nil { addLedger(-price, .singles, "\(print.name) · \(source)") }
+            if credit == nil { bizLedger(-price, .singles, "\(print.name) · \(source)") }
         case .slab(let print, let slug, let grade):
             var card = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: price, ripID: nil, grade: grade)
             card.fake = Counterfeit.roll(source: .stranger, sealed: false, slug: slug, market: card.market)
             card.acquiredDay = data.day
             data.slabs.append(card)
-            if credit == nil { addLedger(-price, .singles, "\(print.name) \(grade.label) · \(source)") }
+            if credit == nil { bizLedger(-price, .singles, "\(print.name) \(grade.label) · \(source)") }
         case .sealed(let product):
             var item = SealedItem(setSlug: product.homeSlug, name: product.name, packs: product.packs, paid: price,
                                   acquired: .now, source: source, productID: product.id, acquiredDay: data.day)
             item.fake = Counterfeit.roll(source: .stranger, sealed: true, slug: product.homeSlug, market: product.market, msrp: product.msrp)
             data.sealed.append(item)
-            if credit == nil { addLedger(-price, .sealed, "\(product.name) · \(source)") }
+            if credit == nil { bizLedger(-price, .sealed, "\(product.name) · \(source)") }
         case .mystery:
             return
         }

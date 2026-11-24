@@ -26,13 +26,13 @@ extension GameStore {
 
     var canUpgradeSpace: Bool {
         guard let step = nextSpaceStep else { return false }
-        return storeIsBuilt && canAfford(step.cost)
+        return storeIsBuilt && bizAfford(step.cost)
     }
 
     /// Moves into a bigger unit. It adds slots at once. The new rent starts at the next rent day.
     func upgradeSpace() {
         guard canUpgradeSpace, let step = nextSpaceStep, var s = data.cardStore else { return }
-        addLedger(-step.cost, .storeSetup, "\(step.name) · \(s.name)")
+        bizLedger(-step.cost, .storeSetup, "\(step.name) · \(s.name)")
         var g = s.growth
         g.space += 1
         s.growth = g

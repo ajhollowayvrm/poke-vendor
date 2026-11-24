@@ -225,7 +225,7 @@ extension GameStore {
 
     /// Cash and stock, less every debt and the tax that the player owes.
     var netWorth: Double {
-        cash + marketValue + pawnedValue + owedToPlayer - totalDebt - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
+        personalCash + businessCash + marketValue + pawnedValue + owedToPlayer - totalDebt - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
     }
 
     /// The installment payments of every open loan, for 4 weeks.
@@ -538,7 +538,8 @@ extension GameStore {
     /// now enough.
     func coverWithLine(_ amount: Double, for what: String) -> Bool {
         if canAfford(amount) { return true }
-        guard let line = data.debt.line, line.overdraft, !inCollections else { return false }
+        // The player's line of credit never covers a bill of the business account (Model/BusinessAccount.swift).
+        guard activeAccount == .personal, let line = data.debt.line, line.overdraft, !inCollections else { return false }
         let gap = cents(amount - data.cash + 0.005)
         guard gap <= line.available else { return false }
         data.debt.line?.balance += gap

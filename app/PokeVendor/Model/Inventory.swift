@@ -684,6 +684,8 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
         case loan = "Loans", interest = "Interest and fees", businessInterest = "Business interest"
         case businessCosts = "Business costs", auctionFees = "Auction fees", creatorPayouts = "Creator payouts"
         case grayMarket = "Gray market"
+        /// Money between the player's own account and the business account. It is not income and not a cost.
+        case transfer = "Transfers"
     }
 
     var id = UUID()
@@ -692,6 +694,8 @@ struct LedgerEntry: Codable, Identifiable, Hashable {
     let category: Category
     var label: String
     var pending = false
+    /// The business account of the store, or nil for the player's own account (Model/BusinessAccount.swift).
+    var account: MoneyAccount?
 }
 
 struct ActivityEntry: Codable, Identifiable, Hashable {

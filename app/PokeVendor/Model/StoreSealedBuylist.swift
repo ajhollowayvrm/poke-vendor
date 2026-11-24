@@ -31,7 +31,7 @@ extension GameStore {
             let cash = ShowSession.round(product.market * rate)
             let floor = product.market * Double.random(in: Balance.sealedBuySellerFloor)
             guard cash >= floor else { continue }
-            guard cash <= budget, canAfford(cash) else {
+            guard cash <= budget, bizAfford(cash) else {
                 overBudget = true
                 continue
             }
@@ -41,7 +41,7 @@ extension GameStore {
                                   acquired: .now, source: source, productID: product.id, acquiredDay: data.day)
             item.fake = Counterfeit.roll(source: .stranger, sealed: true, slug: product.homeSlug, market: product.market, msrp: product.msrp)
             data.sealed.append(item)
-            addLedger(-cash, .sealed, "\(product.name) · \(source)")
+            bizLedger(-cash, .sealed, "\(product.name) · \(source)")
             bought += 1
             spent += cash
         }

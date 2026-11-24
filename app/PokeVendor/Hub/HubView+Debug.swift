@@ -160,6 +160,7 @@ extension HubView {
             store.startRun()
             store.addTestCash(3000)
             store.testOpenCardStore()
+            store.openBusinessAccount(storeName: "Test Cards", contribution: 1500)
             store.setClerk(true)
             for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 }).prefix(8) { store.addTestCard(print) }
             for _ in 0..<6 { store.addTestPack() }

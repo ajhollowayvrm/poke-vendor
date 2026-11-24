@@ -234,20 +234,20 @@ extension GameStore {
 
     var storeRequirementsMet: Bool { storeRequirements.allSatisfy(\.met) }
 
-    func canSignLease(_ location: StoreLocation, term: Int, investor: Bool = false) -> Bool {
-        data.cardStore == nil && storeRequirementsMet && canAfford(location.upfront(term: term) - (investor ? investorMoney(location) : 0))
+    /// The player's own cash pays the cost to sign and the seed money for the business account.
+    func canSignLease(_ location: StoreLocation, term: Int, investor: Bool = false, seed: Double = 0) -> Bool {
+        data.cardStore == nil && storeRequirementsMet
+            && canAfford(location.upfront(term: term) - (investor ? investorMoney(location) : 0) + seed)
     }
 
     /// Signs the lease for `term` periods of 28 days: the first rent, the deposit, and the build-out. The store opens
-    /// after the build-out. The two game shops notice.
-    func signLease(_ location: StoreLocation, term: Int, name: String, investor: Bool = false) {
-        guard canSignLease(location, term: term, investor: investor) else { return }
+    /// after the build-out. The two game shops notice. The business account opens with the cost to sign and `seed`
+    /// from the player's own cash (Model/BusinessAccount.swift).
+    func signLease(_ location: StoreLocation, term: Int, name: String, investor: Bool = false, seed: Double = 0) {
+        guard canSignLease(location, term: term, investor: investor, seed: seed) else { return }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = trimmed.isEmpty ? "Card Corner" : String(trimmed.prefix(30))
         let rent = location.rent(term: term)
-        addLedger(-rent, .storeRent, "First rent · \(title)")
-        addLedger(-rent, .storeSetup, "Security deposit · \(title)")
-        addLedger(-location.buildout, .storeSetup, "Build-out · \(title)")
         var state = CardStoreState(name: title, location: location, leaseDay: data.day,
                                    openDay: data.day + Balance.storeBuildDays, deposit: rent)
         // A new store starts unknown (Model/StoreBusiness.swift).
@@ -255,17 +255,21 @@ extension GameStore {
         business.awareness = Balance.bizAwarenessNew
         // The opening tasks (Model/StoreOpening.swift), and the investor's money.
         business.opening = OpeningPlan()
-        if investor {
-            let money = investorMoney(location)
-            addLedger(money, .startingCapital, "Investor money · \(title)")
-            business.investor = Investor(invested: money, share: Balance.investorProfitShare)
-        }
+        let investorPart = investor ? investorMoney(location) : 0
+        if investor { business.investor = Investor(invested: investorPart, share: Balance.investorProfitShare) }
         state.business = business
         state.lease = StoreLease(periods: term, endDay: data.day + term * Balance.rentCycleDays, rent: rent)
         data.cardStore = state
+        let contribution = location.upfront(term: term) - investorPart + seed
+        openBusinessAccount(storeName: title, contribution: contribution)
+        if investor { bizLedger(investorPart, .startingCapital, "Investor money · \(title)") }
+        bizLedger(-rent, .storeRent, "First rent · \(title)")
+        bizLedger(-rent, .storeSetup, "Security deposit · \(title)")
+        bizLedger(-location.buildout, .storeSetup, "Build-out · \(title)")
         rivalShopsReact()
         log("Signed a \(term)-period lease at \(location.name). \(title) opens on day \(data.day + Balance.storeBuildDays + 1).",
-            cash: -location.upfront(term: term))
+            cash: -contribution)
+        if seed > 0 { log("The business account of \(title) starts with \(money(seed)).") }
         log("Cardboard Castle and Top Deck Games lost \(Balance.rivalStandingLoss) standing with you. They do not consign for the competition.")
         save()
     }
@@ -280,7 +284,7 @@ extension GameStore {
     func closeStore(evicted: Bool = false) -> [String] {
         guard let s = data.cardStore else { return [] }
         let buyout = evicted ? 0 : leaseBuyout(s)
-        guard evicted || canAfford(buyout) else { return ["You need \(money(buyout)) to buy out the lease."] }
+        guard evicted || bizAfford(buyout) else { return ["The business account needs \(money(buyout)) to buy out the lease."] }
         let back = ItemStatus.arriving(daysLeft: 1, from: s.name)
         var count = 0
         for i in data.raw.indices where Self.isInStore(data.raw[i].status) {
@@ -300,21 +304,23 @@ extension GameStore {
             count += 1
         }
         data.bulk += s.source.bulkBox
-        data.cardStore = nil
         var lines: [String] = []
-        if let line = consignmentCloseLine(s) { lines.append(line) }
-        if let line = storeMachineHome() { lines.append(line) }
         let stock = count > 0 ? " \(count) item\(count == 1 ? "" : "s") come\(count == 1 ? "s" : "") home tomorrow." : ""
+        // The business account pays the buyout or takes the deposit back, then closes (Model/BusinessAccount.swift).
         if evicted {
             addReputation(-Balance.evictionReputationCost)
-            lines.append("You could not pay the store rent. The landlord locked \(s.name) and kept the \(money(s.deposit)) deposit. Reputation −\(Balance.evictionReputationCost).\(stock)")
+            lines.append("The business account could not pay the store rent. The landlord locked \(s.name) and kept the \(money(s.deposit)) deposit. Reputation −\(Balance.evictionReputationCost).\(stock)")
         } else if buyout > 0 {
-            addLedger(-buyout, .storeRent, "Lease buyout · \(s.name)")
-            lines.append("You closed \(s.name) before the lease ended. You paid \(money(buyout)) to leave, and the landlord kept the \(money(s.deposit)) deposit.\(stock)")
+            bizLedger(-buyout, .storeRent, "Lease buyout · \(s.name)")
+            lines.append("You closed \(s.name) before the lease ended. The business paid \(money(buyout)) to leave, and the landlord kept the \(money(s.deposit)) deposit.\(stock)")
         } else {
-            addLedger(s.deposit, .refund, "Deposit back · \(s.name)")
+            bizLedger(s.deposit, .refund, "Deposit back · \(s.name)")
             lines.append("You closed \(s.name). The landlord gave back the \(money(s.deposit)) deposit.\(stock)")
         }
+        if let line = closeBusinessAccount(storeName: s.name) { lines.append(line) }
+        data.cardStore = nil
+        if let line = consignmentCloseLine(s) { lines.append(line) }
+        if let line = storeMachineHome() { lines.append(line) }
         for line in lines { log(line) }
         save()
         return lines
@@ -324,12 +330,12 @@ extension GameStore {
 
     func canBuyFixture(_ fixture: StoreFixture) -> Bool {
         guard let s = data.cardStore else { return false }
-        return !s.has(fixture) && canAfford(fixture.cost) && (fixture.requires.map(s.has) ?? true)
+        return !s.has(fixture) && bizAfford(fixture.cost) && (fixture.requires.map(s.has) ?? true)
     }
 
     func buyFixture(_ fixture: StoreFixture) {
         guard canBuyFixture(fixture), var s = data.cardStore else { return }
-        addLedger(-fixture.cost, .storeSetup, "\(fixture.name) · \(s.name)")
+        bizLedger(-fixture.cost, .storeSetup, "\(fixture.name) · \(s.name)")
         s.fixtures.append(fixture)
         data.cardStore = s
         log("Bought the \(fixture.name.lowercased()) for \(s.name).", cash: -fixture.cost)
@@ -373,6 +379,18 @@ extension GameStore {
         let stock = showStock
         let room = hasBackRoom
         return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc && (room || !$0.isCase) })
+    }
+
+    /// True when one or more of these items can go in the store. It uses the same rule as `stockable`, but it looks
+    /// only at the given items, so a view can call it on each change.
+    func canStock(_ ids: Set<UUID>) -> Bool {
+        guard data.cardStore != nil, !ids.isEmpty else { return false }
+        let room = hasBackRoom
+        let cardOK: (OwnedCard) -> Bool = {
+            ids.contains($0.id) && $0.status == nil && !$0.inMasterSet && !$0.inShowcase && !$0.isKnownFake && !$0.pc
+        }
+        return data.raw.contains(where: cardOK) || data.slabs.contains(where: cardOK)
+            || data.sealed.contains { ids.contains($0.id) && $0.status == nil && !$0.isKnownFake && !$0.pc && (room || !$0.isCase) }
     }
 
     var storeCardSlots: Int {
@@ -496,6 +514,8 @@ extension GameStore {
         let session = ShowSession(venue: venue, store: self, vendors: [], regulars: storeRegulars())
         session.markup = s.singlesPrice
         session.openTable()
+        // The counter buys and sells for the store, so its money uses the business account (Model/BusinessAccount.swift).
+        counterSession = session
         return session
     }
 
@@ -509,6 +529,7 @@ extension GameStore {
 
     /// The counter session is over. The clerk covers the rest of the open hours.
     func finishCounter(_ session: ShowSession) {
+        defer { counterSession = nil }
         let worked = max(0, (session.minute - session.startMinute) / 60)
         data.hour = max(data.hour, min(Balance.storeClose, Balance.storeOpen + session.minute / 60))
         guard var s = data.cardStore else { return }
@@ -536,9 +557,13 @@ extension GameStore {
         guard s.openDays.contains(today % 7) else { return [] }
         var lines: [String] = []
         // The staff: who comes in, and theft (Model/StoreStaff.swift). The staff can change, so read the store again.
-        let crew = s.clerk ? staffDay(storeName: s.name) : (present: false, lines: [String]())
+        // The business account pays the staff. With no money for the wages, the staff stays home
+        // (Model/BusinessAccount.swift).
+        let unpaid = s.clerk && !bizAfford(staffDailyWage)
+        let crew = s.clerk && !unpaid ? staffDay(storeName: s.name) : (present: false, lines: [String]())
         lines += crew.lines
-        let wage = s.clerk ? staffDailyWage : 0
+        if unpaid { lines.append("The business account of \(s.name) could not pay the staff today, so they stayed home. Move money into it.") }
+        let wage = s.clerk && !unpaid ? staffDailyWage : 0
         s = data.cardStore ?? s
         let staffed = s.clerk && crew.present
         let worked = s.counterDay == today ? s.counterHours : 0
@@ -546,7 +571,7 @@ extension GameStore {
         let share = staffed ? max(0, 1 - worked / hours) : 0
         var record = s.history.last?.day == today ? s.history.removeLast() : StoreDay(day: today)
         if wage > 0 {
-            addLedger(-wage, .wages, "Clerk · \(s.name)")
+            bizLedger(-wage, .wages, "Clerk · \(s.name)")
             record.costs += wage
         }
         if share > 0 {
@@ -698,7 +723,7 @@ extension GameStore {
         } else {
             data.sealed.removeAll { $0.id == id }
         }
-        addLedger(price, .sale, "\(item.name) · \(storeName)")
+        bizLedger(price, .sale, "\(item.name) · \(storeName)")
         collectSalesTax(on: price, at: storeName)
         addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid, ids: [item.id])
         if let fake = item.fake {
@@ -717,9 +742,9 @@ extension GameStore {
         let rent = s.rent
         if since % Balance.rentCycleDays == 0 {
             let overhead = storeOverhead(s)
-            guard canAfford(rent + overhead.total) else { return closeStore(evicted: true) }
-            addLedger(-rent, .storeRent, "Store rent · \(s.name)")
-            addLedger(-overhead.total, .storeOverhead, "Store overhead · \(s.name)")
+            guard bizAfford(rent + overhead.total) else { return closeStore(evicted: true) }
+            bizLedger(-rent, .storeRent, "Store rent · \(s.name)")
+            bizLedger(-overhead.total, .storeOverhead, "Store overhead · \(s.name)")
             addStoreCost(rent + overhead.total, to: &s)
             var lines = ["Store rent paid: \(money(rent)) for \(s.name).",
                          "Store overhead paid: \(money(overhead.total)). Card fees \(money(overhead.fees)), insurance \(money(overhead.insurance)), utilities \(money(overhead.utilities)), software \(money(overhead.software))."]

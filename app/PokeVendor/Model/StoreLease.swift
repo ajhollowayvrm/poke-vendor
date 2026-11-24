@@ -65,7 +65,7 @@ extension GameStore {
     }
 
     /// The player can close the store: the buyout, if any, must fit in cash.
-    var canCloseStore: Bool { data.cardStore.map { canAfford(leaseBuyout($0)) } ?? false }
+    var canCloseStore: Bool { data.cardStore.map { bizAfford(leaseBuyout($0)) } ?? false }
 
     /// The overhead for the period that just ended: the fee on its sales, and the fixed costs.
     func storeOverhead(_ s: CardStoreState) -> StoreOverhead {

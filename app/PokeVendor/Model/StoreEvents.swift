@@ -193,7 +193,7 @@ extension GameStore {
             // No players, no prizes. One player or more gets at least one pack.
             let wanted = players == 0 ? 0 : max(1, Int((Double(players) * Balance.tournamentPrizePerPlayer).rounded()))
             let (given, cost) = givePrizePacks(wanted)
-            if fees > 0 { addLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
+            if fees > 0 { bizLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
             record.revenue += fees
             // The packs left the store at what the player paid for them.
             record.costs += cost
@@ -208,8 +208,8 @@ extension GameStore {
             let fees = Double(players) * plan.leagueFee
             // An official event store gets the league promos free.
             let promo = isEventStore ? 0 : Double(players) * Balance.leaguePromoCost
-            if fees > 0 { addLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
-            if promo > 0 { addLedger(-promo, .storeEvents, "League promo cards · \(s.name)") }
+            if fees > 0 { bizLedger(fees, .storeEvents, "\(kind.name) · \(players) players · \(s.name)") }
+            if promo > 0 { bizLedger(-promo, .storeEvents, "League promo cards · \(s.name)") }
             record.revenue += fees
             record.costs += promo
             line = "\(players) players came to the \(kind.name) at \(s.name). You gave each one a promo card."

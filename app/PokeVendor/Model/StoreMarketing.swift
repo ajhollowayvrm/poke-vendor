@@ -201,7 +201,7 @@ extension GameStore {
         if channel == .maps && marketing.mapsListed { return "The store is listed." }
         if channel == .window, let d = marketing.windowDay, data.day - d < 7 { return "You refreshed the window this week." }
         let cost = channelCost(channel, level: level)
-        if cost > 0, !canAfford(cost) { return "It costs \(money(cost)). You have \(money(cash))." }
+        if cost > 0, !bizAfford(cost) { return "It costs \(money(cost)). The business account has \(money(businessCash))." }
         return nil
     }
 
@@ -210,7 +210,7 @@ extension GameStore {
     func startChannel(_ channel: MarketingChannel, level: Int = 0) -> Bool {
         guard channelBlock(channel, level: level) == nil, let s = data.cardStore else { return false }
         let cost = channelCost(channel, level: level)
-        if cost > 0 { addLedger(-cost, .businessCosts, "Marketing · \(channel.rawValue) · \(s.name)") }
+        if cost > 0 { bizLedger(-cost, .businessCosts, "Marketing · \(channel.rawValue) · \(s.name)") }
         let today = data.day
         updateMarketing { m in
             m.weekSpent += cost
@@ -264,8 +264,8 @@ extension GameStore {
         // Payments, at the End Day before each new week. A channel that cannot be paid stops.
         for c in marketing.campaigns where today + 1 >= c.nextPayDay {
             let cost = channelCost(c.channel, level: c.level)
-            if canAfford(cost) {
-                addLedger(-cost, .businessCosts, "Marketing · \(c.channel.rawValue) · \(s.name)")
+            if bizAfford(cost) {
+                bizLedger(-cost, .businessCosts, "Marketing · \(c.channel.rawValue) · \(s.name)")
                 updateMarketing { m in
                     m.weekSpent += cost
                     if let i = m.campaigns.firstIndex(where: { $0.channel == c.channel }) { m.campaigns[i].nextPayDay = today + 1 + payEvery(c.channel) }
@@ -278,7 +278,7 @@ extension GameStore {
         // The loyalty program takes its share of the day's sales.
         if marketing.running(.loyalty) != nil, revenue > 0 {
             let cut = (revenue * Balance.mktLoyaltyShare * 100).rounded() / 100
-            addLedger(-cut, .businessCosts, "Loyalty program · \(s.name)")
+            bizLedger(-cut, .businessCosts, "Loyalty program · \(s.name)")
             updateMarketing { $0.weekSpent += cut }
         }
         // The effect of each channel.

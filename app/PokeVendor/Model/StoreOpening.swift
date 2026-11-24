@@ -122,8 +122,8 @@ extension GameStore {
     var openingInProgress: Bool { data.cardStore.map { data.day < $0.openDay } ?? false && openingPlan != nil }
 
     func fileLicense() {
-        guard let p = openingPlan, p.licenseReadyDay == nil, canAfford(Balance.licenseFee) else { return }
-        addLedger(-Balance.licenseFee, .storeSetup, "Business license")
+        guard let p = openingPlan, p.licenseReadyDay == nil, bizAfford(Balance.licenseFee) else { return }
+        bizLedger(-Balance.licenseFee, .storeSetup, "Business license")
         let ready = data.day + Balance.licenseDays
         updateOpening { $0.licenseReadyDay = ready }
         log("Filed for the business license. It is ready on day \(ready + 1).", cash: -Balance.licenseFee)
@@ -135,7 +135,7 @@ extension GameStore {
         if p.inspectionPassed { return "Passed." }
         if p.inspectionDay != nil, !p.inspectionFailed { return "Booked." }
         if data.day < s.leaseDay + Balance.inspectionFromDay { return "The build-out is not far enough along." }
-        if p.inspectionFailed, !canAfford(Balance.inspectionFixCost) { return "The fix costs \(money(Balance.inspectionFixCost))." }
+        if p.inspectionFailed, !bizAfford(Balance.inspectionFixCost) { return "The fix costs \(money(Balance.inspectionFixCost))." }
         return nil
     }
 
@@ -143,7 +143,7 @@ extension GameStore {
     func bookInspection() {
         guard inspectionBlock == nil, let p = openingPlan else { return }
         if p.inspectionFailed {
-            addLedger(-Balance.inspectionFixCost, .storeSetup, "Fire code fix")
+            bizLedger(-Balance.inspectionFixCost, .storeSetup, "Fire code fix")
             log("Paid \(money(Balance.inspectionFixCost)) to fix the exit sign and the extinguishers.", cash: -Balance.inspectionFixCost)
         }
         let day = data.day + 1
@@ -160,8 +160,8 @@ extension GameStore {
     }
 
     func preOpeningBuzz() {
-        guard let p = openingPlan, !p.buzzDone, canAfford(Balance.buzzCost) else { return }
-        addLedger(-Balance.buzzCost, .businessCosts, "Pre-opening buzz")
+        guard let p = openingPlan, !p.buzzDone, bizAfford(Balance.buzzCost) else { return }
+        bizLedger(-Balance.buzzCost, .businessCosts, "Pre-opening buzz")
         updateOpening { $0.buzzDone = true }
         updateBusiness { $0.awareness = min(100, $0.awareness + Balance.buzzAwareness) }
         log("Put up posters and a launch post: +\(Int(Balance.buzzAwareness)) awareness.", cash: -Balance.buzzCost)
@@ -228,8 +228,8 @@ extension GameStore {
 
     func buyOutInvestor() {
         let cost = investorBuyoutCost
-        guard let inv = investor, canAfford(cost) else { return }
-        addLedger(-cost, .businessCosts, "Investor buyout")
+        guard let inv = investor, bizAfford(cost) else { return }
+        bizLedger(-cost, .businessCosts, "Investor buyout")
         updateBusiness { $0.investor = nil }
         log("Bought out the investor for \(money(cost)). They had \(money(inv.paidOut)) in profit shares.", cash: -cost)
         save()
@@ -239,8 +239,8 @@ extension GameStore {
     func payInvestor(net: Double) -> String? {
         guard let inv = investor, net > 0 else { return nil }
         let share = (net * inv.share * 100).rounded() / 100
-        guard canAfford(share) else { return nil }
-        addLedger(-share, .businessCosts, "Investor profit share")
+        guard bizAfford(share) else { return nil }
+        bizLedger(-share, .businessCosts, "Investor profit share")
         updateBusiness { $0.investor?.paidOut += share }
         return "The investor took \(Int(inv.share * 100))% of the month's profit: \(money(share))."
     }

@@ -267,7 +267,8 @@ struct HubView: View {
 
     private var tiles: some View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
-            Tile(label: "Cash", value: money(store.cash), detail: "Wallet") { nav.path.append(.wallet) }
+            Tile(label: "Cash", value: money(store.personalCash),
+                 detail: store.hasBusinessAccount ? "Business \(money(store.businessCash))" : "Wallet") { nav.path.append(.wallet) }
             Tile(label: "Collection", value: money(store.collectionValue),
                  detail: "Inventory \(money(store.marketValue))") { nav.path.append(.inventory(.sealed)) }
             Tile(label: "Followers", value: store.hasAccount ? store.social.followers.formatted() : "Start posting",

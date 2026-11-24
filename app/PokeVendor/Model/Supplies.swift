@@ -164,9 +164,9 @@ extension GameStore {
         guard cases > 0 else { return nil }
         guard storeIsBuilt, let name = data.cardStore?.name else { return "You need an open store to stock accessories." }
         let total = item.casePrice * Double(cases)
-        guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }
+        guard bizAfford(total) else { return "You need \(money(total)). The business account has \(money(businessCash))." }
         let pieces = item.caseSize * cases
-        addLedger(-total, .wholesale, "\(pieces) \(item.name.lowercased()) · Distributor")
+        bizLedger(-total, .wholesale, "\(pieces) \(item.name.lowercased()) · Distributor")
         var s = data.supplies
         s.shelf[item.rawValue, default: 0] += pieces
         s.stockedShelf = true

@@ -4,10 +4,16 @@ import SwiftUI
 struct WalletView: View {
     @Environment(GameStore.self) private var store
     @State private var month = false
+    /// With a store: the player's own account, or the business account (Model/BusinessAccount.swift).
+    @State private var business = false
 
     var body: some View {
         let days = month ? 28 : 7
-        let period = store.data.ledger.filter { store.day - $0.day < days }
+        let showBusiness = business && store.hasBusinessAccount
+        let wanted: MoneyAccount? = showBusiness ? .business : nil
+        let entries = store.data.ledger.filter { $0.account == wanted }
+        // A transfer between the two accounts is not money in or out.
+        let period = entries.filter { store.day - $0.day < days && $0.category != .transfer }
         let moneyIn = period.filter { $0.amount > 0 }.reduce(0) { $0 + $1.amount }
         let moneyOut = period.filter { $0.amount < 0 }.reduce(0) { $0 - $1.amount }
         let spend = Dictionary(grouping: period.filter { $0.amount < 0 }, by: \.category)
@@ -16,8 +22,18 @@ struct WalletView: View {
         ScrollView {
             VStack(spacing: 14) {
                 VStack(spacing: 4) {
-                    Text("CASH").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
-                    Text(money(store.cash)).font(.system(size: 34, weight: .semibold, design: .monospaced))
+                    Text(showBusiness ? "BUSINESS ACCOUNT" : "CASH").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                    Text(money(showBusiness ? store.businessCash : store.personalCash))
+                        .font(.system(size: 34, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(showBusiness ? Theme.cyan : Theme.text)
+                    if store.hasBusinessAccount {
+                        Picker("Account", selection: $business) {
+                            Text("Yours · \(money(store.personalCash))").tag(false)
+                            Text("Business · \(money(store.businessCash))").tag(true)
+                        }
+                        .pickerStyle(.segmented)
+                        .padding(.top, 4)
+                    }
                 }
                 .padding(.top, 8)
                 DetailBox(title: month ? "Last 4 weeks" : "Last 7 days") {
@@ -57,7 +73,7 @@ struct WalletView: View {
                 debtBox
                 insuranceBox
                 DetailBox(title: "Ledger") {
-                    ForEach(store.data.ledger.reversed()) { entry in
+                    ForEach(entries.reversed()) { entry in
                         HStack(alignment: .top) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(entry.label).font(.subheadline).lineLimit(2)

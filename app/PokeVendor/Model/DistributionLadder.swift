@@ -101,7 +101,7 @@ extension GameStore {
     /// Puts an order on terms: the cash comes back now as credit, and a bill comes due in 30 days. The order's charge
     /// and any refund stay as they are, so the ledger nets out to the order total when the bill is paid.
     func takeOnTerms(_ total: Double, label: String) {
-        addLedger(total, .wholesale, "Net 30 credit · \(label)")
+        bizLedger(total, .wholesale, "Net 30 credit · \(label)")
         var list = payables
         list.append(Payable(amount: total, label: label, dueDay: data.day + Balance.termsDays))
         data.distributor.payables = list
@@ -110,8 +110,8 @@ extension GameStore {
     /// Pays a bill now.
     @discardableResult
     func payPayable(_ id: UUID, quiet: Bool = false) -> Bool {
-        guard let p = payables.first(where: { $0.id == id }), canAfford(p.amount) else { return false }
-        addLedger(-p.amount, .wholesale, "Distributor bill · \(p.label)")
+        guard let p = payables.first(where: { $0.id == id }), bizAfford(p.amount) else { return false }
+        bizLedger(-p.amount, .wholesale, "Distributor bill · \(p.label)")
         data.distributor.payables = payables.filter { $0.id != id }
         if !p.late { data.distributor.onTime = (data.distributor.onTime ?? 0) + 1 }
         if !quiet {
@@ -161,7 +161,7 @@ extension GameStore {
         let today = data.day
         // Bills: paid when due if the cash covers them. A bill that cannot be paid is late, and the account goes on hold.
         for p in payables where p.dueDay <= today {
-            if canAfford(p.amount) {
+            if bizAfford(p.amount) {
                 payPayable(p.id, quiet: true)
                 lines.append("Paid the distributor bill of \(money(p.amount)) for \(p.label).")
             } else if !p.late {

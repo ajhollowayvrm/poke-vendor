@@ -158,6 +158,8 @@ struct GameData: Codable {
     var auctionLots: [AuctionLot] = []
     /// The storage unit (Model/Storage.swift).
     var storage = StorageState()
+    /// The business account of the player's store (Model/BusinessAccount.swift). Nil while the player has no store.
+    var businessCash: Double?
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -171,6 +173,7 @@ extension GameData {
         day = v(.day, day)
         hour = v(.hour, hour)
         cash = v(.cash, cash)
+        businessCash = v(.businessCash, businessCash)
         ledger = v(.ledger, ledger)
         activity = v(.activity, activity)
         jobIndex = v(.jobIndex, jobIndex)
@@ -284,6 +287,11 @@ final class GameStore {
     var retailNotice: String?
     /// The peak viewers of the stream that runs now. A palm in a Rip & Ship rip reads it for its witnesses.
     @ObservationIgnored var currentStreamPeakViewers = 0
+    /// The account that money uses now, when a call sets it (`asBusiness`, Model/BusinessAccount.swift). Nil: the
+    /// counter session decides, or the personal account.
+    @ObservationIgnored var accountOverride: MoneyAccount?
+    /// The counter session that runs now at the player's store. Its money uses the business account.
+    @ObservationIgnored weak var counterSession: ShowSession?
     /// The route of a top goal the player just reached. It opens the "you made it" screen.
     var madeIt: GoalRoute?
     private var slabsBack: [OwnedCard] = []
@@ -348,6 +356,8 @@ final class GameStore {
             // A store from before the application keeps its distributor account.
             Self.grandfatherDistributor(&saved)
             data = saved
+            // A store from before the business account gets its account now (Model/BusinessAccount.swift).
+            openLegacyBusinessAccount()
         } else {
             data = GameData()
             startRun()
@@ -425,12 +435,21 @@ final class GameStore {
 
     // MARK: - Money
 
-    var cash: Double { data.cash }
+    /// The cash of the account that money uses now: the business account in store code and at the counter, or the
+    /// player's own account (Model/BusinessAccount.swift).
+    var cash: Double { balance(activeAccount) }
 
     @discardableResult
-    func addLedger(_ amount: Double, _ category: LedgerEntry.Category, _ label: String, pending: Bool = false) -> UUID {
-        let entry = LedgerEntry(day: data.day, amount: amount, category: category, label: label, pending: pending)
-        data.cash += amount
+    func addLedger(_ amount: Double, _ category: LedgerEntry.Category, _ label: String, pending: Bool = false,
+                   account: MoneyAccount? = nil) -> UUID {
+        let business = resolve(account) == .business
+        var entry = LedgerEntry(day: data.day, amount: amount, category: category, label: label, pending: pending)
+        if business {
+            entry.account = .business
+            data.businessCash = (data.businessCash ?? 0) + amount
+        } else {
+            data.cash += amount
+        }
         data.ledger.append(entry)
         return entry.id
     }
@@ -439,7 +458,7 @@ final class GameStore {
         data.activity.append(ActivityEntry(day: data.day, text: text, cash: cash))
     }
 
-    func canAfford(_ amount: Double) -> Bool { data.cash >= amount - 0.001 }
+    func canAfford(_ amount: Double) -> Bool { balance(activeAccount) >= amount - 0.001 }
 
     /// The next centering tool, if the player does not own the best one yet.
     var nextCenteringTool: (level: Int, name: String, cost: Double, detail: String)? {
@@ -619,6 +638,8 @@ final class GameStore {
 
     func startRun() {
         data = GameData()
+        counterSession = nil
+        accountOverride = nil
         data.marketSeed = UInt64.random(in: 1...UInt64.max)
         data.calendarStart = 0
         syncMarket()
@@ -1277,9 +1298,9 @@ final class GameStore {
             addReputation(-5)
         }
         lines += jobEndDay(endedDay: data.day)
-        lines += openingDayEnd()
-        lines += storeDayEnd()
-        lines += businessDayEnd()
+        lines += asBusiness { openingDayEnd() }
+        lines += asBusiness { storeDayEnd() }
+        lines += asBusiness { businessDayEnd() }
         lines += shortsEndDay()
 
         // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).
@@ -1323,7 +1344,7 @@ final class GameStore {
         lines += ripShipEndDay()
         lines += splitsEndDay()
         lines += distributorEndDay()
-        lines += ladderEndDay()
+        lines += asBusiness { ladderEndDay() }
         lines += plugEndDay()
         lines += meetupsEndDay()
         lines += offersEndDay()
@@ -1355,15 +1376,15 @@ final class GameStore {
         } else if daysUntilRent == Balance.rentWarningDays, rentNow > 0 {
             lines.append("Rent of \(money(rentNow)) is due in \(Balance.rentWarningDays) days.")
         }
-        if data.gameOver == nil { lines += storeRentDue() }
+        if data.gameOver == nil { lines += asBusiness { storeRentDue() } }
         lines += taxesEndDay()
         // Debt payments come after rent and taxes. A missed debt payment adds a fee, and the run goes on.
         if data.gameOver == nil { lines += debtEndDay() }
         if data.gameOver == nil { lines += collectionsEndDay() }
         if data.gameOver == nil { lines += lossesEndDay() }
         if data.gameOver == nil { lines += storageEndDay() }
-        if data.gameOver == nil { lines += storeBreakInEndDay() }
-        if data.gameOver == nil { lines += storeGrowthDay() }
+        if data.gameOver == nil { lines += asBusiness { storeBreakInEndDay() } }
+        if data.gameOver == nil { lines += asBusiness { storeGrowthDay() } }
         if data.gameOver == nil { lines += businessCostsEndDay() }
         if data.gameOver == nil { lines += alertsEndDay() }
         if data.gameOver == nil { lines += goalsEndDay() }

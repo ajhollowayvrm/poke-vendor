@@ -123,7 +123,7 @@ extension GameStore {
         if on.contains(setup) { return nil }
         if on.count >= Balance.floorSetupMax { return "The floor has room for \(Balance.floorSetupMax). Take one out first." }
         if setup == .playArea, data.cardStore?.has(.playTables) != true { return "Needs the play tables." }
-        if !canAfford(Balance.floorChangeCost) { return "It costs \(money(Balance.floorChangeCost))." }
+        if !bizAfford(Balance.floorChangeCost) { return "It costs \(money(Balance.floorChangeCost))." }
         if slot(for: Balance.floorChangeHours) == nil { return "There is no time left today." }
         return nil
     }
@@ -135,7 +135,7 @@ extension GameStore {
             on.removeAll { $0 == setup }
         } else {
             guard floorBlock(setup) == nil, spendHours(Balance.floorChangeHours) else { return }
-            addLedger(-Balance.floorChangeCost, .storeSetup, "Floor change · \(setup.rawValue)")
+            bizLedger(-Balance.floorChangeCost, .storeSetup, "Floor change · \(setup.rawValue)")
             on.append(setup)
             log("Moved the floor around: \(setup.rawValue.lowercased()).", cash: -Balance.floorChangeCost)
         }
@@ -196,7 +196,7 @@ extension GameStore {
         case .birthdayParty:
             if yes {
                 if !hasManager, !spendHours(Balance.partyHours) { line = "You had no time for the party, so you declined." } else {
-                    addLedger(Balance.partyFee, .storeEvents, "Birthday party · \(s.name)")
+                    bizLedger(Balance.partyFee, .storeEvents, "Birthday party · \(s.name)")
                     addToTodayRecord(revenue: Balance.partyFee, sold: 0)
                     updateBusiness { $0.loyalty = min(100, $0.loyalty + 2); $0.awareness = min(100, $0.awareness + 1) }
                     line = "Hosted a birthday party for \(money(Balance.partyFee)). The parents will tell their friends."
@@ -219,7 +219,7 @@ extension GameStore {
             }
         case .tradeDispute:
             if yes {
-                addLedger(-Balance.disputeRefund, .storeEvents, "Trade refund · \(s.name)")
+                bizLedger(-Balance.disputeRefund, .storeEvents, "Trade refund · \(s.name)")
                 addReview(5, "They made a bad trade right, no questions asked.")
                 line = "Refunded \(money(Balance.disputeRefund)). The parent left happy."
             } else {
@@ -228,7 +228,7 @@ extension GameStore {
             }
         case .leakyRoof:
             if yes {
-                addLedger(-Balance.roofFix, .storeSetup, "Roof repair · \(s.name)")
+                bizLedger(-Balance.roofFix, .storeSetup, "Roof repair · \(s.name)")
                 line = "The roofer fixed the leak for \(money(Balance.roofFix))."
             } else if Double.random(in: 0..<1) < Balance.roofDamageChance, let hit = storeStock.sealed.randomElement() {
                 data.sealed.removeAll { $0.id == hit.id }

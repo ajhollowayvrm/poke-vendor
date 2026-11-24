@@ -15,10 +15,24 @@ struct CardStoreView: View {
     @State private var onlineSheet: SellRequest?
     @State private var caseRequest: CaseRequest?
 
+    /// The sections of the store screen. The store has many boxes, so each tab shows a few of them.
+    enum StoreTab: String, CaseIterable {
+        case today = "Today", shelves = "Shelves", buying = "Buying", staff = "Staff", setup = "Setup"
+    }
+
+    @AppStorage("storeTab") private var tab: StoreTab = .today
+    /// Select mode on the shelves: the picked items, and the kind of stock that shows.
+    @State private var selectingShelf = false
+    @State private var shelfPick: Set<UUID> = []
+    @State private var shelfKind: ShelfKind = .all
+    @State private var seed = Balance.accountSeeds[1]
+
+    enum ShelfKind: String, CaseIterable { case all = "All", singles = "Singles", slabs = "Slabs", sealed = "Sealed" }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 14) {
-                Text("Cash \(money(store.cash))").font(.caption.monospaced()).frame(maxWidth: .infinity, alignment: .trailing)
+                AccountsLine()
                 if let s = store.cardStore {
                     storeHeader(s)
                     if store.day < s.openDay {
@@ -26,24 +40,36 @@ struct CardStoreView: View {
                                icon: "hammer")
                     }
                     rentBanner(s)
-                    if store.openingInProgress { OpeningBox() }
                     if store.pendingDecision != nil { DecisionCard() }
-                    BusinessLink()
-                    todayBox(s)
-                    numbersBox
-                    shelvesBox
-                    if store.hasBackRoom { backRoomBox }
-                    pricesBox(s)
-                    staffBox(s)
-                    StoreEventsBox()
-                    buylistBox(s)
-                    StoreCreditBox()
-                    StoreSealedBuylistBox()
-                    StoreConsignmentBox()
-                    bulkBox(s)
-                    fixturesBox
-                    StoreSpaceBox()
-                    leaseBox(s)
+                    Picker("Section", selection: $tab) {
+                        ForEach(StoreTab.allCases, id: \.self) { t in Text(t.rawValue).tag(t) }
+                    }
+                    .pickerStyle(.segmented)
+                    switch tab {
+                    case .today:
+                        if store.openingInProgress { OpeningBox() }
+                        todayBox(s)
+                        BusinessAccountBox()
+                        numbersBox
+                        BusinessLink()
+                    case .shelves:
+                        shelvesBox
+                        if store.hasBackRoom { backRoomBox }
+                        pricesBox(s)
+                        bulkBox(s)
+                    case .buying:
+                        buylistBox(s)
+                        StoreCreditBox()
+                        StoreSealedBuylistBox()
+                        StoreConsignmentBox()
+                    case .staff:
+                        staffBox(s)
+                        StoreEventsBox()
+                    case .setup:
+                        fixturesBox
+                        StoreSpaceBox()
+                        leaseBox(s)
+                    }
                 } else {
                     pitch
                 }
@@ -58,11 +84,11 @@ struct CardStoreView: View {
         .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(isPresent: $signing),
                             titleVisibility: .visible, presenting: signing) { location in
-            Button("Sign for \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0)))") {
-                store.signLease(location, term: term, name: name, investor: withInvestor)
+            Button("Sign for \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0) + seed))") {
+                store.signLease(location, term: term, name: name, investor: withInvestor, seed: seed)
             }
         } message: { location in
-            Text("\(location.name): \(term) periods of 28 days, to day \(store.day + term * Balance.rentCycleDays + 1). You pay the first rent, a deposit, and the build-out now. Rent of \(money(location.rent(term: term))) is due every 28 days, with about \(money(location.fixedOverhead)) of overhead and a \(Int(Balance.cardFeeRate * 100))% card fee. The lease renews on the same terms unless you close in the last \(Balance.leaseNoticeDays) days of a term. If you close sooner, you pay a buyout of up to \(Balance.leaseBuyoutRents) rents, and the landlord keeps the deposit. If you cannot pay, the landlord locks the store and keeps the deposit. Cardboard Castle and Top Deck Games see you as a competitor. Your standing with each goes down by \(Balance.rivalStandingLoss) points, and they do not consign for you while you own a store.")
+            Text(leaseMessage(location))
         }
         .confirmationDialog("Close the store?", isPresented: $closing, titleVisibility: .visible) {
             if let s = store.cardStore {
@@ -72,11 +98,27 @@ struct CardStoreView: View {
             }
         } message: {
             if let s = store.cardStore, store.leaseBuyout(s) > 0 {
-                Text("The lease runs to day \((s.lease?.endDay ?? 0) + 1). You pay the buyout, and the landlord keeps the \(money(s.deposit)) deposit. Your stock comes home tomorrow. The fixtures stay with the building.")
+                Text("The lease runs to day \((s.lease?.endDay ?? 0) + 1). The business account pays the buyout, and the landlord keeps the \(money(s.deposit)) deposit. The money left in the business account comes to you. Your stock comes home tomorrow. The fixtures stay with the building.")
             } else {
-                Text("The landlord gives back the deposit. Your stock comes home tomorrow. The fixtures stay with the building.")
+                Text("The landlord gives back the deposit. The money in the business account comes to you. Your stock comes home tomorrow. The fixtures stay with the building.")
             }
         }
+    }
+
+    /// The terms of the lease, for the signing dialog.
+    private func leaseMessage(_ location: StoreLocation) -> String {
+        let endDay = store.day + term * Balance.rentCycleDays + 1
+        let rent = money(location.rent(term: term))
+        let overhead = money(location.fixedOverhead)
+        let fee = Int(Balance.cardFeeRate * 100)
+        var parts = ["\(location.name): \(term) periods of 28 days, to day \(endDay)."]
+        parts.append("You pay the first rent, a deposit, and the build-out now, and \(money(seed)) goes into the business account.")
+        parts.append("Rent of \(rent) is due every 28 days, with about \(overhead) of overhead and a \(fee)% card fee.")
+        parts.append("The lease renews on the same terms unless you close in the last \(Balance.leaseNoticeDays) days of a term.")
+        parts.append("If you close sooner, you pay a buyout of up to \(Balance.leaseBuyoutRents) rents, and the landlord keeps the deposit.")
+        parts.append("If the business account cannot pay, the landlord locks the store and keeps the deposit.")
+        parts.append("Cardboard Castle and Top Deck Games see you as a competitor. Your standing with each goes down by \(Balance.rivalStandingLoss) points, and they do not consign for you while you own a store.")
+        return parts.joined(separator: " ")
     }
 
     // MARK: - Before the lease
@@ -125,6 +167,13 @@ struct CardStoreView: View {
                 .foregroundStyle(Theme.muted)
         }
         DetailBox(title: "Money to open") {
+            Text("THE BUSINESS ACCOUNT").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+            Picker("Seed", selection: $seed) {
+                ForEach(Balance.accountSeeds, id: \.self) { a in Text(money(a)).tag(a) }
+            }
+            .pickerStyle(.segmented)
+            Text("The store gets its own bank account. You pay the cost to sign into it, plus this much to run on. After that, store sales go in, and rent, wages, and other store bills come out. A bill that it cannot pay fails, so start with enough for the second rent.")
+                .font(.caption).foregroundStyle(Theme.muted)
             Toggle("Take an investor", isOn: $withInvestor).font(.subheadline)
             Text("An investor pays \(Int(Balance.investorBuildoutShare * 100))% of the build-out now. In return, they take \(Int(Balance.investorProfitShare * 100))% of each profitable month, until you buy them out for \(Int(Balance.investorBuyout)) times the money.")
                 .font(.caption).foregroundStyle(Theme.muted)
@@ -148,10 +197,10 @@ struct CardStoreView: View {
                     Text("The investor pays \(money(store.investorMoney(location))).").font(.caption2.monospaced()).foregroundStyle(Theme.cyan)
                 }
                 Button { signing = location } label: {
-                    Text("Sign the lease · \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0)))").frame(maxWidth: .infinity)
+                    Text("Sign the lease · \(money(location.upfront(term: term) - (withInvestor ? store.investorMoney(location) : 0) + seed))").frame(maxWidth: .infinity)
                 }
                 .primaryButton()
-                .disabled(!store.canSignLease(location, term: term, investor: withInvestor))
+                .disabled(!store.canSignLease(location, term: term, investor: withInvestor, seed: seed))
             }
         }
     }
@@ -187,8 +236,8 @@ struct CardStoreView: View {
     @ViewBuilder private func rentBanner(_ s: CardStoreState) -> some View {
         if let days = store.daysUntilStoreRent, days <= Balance.rentWarningDays {
             let overhead = store.storeOverhead(s).total
-            Banner(text: "Store rent of \(money(s.rent)) and about \(money(overhead)) of overhead are due in \(days) day\(days == 1 ? "" : "s"). You have \(money(store.cash)).",
-                   color: store.canAfford(s.rent + overhead) ? Theme.cyan : Theme.orange)
+            Banner(text: "Store rent of \(money(s.rent)) and about \(money(overhead)) of overhead are due in \(days) day\(days == 1 ? "" : "s"). The business account has \(money(store.businessCash)).",
+                   color: store.bizAfford(s.rent + overhead) ? Theme.cyan : Theme.orange)
         }
     }
 
@@ -229,8 +278,16 @@ struct CardStoreView: View {
 
     private var shelvesBox: some View {
         let stock = store.storeStock
-        let items = store.showItems(stock)
-        let value = items.reduce(0) { $0 + store.storePrice(item: $1) }
+        let all = store.showItems(stock)
+        let value = all.reduce(0) { $0 + store.storePrice(item: $1) }
+        let items = all.filter { item in
+            switch shelfKind {
+            case .all: true
+            case .singles: item.kind == .card && !item.graded
+            case .slabs: item.kind == .card && item.graded
+            case .sealed: item.kind == .sealed
+            }
+        }
         return DetailBox(title: "Shelves") {
             HStack(spacing: 0) {
                 StatCell(label: "Cards", value: "\(store.storeCardsUsed) / \(store.storeCardSlots)")
@@ -248,12 +305,26 @@ struct CardStoreView: View {
                         .font(.caption).foregroundStyle(Theme.muted)
                 }
             }
-            Button { stocking = true } label: { Text("Stock the shelves").frame(maxWidth: .infinity) }
-                .primaryButton()
-                .disabled(store.stockable.cards.isEmpty && store.stockable.sealed.isEmpty)
-            if items.isEmpty {
-                Text("The shelves are empty. Empty shelves turn customers away.").font(.caption).foregroundStyle(Theme.orange)
+            HStack(spacing: 8) {
+                Button { stocking = true } label: { Text("Stock the shelves").frame(maxWidth: .infinity) }
+                    .primaryButton()
+                    .disabled(store.stockable.cards.isEmpty && store.stockable.sealed.isEmpty)
+                Button {
+                    selectingShelf.toggle()
+                    shelfPick = []
+                } label: { Text(selectingShelf ? "Done" : "Select").frame(maxWidth: .infinity) }
+                    .buttonStyle(.bordered)
+                    .disabled(all.isEmpty)
             }
+            if all.isEmpty {
+                Text("The shelves are empty. Empty shelves turn customers away.").font(.caption).foregroundStyle(Theme.orange)
+            } else {
+                Picker("Kind", selection: $shelfKind) {
+                    ForEach(ShelfKind.allCases, id: \.self) { k in Text(k.rawValue).tag(k) }
+                }
+                .pickerStyle(.segmented)
+            }
+            if selectingShelf { shelfActions(items) }
             let cards = items.filter { $0.kind == .card }
             let groups = SetLibrary.grouped(items.filter { $0.kind == .sealed }, by: { $0.setSlug })
             FoldAllButton(list: "store", keys: (cards.isEmpty ? [] : [FoldKey.title("In the cases")]) + groups.map { FoldKey.set($0.slug) })
@@ -268,6 +339,60 @@ struct CardStoreView: View {
                 }
             }
         }
+    }
+
+    /// The actions on the picked shelf items: take back, list online, put on clearance, and the slab price.
+    private func shelfActions(_ shown: [ShowItem]) -> some View {
+        let picked = shown.filter { shelfPick.contains($0.id) }
+        let ids = Set(picked.map(\.id))
+        let slabs = picked.filter(\.graded).map(\.id)
+        let allPicked = !shown.isEmpty && picked.count == shown.count
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("PICKED · \(picked.count) of \(shown.count)")
+                    .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                Spacer()
+                Button(allPicked ? "None" : "All") {
+                    shelfPick = allPicked ? [] : Set(shown.map(\.id))
+                }
+                .font(.caption.weight(.semibold))
+            }
+            HStack(spacing: 8) {
+                Button {
+                    store.takeBackFromStore(ids)
+                    shelfPick = []
+                } label: { Text("Take back \(ids.count)").lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity) }
+                .primaryButton()
+                .disabled(ids.isEmpty)
+                Button {
+                    onlineSheet = SellRequest(ids: ids, startAll: false)
+                    shelfPick = []
+                } label: { Text("List online").lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity) }
+                .buttonStyle(.bordered)
+                .disabled(ids.isEmpty || picked.contains { store.onlineListing(of: $0.id) != nil })
+            }
+            HStack(spacing: 8) {
+                Button {
+                    store.markDown(Array(ids))
+                    shelfPick = []
+                } label: { Text("Clearance \(Int(Balance.clearanceFactor * 100))%").lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity) }
+                .buttonStyle(.bordered)
+                .tint(Theme.orange)
+                .disabled(ids.isEmpty)
+                Menu {
+                    Button("Singles price") { slabs.forEach { store.setSlabPrice($0, nil) } }
+                    ForEach(Balance.storeSlabPrices, id: \.self) { p in
+                        Button(Self.percent(p)) { slabs.forEach { store.setSlabPrice($0, p) } }
+                    }
+                } label: {
+                    Text("Slab price · \(slabs.count)").lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(slabs.isEmpty)
+            }
+        }
+        .padding(10)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 10))
     }
 
     /// Sealed cases off the shelf. When a product runs low, the store opens a case of it at night and restocks.
@@ -308,7 +433,31 @@ struct CardStoreView: View {
         }
     }
 
-    private func stockRow(_ item: ShowItem) -> some View {
+    @ViewBuilder private func stockRow(_ item: ShowItem) -> some View {
+        if selectingShelf {
+            let on = shelfPick.contains(item.id)
+            Button {
+                if on { shelfPick.remove(item.id) } else { shelfPick.insert(item.id) }
+            } label: {
+                HStack(spacing: 10) {
+                    Image(systemName: on ? "checkmark.circle.fill" : "circle").foregroundStyle(on ? Theme.cyan : Theme.muted)
+                    ItemLine(item: item)
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(money(store.storePrice(item: item))).font(.subheadline.monospaced())
+                        Text("mkt \(money(item.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                }
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        } else {
+            plainStockRow(item)
+        }
+    }
+
+    private func plainStockRow(_ item: ShowItem) -> some View {
         HStack(spacing: 10) {
             ItemLine(item: item)
             Spacer()

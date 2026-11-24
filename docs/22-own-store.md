@@ -486,12 +486,44 @@ The player does not need a new lease.
   stock, and events. The hub, the End Day hooks, and the shelf code
   all read the one store. This is still an open topic.
 
+## The business account
+
+The store has its own bank account, apart from the player's own cash
+(`Model/BusinessAccount.swift`). It opens with the lease and closes
+with the store. Before the lease, nothing changes.
+
+- **At the lease**: the player pays the cost to sign (the first rent,
+  the deposit, and the build-out) into the account from their own
+  cash. The player also picks the money to run on: $0, $1,000,
+  $2,500, or $5,000. An investor's money goes into the account.
+- **The business account** takes the store's sales, the counter, the
+  clerk buylist, the sealed buylist, consignment cuts, events, and the
+  accessories. It pays rent, overhead, wages, marketing, fixtures,
+  floor changes, the space, the opening tasks, the investor, the hobby
+  distributor (orders and net-30 bills), and the sales tax that the
+  store collected.
+- **The player's own cash** takes everything else: shows, eBay,
+  TCGplayer, rips, the job, home rent, loans, and insurance. An online
+  listing of a store item is a sale of the player's own.
+- **Transfers**: "Move in" puts the player's cash into the business.
+  "Pay yourself" is an owner's draw. A transfer is not income and not
+  a cost, so the taxes and the Wallet totals leave it out.
+- **Bills fail**: a bill that the business account cannot pay fails.
+  The player's own cash and line of credit never cover it. With no
+  money for the wages, the staff stays home that day. With no money
+  for the rent, the landlord locks the store.
+- **The close**: the buyout comes out of the account, or the deposit
+  comes back into it. Then the money left goes to the player.
+- **An older save**: a store from before the account gets it at load.
+  The game moves the next rent, the overhead, and 14 days of wages
+  from the player's cash, or all of the cash when that is less.
+
 ## Store rent and eviction
 
 - Store rent and overhead are due every 28 days after the lease day.
   The game warns the player 3 days before.
-- The home rent comes first. If the player cannot pay the store rent
-  and the overhead after the home rent, the landlord locks the store.
+- The business account pays them. If it cannot pay the store rent and
+  the overhead, the landlord locks the store.
 - **Eviction**: the landlord keeps the deposit, and reputation goes
   down by 15. The stock comes home the next day. The run does not end.
 
@@ -507,18 +539,22 @@ opens again. The player can sign a new lease later.
 
 ## The store screen
 
-- **Today**: work the counter, and the customers to expect today.
-- **Last 7 days**: sales, costs (wages, rent, and overhead), the net,
-  customers, and items sold.
-- **Space**: the unit, the room, and the step up to a bigger unit.
-- **Shelves**: the room used, the stock at the shelf price, and the
-  stock list. Each row has a menu: the slab price, and the online
-  listing.
-- **Buylist and store credit**: the buylist settings and the credit the store owes.
-- **Credit that expires**, **Sealed buylist**, and **Consignment**: the boxes for the topics above.
-- **Bulk box**: the cards in the box and the buttons to move bulk.
-- **Prices**, **Staff and hours**, **Fixtures**, and **Lease**. The
-  Lease box shows the term, the end day, the buyout, and the overhead.
+Five tabs sit above the boxes, under the store name and the banners.
+A morning decision shows above the tabs.
+
+- **Today**: the opening tasks, work the counter, the business
+  account, the last 7 days, and the link to the Business screen.
+- **Shelves**: the stock, the back room, the prices, and the bulk box.
+  "Select" picks shelf items. The picked items can come back home, go
+  online, go on clearance, or take a slab price. A kind filter shows
+  all stock, singles, slabs, or sealed.
+- **Buying**: the buylist and store credit, the credit that expires,
+  the sealed buylist, and consignment.
+- **Staff**: the staff, the open days, and the events.
+- **Setup**: the fixtures, the space, and the lease.
+
+In Inventory select mode, the "Store" tile puts the picked items on
+the shelves, up to the room.
 
 The calendar shows the grand opening, each open day, each event, and
 each store rent.

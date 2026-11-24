@@ -39,6 +39,7 @@ final class GameTests {
         timed("opening", opening)
         timed("staff", staffing)
         timed("floor", floor)
+        timed("account", businessAccount)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -560,7 +561,7 @@ final class GameTests {
         store.data.taxes.permit = true
         store.addLedger(5_000, .sale, "Test sales")
         store.addTestCash(50_000)
-        store.signLease(.stripMall, term: 6, name: "Test Store", investor: investor)
+        store.signLease(.stripMall, term: 6, name: "Test Store", investor: investor, seed: 20_000)
         // The opening tasks are done, unless the test checks them.
         if tasksDone {
             let day = store.day
@@ -582,7 +583,7 @@ final class GameTests {
         let cash = store.cash
         openTestStore(investor: true)
         guard let s2 = store.cardStore else { return check(false, "the test store did not open") }
-        let paid = cash + 50_000 + 5_000 - store.cash
+        let paid = cash + 50_000 + 5_000 - store.cash - 20_000
         check(abs(paid - (s2.location.upfront(term: 6) - store.investorMoney(s2.location))) < 0.01, "the investor's money did not lower the cost")
         check(store.investor != nil, "no investor")
         store.setSoftOpen(true)
@@ -735,9 +736,9 @@ final class GameTests {
         fresh()
         openTestStore()
         for _ in 0..<Balance.storeBuildDays { nextDay() }
-        let cash = store.cash
+        let cash = store.businessCash
         store.toggleFloor(.impulseRack)
-        check(store.floorSetups == [.impulseRack] && abs(cash - store.cash - Balance.floorChangeCost) < 0.01, "a floor setup did not cost its price")
+        check(store.floorSetups == [.impulseRack] && abs(cash - store.businessCash - Balance.floorChangeCost) < 0.01, "a floor setup did not cost its price")
         store.data.hour = Balance.dayStart
         store.toggleFloor(.slabsFront)
         store.data.hour = Balance.dayStart
@@ -752,9 +753,9 @@ final class GameTests {
         check(item.map { abs(store.shelfPrice($0) - ShowSession.round($0.market * Balance.clearanceFactor)) < 0.01 } ?? false, "clearance is not 80% of market")
 
         store.updateBusiness { $0.decision = Decision(kind: .tradeDispute, day: store.day) }
-        let before = store.cash
+        let before = store.businessCash
         store.answerDecision(true)
-        check(abs(before - store.cash - Balance.disputeRefund) < 0.01 && store.pendingDecision == nil, "the refund decision did not pay the refund")
+        check(abs(before - store.businessCash - Balance.disputeRefund) < 0.01 && store.pendingDecision == nil, "the refund decision did not pay the refund")
 
         let war = RivalMove(kind: .priceWar, rival: "Test", untilDay: store.day + 10)
         store.updateBusiness { $0.rivals = [war] }
@@ -773,9 +774,9 @@ final class GameTests {
         fresh()
         openTestStore()
         for _ in 0..<Balance.storeBuildDays { nextDay() }
-        let cash = store.cash
+        let cash = store.businessCash
         check(store.startChannel(.flyers), "flyers did not start")
-        check(abs(cash - store.cash - Balance.mktFlyers) < 0.01, "flyers cost \(money(cash - store.cash)) to start")
+        check(abs(cash - store.businessCash - Balance.mktFlyers) < 0.01, "flyers cost \(money(cash - store.businessCash)) to start")
         check(store.channelBlock(.school) != nil, "a channel above the store level is open")
         check(store.startChannel(.maps) && !store.startChannel(.maps), "the maps listing is not once")
         let awareness = store.business.awareness
@@ -2362,6 +2363,53 @@ final class GameTests {
     }
 
     /// One End Day, the way the player plays it.
+    /// The business account: the lease fills it, store costs come out of it, transfers move money both ways, a rent
+    /// that it cannot pay closes the store, and the money left goes home (Model/BusinessAccount.swift).
+    private func businessAccount() {
+        fresh()
+        let before = store.personalCash
+        openTestStore()
+        guard let s = store.cardStore else { return check(false, "the test store did not open") }
+        check(abs(store.businessCash - 20_000) < 0.01, "the business account did not start with the seed: \(money(store.businessCash))")
+        check(abs(before + 50_000 + 5_000 - store.personalCash - s.location.upfront(term: 6) - 20_000) < 0.01,
+              "the lease did not come out of the player's own cash")
+        check(abs(store.cash - store.personalCash) < 0.01, "outside the store, cash is not the player's own cash")
+        let personal = store.personalCash
+        store.buyFixture(.sign)
+        check(abs(store.personalCash - personal) < 0.01 && abs(20_000 - store.businessCash - Balance.fixtureCosts[.sign]!) < 0.01,
+              "a fixture did not come out of the business account")
+        store.payYourself(1_000)
+        check(abs(store.personalCash - personal - 1_000) < 0.01, "an owner's draw did not reach the player")
+        store.moveToBusiness(500)
+        check(abs(store.personalCash - personal - 500) < 0.01, "a transfer into the business did not leave the player's cash")
+        let biz = store.businessCash
+        _ = store.asBusiness { store.addLedger(10, .sale, "Test sale") }
+        check(abs(store.businessCash - biz - 10) < 0.01, "a sale in store code did not reach the business account")
+        // The bills: with nothing in the business account, the rent fails, and the store closes. The player keeps
+        // their own cash.
+        store.payYourself(store.businessCash)
+        let mine = store.personalCash
+        var guardDays = 0
+        while store.cardStore != nil, guardDays < Balance.rentCycleDays + 2 {
+            nextDay()
+            guardDays += 1
+        }
+        check(store.cardStore == nil, "a rent that the business could not pay did not close the store")
+        check(store.data.businessCash == nil, "the business account stayed open after the store closed")
+        check(store.personalCash > mine - 1_000, "the player's own cash paid a store bill")
+
+        // A close returns the money in the account to the player.
+        fresh()
+        openTestStore()
+        let home = store.personalCash
+        let left = store.businessCash
+        let refund = store.cardStore.map { store.leaseBuyout($0) } ?? 0
+        let deposit = store.cardStore?.deposit ?? 0
+        store.closeStore()
+        let expected = left + (refund > 0 ? -refund : deposit)
+        check(abs(store.personalCash - home - expected) < 0.01, "the money in the business account did not come home at the close")
+    }
+
     private func nextDay() {
         store.report = nil
         if store.data.lateHours > 0 { store.chooseMorning(sleepIn: false) }

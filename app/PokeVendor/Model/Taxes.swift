@@ -8,6 +8,8 @@ struct TaxState: Codable, Hashable {
     var permit = false
     /// Sales tax that the player collected and has not paid yet. It is not the player's money.
     var salesTaxOwed = 0.0
+    /// The part of `salesTaxOwed` that the store collected. The business account pays it. Optional, so old saves load.
+    var businessSalesTaxOwed: Double?
     /// Income tax from a quarter that the player has not paid yet, with its penalties.
     var incomeTaxOwed = 0.0
     /// The loss of earlier quarters. It lowers the profit of the next quarter.
@@ -86,30 +88,42 @@ extension GameStore {
         guard tax > 0 else { return }
         let label = "Sales tax collected · \(venue)"
         let today = data.day
+        // The store collects into the business account, and the business account pays it (Model/BusinessAccount.swift).
+        let account = activeAccount
+        let business: MoneyAccount? = account == .business ? .business : nil
         var found: Int?
         for i in data.ledger.indices.reversed() {
             let entry = data.ledger[i]
             if entry.day != today { break }
-            if entry.category == .tax, entry.label == label {
+            if entry.category == .tax, entry.label == label, entry.account == business {
                 found = i
                 break
             }
         }
         if let found {
             data.ledger[found].amount += tax
-            data.cash += tax
+            if account == .business { data.businessCash = (data.businessCash ?? 0) + tax } else { data.cash += tax }
         } else {
-            addLedger(tax, .tax, label)
+            addLedger(tax, .tax, label, account: account)
         }
         data.taxes.salesTaxOwed += tax
+        if account == .business { data.taxes.businessSalesTaxOwed = (data.taxes.businessSalesTaxOwed ?? 0) + tax }
     }
 
     /// Pays the sales tax. Returns a line for the report, or nil when nothing is owed. When the player cannot pay,
     /// the penalty goes on the amount and the player pays it later.
     private func remitSalesTax() -> String? {
+        // The business account pays the part that the store collected. With no account, the player pays it all.
+        if !hasBusinessAccount { data.taxes.businessSalesTaxOwed = nil }
+        let bizPart = min(data.taxes.businessSalesTaxOwed ?? 0, data.taxes.salesTaxOwed)
+        if bizPart >= 0.01, bizAfford(bizPart) {
+            bizLedger(-bizPart, .tax, "Sales tax paid · the store")
+            data.taxes.salesTaxOwed -= bizPart
+            data.taxes.businessSalesTaxOwed = nil
+        }
         let owed = data.taxes.salesTaxOwed
-        guard owed >= 0.01 else { return nil }
-        if canAfford(owed) {
+        guard owed >= 0.01 else { return bizPart >= 0.01 ? "Sales tax paid: \(money(bizPart)) from the business account." : nil }
+        if (data.taxes.businessSalesTaxOwed ?? 0) < 0.01, canAfford(owed) {
             addLedger(-owed, .tax, "Sales tax paid")
             data.taxes.salesTaxOwed = 0
             return "Sales tax paid: \(money(owed))."
@@ -168,7 +182,10 @@ extension GameStore {
         let owed = income ? data.taxes.incomeTaxOwed : data.taxes.salesTaxOwed
         guard owed >= 0.01, canAfford(owed) else { return }
         addLedger(-owed, .tax, income ? "Income tax paid" : "Sales tax paid")
-        if income { data.taxes.incomeTaxOwed = 0 } else { data.taxes.salesTaxOwed = 0 }
+        if income { data.taxes.incomeTaxOwed = 0 } else {
+            data.taxes.salesTaxOwed = 0
+            data.taxes.businessSalesTaxOwed = nil
+        }
         log("Paid \(money(owed)) of \(income ? "income" : "sales") tax.", cash: -owed)
         save()
     }

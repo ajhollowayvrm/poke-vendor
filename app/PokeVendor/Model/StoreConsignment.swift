@@ -40,7 +40,7 @@ extension GameStore {
         g.consignEarned += cut
         s.growth = g
         data.cardStore = s
-        addLedger(cut, .sale, "Consignment cut · \(card.name) · \(storeName) · sold \(money(price))")
+        bizLedger(cut, .sale, "Consignment cut · \(card.name) · \(storeName) · sold \(money(price))")
         addReceipt(name: card.name, venue: "\(storeName) consignment", price: cut, net: cut, paid: nil)
         return cut
     }
@@ -55,7 +55,7 @@ extension GameStore {
         g.consigned.removeAll { ids.contains($0.id) }
         s.growth = g
         data.cardStore = s
-        addLedger(-payout, .sale, "Consignment payout for a stolen card · \(s.name)")
+        bizLedger(-payout, .sale, "Consignment payout for a stolen card · \(s.name)")
         return payout
     }
 

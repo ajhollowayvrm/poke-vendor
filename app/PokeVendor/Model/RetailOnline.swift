@@ -56,6 +56,8 @@ struct MissingShipment: Codable, Identifiable, Hashable {
     let refundDay: Int
     let refund: Double
     var noticed = false
+    /// The account that paid for the order. The refund goes back to it (Model/BusinessAccount.swift).
+    var account: MoneyAccount?
 }
 
 /// A drawing that the player can enter now. Not saved: the seed makes it.
@@ -248,10 +250,11 @@ extension GameStore {
 
     /// The order is lost on the way. `learnIn` is the days until the player learns it: the normal delivery days.
     /// The refund comes `missingShipmentRefundDays` after that.
-    func registerMissingShipment(name: String, refund: Double, learnIn: Int) {
+    func registerMissingShipment(name: String, refund: Double, learnIn: Int, account: MoneyAccount? = nil) {
         let notice = data.day + learnIn
         data.retail.missingShipments.append(MissingShipment(name: name, noticeDay: notice,
-                                                            refundDay: notice + Balance.missingShipmentRefundDays, refund: refund))
+                                                            refundDay: notice + Balance.missingShipmentRefundDays, refund: refund,
+                                                            account: account == .business ? .business : nil))
     }
 
     /// Tells the player about a lost order, and pays each refund once. A refund counts as a wholesale credit, so it
@@ -267,7 +270,7 @@ extension GameStore {
         let paid = all.filter { $0.refundDay <= today }
         data.retail.missingShipments = all.filter { $0.refundDay > today }
         for s in paid {
-            addLedger(s.refund, .wholesale, "Missing shipment refund · \(s.name)")
+            addLedger(s.refund, .wholesale, "Missing shipment refund · \(s.name)", account: s.account ?? .personal)
             lines.append("The distributor refunded \(money(s.refund)) for the missing \(s.name).")
         }
         return lines

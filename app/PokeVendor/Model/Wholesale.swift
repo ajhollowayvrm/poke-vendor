@@ -106,7 +106,11 @@ extension GameStore {
         guard requested >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
         // A Preferred or Premier account can buy on net-30 terms (Model/DistributionLadder.swift).
         let onTerms = buyingOnTerms && termsBlock(requested) == nil
-        guard onTerms || canAfford(requested) else { return "You need \(money(requested)). You have \(money(cash))." }
+        // The hobby account belongs to the store, so the business account pays for it (Model/BusinessAccount.swift).
+        let account: MoneyAccount = distributorTier == .hobby ? .business : .personal
+        guard onTerms || balance(account) >= requested - 0.001 else {
+            return "You need \(money(requested)). \(account == .business ? "The business account has" : "You have") \(money(balance(account)))."
+        }
         // 1. The fill roll. Read every value into locals first.
         let hot = isHot(offer.product)
         let fill = hotFillRate(offer.product)
@@ -134,7 +138,7 @@ extension GameStore {
         // 2. The charge, for the filled cases only.
         let total = offer.casePrice * Double(filled)
         let orderName = "\(filled) case\(filled == 1 ? "" : "s") of \(offer.product.name)"
-        addLedger(-total, .wholesale, "\(orderName) · Distributor")
+        addLedger(-total, .wholesale, "\(orderName) · Distributor", account: account)
         if onTerms { takeOnTerms(total, label: orderName) }
         // 3. The missing-shipment roll. No items, no hot records, no rep credit, no spend.
         #if DEBUG
@@ -143,7 +147,7 @@ extension GameStore {
         let missing = Double.random(in: 0..<1) < Balance.wholesaleMissingChance
         #endif
         if missing {
-            registerMissingShipment(name: orderName, refund: total, learnIn: Balance.wholesaleDeliveryDays)
+            registerMissingShipment(name: orderName, refund: total, learnIn: Balance.wholesaleDeliveryDays, account: account)
             log("Ordered \(orderName) from the distributor for \(money(total)). It should arrive in \(Balance.wholesaleDeliveryDays) days.", cash: -total)
             save()
             return nil
@@ -156,7 +160,7 @@ extension GameStore {
             ? max(1, Int(Double(ordered) * Double.random(in: Balance.wholesaleShortShare))) : ordered
         if shipped < ordered {
             let refund = offer.unitPrice * Double(ordered - shipped)
-            addLedger(refund, .wholesale, "Short shipment refund · \(offer.product.name)")
+            addLedger(refund, .wholesale, "Short shipment refund · \(offer.product.name)", account: account)
             log("The distributor is short on \(offer.product.name). It ships \(shipped) of \(ordered) and refunds \(money(refund)).", cash: refund)
         }
         let arriving = ItemStatus.arriving(daysLeft: Balance.wholesaleDeliveryDays, from: "the distributor")

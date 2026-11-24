@@ -686,6 +686,11 @@ struct ItemActions<Extra: View>: View {
                         Text("The grade is gone for good. The card goes back to Raw. Rarely, the case breaks badly and nicks the card.")
                     }
             }
+            // Put the items on the shelves of the player's own store (docs/22-own-store.md).
+            if store.cardStore != nil {
+                ActionTile(title: "Store", icon: "storefront") { run { store.stockStore(ids) } }
+                    .disabled(aside || !store.canStock(ids))
+            }
             if kind != .sealed { masterSetTile }
             if store.series(.pnl) != nil {
                 ActionTile(title: "Challenge", icon: "flag.checkered") { run { store.addToChallenge(ids) } }
