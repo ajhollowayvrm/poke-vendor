@@ -2385,6 +2385,16 @@ final class GameTests {
         let biz = store.businessCash
         _ = store.asBusiness { store.addLedger(10, .sale, "Test sale") }
         check(abs(store.businessCash - biz - 10) < 0.01, "a sale in store code did not reach the business account")
+        // The counter buys and sells for the store.
+        let day = store.day
+        store.updateOpening { $0.licenseReadyDay = day; $0.inspectionPassed = true }
+        store.data.cardStore?.openDay = day
+        store.data.hour = 12
+        if let counter = store.startCounter() {
+            check(abs(store.cash - store.businessCash) < 0.01, "at the counter, cash is not the business account")
+            store.finishEncounter(counter)
+            check(abs(store.cash - store.personalCash) < 0.01, "after the counter, cash is not the player's own cash")
+        }
         // The bills: with nothing in the business account, the rent fails, and the store closes. The player keeps
         // their own cash.
         store.payYourself(store.businessCash)

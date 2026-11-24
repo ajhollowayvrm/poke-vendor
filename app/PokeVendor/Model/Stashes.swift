@@ -129,11 +129,14 @@ extension ShowSession {
 
     /// An offer on stash items. At or over the seller's lowest total, they sell. Under it, they counter, and after
     /// the second refusal they close the stash. The main deal stays open.
-    func offerOnStash(_ ids: Set<UUID>, price: Double) {
+    /// `credit`: at the player's store, the seller takes store credit for the price (`creditOffer(cash:)`). The
+    /// seller judges the cash price.
+    func offerOnStash(_ ids: Set<UUID>, price: Double, credit: Bool = false) {
         guard var v = current, v.intent == .sell else { return }
         let items = v.stash.filter { ids.contains($0.id) }
         guard !items.isEmpty else { return }
-        guard store.canAfford(price) else {
+        let credit = credit && canPayCredit
+        guard credit || store.canAfford(price) else {
             note = "You do not have \(money(price))."
             return
         }
@@ -141,7 +144,7 @@ extension ShowSession {
         let ask = stashAsk(v, ids)
         let market = stashMarket(v, ids)
         if price >= floor - 0.001 {
-            buyStash(&v, items, price: price, market: market, pushed: price < ask - 0.001)
+            buyStash(&v, items, price: price, market: market, pushed: price < ask - 0.001, credit: credit)
             return
         }
         if market > 0, price < market * 0.6, !v.naive { store.lowballed(v.contactID) }
@@ -163,12 +166,13 @@ extension ShowSession {
     }
 
     /// Takes the seller's counter on the stash.
-    func takeStashCounter() {
+    func takeStashCounter(credit: Bool = false) {
         guard let v = current, let counter = v.stashCounter else { return }
-        offerOnStash(v.stashCounterFor, price: counter)
+        offerOnStash(v.stashCounterFor, price: counter, credit: credit)
     }
 
-    private func buyStash(_ v: inout Visitor, _ items: [StashItem], price: Double, market: Double, pushed: Bool) {
+    private func buyStash(_ v: inout Visitor, _ items: [StashItem], price: Double, market: Double, pushed: Bool,
+                          credit: Bool = false) {
         // Each item gets its own receipt: the price splits by the asking prices.
         let asks = items.map(\.item.price)
         let total = max(asks.reduce(0, +), 0.01)
@@ -176,12 +180,13 @@ extension ShowSession {
         for (i, one) in items.enumerated() {
             let part = i == items.count - 1 ? left : Self.round(price * asks[i] / total)
             left -= part
-            buyGoods(one.item.goods, price: part, from: v.name, fake: one.item.fake, looksOff: one.item.looksOff)
+            buyGoods(one.item.goods, price: part, from: v.name, fake: one.item.fake, looksOff: one.item.looksOff,
+                     credit: credit ? creditOffer(cash: part) : nil)
         }
         let names = items.map(\.item.name).joined(separator: ", ")
-        store.recordDeal(v.contactID, what: "Bought \(names) from their stash", price: price, market: market,
-                         slug: items.first?.item.slug, scored: true)
-        score(.buy, price: price, market: market, pushed: pushed, v)
+        store.recordDeal(v.contactID, what: "Bought \(names) from their stash\(credit ? " for store credit" : "")", price: price,
+                         market: market, slug: items.first?.item.slug, scored: true)
+        score(credit ? .credit : .buy, price: credit ? creditOffer(cash: price) : price, market: market, pushed: pushed, v)
         let bought = Set(items.map(\.id))
         stashBuys += 1
         v.stash.removeAll { bought.contains($0.id) }

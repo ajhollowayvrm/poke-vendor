@@ -352,6 +352,17 @@ of the cash offer.
 - **Old saves**: credit from an old save gets the day of the first End
   Day after the update. It expires 56 days after that day.
 
+### Store credit for a binder or a stash
+
+At the counter, store credit also works on what people show:
+
+- **A seller's stash**: a "Pay in store credit" switch on the stash
+  panel. The seller judges the cash price and takes credit worth more
+  (the credit bonus), the same as a single item.
+- **A trader's binder**: when the player adds money to a trade, the
+  player can add store credit instead. The credit is the cash part
+  with the bonus.
+
 ## Sealed buylist
 
 The store also has a buylist for sealed product only. It is separate

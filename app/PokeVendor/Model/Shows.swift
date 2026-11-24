@@ -285,7 +285,8 @@ extension GameStore {
     }
 
     /// A trade: the player's item goes, and the other person's cards plus any cash come in.
-    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String) {
+    /// `credit`: the player pays their part (`cash` under 0) in store credit at their own store.
+    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String, credit: Double? = nil) {
         settleOnlineListing(item.id, name: item.name)
         // A trade at the table is a deal with a person, so it counts as a retail sale of a hot unit.
         noteAllocationSold([item.id], offShelf: false)
@@ -305,10 +306,15 @@ extension GameStore {
             data.raw.append(owned)
         }
         if cash > 0 { addLedger(cash, .sale, "\(item.name) · trade at \(venue)") }
-        if cash < 0 { addLedger(cash, .singles, "Cash added in a trade at \(venue)") }
-        let extra = cash > 0 ? " plus \(money(cash))" : cash < 0 ? ", adding \(money(-cash)) of your own" : ""
+        if cash < 0, let credit {
+            addStoreCredit(credit)
+        } else if cash < 0 {
+            addLedger(cash, .singles, "Cash added in a trade at \(venue)")
+        }
+        let extra = cash > 0 ? " plus \(money(cash))" : cash < 0
+            ? (credit.map { ", adding \(money($0)) in store credit" } ?? ", adding \(money(-cash)) of your own") : ""
         log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(extra) at \(venue).",
-            cash: cash != 0 ? cash : nil)
+            cash: cash != 0 && !(cash < 0 && credit != nil) ? cash : nil)
         save()
     }
 
@@ -654,6 +660,8 @@ struct Visitor: Identifiable {
     var line: String
     var tradeCards: [FloorListing] = []
     var tradeCash: Double = 0
+    /// At the player's store: the player pays their part of a trade in store credit, not cash.
+    var tradeInCredit = false
     /// What they sell, and what it is worth.
     var goods: VendorGoods?
     var goodsMarket: Double = 0
@@ -1556,12 +1564,13 @@ final class ShowSession {
             if v.lostFlip { store.lostFlipStory(name: v.name, venue: venue.name, price: v.offer) }
         case .trade:
             guard let item = v.item else { return }
-            if v.tradeCash < 0, !store.canAfford(-v.tradeCash) {
+            let credit = v.tradeCash < 0 && v.tradeInCredit && canPayCredit ? creditOffer(cash: -v.tradeCash) : nil
+            if v.tradeCash < 0, credit == nil, !store.canAfford(-v.tradeCash) {
                 note = "You do not have \(money(-v.tradeCash))."
                 return
             }
             if buyerCatchesFake(v, item) { return }
-            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name)
+            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name, credit: credit)
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
                                     refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
@@ -1597,6 +1606,9 @@ final class ShowSession {
 
     /// The store credit for this seller: more than the cash offer, and no cash leaves the till.
     func creditOffer(_ v: Visitor) -> Double { store.storeCreditOffer(cash: v.offer) }
+
+    /// The store credit in place of a cash amount.
+    func creditOffer(cash: Double) -> Double { store.storeCreditOffer(cash: cash) }
 
     func acceptWithCredit() {
         guard canPayCredit, let v = current, v.intent == .sell, let goods = v.goods else { return }
@@ -1949,8 +1961,9 @@ final class ShowSession {
 
     /// The player sets a value on the trader's cards, and the cash follows. The trader takes it when the real
     /// value they give stays within their limit. If not, they add part of the cash, or walk away.
-    func proposeTrade(valuing percent: Double) {
+    func proposeTrade(valuing percent: Double, credit: Bool = false) {
         guard var v = current, v.intent == .trade, let item = v.item else { return }
+        v.tradeInCredit = credit && canPayCredit
         // The trader takes any valuation at or above their own lowest one, while the cash fits what they carry
         // (docs/30-haggling-and-deal-reputation.md).
         let cash = tradeCash(v, valuing: percent)
@@ -1962,7 +1975,7 @@ final class ShowSession {
                 spend(2)
                 return
             }
-            if cash < 0, !store.canAfford(-cash) {
+            if cash < 0, !v.tradeInCredit, !store.canAfford(-cash) {
                 note = "You do not have \(money(-cash))."
                 return
             }

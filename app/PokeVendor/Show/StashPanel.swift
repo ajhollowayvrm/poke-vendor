@@ -9,6 +9,8 @@ struct StashPanel: View {
     let visitor: Visitor
     @State private var picked: Set<UUID> = []
     @State private var percent: Double = 80
+    /// At the player's store: pay in store credit.
+    @State private var credit = false
 
     var body: some View {
         if session.canAskStash(visitor) {
@@ -66,18 +68,26 @@ struct StashPanel: View {
                     .padding(.vertical, -4)
                     .tint(Theme.cyan)
                     .onChange(of: percent) { _, _ in Haptics.tick(0.35) }
+                if session.canPayCredit {
+                    Toggle("Pay in store credit · \(money(store.storeCreditOffer(cash: price)))", isOn: $credit)
+                        .font(.caption)
+                        .tint(Theme.cyan)
+                }
                 HStack(spacing: 8) {
-                    Button { withAnimation { session.offerOnStash(chosen, price: price) } } label: {
+                    Button { withAnimation { session.offerOnStash(chosen, price: price, credit: credit) } } label: {
                         Text("Offer \(money(price))").frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(Theme.line)
-                    Button { withAnimation { session.offerOnStash(chosen, price: counter ?? ask) } } label: {
-                        Text("Pay \(money(counter ?? ask))").frame(maxWidth: .infinity)
+                    .disabled(!credit && !store.canAfford(price))
+                    Button { withAnimation { session.offerOnStash(chosen, price: counter ?? ask, credit: credit) } } label: {
+                        Text("Pay \(money(credit ? store.storeCreditOffer(cash: counter ?? ask) : counter ?? ask))").frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+                    .disabled(!credit && !store.canAfford(counter ?? ask))
                 }
                 Text("Their price \(money(ask)) for \(chosen.count) item\(chosen.count == 1 ? "" : "s")."
+                     + (credit ? " They judge the cash price, and take store credit worth \(Int(((Balance.creditBonus - 1) * 100).rounded()))% more." : "")
                      + (counter != nil ? " They countered at \(money(counter ?? 0))." : ""))
                     .font(.caption2)
                     .foregroundStyle(Theme.muted)

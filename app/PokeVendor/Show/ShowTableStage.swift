@@ -116,9 +116,12 @@ struct CounterSlider: View {
 
 /// A trade counter: the player sets what the trader's cards are worth to them, and the cash follows.
 struct TradeSlider: View {
+    @Environment(GameStore.self) private var store
     let session: ShowSession
     let visitor: Visitor
     @State private var percent: Double = 80
+    /// At the player's store: the player's part of the trade is store credit, not cash.
+    @State private var credit = false
 
     var body: some View {
         let cards = session.tradeCardsValue(visitor)
@@ -162,8 +165,13 @@ struct TradeSlider: View {
                 Spacer()
                 Text("for your \(money(visitor.item?.dealMarket ?? 0)) item").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
+            if session.canPayCredit, cash < 0 {
+                Toggle("Add store credit instead · \(money(store.storeCreditOffer(cash: -cash)))", isOn: $credit)
+                    .font(.caption)
+                    .tint(Theme.cyan)
+            }
             HStack(spacing: 8) {
-                Button { withAnimation { session.proposeTrade(valuing: percent) } } label: {
+                Button { withAnimation { session.proposeTrade(valuing: percent, credit: credit && cash < 0) } } label: {
                     Text("Propose").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
