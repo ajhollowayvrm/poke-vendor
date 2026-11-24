@@ -40,6 +40,7 @@ final class GameTests {
         timed("staff", staffing)
         timed("floor", floor)
         timed("account", businessAccount)
+        timed("counter", counterEvents)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2418,6 +2419,87 @@ final class GameTests {
         store.closeStore()
         let expected = left + (refund > 0 ? -refund : deposit)
         check(abs(store.personalCash - home - expected) < 0.01, "the money in the business account did not come home at the close")
+    }
+
+    /// The counter walk-ins at the player's store: each answer moves the money and the items it should
+    /// (Model/CounterEvents.swift).
+    private func counterEvents() {
+        fresh()
+        openTestStore()
+        let day = store.day
+        store.data.cardStore?.openDay = day
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 8 && ($0.market ?? 0) < 150 }).prefix(16) {
+            store.addTestCard(print)
+        }
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 60 && ($0.market ?? 0) < 400 }).prefix(3) {
+            store.addTestCard(print)
+        }
+        for _ in 0..<4 { store.addTestPack() }
+        let pick = store.stockable
+        store.stockStore(Set(pick.cards.map(\.id) + pick.sealed.map(\.id)))
+        store.data.hour = 12
+        guard let session = store.startCounter() else { return check(false, "no counter session for the walk-ins") }
+        func seat(_ kind: CounterEventKind) -> Visitor? {
+            for _ in 0..<20 { if let v = session.makeCounterEvent(kind) { session.testSeat(v); return v } }
+            return nil
+        }
+
+        // A gift sells an item at the shelf price.
+        if let v = seat(.gift), let item = session.table.filter({ session.asking($0) <= v.event?.budget ?? 0 }).first {
+            let biz = store.businessCash
+            session.suggestGift(item.id)
+            let sold = !session.table.contains { $0.id == item.id }
+            check(!sold || store.businessCash > biz, "a gift sale did not reach the business account")
+        } else { check(false, "no gift shopper") }
+
+        // A pack rip sells the pack.
+        if let v = seat(.packRip), let pack = v.event?.item {
+            session.sellPackToRip()
+            check(!session.table.contains { $0.id == pack.id }, "the ripped pack stayed on the table")
+        } else { check(false, "no pack ripper") }
+
+        // A cash refund pays from the business account, and the card comes back.
+        if let v = seat(.returnItem), let e = v.event {
+            let biz = store.businessCash
+            let raw = store.data.raw.count
+            session.answerReturn(.cash)
+            check(abs(biz - store.businessCash - e.price) < 0.01 && store.data.raw.count == raw + 1, "a cash refund did not pay and take the card back")
+        } else { check(false, "no return") }
+
+        // A special order: the deposit now, and the sale when the card is in hand.
+        if let v = seat(.specialOrder), let e = v.event, let print = e.print {
+            let biz = store.businessCash
+            session.takeSpecialOrder()
+            check(store.specialOrders.count == 1 && store.businessCash > biz, "a special order took no deposit")
+            store.addTestCard(print, slug: e.slug)
+            let after = store.businessCash
+            _ = store.asBusiness { store.counterEventsEndDay() }
+            check(store.specialOrders.isEmpty && store.businessCash > after, "a found card did not fill the special order")
+        } else { check(false, "no special order") }
+
+        // A hold takes the item off the table and the shelf. Taking it back refunds the deposit.
+        if let v = seat(.hold), let item = v.event?.item {
+            session.holdItem()
+            check(!session.table.contains { $0.id == item.id } && !store.storeShelf().contains { $0.id == item.id },
+                  "a held item stayed for sale")
+            let biz = store.businessCash
+            store.takeBackFromStore([item.id])
+            check(store.storeHolds.isEmpty && store.businessCash < biz, "taking a held item back did not refund the deposit")
+        } else { check(false, "no hold") }
+
+        // A trade-in at a high rate: the item goes, and their cards come in.
+        if let v = seat(.tradeIn), let e = v.event, let item = e.item {
+            let raw = store.data.raw.count
+            session.answerTradeIn(rate: 0.8)
+            check(!session.table.contains { $0.id == item.id } && store.data.raw.count >= raw + e.cards.count - 1,
+                  "a trade-in did not swap the item for the cards")
+        } else { check(false, "no trade-in") }
+
+        // A sealed hoard is all sealed, with no bulk.
+        if let lot = CollectionLot.makeSealed(fakes: .stranger, tired: 1) {
+            check(lot.bulkCount == 0 && lot.pieces.allSatisfy(\.isSealed) && !lot.pieces.isEmpty, "a sealed hoard had cards in it")
+        } else { check(false, "no sealed hoard") }
+        store.finishEncounter(session)
     }
 
     private func nextDay() {

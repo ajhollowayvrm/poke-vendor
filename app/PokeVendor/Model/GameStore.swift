@@ -1301,6 +1301,7 @@ final class GameStore {
         lines += asBusiness { openingDayEnd() }
         lines += asBusiness { storeDayEnd() }
         lines += asBusiness { businessDayEnd() }
+        lines += asBusiness { counterEventsEndDay() }
         lines += shortsEndDay()
 
         // A late night: the hours past 11 PM wait for the morning choice (docs/16, Late nights).

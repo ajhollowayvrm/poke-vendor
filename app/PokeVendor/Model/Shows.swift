@@ -713,6 +713,8 @@ struct Visitor: Identifiable {
     var cherryOK: Bool?
     /// A card the person asks about: grade it, or keep it raw (docs/33-collections.md, Grading advice).
     var advice: AdviceAsk?
+    /// A job at the player's store counter: a gift, a return, a hold, and more (Model/CounterEvents.swift).
+    var event: CounterEvent?
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.dealMarket } + tradeCash }
 }
@@ -971,7 +973,11 @@ final class ShowSession {
 
     var stockItems: [ShowItem] {
         // At the player's own store, the table is the stock in the store.
-        guard venue.kind != .store else { return store.showItems(store.storeStock) }
+        // A held item waits for its customer (Model/CounterEvents.swift).
+        guard venue.kind != .store else {
+            let held = store.heldItemIDs
+            return store.showItems(store.storeStock).filter { !held.contains($0.id) }
+        }
         let stock = store.showStock
         return store.showItems((stock.cards, stock.sealed.filter { !store.bannedAtShow($0, show: show) }))
     }
@@ -1156,6 +1162,10 @@ final class ShowSession {
         var v: Visitor?
         // With the showcase out, a whale comes more often. Some whales ask about a showcase card.
         if showcaseOut, Double.random(in: 0..<1) < store.showcaseWhaleChance { v = makeWhale() }
+        // At the player's store, some people come with a job for the player (Model/CounterEvents.swift).
+        if v == nil, venue.kind == .store, Double.random(in: 0..<1) < Balance.counterEventShare {
+            if let event = makeCounterEvent() { return event }
+        }
         if v == nil {
             if table.isEmpty || roll < sellers {
                 // Some sellers bring a whole collection, and some only ask about grading (docs/33-collections.md).
@@ -2061,6 +2071,14 @@ final class ShowSession {
     func recordTrade(_ line: String) { trades.append(line) }
     func recordWalkAway() { walkedAway += 1 }
 
+    /// Sells one table item at a price, for a deal that lives in another file.
+    func sellTableItem(_ item: ShowItem, price: Double) {
+        store.sellAtShow(item, price: price, at: venue.name)
+        sold.append((item.name, price))
+        table.removeAll { $0.id == item.id }
+        bring.remove(item.id)
+    }
+
     /// Takes items off the table and out of the load, after a trade.
     func removeFromTable(_ ids: Set<UUID>) {
         table.removeAll { ids.contains($0.id) }
@@ -2346,6 +2364,15 @@ final class ShowSession {
         case "seller": visitor = makeSeller()
         case "collection": visitor = makeCollectionSeller() ?? visitor
         case "advice": visitor = makeAdviceSeeker() ?? visitor
+        case "gift": visitor = makeCounterEvent(.gift) ?? visitor
+        case "packrip": visitor = makeCounterEvent(.packRip) ?? visitor
+        case "return": visitor = makeCounterEvent(.returnItem) ?? visitor
+        case "order": visitor = makeCounterEvent(.specialOrder) ?? visitor
+        case "hold": visitor = makeCounterEvent(.hold) ?? visitor
+        case "shoplifter": visitor = makeCounterEvent(.shoplifter) ?? visitor
+        case "pricecheck": visitor = makeCounterEvent(.priceCheck) ?? visitor
+        case "tradeup": visitor = makeCounterEvent(.tradeUp) ?? visitor
+        case "tradein": visitor = makeCounterEvent(.tradeIn) ?? visitor
         case "trader": visitor = makeTrader() ?? visitor
         case "naive":
             for _ in 0..<60 {

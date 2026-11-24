@@ -10,7 +10,8 @@ struct CollectionSummary: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("THEY BROUGHT · \(lot.theme.label.uppercased())").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
             Text(lot.summary).font(.subheadline)
-            Text("worth \(money(lot.dealValue)) to a dealer · bulk at \(Int(Balance.collectionBulkShare * 100))% of its \(money(lot.bulkValue))")
+            Text(lot.bulkCount == 0 ? "worth \(money(lot.dealValue)) at market"
+                 : "worth \(money(lot.dealValue)) to a dealer · bulk at \(Int(Balance.collectionBulkShare * 100))% of its \(money(lot.bulkValue))")
                 .font(.caption.monospaced())
                 .foregroundStyle(Theme.muted)
             HStack(spacing: 6) {
@@ -44,13 +45,15 @@ struct CollectionPanel: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("THE COLLECTION · TAP TO CHERRY-PICK").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
                 ForEach(lot.pieces) { piece in row(piece, on: chosen.contains(piece.id)) }
-                HStack {
-                    Image(systemName: "square.stack.3d.down.right").foregroundStyle(Theme.muted)
-                    Text("Bulk · \(lot.bulkCount) cards").font(.caption)
-                    Spacer()
-                    Text("\(money(lot.bulkValue * Balance.collectionBulkShare)) of \(money(lot.bulkValue))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                if lot.bulkCount > 0 {
+                    HStack {
+                        Image(systemName: "square.stack.3d.down.right").foregroundStyle(Theme.muted)
+                        Text("Bulk · \(lot.bulkCount) cards").font(.caption)
+                        Spacer()
+                        Text("\(money(lot.bulkValue * Balance.collectionBulkShare)) of \(money(lot.bulkValue))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                    }
+                    .opacity(target == nil ? 1 : 0.4)
                 }
-                .opacity(target == nil ? 1 : 0.4)
                 Divider().overlay(Theme.line)
                 HStack(alignment: .firstTextBaseline) {
                     Text(target == nil ? "All of it" : "\(chosen.count) picked").font(.subheadline.weight(.semibold))

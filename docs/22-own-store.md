@@ -282,6 +282,31 @@ store screen. The Friday tournament starts on. The league starts off.
   came to the Friday tournament at Card Corner. You gave 10 packs as
   prizes."
 
+## Counter walk-ins
+
+At the counter, about 3 visitors in 10 come with a job for the player
+(`Model/CounterEvents.swift`). Only the store counter has them.
+
+| Walk-in | What happens | The choices |
+|---|---|---|
+| Gift shopper | A parent with a budget asks for a gift for a young kid, a teen player, or a collector. | Pick an item under the budget. A fit that uses most of the budget earns a 10% tip, a 5-star review, and loyalty. A poor fit can lose the sale. |
+| Pack ripper | They buy a loose pack from the table and open it at the counter. | Sell the pack. About 1 pack in 4 gives a hit, and 1 in 20 a chase card. Then they offer to sell the hit to you. |
+| Return | They bring back a card: damaged, the wrong version, buyer's remorse, or "my friend says it's fake". 3 in 10 are a trick: a worse copy or a fake. | Refund cash, refund in store credit, or "No returns". Refusing an honest return gives a bad review and costs loyalty. |
+| Special order | A player asks for a card the store does not have, at 115% of market. | Take a 20% deposit. Find the card in 7 days. At the end of a day, the store sells it from Inventory or the shelves. A missed order refunds the deposit and gives a bad review. |
+| Hold | They want an item of $40 or more, and pay 25% down. | Hold it for up to 14 days. It leaves the table and the shelf. 8 in 10 come back and pay the rest. If not, the store keeps the deposit. Taking the item back refunds the deposit. |
+| Shoplifter | A teen hangs around the case. 6 in 10 steal. A glance is a tell, but honest kids glance too. | Watch them (10 minutes), offer help, call them out, or let it go. Calling out an honest kid gives a 1-star review. Letting a thief go loses an item of $60 or less. |
+| Price check | Someone asks what their card is worth. | Tell the truth: reputation, and half the time they sell it at 75%. Lowball: buy it at 35%. It is a lie, and they can find out. |
+| Trade-up | They offer a PSA slab for two or three of your items of about the same value. | Trade, ask them to add 10% cash (once), or pass. The slab can be a fake. |
+| Trade-in | They bring 3 to 8 cards for credit toward one item. | Offer 60%, 70%, or 80% of market. They pay the rest in cash, or keep the extra as credit. Under their lowest rate, they ask once for more. |
+
+**Sealed hoards**: about 1 collection seller in 3 at the store brings
+sealed product only: a case of one product (up to 24 units), a pile of
+8 to 24 Elite Trainer Boxes, or 4 to 14 booster boxes and bundles. Each
+unit is one piece, so the player can cherry-pick. A unit can be resealed
+or fake. Shows and eBay never get these lots.
+
+The store screen lists open special orders and holds on the Today tab.
+
 ## Shoplifting
 
 On a day when the clerk is alone, there is a chance that someone steals

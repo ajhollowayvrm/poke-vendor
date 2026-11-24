@@ -49,6 +49,7 @@ struct CardStoreView: View {
                     case .today:
                         if store.openingInProgress { OpeningBox() }
                         todayBox(s)
+                        OrdersAndHoldsBox()
                         BusinessAccountBox()
                         numbersBox
                         BusinessLink()

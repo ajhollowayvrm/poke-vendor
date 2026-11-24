@@ -171,6 +171,11 @@ extension HubView {
                 for _ in 0..<7 { store.endDay() }
                 store.report = nil
             }
+            // `-counter` opens the counter. A walk-in kind ("gift", "return", ...) seats that walk-in.
+            if args.contains("-counter") {
+                store.data.hour = 12
+                if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
+            }
         }
         if args.contains("-sim") {
             store.startRun()

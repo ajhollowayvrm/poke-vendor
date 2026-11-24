@@ -306,6 +306,8 @@ extension GameStore {
         data.bulk += s.source.bulkBox
         var lines: [String] = []
         let stock = count > 0 ? " \(count) item\(count == 1 ? "" : "s") come\(count == 1 ? "s" : "") home tomorrow." : ""
+        // Customers get their order and hold deposits back (Model/CounterEvents.swift).
+        refundCounterDeposits()
         // The business account pays the buyout or takes the deposit back, then closes (Model/BusinessAccount.swift).
         if evicted {
             addReputation(-Balance.evictionReputationCost)
@@ -432,6 +434,7 @@ extension GameStore {
 
     /// Takes items off the shelves. They are in hand at once.
     func takeBackFromStore(_ ids: Set<UUID>) {
+        cancelHolds(ids)
         // An item with an online listing stays listed.
         for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.isInStore(data.raw[i].status) {
             data.raw[i].status = data.raw[i].onlineListing.map(ItemStatus.listed)
@@ -685,7 +688,10 @@ extension GameStore {
     }
 
     func storeShelf() -> [StoreShelfItem] {
-        let stock = storeStock
+        // A held item waits for its customer (Model/CounterEvents.swift).
+        let held = heldItemIDs
+        let all = storeStock
+        let stock = held.isEmpty ? all : (cards: all.cards.filter { !held.contains($0.id) }, sealed: all.sealed.filter { !held.contains($0.id) })
         let cards = stock.cards.map { c in
             StoreShelfItem(id: c.id, name: c.print.name + (c.grade.map { " " + $0.label } ?? ""), market: c.realMarket, paid: c.paid,
                       setSlug: c.setSlug, isCard: true, isPack: false, productKey: "", fake: c.fake, known: c.isKnownFake)

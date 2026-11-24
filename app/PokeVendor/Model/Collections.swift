@@ -55,9 +55,16 @@ extension Balance {
 /// The kinds of collection that people bring.
 enum CollectionTheme: String, Codable, CaseIterable, Hashable {
     case childhoodBinder, modernBinder, mixedBox, estate
+    /// Sealed product only: a case, a pile of Elite Trainer Boxes, or a stack of booster boxes. Only at the player's
+    /// store counter (Model/CounterEvents.swift).
+    case sealedHoard
+
+    /// The card collections. A sealed hoard comes only to the player's store, so the random picks use this list.
+    static let binders: [CollectionTheme] = [.childhoodBinder, .modernBinder, .mixedBox, .estate]
 
     var label: String {
         switch self {
+        case .sealedHoard: "Sealed product"
         case .childhoodBinder: "Childhood binder"
         case .modernBinder: "Modern binder"
         case .mixedBox: "Shoebox of mixed cards"
@@ -70,6 +77,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .childhoodBinder, .estate: Balance.vintageSets + Balance.olderSets
         case .modernBinder: Balance.modernSets
         case .mixedBox: Balance.vintageSets + Balance.olderSets + Balance.modernSets
+        case .sealedHoard: Balance.modernSets + Balance.olderSets
         }
     }
 
@@ -77,7 +85,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
     var played: Bool {
         switch self {
         case .childhoodBinder, .estate: true
-        case .modernBinder: false
+        case .modernBinder, .sealedHoard: false
         case .mixedBox: Bool.random()
         }
     }
@@ -88,6 +96,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: 8...20
         case .mixedBox: 6...14
         case .estate: 10...24
+        case .sealedHoard: 0...0
         }
     }
 
@@ -97,6 +106,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: 0...2
         case .mixedBox: 0...1
         case .estate: 0...3
+        case .sealedHoard: 0...0
         }
     }
 
@@ -106,6 +116,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: 0...2
         case .mixedBox: 0...3
         case .estate: 1...3
+        case .sealedHoard: 8...24
         }
     }
 
@@ -115,6 +126,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: 100...400
         case .mixedBox: 80...300
         case .estate: 150...500
+        case .sealedHoard: 0...0
         }
     }
 
@@ -124,6 +136,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: "I'm done collecting. Here's my binder and the rest of my cards."
         case .mixedBox: "I found this box of cards when I moved."
         case .estate: "These were my dad's. I don't know what any of it is worth."
+        case .sealedHoard: "I bought way too much sealed. I need the cash back."
         }
     }
 
@@ -133,6 +146,7 @@ enum CollectionTheme: String, Codable, CaseIterable, Hashable {
         case .modernBinder: "HUGE modern Pokemon card lot - ex, full arts"
         case .mixedBox: "Shoebox of Pokemon cards - old and new"
         case .estate: "Estate Pokemon collection - binders, slabs, sealed"
+        case .sealedHoard: "Sealed Pokemon lot - boxes and ETBs"
         }
     }
 }
@@ -184,6 +198,10 @@ struct CollectionLot: Codable, Hashable {
         let singles = pieces.filter { if case .single = $0.goods { return true }; return false }.count
         let slabs = pieces.filter { if case .slab = $0.goods { return true }; return false }.count
         let sealed = pieces.filter(\.isSealed).count
+        if theme == .sealedHoard {
+            let kinds = Set(pieces.map(\.name)).count
+            return "\(sealed) sealed item\(sealed == 1 ? "" : "s") of \(kinds) product\(kinds == 1 ? "" : "s")"
+        }
         var parts = ["\(singles) single\(singles == 1 ? "" : "s")"]
         if slabs > 0 { parts.append("\(slabs) slab\(slabs == 1 ? "" : "s")") }
         parts.append("\(bulkCount) bulk")
@@ -235,6 +253,43 @@ struct CollectionLot: Codable, Hashable {
         }
         return CollectionLot(theme: theme, pieces: pieces.sorted { $0.market > $1.market }, bulk: bulk,
                              bulkWear: played ? Double.random(in: 0.6...0.85) : Double.random(in: 0.9...1.0))
+    }
+}
+
+extension CollectionLot {
+    /// A sealed hoard: a case of one product, a pile of Elite Trainer Boxes, or a mix of boxes and bundles. Each unit
+    /// is one piece, so the player can cherry-pick. A resealed or fake unit can hide in it.
+    @MainActor
+    static func makeSealed(fakes source: FakeSource, tired: Double) -> CollectionLot? {
+        let pool = Set(Balance.modernSets + (Bool.random() ? Balance.olderSets : []))
+        let products = SetLibrary.catalog.filter { pool.contains($0.homeSlug) && $0.market >= 20 }
+        let etbs = products.filter { $0.kind == "Elite Trainer Box" }
+        let boxes = products.filter { $0.kind == "Booster box" || $0.kind == "Booster bundle" }
+        var units: [Product] = []
+        switch Int.random(in: 0..<3) {
+        case 0:
+            // A sealed case of one product.
+            guard let p = (boxes + etbs).randomElement() else { return nil }
+            let size = Balance.caseSize(for: p) ?? (p.kind == "Elite Trainer Box" ? 10 : 6)
+            units = Array(repeating: p, count: min(size * Int.random(in: 1...2), 24))
+        case 1:
+            // A pile of Elite Trainer Boxes from a few sets.
+            let picks = Array(etbs.shuffled().prefix(Int.random(in: 1...4)))
+            guard !picks.isEmpty else { return nil }
+            for _ in 0..<Int.random(in: 8...24) { if let p = picks.randomElement() { units.append(p) } }
+        default:
+            // A mix of booster boxes and bundles.
+            let picks = Array(boxes.shuffled().prefix(Int.random(in: 2...5)))
+            guard !picks.isEmpty else { return nil }
+            for _ in 0..<Int.random(in: 4...14) { if let p = picks.randomElement() { units.append(p) } }
+        }
+        guard !units.isEmpty else { return nil }
+        var pieces = units.map { CollectionPiece(goods: .sealed($0), market: $0.market) }
+        for i in pieces.indices {
+            pieces[i].fake = Counterfeit.roll(source: source, sealed: true, slug: pieces[i].slug, market: pieces[i].market)
+            if let fake = pieces[i].fake { pieces[i].looksOff = Counterfeit.eyeballCatches(fake, tired: tired) }
+        }
+        return CollectionLot(theme: .sealedHoard, pieces: pieces.sorted { $0.market > $1.market }, bulk: [:], bulkWear: 1)
     }
 }
 
@@ -455,7 +510,7 @@ extension GameStore {
     func lotRate(_ theme: CollectionTheme) -> Double { data.lotRates[theme.rawValue] ?? Balance.lotRateStart }
 
     private func makeEbayLot() -> EbayLot {
-        let theme = CollectionTheme.allCases.randomElement() ?? .mixedBox
+        let theme = CollectionTheme.binders.randomElement() ?? .mixedBox
         var lot = CollectionLot.make(theme, fakes: .ebay, tired: eyeFactor)
         // Photos do not show what an eye at the table would see. The look happens when the box arrives.
         for i in lot.pieces.indices { lot.pieces[i].looksOff = false }
@@ -603,9 +658,12 @@ extension ShowSession {
     func makeCollectionSeller() -> Visitor? {
         let type = [VisitorType.closetCleaner, .closetCleaner, .collector, .dealer].randomElement() ?? .closetCleaner
         let theme: CollectionTheme = type == .closetCleaner ? [.childhoodBinder, .mixedBox, .estate].randomElement() ?? .mixedBox
-            : CollectionTheme.allCases.randomElement() ?? .modernBinder
+            : CollectionTheme.binders.randomElement() ?? .modernBinder
         let source = store.fakeSource(contact: nil, fallback: venue.fakeSource == .none ? .stranger : venue.fakeSource)
-        var lot = CollectionLot.make(theme, fakes: source, tired: store.eyeFactor)
+        // At the player's store, some sellers bring a sealed hoard (Model/CounterEvents.swift).
+        let hoard = venue.kind == .store && Double.random(in: 0..<1) < Balance.sealedHoardShare
+            ? CollectionLot.makeSealed(fakes: source, tired: store.eyeFactor) : nil
+        var lot = hoard ?? CollectionLot.make(theme, fakes: source, tired: store.eyeFactor)
         // A seller at a show with the rule leaves the in-print sealed at home. The lot is a local value.
         if bansInPrintSealed {
             lot.pieces.removeAll { piece in
@@ -626,7 +684,7 @@ extension ShowSession {
         let roll = Double.random(in: 0..<1)
         let want: CollectionWant = venue.kind == .store ? (roll < 0.35 ? .credit : roll < 0.5 ? .trade : .cash)
             : (hasTable && !table.isEmpty && roll < 0.25 ? .trade : .cash)
-        let line = "\(theme.sellerLine) \(money(ask)) for all of it? \(want.line)"
+        let line = "\(lot.theme.sellerLine) \(money(ask)) for all of it? \(want.line)"
         var v = Visitor(type: type, name: Self.names.randomElement() ?? "A seller", intent: .sell, item: nil, limit: floor,
                         offer: ask, patience: 2, line: line)
         v.goodsMarket = lot.dealValue

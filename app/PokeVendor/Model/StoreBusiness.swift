@@ -123,6 +123,9 @@ struct BusinessState: Codable, Hashable {
     var clearance: [String]?
     var decision: Decision?
     var rivals: [RivalMove]?
+    /// Special orders and holds from the counter (`Model/CounterEvents.swift`).
+    var orders: [SpecialOrder]?
+    var holds: [StoreHold]?
 
     init() {}
 
@@ -145,6 +148,8 @@ struct BusinessState: Codable, Hashable {
         clearance = try c.decodeIfPresent([String].self, forKey: .clearance)
         decision = try c.decodeIfPresent(Decision.self, forKey: .decision)
         rivals = try c.decodeIfPresent([RivalMove].self, forKey: .rivals)
+        orders = try c.decodeIfPresent([SpecialOrder].self, forKey: .orders)
+        holds = try c.decodeIfPresent([StoreHold].self, forKey: .holds)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.

@@ -13,7 +13,9 @@ struct TableStage: View {
                             .id(visitor.id)
                             .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                                     removal: .move(edge: .leading).combined(with: .opacity)))
-                        if visitor.collection != nil {
+                        if let event = visitor.event {
+                            CounterEventPanel(session: session, visitor: visitor, event: event).id(visitor.id)
+                        } else if visitor.collection != nil {
                             CollectionPanel(session: session, visitor: visitor).id(visitor.id)
                         } else {
                             StashPanel(session: session, visitor: visitor)
@@ -29,7 +31,10 @@ struct TableStage: View {
                 .animation(.spring(response: 0.4, dampingFraction: 0.85), value: session.visitor?.id)
             }
             if let visitor = session.visitor {
-                if visitor.advice != nil {
+                if visitor.event != nil {
+                    // The answers are in the event panel above.
+                    EmptyView()
+                } else if visitor.advice != nil {
                     AdviceButtons(session: session, visitor: visitor)
                 } else if visitor.collection != nil {
                     // The collection deal is in the panel above. Here the player can only pass.
@@ -396,7 +401,7 @@ struct VisitorCard: View {
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Theme.background, in: RoundedRectangle(cornerRadius: 10))
-            switch visitor.intent {
+            switch visitor.event == nil ? visitor.intent : nil {
             case .trade:
                 Text("THEY OFFER").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
                 ForEach(visitor.tradeCards) { card in
@@ -424,7 +429,7 @@ struct VisitorCard: View {
                         .contentTransition(.numericText())
                 }
             default:
-                if visitor.advice == nil {
+                if visitor.advice == nil && visitor.event == nil {
                 HStack(alignment: .firstTextBaseline) {
                     Text(visitor.collection != nil ? "THEIR PRICE FOR ALL" : visitor.intent == .sell ? "THEIR PRICE" : "OFFER")
                         .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
@@ -450,7 +455,8 @@ struct VisitorCard: View {
     }
 
     private var intentLabel: String {
-        switch visitor.intent {
+        if let event = visitor.event { return event.kind.title }
+        return switch visitor.intent {
         case .buy: "WANTS TO BUY"
         case .trade: "WANTS TO TRADE"
         case .sell: visitor.collection != nil ? "SELLING A COLLECTION" : visitor.advice != nil ? "ASKS ABOUT GRADING" : "WANTS TO SELL"

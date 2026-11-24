@@ -36,6 +36,7 @@
 		147623CBCD67C468C0C8D3AA /* stellar-crown.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F38B7B3DE47AF76DF106787 /* stellar-crown.json */; };
 		1491A903A92DB128281D9D47 /* plasma-storm.json in Resources */ = {isa = PBXBuildFile; fileRef = 2BB5E54A48F045F4D8D408CD /* plasma-storm.json */; };
 		14BC4B51E0FEAF475510B430 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2BBF1705A78AD1FB2B8A33 /* Messages.swift */; };
+		1760B48C9A91D05FFCC38ADC /* CounterEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF100F010E5835C802FAC78D /* CounterEvents.swift */; };
 		1791273FD9C7DEC1E5DD2888 /* dragon-vault.json in Resources */ = {isa = PBXBuildFile; fileRef = C48C1D5FF1B74BD664CD16E2 /* dragon-vault.json */; };
 		179DF689C158578B8EAEF5BC /* team-rocket-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = 79CA8019BFA3AA3CC88EDA3B /* team-rocket-1st-edition.json */; };
 		18D0A389AC8681EB12B78A9B /* Stashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D3E9F9E012F05AC4B3E9A5B /* Stashes.swift */; };
@@ -206,6 +207,7 @@
 		A2BAE1FE55F4408A11D999E0 /* brilliant-stars.json in Resources */ = {isa = PBXBuildFile; fileRef = DA252B8F0C1AEDD2F377CAAD /* brilliant-stars.json */; };
 		A30688FAC3E1D24CCF9ED639 /* Effects.metal in Sources */ = {isa = PBXBuildFile; fileRef = 77CD37AEDEDAD5767A419067 /* Effects.metal */; };
 		A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */; };
+		A4A382AAD48458F412CD9312 /* CounterEventViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AA5DD4E1BD96EE50971780 /* CounterEventViews.swift */; };
 		A51C92ACDE9CB838F30C650B /* HubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DCF071A80BA4398E968082 /* HubView.swift */; };
 		A594A05B05D0A05E3C748B74 /* neo-genesis-1st-edition.json in Resources */ = {isa = PBXBuildFile; fileRef = ABCD791A8D85E01E7FF2A91A /* neo-genesis-1st-edition.json */; };
 		A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E04FD006DB8B88A9342A378 /* Support.swift */; };
@@ -579,6 +581,7 @@
 		D3C180A062FEB64E1EB184FD /* legends-awakened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "legends-awakened.json"; sourceTree = "<group>"; };
 		D439F10D2937F79B968A0331 /* StorageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageView.swift; sourceTree = "<group>"; };
 		D5A73274FF00A599902EDFFF /* cases.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = cases.json; sourceTree = "<group>"; };
+		D5AA5DD4E1BD96EE50971780 /* CounterEventViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterEventViews.swift; sourceTree = "<group>"; };
 		D7653D159E767B267752F265 /* StoreRunViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreRunViews.swift; sourceTree = "<group>"; };
 		D79C5589F2211F09E31C1FB2 /* primal-clash.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "primal-clash.json"; sourceTree = "<group>"; };
 		D85667450A30BCA2B91E3829 /* Camping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camping.swift; sourceTree = "<group>"; };
@@ -639,6 +642,7 @@
 		FDDB3709D7BFD861D4F66368 /* celebrations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = celebrations.json; sourceTree = "<group>"; };
 		FE044E20B20FB2490087A1C9 /* temporal-forces.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "temporal-forces.json"; sourceTree = "<group>"; };
 		FE24D22F379B1A8349AED4A6 /* sandstorm.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = sandstorm.json; sourceTree = "<group>"; };
+		FF100F010E5835C802FAC78D /* CounterEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CounterEvents.swift; sourceTree = "<group>"; };
 		FF5188F9BDD662DDFD44100F /* AuctionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionViews.swift; sourceTree = "<group>"; };
 		FFB84E50DD5B533FE4BD8643 /* sun-moon.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sun-moon.json"; sourceTree = "<group>"; };
 		FFCA10E0346065DAC9FB7BF1 /* RipView+Tear.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RipView+Tear.swift"; sourceTree = "<group>"; };
@@ -650,6 +654,7 @@
 			children = (
 				DFCAA7018CABF3E161025536 /* CoinFlipView.swift */,
 				EEB33981612CBC52FCFA0A2B /* CollectionBuyViews.swift */,
+				D5AA5DD4E1BD96EE50971780 /* CounterEventViews.swift */,
 				E20845FB5280BA69E0BC46DC /* ShowDayView.swift */,
 				0F00430F0834556CB005AAA2 /* ShowFloorStage.swift */,
 				72F1BB13FF5067254ABE6CDE /* ShowGoodsDetail.swift */,
@@ -887,6 +892,7 @@
 				086CD5486126C0FE54AF794E /* Collections.swift */,
 				FAFC1AB6090289298D64A7E6 /* Condition.swift */,
 				3284779D32F44C664EE1950F /* Consignment.swift */,
+				FF100F010E5835C802FAC78D /* CounterEvents.swift */,
 				4755B9D1944633247C22C671 /* Counterfeits.swift */,
 				F93E91BC33F28004C994B1EE /* Debt.swift */,
 				531934AE1683B48C6717CC3A /* Demand.swift */,
@@ -1327,6 +1333,8 @@
 				A212371EC2DF99306F380ECA /* ConditionViews.swift in Sources */,
 				54A70B6EF7C7CDBAC3EE142E /* Consignment.swift in Sources */,
 				E1DF8021616BDFAE59B368AF /* ContactsView.swift in Sources */,
+				A4A382AAD48458F412CD9312 /* CounterEventViews.swift in Sources */,
+				1760B48C9A91D05FFCC38ADC /* CounterEvents.swift in Sources */,
 				EDECE585BE210F65109E48BD /* Counterfeits.swift in Sources */,
 				D90345D7928D6B1B77B76F3C /* Debt.swift in Sources */,
 				02FDC2C400CC7F8D85AD622F /* Demand.swift in Sources */,
