@@ -303,6 +303,22 @@ struct CardStoreView: View {
                 }
                 StatCell(label: "At your price", value: money(value))
             }
+            // The store refills the display from the back room each night (Model/Cases.swift, refillPackDisplay).
+            if store.packDisplaySlots > 0 {
+                HStack {
+                    Text("Refill the pack display").font(.caption)
+                    Spacer()
+                    Menu {
+                        Button("Off") { store.setPackRefill(nil) }
+                        ForEach(Balance.packRefillLevels, id: \.self) { l in Button("Below \(Int(l * 100))%") { store.setPackRefill(l) } }
+                    } label: {
+                        Text(store.cardStore?.packRefill.map { "Below \(Int($0 * 100))%" } ?? "Off").font(.caption.monospaced())
+                    }
+                }
+                if store.cardStore?.packRefill != nil, !store.hasBackRoom {
+                    Text("The refill breaks boxes from the back room. Buy the back room first.").font(.caption2).foregroundStyle(Theme.orange)
+                }
+            }
             // The rep watches where hot distributor product goes: customers, or resellers.
             if !store.data.distributor.hotRecords.isEmpty {
                 if let share = store.hotShelfShare {
@@ -537,6 +553,19 @@ struct CardStoreView: View {
                 ForEach(Balance.storeSealedPrices, id: \.self) { p in Text(Self.percent(p)).tag(p) }
             }
             .pickerStyle(.segmented)
+            // Loose packs have their own price (docs/38-loose-packs-and-straight-buys.md).
+            HStack {
+                Text("Loose packs").font(.subheadline)
+                Spacer()
+                Menu {
+                    Button("Same as sealed") { store.setPackPrice(nil) }
+                    ForEach(Balance.storePackPrices, id: \.self) { p in Button(Self.percent(p)) { store.setPackPrice(p) } }
+                } label: {
+                    Text(s.packFactor.map { Self.percent($0) } ?? "Same as sealed").font(.subheadline.monospaced())
+                }
+            }
+            Text("A buyer at the pack display pays up to about \(Int(Balance.packBuyerLimit.upperBound * 100))% of market for a pack or two.")
+                .font(.caption).foregroundStyle(Theme.muted)
             Text("Sealed product sells near MSRP. Put hot product above market. A slab uses the singles price, unless you set its own price with the menu on its row. A customer pays up to about \(Int(Balance.storeBuyerLimit.upperBound * 100))% of market, so a lower price sells more. At the counter, buyers still haggle.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)

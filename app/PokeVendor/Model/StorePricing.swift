@@ -6,6 +6,11 @@ extension Balance {
     /// Sealed product sells near MSRP. Hot product goes above it.
     static let storeDefaultSealedPrice = 1.0
     static let storeSealedPrices = [0.9, 1.0, 1.10, 1.20, 1.35, 1.5]
+    /// Loose pack prices, and the levels that refill the pack display (docs/38-loose-packs-and-straight-buys.md).
+    static let storePackPrices = [1.0, 1.10, 1.20, 1.30, 1.40, 1.50]
+    static let packRefillLevels = [0.25, 0.5, 0.75]
+    /// An impulse buyer pays more over market for a pack or two than for a box.
+    static let packBuyerLimit = 0.95...1.45
     /// The own price of one slab, as a share of market.
     static let storeSlabPrices = [0.9, 0.95, 1.0, 1.10, 1.20, 1.30, 1.5, 2.0]
     /// Both an online order and a store customer want the same item on the same day.
@@ -18,6 +23,8 @@ extension CardStoreState {
     var singlesPrice: Double { singlesFactor ?? priceFactor ?? Balance.storeDefaultPrice }
     /// The shelf price of sealed product, as a share of market. An old save gives its one price.
     var sealedPrice: Double { sealedFactor ?? priceFactor ?? Balance.storeDefaultSealedPrice }
+    /// The shelf price of a loose pack. Nil until the player sets it: the sealed price.
+    var packPrice: Double { packFactor ?? sealedPrice }
 
     /// Moves the old store-wide price into the two new prices, so a change to one does not move the other.
     fileprivate mutating func splitOldPrice() {
@@ -48,6 +55,21 @@ extension GameStore {
         save()
     }
 
+    /// The loose pack price. Nil goes back to the sealed price.
+    func setPackPrice(_ factor: Double?) {
+        guard var s = data.cardStore else { return }
+        s.packFactor = factor
+        data.cardStore = s
+        save()
+    }
+
+    func setPackRefill(_ level: Double?) {
+        guard var s = data.cardStore else { return }
+        s.packRefill = level
+        data.cardStore = s
+        save()
+    }
+
     /// Sets the own price of a slab in the store. Nil gives the slab the singles price again.
     func setSlabPrice(_ id: UUID, _ factor: Double?) {
         guard let i = data.slabs.firstIndex(where: { $0.id == id }), Self.isInStore(data.slabs[i].status) else { return }
@@ -67,7 +89,7 @@ extension GameStore {
 
     /// The shelf price of an item on the table at the counter, or in the stock list.
     func storePrice(item: ShowItem) -> Double {
-        shelfPrice(market: item.market, id: item.id, sealed: item.kind == .sealed)
+        shelfPrice(market: item.market, id: item.id, sealed: item.kind == .sealed, pack: item.isLoosePack)
     }
 
     /// The shelf price of a card in the store.
@@ -77,13 +99,13 @@ extension GameStore {
 
     /// The shelf price of an item that a customer looks at.
     func shelfPrice(_ item: StoreShelfItem) -> Double {
-        shelfPrice(market: item.market, id: item.id, sealed: !item.isCard)
+        shelfPrice(market: item.market, id: item.id, sealed: !item.isCard, pack: item.isPack)
     }
 
-    private func shelfPrice(market: Double, id: UUID, sealed: Bool) -> Double {
+    private func shelfPrice(market: Double, id: UUID, sealed: Bool, pack: Bool = false) -> Double {
         guard let s = data.cardStore else { return ShowSession.round(market * Balance.storeDefaultPrice) }
         // Clearance: dead stock at 80% of market (Model/StoreFloor.swift).
-        let factor = sealed ? s.sealedPrice : slabPrice(id) ?? s.singlesPrice
+        let factor = pack ? s.packPrice : sealed ? s.sealedPrice : slabPrice(id) ?? s.singlesPrice
         // Clearance never raises a price.
         if isOnClearance(id) { return ShowSession.round(market * min(factor, Balance.clearanceFactor)) }
         return ShowSession.round(market * factor)

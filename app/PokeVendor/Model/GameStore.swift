@@ -1442,6 +1442,7 @@ final class GameStore {
         lines += advanceSealed()
         lines += retailOrdersEndDay()
         lines += backRoomRestock()
+        lines += refillPackDisplay()
         lines += advanceCards()
         lines += gradingBillsEndDay()
         lines += lotOrdersEndDay()

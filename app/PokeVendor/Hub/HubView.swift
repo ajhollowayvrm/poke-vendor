@@ -59,9 +59,13 @@ struct HubView: View {
                 .saleReceipts()
         }
         .onAppear {
-            // After a quit during a visit, the app opens the visit again, once (docs/40-resume-events.md).
+            // After a quit during a visit, the app opens the visit again, once (docs/40-resume-events.md). The test run
+            // starts its own runs, so it skips this.
             guard !nav.launchResumeDone else { return }
             nav.launchResumeDone = true
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("-test") { return }
+            #endif
             if let event = store.activeEvent, nav.encounter == nil, nav.showDay == nil {
                 nav.encounter = EncounterSession(session: event)
             } else if let stream = store.activeStream, nav.stream == nil {

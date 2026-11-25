@@ -155,6 +155,10 @@ struct CardStoreState: Codable, Hashable {
     /// The posted hours (Model/StoreHours.swift). Nil: 11 AM to 7 PM. A change waits in `pendingHours` until tomorrow.
     var hours: StoreHours?
     var pendingHours: StoreHours?
+    /// The shelf price of a loose pack, as a share of market. Nil: the sealed price (Model/StorePricing.swift).
+    var packFactor: Double?
+    /// Refill the pack display from the back room below this share of it. Nil: off (Model/StorePricing.swift).
+    var packRefill: Double?
     var history: [StoreDay] = []
     /// The events (docs/22-own-store.md#events). Optional, so old saves still load.
     var events: StoreEvents?
@@ -761,7 +765,7 @@ extension GameStore {
     func sellPackLot(_ packs: inout [StoreShelfItem], casual: Bool, storeName: String) -> (count: Int, revenue: Double) {
         guard let first = pickForCustomer(packs) else { return (0, 0) }
         let price = shelfPrice(first)
-        guard perceivedPrice(first, price: price) <= first.market * Double.random(in: Balance.storeBuyerLimit) else { return (0, 0) }
+        guard perceivedPrice(first, price: price) <= first.market * Double.random(in: Balance.packBuyerLimit) else { return (0, 0) }
         var want = Self.packLotSize()
         if casual { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }
         let lot = Array(packs.filter { $0.productKey == first.productKey }.prefix(max(0, want)))

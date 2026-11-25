@@ -70,6 +70,11 @@ final class GameTests {
         print(fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms")
         // The console is a pipe, so stdout is buffered. Push the report out now.
         fflush(stdout)
+        // The console can drop lines, so the report also goes to a file that the run script reads.
+        let report = (fails.map { "TEST FAIL: " + $0 } + [fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms"])
+            .joined(separator: "\n")
+        let file = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("test-result.txt")
+        try? report.write(to: file, atomically: true, encoding: .utf8)
     }
 
     private func check(_ ok: Bool, _ what: @autoclosure () -> String) {
@@ -2743,25 +2748,20 @@ final class GameTests {
         store.data.hour = 12
         store.data.cardStore?.counterDay = -1
         if let quick = store.startCounter() {
-            var runs = 0
-            var rang = 0
-            var booked = true
-            while quick.phase == .table, runs < 40 {
-                runs += 1
-                if let v = quick.current, quick.isRoutine(v) {
-                    let sold = quick.soldTotal
-                    let r = quick.quickShift()
-                    rang += r.count
-                    if abs(quick.soldTotal - sold - r.total) > 0.01 { booked = false }
-                    check(quick.phase != .table || quick.current.map { !quick.isRoutine($0) } ?? true, "a quick shift stopped at a routine buyer")
-                } else if quick.current != nil {
-                    quick.decline()
-                } else {
-                    quick.nextVisitor()
-                }
+            // Seat a routine buyer: a stranger who pays the price on the item. Then the quick shift must ring them up.
+            var seated: Visitor?
+            for _ in 0..<200 {
+                if let v = quick.testBuyer(), quick.isRoutine(v) { seated = v; break }
             }
-            check(booked, "a quick shift's sales did not match its total")
-            check(rang > 0, "a quick shift rang up nothing on a whole counter day")
+            if let v = seated {
+                quick.testSeat(v)
+                let sold = quick.soldTotal
+                let r = quick.quickShift()
+                // A routine buyer can still walk out at the register (a payment problem). Then nothing books, and the note says why.
+                check(abs(quick.soldTotal - sold - r.total) < 0.01 && (r.count >= 1 || quick.note != nil),
+                      "a quick shift did not ring up a routine buyer, or its total is wrong")
+                check(quick.phase != .table || quick.current.map { !quick.isRoutine($0) } ?? true, "a quick shift stopped at a routine buyer")
+            } else { check(false, "no routine buyer at the counter") }
             quick.packUp()
             store.finishEncounter(quick)
         } else { check(false, "no counter for the quick shift") }
@@ -2782,6 +2782,44 @@ final class GameTests {
         check(packsSold > otherSold, "a clerk week sold \(packsSold) packs and \(otherSold) other items")
         print("TEST NOTE: clerk week: \(packsSold) packs, \(otherSold) other items")
         print("TEST NOTE: straight buys: store strangers \(Int(strangers * 100))%, store friend \(Int(friends * 100))%, show strangers \(Int(show * 100))%")
+
+        // A loose pack sells at the pack price. A box keeps the sealed price.
+        if let shelfBox = store.addTestProduct(box.id) { store.stockStore([shelfBox.id]) }
+        store.setPackPrice(1.5)
+        if let pack = store.showItems(store.storeStock).first(where: \.isLoosePack),
+           let boxItem = store.showItems(store.storeStock).first(where: { $0.kind == .sealed && !$0.isLoosePack }) {
+            check(abs(store.storePrice(item: pack) - ShowSession.round(pack.market * 1.5)) < 0.01, "a loose pack did not use the pack price")
+            check(abs(store.storePrice(item: boxItem) - ShowSession.round(boxItem.market * (store.cardStore?.sealedPrice ?? 1))) < 0.01,
+                  "a sealed box used the pack price")
+        }
+        store.setPackPrice(nil)
+
+        // The nightly refill breaks a booster box from the back room into the display, and leaves an ETB sealed.
+        if !store.hasBackRoom { store.buyFixture(.backRoom) }
+        let onDisplay = Set(store.storeStock.sealed.filter(\.isLoosePack).map(\.id))
+        store.data.sealed.removeAll { onDisplay.contains($0.id) }
+        let etb = SetLibrary.catalog.first { $0.kind == "Elite Trainer Box" && $0.isInPrint && $0.market > 20 && $0.homeSlug == box.homeSlug }
+            ?? SetLibrary.catalog.first { $0.kind == "Elite Trainer Box" && $0.isInPrint && $0.market > 20 }
+        var backIDs: [UUID] = []
+        for product in [box] + (etb.map { [$0] } ?? []) {
+            if let unit = store.addTestProduct(product.id), let j = store.data.sealed.firstIndex(where: { $0.id == unit.id }) {
+                store.data.sealed[j].status = .inStore(since: store.day)
+                store.data.sealed[j].backRoom = true
+                backIDs.append(unit.id)
+            }
+        }
+        // An ETB's packs are worth less than the ETB in most sets. Read it before the refill.
+        let etbLoses = backIDs.count > 1 && store.data.sealed.first { $0.id == backIDs[1] }.map {
+            store.loosePackValue(of: $0) < store.realMarket(of: $0)
+        } == true
+        store.setPackRefill(0.5)
+        let lines = store.refillPackDisplay()
+        let shown = store.sealedRoom(store.storeStock.sealed).packsOnDisplay
+        check(shown >= 36 && !store.data.sealed.contains { $0.id == backIDs.first }, "the refill did not break the booster box into the display: \(lines)")
+        if etbLoses {
+            check(store.data.sealed.contains { $0.id == backIDs[1] }, "the refill broke an ETB at a loss")
+        }
+        store.setPackRefill(nil)
     }
 
     private func counterEvents() {
@@ -3453,11 +3491,13 @@ final class GameTests {
         // The booked show of day 0 has a rival, so its session builds a rival table, and the camp and show rival code runs.
         if let k = store.data.shows.firstIndex(where: { $0.covers(store.day) }) { store.data.shows[k].rivalID = flipperID }
         var rivalTable = false
+        var campBlock: String?
         var shows = 0
         for day in 0..<14 {
             // A Sunday: the player has the day free for the wait.
             if day == 6 {
                 let restock = MachineRestock(machine: .pharmacy, day: store.day, hour: 12)
+                campBlock = store.machineCampBlock(restock)
                 if let haul = store.campMachine(restock) {
                     camped = true
                     for item in haul.items { store.buyMachineItem(item, machine: restock.machine) }
@@ -3491,7 +3531,7 @@ final class GameTests {
         }
         check(shows == 1, "the booked test show did not start")
         // The phase 7 steps ran on full data: the machine camp, the premium, the forced break-in with its claim, and the opened product.
-        check(camped && !store.data.campedDays.contains("Walmart-0"), "the machine camp did not run, or it kept an old key")
+        check(camped && !store.data.campedDays.contains("Walmart-0"), "the machine camp did not run, or it kept an old key: \(campBlock ?? "no block")")
         check(store.data.ledger.filter { $0.label == "Store door repair" }.count == 1
               && store.data.ledger.contains { $0.label.hasPrefix("Insurance payout") && $0.amount > 0 }, "the break-in on day 5 did not happen once, or the rider paid nothing (repairs \(store.data.ledger.filter { $0.label == "Store door repair" }.count), ledger \(store.data.ledger.filter { $0.label.hasPrefix("Insurance") || $0.label.hasPrefix("Store") }.map { "\($0.label) \($0.amount) d\($0.day)" }), policy \(store.data.insurance.active) \(store.data.insurance.storeRider)")
         check(store.data.ledger.filter { $0.label == "Insurance premium" }.count >= 2, "the premium with the rider was not charged on its day")

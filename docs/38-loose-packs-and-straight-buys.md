@@ -61,6 +61,19 @@ A store fixture: **Loose-pack display**, $1,200 ([22-own-store.md](22-own-store.
 
 In the test run, a clerk week with 151 packs and 20 cards sold about 74 packs and 20 other items.
 
+## Pack price and the nightly refill
+
+Added on 2026-11-25 (docs/proposals/shop-experience.md, parts 6 and 7).
+
+- **Pack price.** The store screen sets a price for loose packs: 100% to 150% of market, or "Same as sealed" (the
+  default). A box keeps the sealed price.
+- **Impulse buyers.** A pack buyer, at the display or at the counter, pays up to 95% to 145% of market (a box buyer:
+  92% to 128%). So a pack at a price over market still sells, but more slowly.
+- **Refill the pack display.** A setting under the shelf numbers: Off (the default), or below 25%, 50%, or 75%. Each
+  night, after the back-room restock, when the display is under the level, the store breaks sealed units from the back
+  room into packs until the display is full. It breaks only a product whose packs are worth at least the product, the
+  oldest first, so an ETB stays sealed. It never breaks a case. It needs the back room.
+
 ## Straight buys
 
 A straight buyer pays the asking price and does not haggle. The screen shows **Ring it up · $X** and **Decline**. It

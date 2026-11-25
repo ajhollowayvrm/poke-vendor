@@ -571,6 +571,8 @@ struct ShowItem: Identifiable, Hashable, Codable {
     var dealMarket: Double { pc ? market * Balance.pcPremium : market }
 
     var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
+    /// One plain pack: it sells at the pack price (docs/38-loose-packs-and-straight-buys.md).
+    var isLoosePack: Bool { kind == .sealed && packs == 1 && !isCase && !SetLibrary.promoProductIDs.contains(productID ?? "") }
 }
 
 /// A card that a visitor offers in a trade.
@@ -1453,12 +1455,11 @@ final class ShowSession {
     /// one product at the asking price, with no haggle (docs/38-loose-packs-and-straight-buys.md).
     private func makePackBuyer(_ type: VisitorType) -> Visitor? {
         guard venue.kind == .store, store.packDisplaySlots > 0, Double.random(in: 0..<1) < Self.packBuyChance(type) else { return nil }
-        let packs = table.filter {
-            $0.kind == .sealed && $0.packs == 1 && !$0.isCase && !$0.pc && !SetLibrary.promoProductIDs.contains($0.productID ?? "")
-        }
+        let packs = table.filter { $0.isLoosePack && !$0.pc }
         guard let first = pick(packs) else { return nil }
         let price = asking(first)
-        let top = first.market * Double.random(in: Balance.storeBuyerLimit)
+        // An impulse buyer pays more over market for a pack than for a box.
+        let top = first.market * Double.random(in: Balance.packBuyerLimit)
         guard buyLimit(top: top, ask: price, item: first) >= price - 0.001 else { return nil }
         var want = GameStore.packLotSize()
         if type == .kid { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }

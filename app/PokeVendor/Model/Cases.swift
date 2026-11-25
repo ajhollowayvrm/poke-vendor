@@ -291,6 +291,33 @@ extension GameStore {
         return lines
     }
 
+    /// Each night with the setting on: when the pack display is under its level, the store breaks sealed units from the
+    /// back room into packs until the display is full (docs/38-loose-packs-and-straight-buys.md). It breaks only a product
+    /// whose packs are worth at least the product, the oldest first, so an ETB stays sealed. A case opens first through
+    /// the restock above.
+    func refillPackDisplay() -> [String] {
+        guard hasBackRoom, let level = data.cardStore?.packRefill, packDisplaySlots > 0 else { return [] }
+        let room = sealedRoom(storeStock.sealed)
+        guard Double(room.packsOnDisplay) < level * Double(packDisplaySlots) else { return [] }
+        // Read everything into locals first. A break writes `data.sealed`.
+        let units = backRoomUnits.filter { !$0.isLoosePack && !$0.isKnownFake && !$0.pc && breakRefusal($0) == nil
+            && loosePackValue(of: $0) >= realMarket(of: $0) }.sorted { $0.acquiredDay < $1.acquiredDay }
+        var free = room.display
+        var broken: [String: Int] = [:]
+        for unit in units where free > 0 {
+            let before = Set(data.sealed.map(\.id))
+            breakIntoPacks(unit.id, save: false)
+            // The new packs go from the back room to the display, as many as fit. The rest wait in the back room.
+            let new = data.sealed.indices.filter { !before.contains(data.sealed[$0].id) && data.sealed[$0].isLoosePack }
+            for i in new.prefix(free) { data.sealed[i].backRoom = nil }
+            free -= min(free, new.count)
+            broken[unit.name, default: 0] += 1
+        }
+        guard !broken.isEmpty else { return [] }
+        let what = broken.sorted { $0.key < $1.key }.map { "\($0.value) \($0.key)" }.joined(separator: ", ")
+        return ["\(data.cardStore?.name ?? "The store") broke \(what) into packs for the display."]
+    }
+
     #if DEBUG
     /// Test tool: a case in hand, at 60% of the price of its units. Returns its ID.
     @discardableResult
