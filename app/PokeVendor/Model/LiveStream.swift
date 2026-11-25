@@ -56,7 +56,7 @@ struct StreamPlan: Codable, Identifiable, Hashable {
 }
 
 /// A card or a sealed product the player brought to the stream.
-struct StreamItem: Identifiable, Hashable {
+struct StreamItem: Identifiable, Hashable, Codable {
     let id: UUID
     let name: String
     let market: Double
@@ -75,22 +75,22 @@ struct StreamItem: Identifiable, Hashable {
     var ripShip = false
 }
 
-struct ChatLine: Identifiable, Hashable {
-    enum Kind { case chat, tip, bid, buy, system }
+struct ChatLine: Identifiable, Hashable, Codable {
+    enum Kind: Codable { case chat, tip, bid, buy, system }
 
-    let id = UUID()
+    var id = UUID()
     let minute: Int
     let kind: Kind
     let text: String
 }
 
-struct StreamAuction {
+struct StreamAuction: Codable {
     let item: StreamItem
     let startPrice: Double
     let endsAt: Double
     var top: Double
     var topBidder: String?
-    var bids: [(name: String, amount: Double)] = []
+    var bids: [StreamBid] = []
     /// The most that anyone watching would pay. Hidden.
     let ceiling: Double
     let bidders: Int
@@ -99,7 +99,13 @@ struct StreamAuction {
     var buyerContactID: String?
 }
 
-struct StreamBuyNow {
+/// One bid in a stream auction.
+struct StreamBid: Codable {
+    let name: String
+    let amount: Double
+}
+
+struct StreamBuyNow: Codable {
     let item: StreamItem
     let price: Double
     let expiresAt: Double
@@ -177,6 +183,58 @@ final class StreamSession {
         system("You're live.")
     }
 
+    /// A stream from the save: the app quit while it was live (docs/40-resume-events.md). A rip on camera is over: its
+    /// cards are in Inventory already, or with the Rip & Ship buyer.
+    init(snapshot x: StreamSnapshot, store: GameStore) {
+        self.store = store
+        hours = x.hours
+        scheduled = x.scheduled
+        startHour = x.startHour
+        followersStart = x.followersStart
+        minute = x.minute
+        ended = x.ended
+        viewers = x.viewers
+        peakViewers = x.peakViewers
+        interest = x.interest
+        target = x.target
+        tips = x.tips
+        tipCount = x.tipCount
+        followersGained = x.followersGained
+        onCamera = x.onCamera
+        chat = x.chat
+        items = x.items
+        auction = x.auction
+        buyNow = x.buyNow
+        sold = x.sold.map { ($0.name, $0.price, $0.fees, $0.orderID) }
+        giveaways = x.giveaways.map { ($0.name, $0.followers) }
+        pulls = x.pulls
+        lastTalk = x.lastTalk
+        minutesRipped = x.minutesRipped
+        ripShipWaiting = x.ripShipWaiting
+        ripShipActive = x.ripShipActive
+        ripShipOrders = x.ripShipOrders
+        ripShipHits = x.ripShipHits
+        waitingSince = x.waitingSince
+        ripShipRivalFactor = x.ripShipRivalFactor
+        if let active = ripShipActive {
+            store.finishRipShip(active.id)
+            ripShipActive = nil
+        }
+        system("Sorry, the connection dropped. We're back.")
+    }
+
+    func snapshot() -> StreamSnapshot {
+        StreamSnapshot(hours: hours, scheduled: scheduled, startHour: startHour, followersStart: followersStart, minute: minute,
+                       ended: ended, viewers: viewers, peakViewers: peakViewers, interest: interest, target: target, tips: tips,
+                       tipCount: tipCount, followersGained: followersGained, onCamera: onCamera, chat: Array(chat.suffix(30)),
+                       items: items, auction: auction, buyNow: buyNow,
+                       sold: sold.map { .init(name: $0.name, price: $0.price, fees: $0.fees, orderID: $0.orderID) },
+                       giveaways: giveaways.map { .init(name: $0.name, followers: $0.followers) }, pulls: pulls,
+                       lastTalk: lastTalk, minutesRipped: minutesRipped, ripShipWaiting: ripShipWaiting,
+                       ripShipActive: ripShipActive, ripShipOrders: ripShipOrders, ripShipHits: ripShipHits,
+                       waitingSince: waitingSince, ripShipRivalFactor: ripShipRivalFactor)
+    }
+
     var totalMinutes: Double { hours * 60 }
     var minutesLeft: Double { max(0, totalMinutes - minute) }
     var isOver: Bool { minute >= totalMinutes }
@@ -203,6 +261,9 @@ final class StreamSession {
     func tick() {
         guard !ended, ripping == nil else { return }
         minute += 1
+        // The save holds the stream, so a quit can resume it (docs/40-resume-events.md). Every 5 stream minutes is enough:
+        // the app also saves when it goes to the background.
+        if Int(minute) % 5 == 0 { store.save() }
         interest = max(0, interest - Balance.interestDecay)
         let noise = Double.random(in: -0.05...0.05) * max(1, viewers)
         viewers = max(0, viewers + (target * (0.5 + interest) - viewers) * 0.10 + noise)
@@ -313,7 +374,7 @@ final class StreamSession {
         let name = Self.names.randomElement() ?? "bidder"
         a.top = min(next, max(a.startPrice, a.ceiling))
         a.topBidder = name
-        a.bids.append((name, a.top))
+        a.bids.append(StreamBid(name: name, amount: a.top))
         auction = a
         add(.bid, "\(name) bid \(money(a.top))")
     }
@@ -593,8 +654,10 @@ extension GameStore {
             return item
         }
         log("Went live for \(formatHours(hours)).")
+        let session = StreamSession(store: self, hours: hours, items: items, scheduled: scheduled)
+        activeStream = session
         save()
-        return StreamSession(store: self, hours: hours, items: items, scheduled: scheduled)
+        return session
     }
 
     /// Puts a stream on the calendar. Followers see it, so more of them come.
@@ -615,6 +678,8 @@ extension GameStore {
 
     /// The stream is over: tips, followers, burnout, and the clock.
     func finishStream(_ s: StreamSession, followers: Int) {
+        activeStream = nil
+        data.activeStream = nil
         if s.tips > 0 { addLedger(s.tips, .tips, "Live-stream tips") }
         data.social.followers = max(0, data.social.followers + followers)
         data.social.burnout = min(1, data.social.burnout + Balance.streamBurnout)
@@ -687,4 +752,47 @@ extension GameStore {
         save()
     }
     #endif
+}
+
+/// A saved live stream (docs/40-resume-events.md).
+struct StreamSnapshot: Codable {
+    struct Sale: Codable {
+        var name: String
+        var price: Double
+        var fees: Double
+        var orderID: UUID?
+    }
+    struct Giveaway: Codable {
+        var name: String
+        var followers: Int
+    }
+    var hours: Double
+    var scheduled: Bool
+    var startHour: Double
+    var followersStart: Int
+    var minute: Double
+    var ended: Bool
+    var viewers: Double
+    var peakViewers: Int
+    var interest: Double
+    var target: Double
+    var tips: Double
+    var tipCount: Int
+    var followersGained: Int
+    var onCamera: StreamItem?
+    var chat: [ChatLine]
+    var items: [StreamItem]
+    var auction: StreamAuction?
+    var buyNow: StreamBuyNow?
+    var sold: [Sale]
+    var giveaways: [Giveaway]
+    var pulls: [RipCard]
+    var lastTalk: Double
+    var minutesRipped: Double
+    var ripShipWaiting: RipShipOrder?
+    var ripShipActive: RipShipOrder?
+    var ripShipOrders: [RipShipOrder]
+    var ripShipHits: [UUID: [RipCard]]
+    var waitingSince: Double
+    var ripShipRivalFactor: Double
 }

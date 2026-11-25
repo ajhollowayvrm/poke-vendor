@@ -64,6 +64,10 @@ struct HubView: View {
             nav.launchResumeDone = true
             if let event = store.activeEvent, nav.encounter == nil, nav.showDay == nil {
                 nav.encounter = EncounterSession(session: event)
+            } else if let stream = store.activeStream, nav.stream == nil {
+                nav.stream = StreamCover(session: stream)
+            } else if let run = store.data.activeStoreRun, nav.storeRun == nil {
+                nav.storeRun = StoreRunSession(stops: run.stops, startHour: run.startHour)
             }
         }
         .fullScreenCover(item: $nav.encounter) { encounter in
@@ -475,6 +479,20 @@ struct HubView: View {
                 Button { nav.encounter = EncounterSession(session: event) } label: {
                     ChevronRow(icon: "arrow.uturn.backward.circle", title: "Back to \(event.venue.name)",
                                detail: "\(event.clock) · the visit waits for you", accent: true)
+                }
+                .buttonStyle(.plain)
+            }
+            if let stream = store.activeStream {
+                Button { nav.stream = StreamCover(session: stream) } label: {
+                    ChevronRow(icon: "dot.radiowaves.left.and.right", title: "Back to your stream",
+                               detail: "\(stream.clock) · chat is waiting", accent: true)
+                }
+                .buttonStyle(.plain)
+            }
+            if let run = store.data.activeStoreRun {
+                Button { nav.storeRun = StoreRunSession(stops: run.stops, startHour: run.startHour) } label: {
+                    ChevronRow(icon: "car", title: "Back to your store run",
+                               detail: "Stop \(min(run.index + 1, run.stops.count)) of \(run.stops.count)", accent: true)
                 }
                 .buttonStyle(.plain)
             }

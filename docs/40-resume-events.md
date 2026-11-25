@@ -31,6 +31,21 @@ was not. A quit lost the visit, the clock stayed at the start, and the hub said 
   to the personal account.
 - The visit ends as before, with the summary. The save then forgets it.
 
+## Live streams and store runs
+
+Added on 2026-11-25 (docs/proposals/shop-experience.md, part 1).
+
+- **A live stream** saves every 5 stream minutes and when the app goes to the background (`StreamSnapshot`,
+  `GameData.activeStream`). At launch the stream opens again, and the chat says "Sorry, the connection dropped. We're
+  back." A Rip & Ship rip that ran at the quit is finished: its cards go to the buyer. A plain rip is safe already:
+  each pack's cards go to Inventory when the pack opens.
+- **A store run** saves its stop, its waits, its spend, and its buys after each change (`StoreRunState`,
+  `GameData.activeStoreRun`). At launch the run opens again at its stop. A shop encounter at that stop rolls again: its
+  deal had not booked. End Day closes a run that is still open, because its hours are already spent.
+- The hub shows **Back to your stream** and **Back to your store run**. While either runs, End Day and the timed
+  actions wait.
+- **Rips** need no change. A quit loses only the reveal screen.
+
 ## Not saved
 
 - The coin flip and the mystery reveal on screen. The deal behind a flip or a reveal is already done when it shows.

@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum EnergyType: String, CaseIterable {
+enum EnergyType: String, CaseIterable, Codable {
     case grass = "Grass", fire = "Fire", water = "Water", lightning = "Lightning"
     case psychic = "Psychic", fighting = "Fighting", darkness = "Darkness", metal = "Metal"
 
@@ -64,10 +64,10 @@ enum Foil {
 }
 
 /// One physical card in the pack.
-struct RipCard: Identifiable, Hashable {
-    let id = UUID()
+struct RipCard: Identifiable, Hashable, Codable {
+    var id = UUID()
     /// The small random turn of the card on the pile.
-    let tilt = Double.random(in: -5...5)
+    var tilt = Double.random(in: -5...5)
     let print: CardPrint?
     let energy: EnergyType?
     /// The card's condition from the moment the pack is built, so the rip screen and Inventory show the same card.

@@ -213,9 +213,9 @@ Two misses end it. A store with no pulls has no change.
 Each phase adds or updates its doc: docs/39 (hours, closures, staff, quick shift), docs/40 (streams, runs), docs/38
 (refill, pack price), and a new docs/41-pull-boxes.md. Memory `project_store_business.md` gets the new save fields.
 
-## Open choices for AJ
+## Choices (AJ, 2026-11-25)
 
-1. Store hours: is a 12-hour day allowed, or 10 at most?
-2. Planned closures: 4 days in 28 at the low cost. Is that the right allowance?
-3. Pull discount: 5% under the shelf price. Real shops give 5–10%.
-4. Pack price default: the sealed price (no change), or 110%?
+1. Store hours: a 12-hour day is allowed.
+2. Planned closures: 4 days in 28 at the low cost.
+3. Pull discount: 5% by default. The player sets it on the store screen: 0%, 5%, 10%, or 15%.
+4. Pack price: the sealed price by default. The player sets it on the store screen (part 7).

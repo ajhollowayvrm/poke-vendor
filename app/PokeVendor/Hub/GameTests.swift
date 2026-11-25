@@ -2467,6 +2467,37 @@ final class GameTests {
         back.packUp()
         store.finishEncounter(back)
         check(store.activeEvent == nil && store.data.activeEvent == nil && store.slot(for: 1) != nil, "the visit stayed after it ended")
+
+
+        // A live stream goes into the save and comes back at the same minute, with its tips.
+        store.data.hour = 18
+        if let stream = store.startStream(hours: 2, itemIDs: [], scheduled: false) {
+            for _ in 0..<12 { stream.tick() }
+            check(store.endDayBlock != nil, "End Day did not wait for the live stream")
+            store.saveNow()
+            if let json = try? JSONEncoder().encode(store.data), let data = try? JSONDecoder().decode(GameData.self, from: json),
+               let snap = data.activeStream {
+                let again = StreamSession(snapshot: snap, store: store)
+                check(again.minute == stream.minute && again.tips == stream.tips && again.items.count == stream.items.count,
+                      "the stream came back at a different minute or with different tips")
+            } else { check(false, "the live stream did not go into the save") }
+            stream.end()
+            check(store.activeStream == nil && store.data.activeStream == nil, "the stream stayed after it ended")
+        } else { check(false, "no test stream: \(store.streamBlock(hours: 2) ?? "")") }
+
+        // A store run keeps its stop in the save.
+        store.data.hour = 8
+        store.data.jobIndex = nil
+        if store.startStoreRun([.castle, .target]) != nil {
+            store.updateStoreRun { $0.index = 1; $0.spent = 12 }
+            if let json = try? JSONEncoder().encode(store.data), let data = try? JSONDecoder().decode(GameData.self, from: json),
+               let run = data.activeStoreRun {
+                check(run.index == 1 && run.spent == 12 && run.stops == [.castle, .target], "the store run came back at a different stop")
+            } else { check(false, "the store run did not go into the save") }
+            check(store.endDayBlock != nil, "End Day did not wait for the store run")
+            store.endStoreRun()
+            check(store.data.activeStoreRun == nil && store.endDayBlock == nil, "the store run stayed after it ended")
+        } else { check(false, "no test store run") }
     }
 
     // MARK: - The owner's shift (docs/39-store-shift.md)

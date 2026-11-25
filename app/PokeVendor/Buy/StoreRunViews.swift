@@ -172,10 +172,25 @@ struct StoreRunView: View {
             RipView(items: session.items, store: store) { rip = nil }
         }
         .onAppear {
-            for s in stops where s.isGameShop { startPoints[s] = store.shop(s).points }
+            // A run from the save picks up where it stopped (docs/40-resume-events.md).
+            if let run = store.data.activeStoreRun, run.stops == stops {
+                index = run.index
+                waited = run.waited
+                spent = run.spent
+                bought = run.bought
+                for s in stops where s.isGameShop { startPoints[s] = run.startPoints[s.rawValue] ?? store.shop(s).points }
+            } else {
+                for s in stops where s.isGameShop { startPoints[s] = store.shop(s).points }
+            }
             rollEncounter()
         }
-        .onChange(of: index) { _, _ in rollEncounter() }
+        .onChange(of: index) { _, now in
+            store.updateStoreRun { $0.index = now }
+            rollEncounter()
+        }
+        .onChange(of: waited) { _, now in store.updateStoreRun { $0.waited = now } }
+        .onChange(of: spent) { _, now in store.updateStoreRun { $0.spent = now } }
+        .onChange(of: bought) { _, now in store.updateStoreRun { $0.bought = now } }
     }
 
     private func arrival(_ i: Int) -> Double { startHour + Double(i) * store.storeStopHours + waited }
@@ -358,7 +373,10 @@ struct StoreRunView: View {
                         }
                     }
                 }
-                Button { onClose() } label: {
+                Button {
+                    store.endStoreRun()
+                    onClose()
+                } label: {
                     Text("Done").frame(maxWidth: .infinity)
                 }
                 .primaryButton()

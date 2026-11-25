@@ -163,6 +163,9 @@ struct GameData: Codable {
     /// The visit that runs now: a show day, a meet, a sale, or the store counter. It comes back after a quit
     /// (docs/40-resume-events.md). Nil: none.
     var activeEvent: ShowSessionSnapshot?
+    /// The store run in progress, and the live stream in progress. Both come back after a quit (docs/40-resume-events.md).
+    var activeStoreRun: StoreRunState?
+    var activeStream: StreamSnapshot?
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -178,6 +181,8 @@ extension GameData {
         cash = v(.cash, cash)
         businessCash = v(.businessCash, businessCash)
         activeEvent = v(.activeEvent, activeEvent)
+        activeStoreRun = v(.activeStoreRun, activeStoreRun)
+        activeStream = v(.activeStream, activeStream)
         ledger = v(.ledger, ledger)
         activity = v(.activity, activity)
         jobIndex = v(.jobIndex, jobIndex)
@@ -298,6 +303,8 @@ final class GameStore {
     @ObservationIgnored weak var counterSession: ShowSession?
     /// The visit that runs now, on screen or stepped out of. The save holds its snapshot (Model/EventResume.swift).
     var activeEvent: ShowSession?
+    /// The live stream that runs now. The save holds its snapshot (docs/40-resume-events.md).
+    var activeStream: StreamSession?
     /// The route of a top goal the player just reached. It opens the "you made it" screen.
     var madeIt: GoalRoute?
     private var slabsBack: [OwnedCard] = []
@@ -657,6 +664,7 @@ final class GameStore {
         data = GameData()
         counterSession = nil
         activeEvent = nil
+        activeStream = nil
         accountOverride = nil
         data.marketSeed = UInt64.random(in: 1...UInt64.max)
         data.calendarStart = 0
@@ -1024,6 +1032,9 @@ final class GameStore {
         }
         log("Store run: \(stores.map(\.rawValue).joined(separator: ", ")) (\(formatHours(hours))).")
         rollCarBreakIn(trip: "the store run")
+        // The run's progress goes into the save, so a quit can resume it (docs/40-resume-events.md).
+        let points = Dictionary(uniqueKeysWithValues: stores.filter(\.isGameShop).map { ($0.rawValue, shop($0).points) })
+        data.activeStoreRun = StoreRunState(stops: stores, startHour: start, startPoints: points)
         arrive(at: stores[0], hour: start)
         save()
         return start
@@ -1396,6 +1407,8 @@ final class GameStore {
             addReputation(-5)
         }
         lines += jobEndDay(endedDay: data.day)
+        // A store run does not carry into the next day. Its hours are spent, and its buys are booked.
+        data.activeStoreRun = nil
         // The hub waits for the shift. Any other path that ends the day with the shift open locks up (Model/StoreShift.swift).
         if storeShiftPending, let line = asBusiness({ lockUp() }) { lines.append(line) }
         lines += asBusiness { openingDayEnd() }
@@ -1835,6 +1848,7 @@ final class GameStore {
         pendingSave = nil
         // The visit that runs now goes into the save, so a quit can resume it (docs/40-resume-events.md).
         if let event = activeEvent { data.activeEvent = event.snapshot() }
+        if let stream = activeStream, !stream.ended { data.activeStream = stream.snapshot() }
         let snapshot = data
         let url = url
         Self.saveQueue.async {
