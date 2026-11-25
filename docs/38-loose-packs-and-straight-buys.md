@@ -20,7 +20,8 @@ rule that the game before the lease does not change ([22-own-store.md](22-own-st
   room, they come back to the player. A product in the back room breaks into loose back-room units.
 - The game refuses a break for: a closed case ("Open the case first"), a loose pack, an item with an online listing, an
   item on hold for a customer, and an item with any other status (listed, consigned, in transit, at auction, sold).
-- A P&L challenge product keeps its packs in the challenge.
+- A P&L challenge product keeps its packs in the challenge. A PC product gives PC packs. Packs from a case-fresh unit
+  stay case-fresh.
 - The confirm dialog shows the sealed market, the loose-pack market, the difference, and the cost per pack.
 
 **A break is a real choice.** The value of the loose packs, divided by the product value, from the catalog on
@@ -48,8 +49,11 @@ A store fixture: **Loose-pack display**, $1,200 ([22-own-store.md](22-own-store.
 - A pack buyer takes **1 to 5 packs** of one product (weights 40/25/15/10/10) at the shelf price. One price check covers
   the lot: the same check as other sealed product. A kid or a casual buyer stays in the $30 budget.
 - **The counter.** With the display, a buyer at the counter can come for packs: kids 55%, players 50%, flippers, dealers,
-  grading hunters, and vintage collectors 0%, others 25%. A pack buyer is always a straight buy.
+  grading hunters, and vintage collectors 0%, others 25%. A pack buyer is always a straight buy. A kid does not come
+  for a pack over the $30 budget.
 - The **Shelves** box shows "Pack display n / 150". Without the display, nothing changes.
+- The stock fill counts only the packs on the display, not its empty slots. A full store that buys the display does not
+  get "The shelves are thin."
 
 In the test run, a clerk week with 151 packs and 20 cards sold about 74 packs and 20 other items.
 
@@ -64,6 +68,7 @@ hides the counter slider, the final offer, and the coin flip.
 - **A buyer far under the sticker still haggles.** A straight buyer pays the ask only when it is at most 15% over their
   top at the store, or 10% at a show.
 - A flipper always haggles. A PC item keeps its own rule: the buyer opens at the PC price.
+- A straight buyer never offers a coin flip. A kid who buys straight can still get the item as a gift.
 - A straight buy is never a "hard" deal, because the player did not push. A fair price gives deal reputation as before.
 
 Measured in the test run (strangers, with high reputation): about 65% of store buyers and about 35% of show buyers pay

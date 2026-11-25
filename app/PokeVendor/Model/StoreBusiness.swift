@@ -313,7 +313,8 @@ extension GameStore {
     /// The share of the store's shelf room that holds stock.
     var stockFill: Double {
         let stock = storeStock
-        let room = max(1, storeCardSlots + storeSealedSlots + packDisplaySlots)
+        // Packs on the display count as stock and as room. An empty display slot does not make the shelves look thin.
+        let room = max(1, storeCardSlots + storeSealedSlots + sealedRoom(stock.sealed).packsOnDisplay)
         return min(1, Double(stock.cards.count + stock.sealed.count + consignedCount) / Double(room))
     }
 

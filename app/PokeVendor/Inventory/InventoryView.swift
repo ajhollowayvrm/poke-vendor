@@ -708,7 +708,8 @@ struct ItemActions<Extra: View>: View {
     @ViewBuilder private var breakTile: some View {
         let items = sealed(ids)
         let breakable = items.filter { store.breakRefusal($0) == nil }
-        if !items.isEmpty, !items.allSatisfy({ $0.isLoosePack }) {
+        // A closed case opens first, and a loose pack has nothing to break.
+        if !items.isEmpty, !items.allSatisfy({ $0.isLoosePack || $0.isCase }) {
             ActionTile(title: "Break", icon: "square.split.2x2") { confirmBreak = true }
                 .disabled(breakable.isEmpty)
                 .confirmationDialog(store.breakTitle(breakable), isPresented: $confirmBreak, titleVisibility: .visible) {

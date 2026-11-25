@@ -750,6 +750,11 @@ final class GameStore {
             pack.backRoom = item.backRoom
         default: break
         }
+        // A break keeps the product's place in the PC, and the case-fresh trust of its case.
+        if keepShelf {
+            pack.pc = item.pc
+            pack.caseFresh = item.caseFresh
+        }
         return pack
     }
 

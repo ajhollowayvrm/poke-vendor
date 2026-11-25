@@ -196,6 +196,18 @@ struct DealButtons: View {
     let session: ShowSession
     let visitor: Visitor
 
+    /// The kid gift (docs/35-callouts.md). A straight buyer can be a kid too.
+    @ViewBuilder private var giveToKidButton: some View {
+        if session.canGiveToKid {
+            Button { withAnimation { session.giveToKid() } } label: {
+                Text("Give it to them").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(Theme.cyan)
+            Text("Free. Once a day. Word can get around.").font(.caption).foregroundStyle(Theme.muted)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 8) {
             switch visitor.intent {
@@ -204,19 +216,13 @@ struct DealButtons: View {
                 if visitor.straight {
                     // A straight buy: they pay the price on the item, and there is nothing to haggle (docs/38).
                     primary("Ring it up · \(money(visitor.offer))", color: Theme.green) { session.accept() }
+                    giveToKidButton
                     Button { withAnimation { session.decline() } } label: { Text("Decline").frame(maxWidth: .infinity) }
                         .buttonStyle(.bordered)
                 } else {
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
                 flipRow
-                if session.canGiveToKid {
-                    Button { withAnimation { session.giveToKid() } } label: {
-                        Text("Give it to them").frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(Theme.cyan)
-                    Text("Free. Once a day. Word can get around.").font(.caption).foregroundStyle(Theme.muted)
-                }
+                giveToKidButton
                 CounterSlider(market: market, offer: visitor.offer, range: 50...150, startAbove: true,
                               verb: "Counter", passTitle: "Decline", pass: { session.decline() },
                               final: visitor.finalUsed ? nil : { session.finalOffer($0) }) { session.counter($0) }

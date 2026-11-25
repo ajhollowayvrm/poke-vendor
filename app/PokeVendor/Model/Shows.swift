@@ -1378,7 +1378,8 @@ final class ShowSession {
         guard buyLimit(top: top, ask: price, item: first) >= price - 0.001 else { return nil }
         var want = GameStore.packLotSize()
         if type == .kid { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }
-        let lot = Array(packs.filter { $0.productID == first.productID && $0.name == first.name }.prefix(max(1, want)))
+        guard want > 0 else { return nil }
+        let lot = Array(packs.filter { $0.productID == first.productID && $0.name == first.name }.prefix(want))
         let total = lot.reduce(0) { $0 + asking($1) }
         let line = lot.count == 1 ? "Just this pack, please." : "Just these \(lot.count) packs, please."
         var v = Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: lot[0], limit: total,
@@ -1736,7 +1737,8 @@ final class ShowSession {
     /// Some visitors ask to flip for it. A buyer flips at the player's price, a seller at their own price. They ask
     /// only when the flip is worth it to them on average: the average cost of a flip is 75% of the full price.
     private func maybeProposeFlip(_ v: inout Visitor) {
-        guard canFlip, !v.naive, v.collection == nil, v.advice == nil, let full = flipFull(v) else { return }
+        // A straight buyer already pays the ask, so they do not offer a flip.
+        guard canFlip, !v.naive, !v.straight, v.collection == nil, v.advice == nil, let full = flipFull(v) else { return }
         guard Double.random(in: 0..<1) < v.type.flipWillingness * Balance.flipProposeShare else { return }
         let half = flipHalf(full)
         switch v.intent {

@@ -2447,6 +2447,15 @@ final class GameTests {
         check(packs.allSatisfy { GameStore.isInStore($0.status) && $0.isLoosePack }, "a pack from a box on the shelf left the shelf")
         check(store.data.raw.count - raw == box.promos.count || box.pickOnePromo, "the promo cards did not go to Raw")
         if let pack = packs.first { check(store.breakRefusal(pack) != nil, "a loose pack could break") }
+        // A PC product breaks into PC packs.
+        if let pcBox = store.addTestProduct(box.id), let j = store.data.sealed.firstIndex(where: { $0.id == pcBox.id }) {
+            store.data.sealed[j].pc = true
+            let held = Set(store.data.sealed.map(\.id))
+            store.breakIntoPacks(pcBox.id)
+            let pcPacks = store.data.sealed.filter { !held.contains($0.id) }
+            check(!pcPacks.isEmpty && pcPacks.allSatisfy(\.pc), "a PC box broke into packs that left the PC")
+            store.data.sealed.removeAll { pcPacks.map(\.id).contains($0.id) }
+        }
         let caseID = store.testCase(box, units: 2, fresh: false)
         if let c = store.data.sealed.first(where: { $0.id == caseID }) { check(store.breakRefusal(c) != nil, "a closed case could break") }
 
