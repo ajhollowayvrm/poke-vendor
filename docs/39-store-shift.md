@@ -58,6 +58,17 @@ Added on 2026-11-25 (docs/proposals/shop-experience.md, parts 3 to 5; `Model/Sto
 - **Late start or early exit.** In the owner's shift, each hour that the counter did not cover costs loyalty, at
   4 × the missed hours ÷ the posted length. It counts only an hour or more.
 
+## Quick shift
+
+Added on 2026-11-25 (docs/proposals/shop-experience.md, part 2; `Model/QuickShift.swift`).
+
+- At the store counter, **Quick shift** rings up the routine buyers through the normal sale, with its payment and fake
+  checks. A routine buyer pays the price on the item (a straight buy or a pack buyer) and has no job, no collection, and
+  no advice question. A kid is not routine, because the gift is a choice.
+- It stops at the first person who is not routine, at a regular at Trusted or higher, at a sale that falls through, and
+  at closing time. The note says "Rang up 14 sales for $212."
+- The button is active only when the person at the counter is routine.
+
 ## Values
 
 | Value | Where |

@@ -52,6 +52,12 @@ struct TableStage: View {
                     Button("Walk the floor") { withAnimation { session.walkFloor() } }
                         .buttonStyle(.bordered)
                 }
+                // At the store: ring up the routine buyers until someone needs you (Model/QuickShift.swift).
+                if session.venue.kind == .store {
+                    Button("Quick shift") { withAnimation { session.quickShift() } }
+                        .buttonStyle(.bordered)
+                        .disabled(!(session.current.map(session.isRoutine) ?? false))
+                }
                 Button(session.venue.isShow ? "Pack up" : "Leave") { withAnimation { session.packUp() } }
                     .buttonStyle(.bordered)
                     .tint(Theme.orange)

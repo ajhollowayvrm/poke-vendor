@@ -316,6 +316,7 @@
 		F09B202F10B17C0F80F2A3B5 /* darkness-ablaze.json in Resources */ = {isa = PBXBuildFile; fileRef = A0DE4A3A88218162B90C004E /* darkness-ablaze.json */; };
 		F09EFDDFD8790FA639C566F4 /* RipView+Tear.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCA10E0346065DAC9FB7BF1 /* RipView+Tear.swift */; };
 		F1B61AB3DF4AFB93BB898C1D /* fossil.json in Resources */ = {isa = PBXBuildFile; fileRef = 99D48054DE8D081D34F8C24C /* fossil.json */; };
+		F3420065B25B0A858570F3DD /* QuickShift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97847C4D6D2636B60D6AC05E /* QuickShift.swift */; };
 		F40F57D80E7FAFC237B24B29 /* legendary-collection.json in Resources */ = {isa = PBXBuildFile; fileRef = 649C90774494AA3AF98125AC /* legendary-collection.json */; };
 		F4572FD4B8BE110711D98967 /* Retail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6344A1A670648627BB04E7 /* Retail.swift */; };
 		F5AC00EB1CE6D87281F4CBF9 /* VendingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A433BDD5A3BD9A5C9E8F46A /* VendingViews.swift */; };
@@ -520,6 +521,7 @@
 		9585374A5165787745D53792 /* call-of-legends.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "call-of-legends.json"; sourceTree = "<group>"; };
 		96BDDA1B76A85BD73D8A9400 /* Job.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Job.swift; sourceTree = "<group>"; };
 		96C7926C1973DA524FFEA029 /* arceus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = arceus.json; sourceTree = "<group>"; };
+		97847C4D6D2636B60D6AC05E /* QuickShift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickShift.swift; sourceTree = "<group>"; };
 		9814967BDC613C1BD5438238 /* StoreConsignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreConsignment.swift; sourceTree = "<group>"; };
 		9881C74F0228AC7C882E6679 /* Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payments.swift; sourceTree = "<group>"; };
 		99D48054DE8D081D34F8C24C /* fossil.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fossil.json; sourceTree = "<group>"; };
@@ -934,6 +936,7 @@
 				6748344097107575A0EA8B89 /* Plug.swift */,
 				0892155B07C10C47B42D6134 /* PriceCycle.swift */,
 				E31479E39C7B363F7E989E45 /* PrintRuns.swift */,
+				97847C4D6D2636B60D6AC05E /* QuickShift.swift */,
 				4CCA5C2B1616094ED4BED6D6 /* Relationships.swift */,
 				AF84B18F04BA2E67662A34FD /* Resubmit.swift */,
 				3F6344A1A670648627BB04E7 /* Retail.swift */,
@@ -1399,6 +1402,7 @@
 				8657332C44D3CF23F4759D40 /* PokeVendorApp.swift in Sources */,
 				F85DCACE4F481C99EAC7F29B /* PriceCycle.swift in Sources */,
 				90D63B86C64FE5FAC5353460 /* PrintRuns.swift in Sources */,
+				F3420065B25B0A858570F3DD /* QuickShift.swift in Sources */,
 				E59F8F1D361FBFE16C552755 /* RecordEpisodeSheet.swift in Sources */,
 				A3F05B2C47782C107816FDA9 /* Relationships.swift in Sources */,
 				9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */,

@@ -2735,6 +2735,37 @@ final class GameTests {
         check(store.rapport(friend) == 0, "rapport did not take the lower opinion")
         counter.packUp()
 
+        // A quick shift rings up routine buyers and stops at the first person who needs a choice (Model/QuickShift.swift).
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 && ($0.market ?? 0) < 60 }).prefix(25) {
+            store.addTestCard(print)
+        }
+        store.stockStore(Set(store.stockable.cards.map(\.id)))
+        store.data.hour = 12
+        store.data.cardStore?.counterDay = -1
+        if let quick = store.startCounter() {
+            var runs = 0
+            var rang = 0
+            var booked = true
+            while quick.phase == .table, runs < 40 {
+                runs += 1
+                if let v = quick.current, quick.isRoutine(v) {
+                    let sold = quick.soldTotal
+                    let r = quick.quickShift()
+                    rang += r.count
+                    if abs(quick.soldTotal - sold - r.total) > 0.01 { booked = false }
+                    check(quick.phase != .table || quick.current.map { !quick.isRoutine($0) } ?? true, "a quick shift stopped at a routine buyer")
+                } else if quick.current != nil {
+                    quick.decline()
+                } else {
+                    quick.nextVisitor()
+                }
+            }
+            check(booked, "a quick shift's sales did not match its total")
+            check(rang > 0, "a quick shift rang up nothing on a whole counter day")
+            quick.packUp()
+            store.finishEncounter(quick)
+        } else { check(false, "no counter for the quick shift") }
+
         // At a show, strangers haggle more than at the store, but many still pay the sticker.
         let venue = Venue(kind: .meet, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
         let table = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
