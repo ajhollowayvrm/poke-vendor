@@ -557,7 +557,7 @@ struct HubView: View {
                 } label: {
                     ChevronRow(icon: "storefront", title: store.storeShiftPending ? "Your shift at \(shop.name)" : "Work the counter at \(shop.name)",
                             detail: store.waitingCounter.map { "Your counter waits · \($0.clock)" }
-                                ?? block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(Balance.storeClose)) · walk-ins buy, trade, and sell",
+                                ?? block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(store.storeCloseHour)) · walk-ins buy, trade, and sell",
                             accent: block == nil)
                 }
                 .buttonStyle(.plain)

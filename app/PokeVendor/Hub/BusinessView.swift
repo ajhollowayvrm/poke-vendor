@@ -433,7 +433,7 @@ struct StaffList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Staff keep the store open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose)) on each open day, and are paid on open days. Staff sell at your price. They do not haggle, trade, or sell a second item, and they buy only through the buylist.")
+            Text("Staff work the days and the half of the day on their schedule, and are paid for those hours. The part of an open day with no staff is your shift. Staff sell at your price. They do not haggle, trade, or sell a second item, and they buy only through the buylist.")
                 .font(.caption).foregroundStyle(Theme.muted)
             if store.staff.isEmpty {
                 Text("No staff. The store opens only while you work the counter.").font(.subheadline).foregroundStyle(Theme.orange)
@@ -458,12 +458,45 @@ struct StaffList: View {
         }
     }
 
+    /// The days and the half that this person works (Model/StoreHours.swift).
+    private func scheduleRow(_ e: Employee) -> some View {
+        let open = store.cardStore?.openDays ?? []
+        let days = e.schedule?.days ?? open
+        let part = e.schedule?.part ?? .full
+        return HStack(spacing: 4) {
+            ForEach(open, id: \.self) { d in
+                let on = days.contains(d)
+                Button {
+                    var next = Set(days)
+                    if on { next.remove(d) } else { next.insert(d) }
+                    store.setSchedule(e.id, StaffSchedule(days: next.sorted(), part: part))
+                } label: {
+                    Text(String(GameStore.weekdays[d].prefix(2))).font(.caption2.weight(.semibold))
+                        .frame(maxWidth: .infinity, minHeight: 24)
+                        .background(on ? Theme.cyan.opacity(0.18) : Theme.surface)
+                        .foregroundStyle(on ? Theme.cyan : Theme.muted)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(GameStore.weekdays[d]) \(on ? "on" : "off")")
+            }
+            Menu {
+                ForEach(StaffPart.allCases, id: \.self) { p in
+                    Button(p.rawValue) { store.setSchedule(e.id, StaffSchedule(days: days, part: p)) }
+                }
+            } label: {
+                Text(part.rawValue).font(.caption2).lineLimit(1)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.mini)
+        }
+    }
+
     private func employeeRow(_ e: Employee, hired: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text("\(e.name) · \(e.role.rawValue)").font(.subheadline.weight(.medium))
                 Spacer()
-                Text("\(money(e.wage))/h · \(money(e.dailyWage))/day").font(.caption.monospaced())
+                Text("\(money(e.wage))/h · \(money(store.dailyWage(e)))/day").font(.caption.monospaced())
             }
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -483,6 +516,7 @@ struct StaffList: View {
                     Button("Raise +\(money(Balance.raiseStep))/h") { store.giveRaise(e.id) }.buttonStyle(.bordered).controlSize(.small)
                     Button("Let go", role: .destructive) { store.fire(e.id) }.buttonStyle(.bordered).controlSize(.small)
                 }
+                scheduleRow(e)
             } else {
                 Button("Hire") { store.hire(e) }.buttonStyle(.bordered).controlSize(.small)
                     .disabled(store.staff.count >= Balance.staffMax)

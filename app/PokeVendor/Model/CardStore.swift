@@ -150,6 +150,11 @@ struct CardStoreState: Codable, Hashable {
     /// The last day the player worked the counter, and for how many hours.
     var counterDay = -1
     var counterHours = 0.0
+    /// The clock hour when the player started the counter that day. Nil: the store opening (an older save).
+    var counterFrom: Double?
+    /// The posted hours (Model/StoreHours.swift). Nil: 11 AM to 7 PM. A change waits in `pendingHours` until tomorrow.
+    var hours: StoreHours?
+    var pendingHours: StoreHours?
     var history: [StoreDay] = []
     /// The events (docs/22-own-store.md#events). Optional, so old saves still load.
     var events: StoreEvents?
@@ -389,7 +394,7 @@ extension GameStore {
         b.staff = on ? [.standard] : []
         s.business = b
         data.cardStore = s
-        log(on ? "Hired a clerk for \(s.name) at \(money(Balance.clerkWage)) a day." : "Let the clerk at \(s.name) go.")
+        log(on ? "Hired a clerk for \(s.name) at \(money(Employee.standard.wage * storeHoursLength)) a day." : "Let the clerk at \(s.name) go.")
         save()
     }
 
@@ -510,6 +515,8 @@ extension GameStore {
     func expectedCustomers(day: Int) -> Double {
         guard let s = data.cardStore else { return 0 }
         var mean = s.location.traffic * Balance.storeWeekdayTraffic[day % 7]
+        // Longer hours and the busy hours bring more people (Model/StoreHours.swift). 1 for 11 AM to 7 PM.
+        mean *= storeHoursTrafficFactor
         mean *= 1 + Balance.storeReputationStep * Double(reputationTier)
         if hasAccount { mean *= 1 + Balance.storeFollowerStep * Double(followerTier) }
         if s.has(.sign) { mean *= Balance.signTrafficBonus }
@@ -529,12 +536,12 @@ extension GameStore {
 
     var storeOpenToday: Bool {
         guard let s = data.cardStore else { return false }
-        return storeSells(on: data.day) && s.openDays.contains(weekday)
+        return storeSells(on: data.day) && s.openDays.contains(weekday) && plannedClosure(on: data.day) == nil
     }
 
     /// The hour the player can start at the counter today. A work day pushes it to the end of the shift.
     var counterStart: Double {
-        var start = max(data.hour, Balance.storeOpen)
+        var start = max(data.hour, storeOpenHour)
         if worksToday && start < Balance.workEnd { start = max(start, Balance.workEnd) }
         return start
     }
@@ -549,7 +556,7 @@ extension GameStore {
         if !s.openDays.contains(weekday) { return "Closed today" }
         if s.counterDay == data.day { return "Done for today" }
         if lockedUpToday { return "Locked up today" }
-        if counterStart > Balance.storeClose - 0.5 {
+        if counterStart > storeCloseHour - 0.5 {
             return worksToday && data.hour < Balance.workEnd ? "You work until 5 PM, too late to open" : "Closed for today"
         }
         return nil
@@ -561,11 +568,12 @@ extension GameStore {
         data.hour = counterStart
         s.counterDay = data.day
         s.counterHours = 0
+        s.counterFrom = data.hour
         data.cardStore = s
         seedContacts()
         let venue = Venue(kind: .store, name: s.name,
-                          detail: "\(s.location.name) · \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose))",
-                          open: Balance.storeOpen, close: Balance.storeClose, hours: Balance.storeClose - Balance.storeOpen,
+                          detail: "\(s.location.name) · \(GameStore.clock(storeOpenHour)) – \(GameStore.clock(storeCloseHour))",
+                          open: storeOpenHour, close: storeCloseHour, hours: storeHoursLength,
                           visitorsMean: expectedCustomers(day: data.day) * Balance.counterVisitorShare,
                           sellerShare: Balance.storeSellerShare, regularShare: 0.35, hasFloor: false, hasTable: true,
                           fakeSource: .stranger)
@@ -590,14 +598,19 @@ extension GameStore {
     func finishCounter(_ session: ShowSession) {
         defer { counterSession = nil }
         let worked = max(0, (session.minute - session.startMinute) / 60)
-        data.hour = max(data.hour, min(Balance.storeClose, Balance.storeOpen + session.minute / 60))
+        let open = session.venue.open
+        data.hour = max(data.hour, min(session.venue.close, open + session.minute / 60))
         guard var s = data.cardStore else { return }
-        // With no staff, leaving early locks the door for the rest of the day: a part of a lock-up (Model/StoreShift.swift).
-        let missed = Balance.storeClose - (Balance.storeOpen + session.minute / 60)
-        if !s.clerk, missed >= 1 {
-            nudgeLoyalty(-Balance.lockUpLoyalty * missed / (Balance.storeClose - Balance.storeOpen))
-            log("You closed \(s.name) \(formatHours(missed)) early. Customers who came later found the door locked.")
-            s = data.cardStore ?? s
+        // In the owner's shift, a late start or an early exit leaves the door locked for that time: a part of a
+        // lock-up (Model/StoreShift.swift, Model/StoreHours.swift).
+        if let w = ownerWindow {
+            let from = open + session.startMinute / 60, to = open + session.minute / 60
+            let missed = max(0, min(w.end, from) - w.start) + max(0, w.end - max(w.start, to))
+            if missed >= 1 {
+                nudgeLoyalty(-Balance.lockUpLoyalty * missed / max(1, storeHoursLength))
+                log("\(s.name) stood locked for \(formatHours(missed)) of your shift. Customers who came then found the door locked.")
+                s = data.cardStore ?? s
+            }
         }
         s.counterHours = worked
         var record = s.history.last?.day == data.day ? s.history.removeLast() : StoreDay(day: data.day)
@@ -621,20 +634,28 @@ extension GameStore {
             return today + 1 == s.openDay ? ["The build-out is done. \(s.name) has its grand opening tomorrow."] : []
         }
         guard s.openDays.contains(today % 7) else { return [] }
+        // A closed day posted ahead (Model/StoreHours.swift).
+        if plannedClosure(on: today) != nil { return closureDayEnd() }
         var lines: [String] = []
-        // The staff: who comes in, and theft (Model/StoreStaff.swift). The staff can change, so read the store again.
-        // The business account pays the staff. With no money for the wages, the staff stays home
-        // (Model/BusinessAccount.swift).
-        let unpaid = s.clerk && !bizAfford(staffDailyWage)
-        let crew = s.clerk && !unpaid ? staffDay(storeName: s.name) : (present: false, lines: [String]())
+        // The staff at work today: their schedules, less the sick calls of the morning (Model/StoreHours.swift). Theft
+        // (Model/StoreStaff.swift). The staff can change, so read the store again. The business account pays the
+        // staff. With no money for the wages, the staff stays home (Model/BusinessAccount.swift).
+        let wageToday = staffWageToday
+        let onShift = !staffOnToday.isEmpty
+        let unpaid = onShift && !bizAfford(wageToday)
+        let crew = onShift && !unpaid ? staffDay(storeName: s.name) : (present: false, lines: [String]())
         lines += crew.lines
         if unpaid { lines.append("The business account of \(s.name) could not pay the staff today, so they stayed home. Move money into it.") }
-        let wage = s.clerk && !unpaid ? staffDailyWage : 0
+        let wage = onShift && !unpaid ? wageToday : 0
         s = data.cardStore ?? s
-        let staffed = s.clerk && crew.present
+        let staffed = onShift && crew.present
         let worked = s.counterDay == today ? s.counterHours : 0
-        let hours = Balance.storeClose - Balance.storeOpen
-        let share = staffed ? max(0, 1 - worked / hours) : 0
+        // The staff sell in the hours they cover, less the hours the player worked the counter in them.
+        let from = s.counterFrom ?? storeOpenHour
+        let counterShare = worked > 0 ? trafficShare(from: from, to: from + worked) : 0
+        let share = staffed ? max(0, coveredWindows.reduce(0) { sum, w in
+            sum + trafficShare(from: w.0, to: w.1) - (worked > 0 ? trafficShare(from: max(w.0, from), to: min(w.1, from + worked)) : 0)
+        }) : 0
         var record = s.history.last?.day == today ? s.history.removeLast() : StoreDay(day: today)
         if wage > 0 {
             bizLedger(-wage, .wages, "Clerk · \(s.name)")
@@ -660,7 +681,7 @@ extension GameStore {
         } else if worked == 0 {
             lines.append("Nobody worked at \(s.name) today, so it stayed closed.")
         }
-        let accessories = storeAccessoryDay(coverage: staffed ? 1 : min(1, worked / hours), storeName: s.name,
+        let accessories = storeAccessoryDay(coverage: min(1, share + counterShare), storeName: s.name,
                                             casualShare: s.location.casualShare)
         record.revenue += accessories.revenue
         record.sold += accessories.sold

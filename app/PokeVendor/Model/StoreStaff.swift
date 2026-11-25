@@ -22,8 +22,8 @@ struct Employee: Codable, Hashable, Identifiable {
     var wage: Double
     var morale = 60.0
     var hiredDay = 0
-
-    var dailyWage: Double { wage * (Balance.storeClose - Balance.storeOpen) }
+    /// The days and the half of the day this person works (Model/StoreHours.swift). Nil: every open day, all day.
+    var schedule: StaffSchedule?
 
     /// The old clerk: average traits and the old wage.
     static let standard = Employee(name: "Sam", role: .clerk, knowledge: 3, sales: 3, honesty: 3, reliability: 3,
@@ -134,7 +134,8 @@ extension GameStore {
         return list.isEmpty ? nil : Double(list.reduce(0) { $0 + $1.knowledge }) / Double(list.count)
     }
 
-    var staffDailyWage: Double { staff.reduce(0) { $0 + $1.dailyWage } }
+    /// Today's wages: the staff at work, for their hours (Model/StoreHours.swift).
+    var staffDailyWage: Double { staffWageToday }
 
     // MARK: - The day
 
@@ -145,15 +146,11 @@ extension GameStore {
         // The standard clerk of an older save has no sick days and no theft: the old numbers.
         guard data.cardStore?.business?.staff != nil else { return (true, []) }
         var lines: [String] = []
-        var absent: [String] = []
-        for e in list {
-            let chance = Double(5 - e.reliability) * Balance.staffAbsentStep + (e.morale < 40 ? 0.04 : 0)
-            if Double.random(in: 0..<1) < chance { absent.append(e.name) }
-        }
-        if !absent.isEmpty { lines.append("\(absent.joined(separator: " and ")) called in sick at \(storeName).") }
-        let present = absent.count < list.count
+        // The sick calls came in the morning (`staffMorning`, Model/StoreHours.swift).
+        let working = staffOnToday
+        let present = !working.isEmpty
         // Theft: a dishonest employee takes cash from the register. A manager halves the chance. Cameras catch it.
-        if present, let thief = list.filter({ !absent.contains($0.name) }).randomElement() {
+        if present, let thief = working.randomElement() {
             var chance = Double(5 - thief.honesty) * Balance.staffTheftStep + (thief.morale < 30 ? 0.01 : 0)
             if hasManager, thief.role != .manager { chance /= 2 }
             if Double.random(in: 0..<1) < chance {

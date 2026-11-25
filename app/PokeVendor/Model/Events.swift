@@ -31,7 +31,7 @@ extension GameStore {
             }
             if day >= s.openDay, s.openDays.contains(day % 7) {
                 out.append(CalendarEntry(kind: .store, title: s.name,
-                                         detail: "Open \(GameStore.clock(Balance.storeOpen)) – \(GameStore.clock(Balance.storeClose))\(s.clerk ? " · clerk" : "")"))
+                                         detail: "Open \(GameStore.clock(storeOpenHour)) – \(GameStore.clock(storeCloseHour))\(s.clerk ? " · clerk" : "")"))
                 out += storeEventEntries(day: day)
             }
         }

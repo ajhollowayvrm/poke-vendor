@@ -10,9 +10,10 @@
 
 ## The shift
 
-- The owner has a shift on a day when the store is open (an open weekday, from the soft opening on) and has **no
-  staff**. With staff, nothing changes.
-- The shift runs from 11 AM to 7 PM. On a work day of the day job, it starts at 5 PM, when the job ends.
+- The owner has a shift on a day when the store is open (an open weekday, from the soft opening on) and staff do not
+  cover all of it.
+- The shift is the part of the posted hours with no staff (see below). On a work day of the day job, it starts at
+  5 PM at the earliest, when the job ends.
 - The shift ends when the owner works the counter, or locks up.
 
 ## What waits for the shift
@@ -35,8 +36,27 @@ The hub shows **Lock up today** under the shift row. The confirm dialog shows th
 - Closing today's weekday in the store schedule while the shift waits is a lock-up. The store screen asks first.
 - End Day from any other path with the shift open locks up (the hub does not allow it).
 
-**Leaving the counter early.** With no staff, an owner who leaves the counter an hour or more before 7 PM leaves the
-door locked for the rest of the day. It costs loyalty for that share of the day: 4 × the missed hours ÷ 8.
+**Leaving the counter early.** See "Late start or early exit" below.
+
+## Store hours, closed days, and part-time staff
+
+Added on 2026-11-25 (docs/proposals/shop-experience.md, parts 3 to 5; `Model/StoreHours.swift`).
+
+- **Posted hours.** The store opens at 9 AM to 3 PM, for 6, 8, 10, or 12 hours, and closes at 11 PM at the latest. A
+  change starts tomorrow. An older store keeps 11 AM to 7 PM.
+- **Customers by the hour.** Before noon ×0.6, noon to 3 PM ×1.0, 3 to 7 PM ×1.3, after 7 PM ×0.8. The traffic is
+  scaled so that 11 AM to 7 PM is the old traffic. A 12-hour day brings more people. 3 to 11 PM brings slightly fewer
+  than 11 to 7.
+- **Posted closed days.** On the store screen, a closed day is posted 3 or more days ahead, up to 14 days ahead. It has
+  no shift and no lock-up. It costs loyalty −1. Past 4 closed days in 4 weeks, each one costs as a lock-up. A posted
+  day comes off up to the day before.
+- **Staff schedules.** Each staff member works the days on their schedule, all day, the opening half, or the closing
+  half. The halves split the posted hours at the middle, on the half hour. Wages pay only those hours. The part of an
+  open day with no staff is the owner's shift. The store screen shows the week: "Staff", "You AM", "You PM", or "You".
+- **Sick calls come in the morning.** After End Day moves the day, each scheduled staff member can call in sick. The
+  report says which part of the day is now the owner's shift. The standard clerk of an older save never calls in.
+- **Late start or early exit.** In the owner's shift, each hour that the counter did not cover costs loyalty, at
+  4 × the missed hours ÷ the posted length. It counts only an hour or more.
 
 ## Values
 

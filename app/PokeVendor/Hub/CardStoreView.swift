@@ -67,6 +67,7 @@ struct CardStoreView: View {
                         StoreConsignmentBox()
                     case .staff:
                         staffBox(s)
+                        hoursBox(s)
                         StoreEventsBox()
                     case .setup:
                         fixturesBox
@@ -252,7 +253,7 @@ struct CardStoreView: View {
                 else if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
             } label: {
                 ChevronRow(icon: "person.crop.square", title: "Work the counter",
-                           detail: store.waitingCounter.map { "Your counter waits · \($0.clock)" } ?? block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(Balance.storeClose)) · buy, sell, and trade with walk-ins",
+                           detail: store.waitingCounter.map { "Your counter waits · \($0.clock)" } ?? block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(store.storeCloseHour)) · buy, sell, and trade with walk-ins",
                            accent: block == nil)
             }
             .buttonStyle(.plain)
@@ -539,6 +540,74 @@ struct CardStoreView: View {
             Text("Sealed product sells near MSRP. Put hot product above market. A slab uses the singles price, unless you set its own price with the menu on its row. A customer pays up to about \(Int(Balance.storeBuyerLimit.upperBound * 100))% of market, so a lower price sells more. At the counter, buyers still haggle.")
                 .font(.caption)
                 .foregroundStyle(Theme.muted)
+        }
+    }
+
+    /// The posted hours, the week's coverage, and the closed days posted ahead (Model/StoreHours.swift).
+    private func hoursBox(_ s: CardStoreState) -> some View {
+        let now = store.storeHours
+        let next = s.pendingHours
+        return DetailBox(title: "Hours and closed days") {
+            HStack {
+                Menu {
+                    ForEach(Balance.storeOpenChoices, id: \.self) { h in
+                        Button(GameStore.clock(h)) { store.setStoreHours(open: h, length: (next ?? now).length) }
+                    }
+                } label: { Text("Open \(GameStore.clock((next ?? now).open))").frame(maxWidth: .infinity) }
+                .buttonStyle(.bordered)
+                Menu {
+                    ForEach(Balance.storeLengthChoices, id: \.self) { l in
+                        Button("\(Int(l)) hours") { store.setStoreHours(open: (next ?? now).open, length: l) }
+                    }
+                } label: { Text("\(Int((next ?? now).length)) hours").frame(maxWidth: .infinity) }
+                .buttonStyle(.bordered)
+            }
+            .controlSize(.small)
+            Text("Today: \(GameStore.clock(now.open)) – \(GameStore.clock(now.close))."
+                 + (next.map { " From tomorrow: \(GameStore.clock($0.open)) – \(GameStore.clock($0.close))." } ?? "")
+                 + " Most customers come from 3 to 7 PM. Staff are paid for every open hour they work.")
+                .font(.caption).foregroundStyle(Theme.muted)
+            Text("THIS WEEK").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted).padding(.top, 4)
+            HStack(spacing: 4) {
+                ForEach(0..<7, id: \.self) { d in
+                    let open = s.openDays.contains(d)
+                    let c = store.covered(weekday: d)
+                    let label = !open ? "Shut" : c.opening && c.closing ? "Staff" : c.opening ? "You PM" : c.closing ? "You AM" : "You"
+                    VStack(spacing: 2) {
+                        Text(String(GameStore.weekdays[d].prefix(2))).font(.caption2.weight(.semibold))
+                        Text(label).font(.system(size: 9)).lineLimit(1).minimumScaleFactor(0.7)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 34)
+                    .foregroundStyle(!open ? Theme.muted : label == "Staff" ? Theme.cyan : Theme.orange)
+                    .overlay(Rectangle().stroke(Theme.line))
+                }
+            }
+            Text("PLAN A CLOSED DAY").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted).padding(.top, 4)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach((store.day + 1)...(store.day + Balance.closureAhead), id: \.self) { day in
+                        let posted = store.plannedClosure(on: day)
+                        let block = store.closureBlock(day)
+                        Button {
+                            if posted != nil { store.cancelClosure(day) } else { store.planClosure(day) }
+                        } label: {
+                            VStack(spacing: 2) {
+                                Text(String(GameStore.weekdays[day % 7].prefix(2))).font(.caption2.weight(.semibold))
+                                Text(GameCalendar.date(day).text).font(.system(size: 9)).lineLimit(1)
+                            }
+                            .padding(.horizontal, 6)
+                            .frame(minHeight: 34)
+                            .background(posted != nil ? Theme.orange.opacity(0.2) : Theme.background)
+                            .foregroundStyle(posted != nil ? Theme.orange : block == nil ? Theme.text : Theme.muted)
+                            .overlay(Rectangle().stroke(posted != nil ? Theme.orange : Theme.line))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(posted == nil && block != nil)
+                    }
+                }
+            }
+            Text("Post a closed day at least \(Balance.closureNotice) days ahead. Up to \(Balance.closureAllowance) in 4 weeks cost only a little loyalty. More than that costs as much as locking up.")
+                .font(.caption).foregroundStyle(Theme.muted)
         }
     }
 

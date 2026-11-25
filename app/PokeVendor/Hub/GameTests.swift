@@ -44,6 +44,7 @@ final class GameTests {
         timed("loosePacks", loosePacks)
         timed("storeShift", storeShift)
         timed("resume", resumeEvents)
+        timed("storeHours", storeHours)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2428,6 +2429,77 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - Store hours, closures, and part-time staff (docs/39-store-shift.md)
+
+    /// The old hours keep the old traffic. New hours start tomorrow. An opener leaves the closing half to the owner. A
+    /// sick call makes a shift. A posted closed day has no shift and costs a little loyalty, until the allowance runs out.
+    private func storeHours() {
+        fresh()
+        store.data.jobIndex = nil
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        check(abs(store.storeHoursTrafficFactor - 1) < 0.0001, "11 AM to 7 PM changed the traffic")
+
+        // New hours start tomorrow.
+        store.setStoreHours(open: 11, length: 12)
+        check(store.storeOpenHour == Balance.storeOpen, "new hours started today")
+        nextDay()
+        check(store.storeOpenHour == 11 && store.storeCloseHour == 23, "the new hours did not start tomorrow")
+        check(store.storeHoursTrafficFactor > 1, "a 12-hour day did not bring more people than 11 AM to 7 PM")
+
+        // An opener: the closing half is the owner's shift.
+        guard let hire = store.candidates.first else { return check(false, "no candidate to hire") }
+        store.hire(hire)
+        guard let e = store.staff.first else { return check(false, "the hire did not join the staff") }
+        store.setSchedule(e.id, StaffSchedule(days: nil, part: .opening))
+        store.data.hour = 7
+        let mid = store.storeHours.mid
+        check(store.ownerWindow?.start == mid && store.ownerWindow?.end == 23, "an opener did not leave the closing half to the owner")
+        check(store.storeShiftPending && store.storeShiftStart == mid, "the closing half is not the owner's shift")
+        check(abs(store.staffWageToday - e.wage * (mid - 11)) < 0.01, "an opener was paid for more than the opening half")
+
+        // A full-day hire covers the day. A sick call in the morning brings the shift back.
+        store.setSchedule(e.id, nil)
+        check(!store.storeShiftPending, "a full-day hire still left a shift")
+        let day = store.day
+        store.updateBusiness { $0.absentToday = [e.id]; $0.absentDay = day }
+        check(store.storeShiftPending && store.ownerWindow?.start == 11, "a sick call did not make the day the owner's shift")
+        store.updateBusiness { $0.absentToday = nil }
+
+        // A posted closed day: at least 3 days ahead, no shift that day, and a small cost.
+        check(store.closureBlock(store.day + 2) != nil, "a closed day could be posted 2 days ahead")
+        let closed = store.day + 3
+        store.planClosure(closed)
+        check(store.plannedClosure(on: closed)?.costly == false, "the first closed day cost as a lock-up")
+        store.setSchedule(e.id, StaffSchedule(days: [], part: .full))       // nobody works, so open days are the owner's
+        for _ in 0..<5 where store.day < closed {
+            if store.storeShiftPending { store.asBusiness { _ = store.lockUp() } }
+            nextDay()
+        }
+        guard store.day == closed else {
+            return check(false, "the days did not move to the closed day: day \(store.day), game over \(String(describing: store.data.gameOver))")
+        }
+        store.data.hour = 7
+        check(!store.storeOpenToday && !store.storeShiftPending && store.endDayBlock == nil, "a posted closed day still opened the store")
+        let loyalty = store.business.loyalty
+        nextDay()
+        // Loyalty also drifts toward its base each night, so the drop is near the cost, not exact.
+        check((0.5...2).contains(loyalty - store.business.loyalty) || store.business.loyalty == 0,
+              "a posted closed day cost \(loyalty - store.business.loyalty) loyalty, not \(Balance.closureLoyalty)")
+        // Past the allowance, a closed day costs as a lock-up.
+        var day0 = store.day + Balance.closureNotice
+        func nextFree() { for _ in 0..<14 where store.closureBlock(day0) != nil { day0 += 1 } }
+        for _ in 0..<Balance.closureAllowance {
+            nextFree()
+            store.planClosure(day0)
+            day0 += 1
+        }
+        nextFree()
+        store.planClosure(day0)
+        check(store.plannedClosure(on: day0)?.costly == true, "a closed day past the allowance did not cost as a lock-up")
+    }
+
     // MARK: - Resume a visit (docs/40-resume-events.md)
 
     /// A visit goes into the save and comes back the same. While it runs, End Day and timed actions wait. Back at the

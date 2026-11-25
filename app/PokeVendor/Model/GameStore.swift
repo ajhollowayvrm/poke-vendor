@@ -419,7 +419,7 @@ final class GameStore {
         }
         // The owner's shift at the store is not free time either (Model/StoreShift.swift).
         if storeShiftPending {
-            left -= max(0, min(Balance.storeClose, Balance.dayEnd) - max(storeShiftStart, data.hour))
+            left -= max(0, min(storeShiftEnd, Balance.dayEnd) - max(storeShiftStart, data.hour))
         }
         return max(0, left)
     }
@@ -1421,6 +1421,9 @@ final class GameStore {
         data.lateHours = lateHoursSoFar
         data.tiredToday = 1
         data.day += 1
+        // Tomorrow's posted hours start, and the staff call in sick or come in (Model/StoreHours.swift).
+        applyPendingHours()
+        lines += asBusiness { staffMorning() }
         data.hour = Balance.dayStart
         demandEndDay()
         syncMarket()

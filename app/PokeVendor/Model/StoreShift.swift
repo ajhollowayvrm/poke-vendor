@@ -16,9 +16,10 @@ extension Balance {
 
 @MainActor
 extension GameStore {
-    /// True when the owner runs the store today: it is open today, and no staff covers it.
+    /// True when the owner runs the store today: it is open today, and staff do not cover all of it
+    /// (Model/StoreHours.swift).
     var storeShiftToday: Bool {
-        guard let s = data.cardStore, !s.clerk, storeOpenToday else { return false }
+        guard storeOpenToday, ownerWindow != nil else { return false }
         return !lockedUpToday
     }
 
@@ -27,12 +28,16 @@ extension GameStore {
 
     var lockedUpToday: Bool { business.lockedDays?.contains(data.day) == true }
 
-    /// The shift starts when the store opens, or when the day job ends.
-    var storeShiftStart: Double { worksToday ? max(Balance.storeOpen, Balance.workEnd) : Balance.storeOpen }
+    /// The shift: the part of the day with no staff. It starts when the day job ends, at the earliest.
+    var storeShiftStart: Double {
+        let start = ownerWindow?.start ?? storeOpenHour
+        return worksToday ? max(start, Balance.workEnd) : start
+    }
+    var storeShiftEnd: Double { ownerWindow?.end ?? storeCloseHour }
 
     /// The reason a timed action from `start` to `end` cannot happen, because it runs into the shift. Nil: it can.
     func storeShiftBlock(from start: Double, to end: Double) -> String? {
-        guard storeShiftPending, start < Balance.storeClose, end > storeShiftStart else { return nil }
+        guard storeShiftPending, start < storeShiftEnd, end > storeShiftStart else { return nil }
         return "You run the store today · lock up to go"
     }
 

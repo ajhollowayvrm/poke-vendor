@@ -194,6 +194,7 @@
 		99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */ = {isa = PBXBuildFile; fileRef = 514263C9681529DF5523A095 /* astral-radiance.json */; };
 		9A7285B1FEC3B63592FC035D /* GradingBills.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5203F6759EAD53285517DF /* GradingBills.swift */; };
 		9CB15D4A7DECA40699DFDEA7 /* AuctionHouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB0A1C3E798D49EF29AE1AC3 /* AuctionHouse.swift */; };
+		9DDE7C89D98F006D16FC7EBB /* StoreHours.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE329925B6FADAD214AC1AB4 /* StoreHours.swift */; };
 		9E137F2DE0EED4CCFDA16759 /* sandstorm.json in Resources */ = {isa = PBXBuildFile; fileRef = FE24D22F379B1A8349AED4A6 /* sandstorm.json */; };
 		9E264DB7991475D250875154 /* crystal-guardians.json in Resources */ = {isa = PBXBuildFile; fileRef = 51D032B98E3876431FC5F38E /* crystal-guardians.json */; };
 		9F7A7EEC92E897F9D8F97EC2 /* ResealedBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1814D1AECBB8B1DC0276EA /* ResealedBanner.swift */; };
@@ -599,6 +600,7 @@
 		DB6AC5DEAC545E0CC2CCF008 /* perfect-order.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "perfect-order.json"; sourceTree = "<group>"; };
 		DCC08691AB0384D342F8CF4F /* SaleProblems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleProblems.swift; sourceTree = "<group>"; };
 		DD8D77A5A8E706D88E3DF2B6 /* emerald.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emerald.json; sourceTree = "<group>"; };
+		DE329925B6FADAD214AC1AB4 /* StoreHours.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreHours.swift; sourceTree = "<group>"; };
 		DEC953034EF1E1F20EFEF7D0 /* paradox-rift.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "paradox-rift.json"; sourceTree = "<group>"; };
 		DEFF895D495560C72743EFB4 /* gym-heroes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "gym-heroes.json"; sourceTree = "<group>"; };
 		DFA05E48B4793E422BDD8455 /* LocalStores.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStores.swift; sourceTree = "<group>"; };
@@ -960,6 +962,7 @@
 				1879E156A1D58605E7F4ACD9 /* StoreExpansion.swift */,
 				5907C04AFE08013BEED3F9A6 /* StoreExtras.swift */,
 				1AC9BC5161CF9AD3FDEC9A38 /* StoreFloor.swift */,
+				DE329925B6FADAD214AC1AB4 /* StoreHours.swift */,
 				70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */,
 				E9C6899A5756FD01A03265AE /* StoreMarketing.swift */,
 				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
@@ -1455,6 +1458,7 @@
 				55B053D2C166F0351D6B065F /* StoreExtras.swift in Sources */,
 				5592DB3B4D34897040EE314D /* StoreFloor.swift in Sources */,
 				0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */,
+				9DDE7C89D98F006D16FC7EBB /* StoreHours.swift in Sources */,
 				976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */,
 				2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */,
 				9051563439DF4BC0856C9957 /* StoreOpening.swift in Sources */,

@@ -128,6 +128,11 @@ struct BusinessState: Codable, Hashable {
     var holds: [StoreHold]?
     /// The days the owner locked up instead of working the counter (`Model/StoreShift.swift`). Nil: none.
     var lockedDays: [Int]?
+    /// Closed days posted ahead (Model/StoreHours.swift). Nil: none.
+    var plannedClosures: [PlannedClosure]?
+    /// The staff who called in sick, and the day. A roll each morning (Model/StoreHours.swift).
+    var absentToday: [UUID]?
+    var absentDay: Int?
 
     init() {}
 
@@ -153,6 +158,9 @@ struct BusinessState: Codable, Hashable {
         orders = try c.decodeIfPresent([SpecialOrder].self, forKey: .orders)
         holds = try c.decodeIfPresent([StoreHold].self, forKey: .holds)
         lockedDays = try c.decodeIfPresent([Int].self, forKey: .lockedDays)
+        plannedClosures = try c.decodeIfPresent([PlannedClosure].self, forKey: .plannedClosures)
+        absentToday = try c.decodeIfPresent([UUID].self, forKey: .absentToday)
+        absentDay = try c.decodeIfPresent(Int.self, forKey: .absentDay)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.
