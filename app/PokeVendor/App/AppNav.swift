@@ -83,6 +83,8 @@ final class AppNav {
     var showDay: ShowDaySession?
     var encounter: EncounterSession?
     var stream: StreamCover?
+    /// The hub reopened the visit from the save at launch (docs/40-resume-events.md).
+    var launchResumeDone = false
 
     func startRip(_ items: [SealedItem], hitsOnly: Bool = false, recording: [SeriesFormat] = []) {
         // A closed case opens first (Model/Cases.swift). It never goes into a rip.

@@ -58,6 +58,14 @@ struct HubView: View {
             ShowDayView(show: session.show, store: store) { nav.showDay = nil }
                 .saleReceipts()
         }
+        .onAppear {
+            // After a quit during a visit, the app opens the visit again, once (docs/40-resume-events.md).
+            guard !nav.launchResumeDone else { return }
+            nav.launchResumeDone = true
+            if let event = store.activeEvent, nav.encounter == nil, nav.showDay == nil {
+                nav.encounter = EncounterSession(session: event)
+            }
+        }
         .fullScreenCover(item: $nav.encounter) { encounter in
             ShowDayView(session: encounter.session) { nav.encounter = nil }
                 .saleReceipts()
@@ -462,6 +470,14 @@ struct HubView: View {
 
     private var timeActions: some View {
         DetailBox(title: "Plans for today") {
+            // A visit that waits: the player stepped out, or the app quit during it (docs/40-resume-events.md).
+            if let event = store.activeEvent {
+                Button { nav.encounter = EncounterSession(session: event) } label: {
+                    ChevronRow(icon: "arrow.uturn.backward.circle", title: "Back to \(event.venue.name)",
+                               detail: "\(event.clock) · the visit waits for you", accent: true)
+                }
+                .buttonStyle(.plain)
+            }
             if let show = store.showToday {
                 Button {
                     if store.canGoToShowToday, let started = store.startShowDay() {

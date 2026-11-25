@@ -132,6 +132,7 @@ extension GameStore {
         guard kind.weekday == weekday else { return "Not today" }
         guard meetUnlocked(kind) else { return "Invite only · reputation \(ReputationTier.names[kind.minReputationTier])" }
         if attendedMeet(kind) { return "Done for today" }
+        if let block = eventBlock { return block }
         if data.hour > kind.close - 1 { return "Over for today" }
         if worksToday, kind.open < Balance.workEnd, kind.close > Balance.workStart { return "You work today" }
         if let block = storeShiftBlock(from: max(data.hour, kind.open), to: kind.close) { return block }

@@ -39,7 +39,7 @@ extension Balance {
 }
 
 /// The kind of job a counter visitor brings.
-enum CounterEventKind: CaseIterable {
+enum CounterEventKind: CaseIterable, Codable {
     case gift, packRip, returnItem, specialOrder, hold, shoplifter, priceCheck, tradeUp, tradeIn
 
     var weight: Double {
@@ -72,7 +72,7 @@ enum CounterEventKind: CaseIterable {
 }
 
 /// Who a gift is for. Each likes a different kind of item.
-enum GiftFor: CaseIterable {
+enum GiftFor: CaseIterable, Codable {
     case youngKid, teenPlayer, collector
 
     var label: String {
@@ -93,7 +93,7 @@ enum GiftFor: CaseIterable {
 }
 
 /// Why a customer brings a card back.
-enum ReturnReason: CaseIterable {
+enum ReturnReason: CaseIterable, Codable {
     case damaged, wrongCard, remorse, fakeClaim
 
     var line: String {
@@ -107,7 +107,7 @@ enum ReturnReason: CaseIterable {
 }
 
 /// The job that a counter visitor brings. It lives only for the visit.
-struct CounterEvent {
+struct CounterEvent: Codable {
     let kind: CounterEventKind
     var giftFor: GiftFor = .youngKid
     var budget = 0.0

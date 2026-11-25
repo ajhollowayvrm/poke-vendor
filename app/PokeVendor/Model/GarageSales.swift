@@ -138,6 +138,7 @@ extension GameStore {
     func saleBlock(_ sale: PostedSale) -> String? {
         guard sale.covers(data.day) else { return sale.startDay > data.day ? "In \(sale.startDay - data.day) day\(sale.startDay - data.day == 1 ? "" : "s")" : "Over" }
         if sale.visited.contains(data.day) { return "Been there today" }
+        if let block = eventBlock { return block }
         guard let start = slot(for: saleHours(sale)) else { return "Not enough time today" }
         if start > sale.kind.close - 1 { return worksToday ? "You work today" : "Over for today" }
         return nil

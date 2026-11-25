@@ -74,7 +74,7 @@ struct ShopState: Codable, Hashable {
     var spendTowardPoint = 0.0
 }
 
-enum StandingLevel: String {
+enum StandingLevel: String, Codable {
     case stranger = "Stranger", familiar = "Familiar", regular = "Regular", trusted = "Trusted", friend = "Friend"
 
     init(points: Int) {

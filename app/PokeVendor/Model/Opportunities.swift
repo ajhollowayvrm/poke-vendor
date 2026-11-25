@@ -182,6 +182,7 @@ extension GameStore {
         if o.answered { return "Answered" }
         if o.day > data.day { return "Tomorrow" }
         if o.day < data.day { return "Gone" }
+        if let block = eventBlock { return block }
         if o.hours > 0, slot(for: o.hours) == nil { return "Not enough time today" }
         return nil
     }

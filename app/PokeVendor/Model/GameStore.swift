@@ -160,6 +160,9 @@ struct GameData: Codable {
     var storage = StorageState()
     /// The business account of the player's store (Model/BusinessAccount.swift). Nil while the player has no store.
     var businessCash: Double?
+    /// The visit that runs now: a show day, a meet, a sale, or the store counter. It comes back after a quit
+    /// (docs/40-resume-events.md). Nil: none.
+    var activeEvent: ShowSessionSnapshot?
 }
 
 /// A save from an older build can miss newer fields. Each missing field takes its default, so an update never wipes a run.
@@ -174,6 +177,7 @@ extension GameData {
         hour = v(.hour, hour)
         cash = v(.cash, cash)
         businessCash = v(.businessCash, businessCash)
+        activeEvent = v(.activeEvent, activeEvent)
         ledger = v(.ledger, ledger)
         activity = v(.activity, activity)
         jobIndex = v(.jobIndex, jobIndex)
@@ -292,6 +296,8 @@ final class GameStore {
     @ObservationIgnored var accountOverride: MoneyAccount?
     /// The counter session that runs now at the player's store. Its money uses the business account.
     @ObservationIgnored weak var counterSession: ShowSession?
+    /// The visit that runs now, on screen or stepped out of. The save holds its snapshot (Model/EventResume.swift).
+    var activeEvent: ShowSession?
     /// The route of a top goal the player just reached. It opens the "you made it" screen.
     var madeIt: GoalRoute?
     private var slabsBack: [OwnedCard] = []
@@ -370,6 +376,7 @@ final class GameStore {
         ensureRepContact()
         seedRivals()
         seedPressureLog()
+        restoreActiveEvent()
     }
 
     // MARK: - Calendar and clock
@@ -411,6 +418,8 @@ final class GameStore {
     /// The start time for a block of hours today, or nil when it does not fit. The block skips the work shift.
     /// A block can run past 11 PM, up to 2 AM. Those hours come out of sleep (docs/16, Late nights).
     func slot(for hours: Double) -> Double? {
+        // The player is at a visit, on screen or stepped out (Model/EventResume.swift).
+        if activeEvent != nil { return nil }
         var start = data.hour
         if worksToday && start < Balance.workEnd && start + hours > Balance.workStart {
             start = max(start, Balance.workEnd)
@@ -645,6 +654,7 @@ final class GameStore {
     func startRun() {
         data = GameData()
         counterSession = nil
+        activeEvent = nil
         accountOverride = nil
         data.marketSeed = UInt64.random(in: 1...UInt64.max)
         data.calendarStart = 0
@@ -1821,6 +1831,8 @@ final class GameStore {
     func saveNow() {
         pendingSave?.cancel()
         pendingSave = nil
+        // The visit that runs now goes into the save, so a quit can resume it (docs/40-resume-events.md).
+        if let event = activeEvent { data.activeEvent = event.snapshot() }
         let snapshot = data
         let url = url
         Self.saveQueue.async {

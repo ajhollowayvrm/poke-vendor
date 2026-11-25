@@ -2,7 +2,7 @@ import Foundation
 
 // The vendor tables on a card show floor (docs/20-card-shows.md, The floor).
 
-enum VendorKind: CaseIterable, Hashable {
+enum VendorKind: CaseIterable, Hashable, Codable {
     case vintageDealer, modernDealer, gameShop, collector, mysteryPacks
     /// A table of sealed product only, from new to vintage.
     case sealedDealer
@@ -187,8 +187,8 @@ enum VendorGoods: Codable, Hashable {
     case mystery(MysteryPack)
 }
 
-struct VendorItem: Identifiable, Hashable {
-    let id = UUID()
+struct VendorItem: Identifiable, Hashable, Codable {
+    var id = UUID()
     let goods: VendorGoods
     var price: Double
     /// The item's market value, for reference. A mystery pack has none.
@@ -240,8 +240,8 @@ struct VendorItem: Identifiable, Hashable {
     }
 }
 
-struct Vendor: Identifiable, Hashable {
-    let id = UUID()
+struct Vendor: Identifiable, Hashable, Codable {
+    var id = UUID()
     let name: String
     let kind: VendorKind
     var items: [VendorItem]

@@ -20,7 +20,7 @@ extension Balance {
 }
 
 /// One item in a seller's stash: the item, the lowest price they take (hidden), and whether it is in their PC.
-struct StashItem: Identifiable {
+struct StashItem: Identifiable, Codable {
     var item: VendorItem
     let floor: Double
     let pc: Bool

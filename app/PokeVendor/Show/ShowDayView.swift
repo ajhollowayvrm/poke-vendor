@@ -89,6 +89,8 @@ struct ShowDayView: View {
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.85), value: session.justBought?.id)
         .onAppear {
+            // The visit is the active event: the save holds it, and the hub can bring it back (docs/40-resume-events.md).
+            store.enterEvent(session)
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("open"), session.phase == .setup { session.openTable() }
             let args = ProcessInfo.processInfo.arguments
@@ -127,6 +129,16 @@ struct ShowDayView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
+                // Step out to the hub. The visit waits with its clock stopped, and the hub brings it back.
+                if session.phase != .summary {
+                    Button {
+                        store.stepOut(of: session)
+                        onClose()
+                    } label: {
+                        Image(systemName: "chevron.down.circle").font(.title2)
+                    }
+                    .accessibilityLabel("Step out to the hub")
+                }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(session.venue.name).font(.headline)
                     Text(session.venue.detail)

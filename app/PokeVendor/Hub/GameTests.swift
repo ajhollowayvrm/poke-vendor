@@ -43,6 +43,7 @@ final class GameTests {
         timed("counter", counterEvents)
         timed("loosePacks", loosePacks)
         timed("storeShift", storeShift)
+        timed("resume", resumeEvents)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2425,6 +2426,47 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - Resume a visit (docs/40-resume-events.md)
+
+    /// A visit goes into the save and comes back the same. While it runs, End Day and timed actions wait. Back at the
+    /// visit, an item that left Inventory leaves the table.
+    private func resumeEvents() {
+        fresh()
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 && ($0.market ?? 0) < 80 }).prefix(12) {
+            store.addTestCard(print)
+        }
+        let venue = Venue(kind: .meet, name: "Test meet", open: 10, close: 16, hours: 6, visitorsMean: 8, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        session.openTable()
+        session.nextVisitor()
+        session.recordBought("Test pack", 4)
+        store.activeEvent = session
+        check(store.slot(for: 1) == nil && store.endDayBlock != nil && !store.canGoToShowToday, "a timed action or End Day did not wait for the visit")
+
+        // The save holds the visit. Decode it the way a launch does.
+        store.saveNow()
+        guard let json = try? JSONEncoder().encode(store.data), let data = try? JSONDecoder().decode(GameData.self, from: json),
+              let snap = data.activeEvent else { return check(false, "the visit did not go into the save") }
+        let back = ShowSession(snapshot: snap, store: store)
+        check(back.minute == session.minute && back.table.map(\.id) == session.table.map(\.id) && back.phase == session.phase,
+              "the visit came back at a different minute, table, or stage")
+        check(back.visitor?.id == session.visitor?.id && back.boughtTotal == session.boughtTotal, "the visitor or the totals changed in the save")
+
+        // An item that left Inventory leaves the table when the player comes back.
+        if let gone = back.table.first {
+            store.data.raw.removeAll { $0.id == gone.id }
+            back.reconcile()
+            check(!back.table.contains { $0.id == gone.id }, "an item that left Inventory stayed on the table")
+            check(back.visitor.map { v in v.intent == .sell || !v.buyItems.contains { $0.id == gone.id } } ?? true,
+                  "a visitor still wants an item that is gone")
+        }
+
+        // Leaving ends the visit, and the save forgets it.
+        back.packUp()
+        store.finishEncounter(back)
+        check(store.activeEvent == nil && store.data.activeEvent == nil && store.slot(for: 1) != nil, "the visit stayed after it ended")
+    }
+
     // MARK: - The owner's shift (docs/39-store-shift.md)
 
     /// With no staff, the counter is the owner's job: it blocks timed actions and End Day. A lock-up costs loyalty, and

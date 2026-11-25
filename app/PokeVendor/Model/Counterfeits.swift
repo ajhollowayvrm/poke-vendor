@@ -23,7 +23,7 @@ enum FakeTier: Int, Codable, Comparable, CaseIterable {
 }
 
 /// Where an item came from. Each source has its own fake rate (docs/14-counterfeit-risk.md, Where the risk lives).
-enum FakeSource: Hashable {
+enum FakeSource: Hashable, Codable {
     /// Pokemon Center, Amazon, camping, big stores, and the game shop shelf: no risk.
     case none
     case reseller

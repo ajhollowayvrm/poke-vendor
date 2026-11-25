@@ -294,7 +294,7 @@ extension CollectionLot {
 }
 
 /// What a collection seller would like to get.
-enum CollectionWant: Hashable {
+enum CollectionWant: Hashable, Codable {
     case cash, credit, trade
 
     var line: String {
@@ -308,7 +308,7 @@ enum CollectionWant: Hashable {
 
 /// A card that someone asks about: grade it, or keep it raw. `worth` is hidden: what grading at PSA's cheapest tier is
 /// worth over the raw card, on average.
-struct AdviceAsk: Hashable {
+struct AdviceAsk: Hashable, Codable {
     let print: CardPrint
     let slug: String
     let condition: Condition

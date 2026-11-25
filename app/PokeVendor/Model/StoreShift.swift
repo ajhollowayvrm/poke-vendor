@@ -38,7 +38,7 @@ extension GameStore {
 
     /// Why End Day must wait, or nil.
     var endDayBlock: String? {
-        storeShiftPending ? "Work the counter at \(data.cardStore?.name ?? "the store") or lock up first" : nil
+        eventBlock ?? (storeShiftPending ? "Work the counter at \(data.cardStore?.name ?? "the store") or lock up first" : nil)
     }
 
     /// The lock-ups in the window, before today.

@@ -117,6 +117,7 @@ extension GameStore {
         }
         if let until = strictness(store).closedUntil, until >= data.day { return "\(store.rawValue) stopped in-store card sales" }
         if campedToday(store) { return "Done for today" }
+        if let block = eventBlock { return block }
         let arrive = max(data.hour, Balance.campStart)
         if let block = storeShiftBlock(from: arrive, to: arrive + Balance.campHours) { return block }
         guard let start = slot(for: Balance.campHours) else { return "Not enough time today" }
@@ -203,6 +204,7 @@ extension GameStore {
     /// Why the player cannot wait at this machine now, or nil.
     func machineCampBlock(_ r: MachineRestock) -> String? {
         if data.campedDays.contains(r.id) { return "Done for today" }
+        if let block = eventBlock { return block }
         let arrive = machineArrival(r)
         // The wait cannot overlap the work shift. A store camp has the same rule.
         if worksToday && arrive < Balance.workEnd && arrive + Balance.machineCampHours > Balance.workStart {

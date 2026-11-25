@@ -151,7 +151,7 @@ extension GameStore {
         let index = data.day - show.startDay
         // A show takes the day, so the owner's shift at the store must be locked up first (Model/StoreShift.swift).
         return !show.attended.contains(index) && data.hour < Balance.showClose - 1
-            && (show.booked || canAfford(show.size.entryFee)) && !storeShiftPending
+            && (show.booked || canAfford(show.size.entryFee)) && !storeShiftPending && activeEvent == nil
     }
 
     /// Starts today's show day. It takes the rest of the day. A walk-in pays the entry fee.
@@ -373,6 +373,7 @@ extension GameStore {
     /// The end of any encounter. A show fills the day. A meet ends when the doors close. A sale or an opportunity
     /// takes its hours from the moment the player arrived.
     func finishEncounter(_ session: ShowSession) {
+        endActiveEvent()
         let venue = session.venue
         // The visit can still be a vlog until the end of the day (docs/32-short-form-video.md).
         if session.canVlog, !session.vlogPosted { recordVlog(session.vlogInfo) }
@@ -537,8 +538,8 @@ extension GameStore {
 }
 
 /// An item on the player's table.
-struct ShowItem: Identifiable, Hashable {
-    enum Kind: Hashable { case card, sealed }
+struct ShowItem: Identifiable, Hashable, Codable {
+    enum Kind: Hashable, Codable { case card, sealed }
 
     let id: UUID
     let kind: Kind
@@ -573,8 +574,8 @@ struct ShowItem: Identifiable, Hashable {
 }
 
 /// A card that a visitor offers in a trade.
-struct FloorListing: Identifiable, Hashable {
-    let id = UUID()
+struct FloorListing: Identifiable, Hashable, Codable {
+    var id = UUID()
     let print: CardPrint
     let setSlug: String
     let condition: Condition
@@ -593,7 +594,7 @@ struct FloorListing: Identifiable, Hashable {
 }
 
 /// The people who come up at a show.
-enum VisitorType: CaseIterable {
+enum VisitorType: CaseIterable, Codable {
     case collector, flipper, kid, gradeHunter, vintageFan, sealedCollector, player, trader, closetCleaner, dealer
 
     var label: String {
@@ -644,10 +645,10 @@ enum VisitorType: CaseIterable {
 }
 
 /// Someone at the show who wants to buy from the player, trade with the player, or sell to the player.
-struct Visitor: Identifiable {
-    enum Intent { case buy, trade, sell }
+struct Visitor: Identifiable, Codable {
+    enum Intent: Codable { case buy, trade, sell }
 
-    let id = UUID()
+    var id = UUID()
     let type: VisitorType
     var name: String
     let intent: Intent
@@ -728,8 +729,8 @@ struct Visitor: Identifiable {
 
 /// Where an encounter happens: a card show, a meet, league night, a garage or estate sale, or a surprise
 /// opportunity. The venue sets the hours, how many people come, and what the player can do there.
-struct Venue: Hashable {
-    enum Kind: Hashable { case show, meet, leagueNight, garageSale, estateSale, opportunity, store }
+struct Venue: Hashable, Codable {
+    enum Kind: Hashable, Codable { case show, meet, leagueNight, garageSale, estateSale, opportunity, store }
 
     let kind: Kind
     let name: String
@@ -787,7 +788,7 @@ struct VendorTradeQuote {
 /// One day at a card show, or one visit to another venue: the table, the visitors, and the floor.
 @MainActor @Observable
 final class ShowSession {
-    enum Phase { case setup, table, floor, summary }
+    enum Phase: Codable { case setup, table, floor, summary }
 
     let venue: Venue
     /// The card show, when the venue is one.
@@ -802,7 +803,10 @@ final class ShowSession {
     private let heatAtOpen: Double
 
     var phase: Phase {
-        didSet { if phase == .summary, oldValue != .summary { rollTheft() } }
+        didSet {
+            if phase == .summary, oldValue != .summary { rollTheft() }
+            store.save()        // the save holds the session, so a quit can resume it (docs/40-resume-events.md)
+        }
     }
     /// Minutes since the doors opened.
     private(set) var minute: Double
@@ -936,6 +940,83 @@ final class ShowSession {
             }
         }
         if venue.tableRules { bring = defaultLoad() } else if venue.limitsLoad { bring = defaultBag() }
+    }
+
+    /// A session from the save: the player quit the app or stepped out during the visit (docs/40-resume-events.md).
+    init(snapshot x: ShowSessionSnapshot, store: GameStore) {
+        venue = x.venue
+        show = x.show
+        dayIndex = x.dayIndex
+        self.store = store
+        rival = x.rival
+        rivalItems = x.rivalItems
+        heatAtOpen = x.heatAtOpen
+        phase = x.phase
+        minute = x.minute
+        startMinute = x.startMinute
+        closeMinute = x.closeMinute
+        markup = x.markup
+        showcaseBrought = x.showcaseBrought
+        showcasePaid = x.showcasePaid
+        showcaseSales = x.showcaseSales
+        stashBuys = x.stashBuys
+        vlogPosted = x.vlogPosted
+        bring = x.bring
+        packed = x.packed
+        table = x.table
+        visitor = x.visitor
+        approach = x.approach
+        vendors = x.vendors
+        openVendorID = x.openVendorID
+        justBought = x.justBought
+        arrivals = x.arrivals
+        missed = x.missed
+        sold = x.sold.map { ($0.name, $0.price) }
+        bought = x.bought.map { ($0.name, $0.price) }
+        trades = x.trades
+        walkedAway = x.walkedAway
+        foundNothing = x.foundNothing
+        stalePassed = x.stalePassed
+        pcPassed = x.pcPassed
+        politePasses = x.politePasses
+        dealRep = x.dealRep
+        angryWalks = x.angryWalks
+        passedBy = x.passedBy
+        opened = x.opened
+        awayMinutes = x.awayMinutes
+        theftRolled = x.theftRolled
+        theftLine = x.theftLine
+        regulars = x.regulars
+    }
+
+    /// Everything the session needs to come back after a quit. The coin flip and the mystery reveal are only on screen.
+    func snapshot() -> ShowSessionSnapshot {
+        ShowSessionSnapshot(venue: venue, show: show, dayIndex: dayIndex, rival: rival, rivalItems: rivalItems, heatAtOpen: heatAtOpen,
+                            phase: phase, minute: minute, startMinute: startMinute, closeMinute: closeMinute, markup: markup,
+                            showcaseBrought: showcaseBrought, showcasePaid: showcasePaid, showcaseSales: showcaseSales,
+                            stashBuys: stashBuys, vlogPosted: vlogPosted, bring: bring, packed: packed, table: table,
+                            visitor: visitor, approach: approach, vendors: vendors, openVendorID: openVendorID,
+                            justBought: justBought, arrivals: arrivals, missed: missed,
+                            sold: sold.map { .init(name: $0.name, price: $0.price) },
+                            bought: bought.map { .init(name: $0.name, price: $0.price) }, trades: trades,
+                            walkedAway: walkedAway, foundNothing: foundNothing, stalePassed: stalePassed, pcPassed: pcPassed,
+                            politePasses: politePasses, dealRep: dealRep, angryWalks: angryWalks, passedBy: passedBy,
+                            opened: opened, awayMinutes: awayMinutes, theftRolled: theftRolled, theftLine: theftLine,
+                            regulars: regulars)
+    }
+
+    /// Back at the visit after a quit or a step out. The player can sell, list, or rip items in the meantime, so the
+    /// table keeps only what is still there and free. A visitor who wanted a gone item leaves.
+    func reconcile() {
+        let here = Set(stockItems.map(\.id))
+        table.removeAll { !here.contains($0.id) }
+        if venue.tableRules || venue.limitsLoad { bring = bring.filter { here.contains($0) } }
+        // A buyer or a trader wants the player's item. A seller brings their own.
+        if let v = visitor, v.intent != .sell, v.buyItems.contains(where: { !here.contains($0.id) }) {
+            visitor = nil
+            note = "\(v.name) could not wait and left."
+            if phase == .table { nextVisitor() }
+        }
     }
 
     /// On-site grading at a regional show: one tier, the grade comes back the same day (docs/20-card-shows.md).
@@ -1156,7 +1237,7 @@ final class ShowSession {
         arrivals.removeFirst()
         minute = max(minute, first)
         visitor = makeVisitor()
-        if visitor == nil { nextVisitor() }
+        if visitor == nil { nextVisitor() } else { store.save() }
     }
 
     /// Most people want to buy. Some want to trade, and some want to sell to the player. More sellers come at a
@@ -2222,6 +2303,7 @@ final class ShowSession {
             approach = nil
             phase = .summary
         }
+        store.save()
     }
 
     func backToTable() {
@@ -2481,4 +2563,54 @@ struct MysteryReveal: Identifiable {
     let price: Double
     let filler: [CardPrint]
     let hit: OwnedCard
+}
+
+/// A saved card show day, meet, sale, opportunity, or store counter shift (docs/40-resume-events.md).
+struct ShowSessionSnapshot: Codable {
+    struct Deal: Codable {
+        var name: String
+        var price: Double
+    }
+    var venue: Venue
+    var show: CardShow?
+    var dayIndex: Int
+    var rival: Rival?
+    var rivalItems: Set<UUID>
+    var heatAtOpen: Double
+    var phase: ShowSession.Phase
+    var minute: Double
+    var startMinute: Double
+    var closeMinute: Double
+    var markup: Double
+    var showcaseBrought: Bool
+    var showcasePaid: Bool
+    var showcaseSales: Int
+    var stashBuys: Int
+    var vlogPosted: Bool
+    var bring: Set<UUID>
+    var packed: Bool
+    var table: [ShowItem]
+    var visitor: Visitor?
+    var approach: Visitor?
+    var vendors: [Vendor]
+    var openVendorID: UUID?
+    var justBought: SealedItem?
+    var arrivals: [Double]
+    var missed: Int
+    var sold: [Deal]
+    var bought: [Deal]
+    var trades: [String]
+    var walkedAway: Int
+    var foundNothing: Int
+    var stalePassed: Int
+    var pcPassed: Int
+    var politePasses: Int
+    var dealRep: Int
+    var angryWalks: Int
+    var passedBy: [String]
+    var opened: Bool
+    var awayMinutes: Double
+    var theftRolled: Bool
+    var theftLine: String?
+    var regulars: [String]
 }

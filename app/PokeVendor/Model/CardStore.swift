@@ -542,6 +542,7 @@ extension GameStore {
     /// Why the player cannot work the counter now, or nil when they can.
     var counterBlock: String? {
         guard let s = data.cardStore else { return "You have no store" }
+        if let block = eventBlock, activeEvent?.venue.kind != .store { return block }
         if !storeSells(on: data.day) { return "Opens on day \(s.openDay + 1)" }
         if !s.openDays.contains(weekday) { return "Closed today" }
         if s.counterDay == data.day { return "Done for today" }

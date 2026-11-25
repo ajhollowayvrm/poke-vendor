@@ -3,7 +3,7 @@ import Foundation
 // Packing and crowds (docs/29-packing-and-crowds.md): carry space, setup time, the crowd at each venue, and stale stock.
 
 /// The people who come to a venue: who they are, what they spend, and how many want to trade.
-enum Crowd: Hashable {
+enum Crowd: Hashable, Codable {
     case general, localShow, regionalShow, parkSwap, tradeNight, tradingCircle, leagueNight
 
     /// The buyer types and how often each one comes, against the others.
