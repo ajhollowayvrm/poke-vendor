@@ -133,6 +133,8 @@ struct BusinessState: Codable, Hashable {
     /// The staff who called in sick, and the day. A roll each morning (Model/StoreHours.swift).
     var absentToday: [UUID]?
     var absentDay: Int?
+    /// Pull boxes for regulars (Model/PullBoxes.swift). Nil: none.
+    var pulls: [Pull]?
 
     init() {}
 
@@ -161,6 +163,7 @@ struct BusinessState: Codable, Hashable {
         plannedClosures = try c.decodeIfPresent([PlannedClosure].self, forKey: .plannedClosures)
         absentToday = try c.decodeIfPresent([UUID].self, forKey: .absentToday)
         absentDay = try c.decodeIfPresent(Int.self, forKey: .absentDay)
+        pulls = try c.decodeIfPresent([Pull].self, forKey: .pulls)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.

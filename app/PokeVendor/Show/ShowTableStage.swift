@@ -343,6 +343,13 @@ struct VisitorCard: View {
                         }
                     }
                     Text(visitor.type.label).font(.caption).foregroundStyle(Theme.muted)
+                    // Both opinions, and why a regular haggles (docs/38-loose-packs-and-straight-buys.md).
+                    if let c = store.contact(visitor.contactID), c.shop == nil {
+                        let rapport = Int(store.rapport(c.id))
+                        Text("You think: \(Int(store.opinion(of: c.id))) · Rapport \(rapport)"
+                             + (visitor.intent == .buy && !visitor.straight && rapport >= 40 ? " · they know you, so they ask for a deal" : ""))
+                            .font(.caption2.monospaced()).foregroundStyle(Theme.muted).lineLimit(2)
+                    }
                     if let memory = store.contact(visitor.contactID)?.memory.first {
                         Text("Last time: \(memory)").font(.caption2).foregroundStyle(Theme.muted).lineLimit(1)
                     }

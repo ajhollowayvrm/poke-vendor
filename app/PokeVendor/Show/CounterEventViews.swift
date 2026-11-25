@@ -19,6 +19,7 @@ struct CounterEventPanel: View {
             case .priceCheck: priceCheck
             case .tradeUp: tradeUp
             case .tradeIn: tradeIn
+            case .pullRequest: pullRequest
             }
         }
         .padding(10)
@@ -78,6 +79,16 @@ struct CounterEventPanel: View {
             wide("Take the order · \(money(deposit)) deposit", primary: true) { session.takeSpecialOrder() }
             hint("Find the card in \(Balance.specialOrderDays) days: buy it anywhere, and keep it in Inventory or in the store. At the end of a day, the store sells it to them for \(money(event.price)). If you miss the day, you refund the deposit, and they leave a bad review.")
             pass("I can't get it")
+        }
+    }
+
+    /// A regular asks for a pull box (Model/PullBoxes.swift).
+    @ViewBuilder private var pullRequest: some View {
+        if let id = event.productID, let product = SetLibrary.product(id) {
+            cardRow(.sealed(product), market: product.market)
+            wide("Start the pull · \(money(event.price)) every \(event.cycle / 7) weeks", primary: true) { session.acceptPull() }
+            hint("Keep one in Inventory or on the shelf for each pickup day. They pay the shelf price less your pull discount. With none on the day, they are let down, and two misses in a row end the pull. Pulls: \(store.pulls.count) of \(store.pullLimit).")
+            pass("Not now")
         }
     }
 

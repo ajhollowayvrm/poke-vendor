@@ -159,6 +159,8 @@ struct CardStoreState: Codable, Hashable {
     var packFactor: Double?
     /// Refill the pack display from the back room below this share of it. Nil: off (Model/StorePricing.swift).
     var packRefill: Double?
+    /// The pull box discount off the shelf price. Nil: 5% (Model/PullBoxes.swift).
+    var pullDiscount: Double?
     var history: [StoreDay] = []
     /// The events (docs/22-own-store.md#events). Optional, so old saves still load.
     var events: StoreEvents?

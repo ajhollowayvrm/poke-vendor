@@ -52,6 +52,7 @@ struct CardStoreView: View {
                         if store.openingInProgress { OpeningBox() }
                         todayBox(s)
                         OrdersAndHoldsBox()
+                        PullListBox()
                         BusinessAccountBox()
                         numbersBox
                         BusinessLink()

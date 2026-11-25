@@ -19,8 +19,9 @@ final class GameTests {
         var times: [String] = []
         func timed(_ name: String, _ group: () -> Void) {
             let t = Date()
+            let before = checks
             group()
-            times.append("\(name) \(Int(Date().timeIntervalSince(t) * 1000))")
+            times.append("\(name) \(Int(Date().timeIntervalSince(t) * 1000))/\(checks - before)")
         }
         timed("collection", collection)
         timed("shorts", shorts)
@@ -45,6 +46,7 @@ final class GameTests {
         timed("storeShift", storeShift)
         timed("resume", resumeEvents)
         timed("storeHours", storeHours)
+        timed("pulls", pullBoxes)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -66,7 +68,7 @@ final class GameTests {
         timed("days", days)
         let ms = Int(Date().timeIntervalSince(start) * 1000)
         for line in fails { print("TEST FAIL:", line) }
-        print("TEST TIMES (ms): " + times.joined(separator: ", "))
+        print("TEST TIMES (ms/checks): " + times.joined(separator: ", "))
         print(fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms")
         // The console is a pipe, so stdout is buffered. Push the report out now.
         fflush(stdout)
@@ -2434,6 +2436,57 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - Pull boxes (docs/41-pull-boxes.md)
+
+    /// A regular's pull picks up with a unit in stock, at the discount. With none, it misses, and two misses end it.
+    private func pullBoxes() {
+        fresh()
+        store.data.jobIndex = nil
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        store.data.cardStore?.clerk = true                 // the standard clerk covers the days, so there is no shift
+        guard let box = SetLibrary.catalog.first(where: { $0.kind == "Booster box" && $0.isInPrint && $0.market > 50 && $0.market < 300 }),
+              let k = store.data.contacts.firstIndex(where: { $0.shop == nil && !$0.kind.isVendor && $0.kind != .gameShop && !$0.kind.isSupplier })
+        else { return check(false, "no product or contact for the pull test") }
+        store.data.contacts[k].points = 40
+        let who = store.data.contacts[k].id
+        store.startPull(contactID: who, name: "Test", productID: box.id, cycle: 14)
+        guard store.pulls.count == 1 else { return check(false, "the pull did not start") }
+        store.updateBusiness { $0.pulls?[0].nextDay = today }
+        guard let unit = store.addTestProduct(box.id) else { return check(false, "no unit for the pull") }
+        let biz = store.businessCash
+        let price = store.pullPrice(box)
+        check(abs(price - ShowSession.round(box.market * (store.cardStore?.sealedPrice ?? 1) * 0.95)) < 0.01, "the pull price is not the shelf price less 5%")
+        nextDay()
+        check(!store.data.sealed.contains { $0.id == unit.id } && store.businessCash > biz, "the pull did not pick up the unit")
+        check(store.pulls.first?.nextDay == today + 14 && store.pulls.first?.pickups == 1, "the next pickup is not one cycle away")
+
+        // No unit: a miss moves it 3 days. A second miss ends the pull.
+        let points = store.data.contacts[k].points
+        store.updateBusiness { $0.pulls?[0].nextDay = store.day }
+        nextDay()
+        check(store.pulls.first?.misses == 1 && store.pulls.first?.nextDay == store.day - 1 + Balance.pullRetryDays, "a miss did not move the pickup")
+        check(store.data.contacts[k].points < points, "a miss cost no standing")
+        store.updateBusiness { $0.pulls?[0].nextDay = store.day }
+        nextDay()
+        check(store.pulls.isEmpty, "two misses did not end the pull")
+
+        // The counter walk-in: a regular asks, and the player says yes.
+        store.data.hour = 12
+        if let session = store.startCounter() {
+            var asked: Visitor?
+            for _ in 0..<20 { if let v = session.makeCounterEvent(.pullRequest) { asked = v; break } }
+            if let v = asked {
+                session.testSeat(v)
+                session.acceptPull()
+                check(store.pulls.count == 1 && store.pulls.first?.contactID == v.contactID, "a yes at the counter did not start the pull")
+            } else { check(false, "no regular asked for a pull") }
+            session.packUp()
+            store.finishEncounter(session)
+        } else { check(false, "no counter for the pull request") }
+    }
+
     // MARK: - Store hours, closures, and part-time staff (docs/39-store-shift.md)
 
     /// The old hours keep the old traffic. New hours start tomorrow. An opener leaves the closing half to the owner. A

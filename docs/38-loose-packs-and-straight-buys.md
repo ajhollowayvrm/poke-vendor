@@ -99,6 +99,8 @@ the sticker. A friend with full rapport pays the sticker about 27% of the time a
   - The contact walks away: −2.
 - **Rapport** is the lower of the two. A stranger has rapport 0.
 - The Contacts screen shows both: "They think: Regular · You think: 45".
+- The visitor card at the counter and at shows shows "You think: 45 · Rapport 30" and the last deal. When rapport is 40
+  or more and the buyer haggles, it adds "they know you, so they ask for a deal".
 
 ## Values
 

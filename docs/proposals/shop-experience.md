@@ -1,6 +1,6 @@
 # Shop Experience: Nine Improvements
 
-**Status: plan.** AJ asked for this plan on 2026-11-25, after the loose packs (docs/38), the owner's shift (docs/39), and
+**Status: built** on 2026-11-25, in 5 phases (commits 9554616 to the pull boxes commit). AJ asked for this plan on 2026-11-25, after the loose packs (docs/38), the owner's shift (docs/39), and
 resume a visit (docs/40). The theme: the store feels like a real job, and no progress is lost.
 
 Each part names the files it changes, the save fields it adds, and its tests. Every new save field is optional or has

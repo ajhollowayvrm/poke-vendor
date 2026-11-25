@@ -41,6 +41,8 @@ extension Balance {
 /// The kind of job a counter visitor brings.
 enum CounterEventKind: CaseIterable, Codable {
     case gift, packRip, returnItem, specialOrder, hold, shoplifter, priceCheck, tradeUp, tradeIn
+    /// A regular asks to reserve a product every few weeks (Model/PullBoxes.swift).
+    case pullRequest
 
     var weight: Double {
         switch self {
@@ -53,6 +55,7 @@ enum CounterEventKind: CaseIterable, Codable {
         case .priceCheck: 0.12
         case .tradeUp: 0.1
         case .tradeIn: 0.1
+        case .pullRequest: 0.06
         }
     }
 
@@ -67,6 +70,7 @@ enum CounterEventKind: CaseIterable, Codable {
         case .priceCheck: "WANTS A PRICE CHECK"
         case .tradeUp: "WANTS TO TRADE UP"
         case .tradeIn: "TRADE-IN FOR CREDIT"
+        case .pullRequest: "WANTS A PULL BOX"
         }
     }
 }
@@ -109,6 +113,9 @@ enum ReturnReason: CaseIterable, Codable {
 /// The job that a counter visitor brings. It lives only for the visit.
 struct CounterEvent: Codable {
     let kind: CounterEventKind
+    /// A pull request: the product, and the days between pickups.
+    var productID: String?
+    var cycle = 14
     var giftFor: GiftFor = .youngKid
     var budget = 0.0
     /// The player's item that the event is about: the pack to rip, or the item to hold.
@@ -293,6 +300,21 @@ extension ShowSession {
             e.floorRate = Double.random(in: Balance.tradeInFloor)
             type = .player
             line = "Can I trade these in for store credit, and put it toward your \(item.name)?"
+        case .pullRequest:
+            // A regular who knows the player, with no pull yet, asks for one (Model/PullBoxes.swift).
+            guard let ask = store.pullAsk() else { return nil }
+            e.productID = ask.product.id
+            e.cycle = ask.cycle
+            e.market = ask.product.market
+            e.price = store.pullPrice(ask.product)
+            type = .collector
+            let weeks = ask.cycle / 7
+            line = "You know I'm in here every week. Could you put a \(ask.product.name) aside for me every \(weeks == 1 ? "week" : "\(weeks) weeks")? I'll pick it up."
+            var v = Visitor(type: type, name: ask.contact.name, intent: .buy, item: nil, limit: 0, offer: 0, patience: 2, line: line)
+            v.event = e
+            v.contactID = ask.contact.id
+            v.goodsMarket = e.market
+            return v
         }
         var v = Visitor(type: type, name: name, intent: intent, item: nil, limit: 0, offer: 0, patience: 2, line: line)
         v.event = e
@@ -613,7 +635,7 @@ extension GameStore {
     func counterEventsEndDay() -> [String] {
         guard let s = data.cardStore else { return [] }
         let today = data.day
-        var lines: [String] = []
+        var lines: [String] = pullsEndDay()
         var keep: [SpecialOrder] = []
         for o in specialOrders {
             if let card = orderMatch(o) {
