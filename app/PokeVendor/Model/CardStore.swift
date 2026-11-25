@@ -394,6 +394,8 @@ extension GameStore {
     }
 
     func toggleOpenDay(_ weekday: Int) {
+        // Closing today while the shift waits is a lock-up, with its cost (Model/StoreShift.swift).
+        if weekday == self.weekday, storeShiftPending, data.cardStore?.openDays.contains(weekday) == true { _ = lockUp() }
         guard var s = data.cardStore else { return }
         if s.openDays.contains(weekday) { s.openDays.removeAll { $0 == weekday } } else { s.openDays = (s.openDays + [weekday]).sorted() }
         data.cardStore = s
@@ -543,6 +545,7 @@ extension GameStore {
         if !storeSells(on: data.day) { return "Opens on day \(s.openDay + 1)" }
         if !s.openDays.contains(weekday) { return "Closed today" }
         if s.counterDay == data.day { return "Done for today" }
+        if lockedUpToday { return "Locked up today" }
         if counterStart > Balance.storeClose - 0.5 {
             return worksToday && data.hour < Balance.workEnd ? "You work until 5 PM, too late to open" : "Closed for today"
         }
@@ -573,7 +576,7 @@ extension GameStore {
     }
 
     /// The regulars who come in today. The same day always gives the same people.
-    private func storeRegulars() -> [String] {
+    func storeRegulars() -> [String] {
         var r = SeededRandom(seed: UInt64(data.day + 1) &* 48_271 &+ 7)
         return data.contacts.filter { c in
             !c.kind.isVendor && c.kind != .gameShop && !c.kind.isSupplier && r.next() < 0.4
@@ -586,6 +589,13 @@ extension GameStore {
         let worked = max(0, (session.minute - session.startMinute) / 60)
         data.hour = max(data.hour, min(Balance.storeClose, Balance.storeOpen + session.minute / 60))
         guard var s = data.cardStore else { return }
+        // With no staff, leaving early locks the door for the rest of the day: a part of a lock-up (Model/StoreShift.swift).
+        let missed = Balance.storeClose - (Balance.storeOpen + session.minute / 60)
+        if !s.clerk, missed >= 1 {
+            nudgeLoyalty(-Balance.lockUpLoyalty * missed / (Balance.storeClose - Balance.storeOpen))
+            log("You closed \(s.name) \(formatHours(missed)) early. Customers who came later found the door locked.")
+            s = data.cardStore ?? s
+        }
         s.counterHours = worked
         var record = s.history.last?.day == data.day ? s.history.removeLast() : StoreDay(day: data.day)
         record.customers += session.sold.count + session.bought.count + session.trades.count + session.walkedAway

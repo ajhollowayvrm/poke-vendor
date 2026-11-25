@@ -42,6 +42,7 @@ final class GameTests {
         timed("account", businessAccount)
         timed("counter", counterEvents)
         timed("loosePacks", loosePacks)
+        timed("storeShift", storeShift)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2424,6 +2425,64 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - The owner's shift (docs/39-store-shift.md)
+
+    /// With no staff, the counter is the owner's job: it blocks timed actions and End Day. A lock-up costs loyalty, and
+    /// the next one costs more.
+    private func storeShift() {
+        fresh()
+        store.data.jobIndex = nil
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        store.data.cardStore?.clerk = false
+        store.data.hour = 7
+        guard store.storeShiftPending else { return check(false, "an open store with no staff has no owner shift") }
+        check(store.slot(for: 3) != nil, "a block that ends before the store opens was refused")
+        check(store.slot(for: 5) == nil, "a block that runs into the shift was allowed")
+        check(store.endDayBlock != nil && !store.canGoToShowToday, "End Day or a show did not wait for the shift")
+        check(store.hoursLeft <= Balance.dayEnd - 7 - (Balance.storeClose - Balance.storeOpen) + 0.01, "the shift counted as free time")
+
+        // A lock-up costs loyalty, and the next one in 4 weeks costs more.
+        let loyalty = store.business.loyalty
+        store.asBusiness { _ = store.lockUp() }
+        let first = loyalty - store.business.loyalty
+        check(!store.storeShiftPending && store.endDayBlock == nil && store.slot(for: 5) != nil, "a lock-up did not end the shift")
+        check(abs(first - Balance.lockUpLoyalty) < 0.01 || store.business.loyalty == 0, "a lock-up cost \(first) loyalty, not \(Balance.lockUpLoyalty)")
+        nextDay()
+        store.data.hour = 7
+        let loyalty2 = store.business.loyalty
+        store.asBusiness { _ = store.lockUp() }
+        check(loyalty2 - store.business.loyalty > first + 0.01 || store.business.loyalty == 0, "a second lock-up did not cost more")
+
+        // The counter ends the shift.
+        nextDay()
+        store.data.hour = 7
+        if let session = store.startCounter() {
+            check(!store.storeShiftPending, "the counter did not end the shift")
+            session.packUp()
+            store.finishCounter(session)
+        } else { check(false, "no counter on a shift day") }
+
+        // Closing today in the schedule locks up. End Day with the shift open locks up too.
+        nextDay()
+        store.data.hour = 7
+        store.toggleOpenDay(store.weekday)
+        check(store.lockedUpToday, "closing today in the schedule skipped the lock-up")
+        store.toggleOpenDay(store.weekday)          // open again: the lock-up holds for today
+        check(store.lockedUpToday && !store.storeShiftPending, "opening today again after a lock-up brought the shift back")
+        nextDay()
+        if store.storeShiftPending {
+            let day = store.day
+            nextDay()
+            check(store.business.lockedDays?.contains(day) == true, "End Day with the shift open did not lock up")
+        }
+
+        // Staff covers the store: no owner shift.
+        store.data.cardStore?.clerk = true
+        check(!store.storeShiftPending, "a store with staff still has an owner shift")
+    }
+
     // MARK: - Loose packs and straight buys (docs/38-loose-packs-and-straight-buys.md)
 
     /// A break splits the cost and keeps the packs on the shelf. The pack display holds packs off the sealed slots, and

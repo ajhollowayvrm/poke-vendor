@@ -164,6 +164,7 @@
 		8016D9B3919FBD6BA8715381 /* team-rocket.json in Resources */ = {isa = PBXBuildFile; fileRef = F52ED77C7307D16459401032 /* team-rocket.json */; };
 		807C01D64258BC9B234CA73D /* Lots.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8AFC53B64CB50A5F4C542D2 /* Lots.swift */; };
 		8170A734DC38CC0A00EDD338 /* chilling-reign.json in Resources */ = {isa = PBXBuildFile; fileRef = B93519BCFCB8D5128925352A /* chilling-reign.json */; };
+		81B14DA2CE47001D9982D579 /* StoreShift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A734C3F5F045BDB54346C535 /* StoreShift.swift */; };
 		824EA645F9A06C258FCB1B29 /* legendary-treasures.json in Resources */ = {isa = PBXBuildFile; fileRef = EE31EB72099822D32FC17548 /* legendary-treasures.json */; };
 		82A33877EA510DCB157F0C0A /* team-rocket-returns.json in Resources */ = {isa = PBXBuildFile; fileRef = E0EB54699B33908D30FBF375 /* team-rocket-returns.json */; };
 		83140D1748C71EC3F62D0ECE /* legends-awakened.json in Resources */ = {isa = PBXBuildFile; fileRef = D3C180A062FEB64E1EB184FD /* legends-awakened.json */; };
@@ -535,6 +536,7 @@
 		A54CEBF267C5CF60E282DE79 /* journey-together.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "journey-together.json"; sourceTree = "<group>"; };
 		A57A043178AAD3F6388A8E3D /* StoreStaff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreStaff.swift; sourceTree = "<group>"; };
 		A6EF564C070D1FD83CA14733 /* CaseOpenSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseOpenSheet.swift; sourceTree = "<group>"; };
+		A734C3F5F045BDB54346C535 /* StoreShift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreShift.swift; sourceTree = "<group>"; };
 		A766A195BEFED131D6BFA971 /* team-magma-vs-team-aqua.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "team-magma-vs-team-aqua.json"; sourceTree = "<group>"; };
 		A7B821E5FBD06698D7A362DE /* hidden-fates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "hidden-fates.json"; sourceTree = "<group>"; };
 		A8AFC53B64CB50A5F4C542D2 /* Lots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lots.swift; sourceTree = "<group>"; };
@@ -960,6 +962,7 @@
 				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
 				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
 				28C63F8F979B2B12C15A4D0A /* StoreSealedBuylist.swift */,
+				A734C3F5F045BDB54346C535 /* StoreShift.swift */,
 				A57A043178AAD3F6388A8E3D /* StoreStaff.swift */,
 				20D2A072C747DEAB8413196A /* Supplies.swift */,
 				AB5F86050C95B7226F93873C /* Taxes.swift */,
@@ -1455,6 +1458,7 @@
 				0654C54986F63534C9F531FF /* StoreRunViews.swift in Sources */,
 				C2563602FFC29B44B43D9F1B /* StoreSealedBuylist.swift in Sources */,
 				475B860FD55F4C5531477F54 /* StoreShelfControls.swift in Sources */,
+				81B14DA2CE47001D9982D579 /* StoreShift.swift in Sources */,
 				331F96CAD287A16542AE8507 /* StoreStaff.swift in Sources */,
 				F905C1398E75C747E47A1439 /* StreamView.swift in Sources */,
 				0B3C36D61F4A2B88E17758D1 /* Supplies.swift in Sources */,

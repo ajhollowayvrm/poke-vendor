@@ -117,6 +117,8 @@ extension GameStore {
         }
         if let until = strictness(store).closedUntil, until >= data.day { return "\(store.rawValue) stopped in-store card sales" }
         if campedToday(store) { return "Done for today" }
+        let arrive = max(data.hour, Balance.campStart)
+        if let block = storeShiftBlock(from: arrive, to: arrive + Balance.campHours) { return block }
         guard let start = slot(for: Balance.campHours) else { return "Not enough time today" }
         if start > Balance.campStart + 3 { return worksToday ? "You work today · call in sick or book time off" : "Too late · the line formed at \(GameStore.clock(Balance.campStart))" }
         return nil
@@ -206,6 +208,7 @@ extension GameStore {
         if worksToday && arrive < Balance.workEnd && arrive + Balance.machineCampHours > Balance.workStart {
             return "You work today · call in sick or book time off"
         }
+        if let block = storeShiftBlock(from: arrive, to: arrive + Balance.machineCampHours) { return block }
         if arrive + Balance.machineCampHours > Balance.lateNightLimit { return "Not enough time today" }
         if arrive > r.hour + 2 { return "Too late · the machine sold out" }
         return nil

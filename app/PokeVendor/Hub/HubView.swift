@@ -9,6 +9,7 @@ struct HubView: View {
     @State private var meetupMessage: String?
     /// The meet the player tapped. A dialog asks: deal at a spot, or only browse.
     @State private var meetChoice: MeetKind?
+    @State private var confirmLockUp = false
 
     /// Opens the stream setup, for a new stream or for today's scheduled one.
     struct StreamSetupRequest: Identifiable {
@@ -473,7 +474,8 @@ struct HubView: View {
                             detail: store.canGoToShowToday
                                 ? (show.booked ? "Your table is booked · takes the rest of the day"
                                                : "Walk in for \(money(show.size.entryFee)) · takes the rest of the day")
-                                : "Done for today", accent: store.canGoToShowToday)
+                                : store.storeShiftPending ? "You run the store today · lock up to go" : "Done for today",
+                            accent: store.canGoToShowToday)
                 }
                 .buttonStyle(.plain)
             }
@@ -514,12 +516,26 @@ struct HubView: View {
                 Button {
                     if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
                 } label: {
-                    ChevronRow(icon: "storefront", title: "Work the counter at \(shop.name)",
+                    ChevronRow(icon: "storefront", title: store.storeShiftPending ? "Your shift at \(shop.name)" : "Work the counter at \(shop.name)",
                             detail: block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(Balance.storeClose)) · walk-ins buy, trade, and sell",
                             accent: block == nil)
                 }
                 .buttonStyle(.plain)
                 .disabled(block != nil)
+                // With no staff, the counter is the owner's job. The only way out is to lock up (Model/StoreShift.swift).
+                if store.storeShiftPending {
+                    Button { confirmLockUp = true } label: {
+                        Text("Lock up today").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Theme.orange)
+                    .controlSize(.small)
+                    .confirmationDialog("Lock up \(shop.name) today?", isPresented: $confirmLockUp, titleVisibility: .visible) {
+                        Button("Lock up", role: .destructive) { store.asBusiness { _ = store.lockUp() } }
+                    } message: {
+                        Text(store.lockUpWarning)
+                    }
+                }
             }
             ForEach(store.meetsToday, id: \.self) { kind in
                 let block = store.meetBlock(kind)
@@ -589,17 +605,23 @@ struct HubView: View {
     }
 
     private var endDayBar: some View {
-        Button {
-            Haptics.tap(.medium)
-            SoundFX.shared.play(.endDay)
-            store.endDay()
-        } label: {
-            Text("End Day \(store.day + 1)")
-                .font(.headline)
-                .frame(maxWidth: .infinity)
+        let block = store.endDayBlock
+        return VStack(spacing: 4) {
+            // The owner's shift at the store comes first (Model/StoreShift.swift).
+            if let block { Text(block).font(.caption).foregroundStyle(Theme.orange) }
+            Button {
+                Haptics.tap(.medium)
+                SoundFX.shared.play(.endDay)
+                store.endDay()
+            } label: {
+                Text("End Day \(store.day + 1)")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+            }
+            .primaryButton()
+            .controlSize(.large)
+            .disabled(block != nil)
         }
-        .primaryButton()
-        .controlSize(.large)
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .background(Theme.background)

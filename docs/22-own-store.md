@@ -207,6 +207,8 @@ pack.
 
 ## Staff and hours
 
+With no staff, the counter is the owner's job on each open day: see [39-store-shift.md](39-store-shift.md).
+
 The store is open from 11 AM to 7 PM on the days that the player
 picks. On an open day, two people can staff it:
 

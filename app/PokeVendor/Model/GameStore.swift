@@ -401,7 +401,11 @@ final class GameStore {
             let overlap = max(0, min(Balance.workEnd, Balance.dayEnd) - max(Balance.workStart, data.hour))
             left -= overlap
         }
-        return left
+        // The owner's shift at the store is not free time either (Model/StoreShift.swift).
+        if storeShiftPending {
+            left -= max(0, min(Balance.storeClose, Balance.dayEnd) - max(storeShiftStart, data.hour))
+        }
+        return max(0, left)
     }
 
     /// The start time for a block of hours today, or nil when it does not fit. The block skips the work shift.
@@ -411,6 +415,8 @@ final class GameStore {
         if worksToday && start < Balance.workEnd && start + hours > Balance.workStart {
             start = max(start, Balance.workEnd)
         }
+        // A block that runs into the owner's shift at the store waits for the counter or a lock-up (Model/StoreShift.swift).
+        if storeShiftBlock(from: start, to: start + hours) != nil { return nil }
         return start + hours <= Balance.lateNightLimit ? start : nil
     }
 
@@ -1378,6 +1384,8 @@ final class GameStore {
             addReputation(-5)
         }
         lines += jobEndDay(endedDay: data.day)
+        // The hub waits for the shift. Any other path that ends the day with the shift open locks up (Model/StoreShift.swift).
+        if storeShiftPending, let line = asBusiness({ lockUp() }) { lines.append(line) }
         lines += asBusiness { openingDayEnd() }
         lines += asBusiness { storeDayEnd() }
         lines += asBusiness { businessDayEnd() }

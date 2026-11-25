@@ -126,6 +126,8 @@ struct BusinessState: Codable, Hashable {
     /// Special orders and holds from the counter (`Model/CounterEvents.swift`).
     var orders: [SpecialOrder]?
     var holds: [StoreHold]?
+    /// The days the owner locked up instead of working the counter (`Model/StoreShift.swift`). Nil: none.
+    var lockedDays: [Int]?
 
     init() {}
 
@@ -150,6 +152,7 @@ struct BusinessState: Codable, Hashable {
         rivals = try c.decodeIfPresent([RivalMove].self, forKey: .rivals)
         orders = try c.decodeIfPresent([SpecialOrder].self, forKey: .orders)
         holds = try c.decodeIfPresent([StoreHold].self, forKey: .holds)
+        lockedDays = try c.decodeIfPresent([Int].self, forKey: .lockedDays)
     }
 
     /// The rating: the last reviews, with a prior of a few 4-star reviews, so one bad review does not sink a new store.

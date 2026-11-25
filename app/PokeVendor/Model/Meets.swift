@@ -134,6 +134,7 @@ extension GameStore {
         if attendedMeet(kind) { return "Done for today" }
         if data.hour > kind.close - 1 { return "Over for today" }
         if worksToday, kind.open < Balance.workEnd, kind.close > Balance.workStart { return "You work today" }
+        if let block = storeShiftBlock(from: max(data.hour, kind.open), to: kind.close) { return block }
         return nil
     }
 
