@@ -132,6 +132,9 @@ struct Contact: Codable, Identifiable, Hashable {
     var registered: Bool?
     /// What the contents of their last Rip & Ship order were worth, as a share of the price. Optional: old saves have none.
     var ripShipLuck: Double?
+    /// 0 to 100: the player's opinion of them. `points` is their opinion of the player. Nil: an old save, read as
+    /// `Balance.opinionStart` (docs/38-loose-packs-and-straight-buys.md).
+    var opinion: Double?
 
     var inBook: Bool { registered == true }
 }
@@ -344,11 +347,33 @@ extension GameStore {
         }
         // A small deal gives little standing, so a stack of cheap packs does not buy a relationship (docs/21).
         addPoints(id, price < Balance.fairDealMinPrice ? (fair ? 1 : 0) : (fair ? 3 : 2))
+        // The player thinks better of a person after a deal: more after a fair one.
+        addOpinion(id, price < Balance.fairDealMinPrice ? (fair ? 1 : 0) : (fair ? Balance.opinionFairDeal : Balance.opinionPlainDeal))
         save()
     }
 
     func lowballed(_ id: String?) { addPoints(id, -2) }
-    func walkedAway(_ id: String?) { addPoints(id, -1) }
+    func walkedAway(_ id: String?) {
+        addPoints(id, -1)
+        addOpinion(id, -Balance.opinionWalkAway)
+    }
+
+    /// The player's opinion of a contact (docs/38-loose-packs-and-straight-buys.md).
+    func opinion(of id: String?) -> Double {
+        contact(id).map { $0.opinion ?? Balance.opinionStart } ?? 0
+    }
+
+    func addOpinion(_ id: String?, _ delta: Double) {
+        guard delta != 0, let id, let i = data.contacts.firstIndex(where: { $0.id == id }) else { return }
+        data.contacts[i].opinion = max(0, min(100, (data.contacts[i].opinion ?? Balance.opinionStart) + delta))
+    }
+
+    /// How well the two sides know each other: the lower of their opinion of the player and the player's opinion of them.
+    /// A regular with high rapport asks for a deal more often. Zero for a stranger.
+    func rapport(_ id: String?) -> Double {
+        guard let c = contact(id) else { return 0 }
+        return min(Double(points(of: c)), c.opinion ?? Balance.opinionStart)
+    }
 
     /// A stranger who dealt well with the player gives their number and becomes a contact.
     func promote(name: String, kind: ContactKind, interest: Interest?, points: Int) -> String? {

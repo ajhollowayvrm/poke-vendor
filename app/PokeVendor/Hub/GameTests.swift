@@ -41,6 +41,7 @@ final class GameTests {
         timed("floor", floor)
         timed("account", businessAccount)
         timed("counter", counterEvents)
+        timed("loosePacks", loosePacks)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2423,6 +2424,98 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - Loose packs and straight buys (docs/38-loose-packs-and-straight-buys.md)
+
+    /// A break splits the cost and keeps the packs on the shelf. The pack display holds packs off the sealed slots, and
+    /// its buyers pay the shelf price. Strangers mostly pay the sticker. Regulars with high rapport haggle more.
+    private func loosePacks() {
+        fresh()
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        guard let box = SetLibrary.catalog.first(where: {
+            $0.kind == "Booster box" && $0.packs == 36 && $0.isInPrint && $0.market > 50 && SetLibrary.loosePack($0.homeSlug) != nil
+        }), let item = store.addTestProduct(box.id) else { return check(false, "no booster box for the break test") }
+        store.stockStore([item.id])
+        let raw = store.data.raw.count
+        let before = Set(store.data.sealed.map(\.id))
+        check(store.breakRefusal(item) == nil, "a booster box on the shelf could not break: \(store.breakRefusal(item) ?? "")")
+        store.breakIntoPacks(item.id)
+        let packs = store.data.sealed.filter { !before.contains($0.id) }
+        check(packs.count == 36 && !store.data.sealed.contains { $0.id == item.id }, "the box broke into \(packs.count) packs, not 36")
+        check(abs(packs.reduce(0) { $0 + $1.paid } - item.paid) < 0.01, "the packs cost \(money(packs.reduce(0) { $0 + $1.paid })), not \(money(item.paid))")
+        check(packs.allSatisfy { GameStore.isInStore($0.status) && $0.isLoosePack }, "a pack from a box on the shelf left the shelf")
+        check(store.data.raw.count - raw == box.promos.count || box.pickOnePromo, "the promo cards did not go to Raw")
+        if let pack = packs.first { check(store.breakRefusal(pack) != nil, "a loose pack could break") }
+        let caseID = store.testCase(box, units: 2, fresh: false)
+        if let c = store.data.sealed.first(where: { $0.id == caseID }) { check(store.breakRefusal(c) != nil, "a closed case could break") }
+
+        // Without the display, the 36 packs use 36 sealed slots. With it, none.
+        check(store.sealedRoom(store.storeStock.sealed).used == 36, "packs used \(store.sealedRoom(store.storeStock.sealed).used) slots, not 36")
+        store.buyFixture(.packDisplay)
+        check(store.packDisplaySlots == Balance.packDisplaySlots, "the pack display did not install")
+        check(store.sealedRoom(store.storeStock.sealed).used == 0, "packs on the display still use sealed slots")
+        for _ in 0..<(Balance.packDisplaySlots - 36 + 1) { store.addTestPack() }
+        store.stockStore(Set(store.stockable.sealed.filter(\.isLoosePack).map(\.id)))
+        let room = store.sealedRoom(store.storeStock.sealed)
+        check(room.packsOnDisplay == Balance.packDisplaySlots && room.used == 1, "151 packs: \(room.packsOnDisplay) on the display and \(room.used) slots, not 150 and 1")
+
+        // A pack buyer pays the shelf price for each pack, into the business account.
+        var shelf = store.storeShelf().filter(\.isPack)
+        let start = shelf.count
+        let biz = store.businessCash
+        var sold = 0
+        for _ in 0..<40 { sold += store.sellPackLot(&shelf, casual: false, storeName: "Test Store").count }
+        let left = store.storeStock.sealed.filter(\.isLoosePack).count
+        check(sold > 0 && store.businessCash > biz, "the pack display sold no packs")
+        check(left == start - sold && shelf.count == left, "pack buyers sold \(sold) packs, but \(start - left) left the shelf")
+
+        // Straight buys at the store counter: most strangers pay the sticker.
+        for print in SetLibrary.set("prismatic-evolutions").prints.filter({ ($0.market ?? 0) > 5 && ($0.market ?? 0) < 80 }).prefix(20) {
+            store.addTestCard(print)
+        }
+        store.stockStore(Set(store.stockable.cards.map(\.id)))
+        store.data.hour = 12
+        guard let counter = store.startCounter() else { return check(false, "no counter session for straight buys") }
+        func share(_ session: ShowSession, regular: String?) -> Double {
+            var buyers = 0, straight = 0
+            for _ in 0..<400 {
+                guard let v = session.testBuyer(regular: regular), v.intent == .buy, v.extraPacks.isEmpty, v.buyItems.count == 1 else { continue }
+                buyers += 1
+                if v.straight { straight += 1 }
+            }
+            return buyers == 0 ? -1 : Double(straight) / Double(buyers)
+        }
+        let strangers = share(counter, regular: nil)
+        check(strangers > 0.5, "only \(Int(strangers * 100))% of strangers at the store paid the sticker")
+        guard let friend = store.data.contacts.first(where: { $0.shop == nil && $0.kind != .gameShop })?.id,
+              let k = store.data.contacts.firstIndex(where: { $0.id == friend }) else { return check(false, "no contact for rapport") }
+        store.data.contacts[k].points = 100
+        store.data.contacts[k].opinion = 100
+        let friends = share(counter, regular: friend)
+        check(friends >= 0 && friends < strangers - 0.2, "a friend paid the sticker \(Int(friends * 100))% of the time, strangers \(Int(strangers * 100))%")
+        store.data.contacts[k].opinion = 0
+        check(store.rapport(friend) == 0, "rapport did not take the lower opinion")
+        counter.packUp()
+
+        // At a show, strangers haggle more than at the store, but many still pay the sticker.
+        let venue = Venue(kind: .meet, name: "Test table", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let table = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        table.openTable()
+        let show = share(table, regular: nil)
+        check(show > 0.3 && show < strangers, "\(Int(show * 100))% of show strangers paid the sticker, store \(Int(strangers * 100))%")
+        // A clerk week with the display: packs are the top seller by units.
+        store.data.cardStore?.clerk = true
+        let packsBefore = store.storeStock.sealed.filter(\.isLoosePack).count
+        let otherBefore = store.storeStock.cards.count + store.storeStock.sealed.filter { !$0.isLoosePack }.count
+        for _ in 0..<7 { nextDay() }
+        let packsSold = packsBefore - store.storeStock.sealed.filter(\.isLoosePack).count
+        let otherSold = otherBefore - store.storeStock.cards.count - store.storeStock.sealed.filter { !$0.isLoosePack }.count
+        check(packsSold > otherSold, "a clerk week sold \(packsSold) packs and \(otherSold) other items")
+        print("TEST NOTE: clerk week: \(packsSold) packs, \(otherSold) other items")
+        print("TEST NOTE: straight buys: store strangers \(Int(strangers * 100))%, store friend \(Int(friends * 100))%, show strangers \(Int(show * 100))%")
+    }
+
     private func counterEvents() {
         fresh()
         openTestStore()

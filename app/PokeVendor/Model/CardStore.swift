@@ -44,6 +44,8 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
     case extraCase, sealedWall, playTables, cameras, sign, pos, backRoom
     /// The back room holds more cases, and acrylic cases make sealed product on the shelf look cheaper to a customer.
     case backRoomShelving, acrylicCases
+    /// A rack of loose packs by the register: room for many packs, and pack buyers (docs/38-loose-packs-and-straight-buys.md).
+    case packDisplay
 
     var name: String {
         switch self {
@@ -56,6 +58,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .backRoom: "Back room"
         case .backRoomShelving: "Back room shelving"
         case .acrylicCases: "Acrylic sealed cases"
+        case .packDisplay: "Loose-pack display"
         }
     }
 
@@ -70,6 +73,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .backRoom: "Holds up to \(Balance.backRoomCases) sealed cases off the shelf. When a product runs low on the shelf, the store opens a case of it and restocks."
         case .backRoomShelving: "The back room holds \(Balance.backRoomShelvingCases) cases instead of \(Balance.backRoomCases)."
         case .acrylicCases: "Sealed items on the shelf sell as if the price were \(Int(((1 - Balance.acrylicPerceivedFactor) * 100).rounded()))% lower. You still get the full price."
+        case .packDisplay: "Holds \(Balance.packDisplaySlots) loose packs off the sealed shelf. Many customers grab a few packs on the way out."
         }
     }
 
@@ -84,6 +88,7 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
         case .backRoom: "shippingbox.fill"
         case .backRoomShelving: "square.grid.3x3.fill"
         case .acrylicCases: "square.stack.3d.down.right"
+        case .packDisplay: "rectangle.stack.fill"
         }
     }
 
@@ -91,6 +96,24 @@ enum StoreFixture: String, Codable, CaseIterable, Hashable {
     var requires: StoreFixture? { self == .backRoomShelving ? .backRoom : nil }
 
     var cost: Double { Balance.fixtureCosts[self] ?? 0 }
+}
+
+/// The free sealed room in the store: the pack display, then the sealed shelf (`GameStore.sealedRoom`).
+struct SealedRoom {
+    var display: Int
+    var shelf: Int
+    /// The sealed slots in use. Packs on the display do not count.
+    var used: Int
+    var packsOnDisplay: Int
+    var total: Int { display + shelf }
+
+    /// Takes a slot for one unit, and returns false when there is no room. A loose pack takes a display slot first.
+    mutating func take(_ item: SealedItem) -> Bool {
+        if item.isLoosePack, display > 0 { display -= 1; return true }
+        guard shelf > 0 else { return false }
+        shelf -= 1
+        return true
+    }
 }
 
 /// One open day at the store, for the numbers on the store screen.
@@ -179,7 +202,21 @@ extension Balance {
     static let extraCaseSlots = 60
     static let sealedWallSlots = 60
     static let fixtureCosts: [StoreFixture: Double] = [.extraCase: 500, .sealedWall: 400, .playTables: 700, .cameras: 350, .sign: 300, .pos: 900, .backRoom: 600,
-                                                    .backRoomShelving: 400, .acrylicCases: 150]
+                                                    .backRoomShelving: 400, .acrylicCases: 150, .packDisplay: 1200]
+    /// The loose packs that the pack display holds, off the sealed shelf.
+    static let packDisplaySlots = 150
+    /// The chance that a store customer buys packs at the pack display, by type. A legacy store's customers have no type.
+    static func packBuyChance(_ type: CustomerType?) -> Double {
+        switch type {
+        case .kids?: 0.55
+        case .players?: 0.50
+        case .collectors?: 0.20
+        case .investors?: 0
+        case .casual?, nil: 0.35
+        }
+    }
+    /// A pack buyer takes 1 to 5 packs, with these weights.
+    static let packLotWeights = [0.40, 0.25, 0.15, 0.10, 0.10]
     static let signTrafficBonus = 1.15
     static let tournamentPlayers = 8...16
     /// The clerk sells a bit worse than the owner: customers buy this often, and never take a second item.
@@ -403,19 +440,32 @@ extension GameStore {
         Balance.storeSealedSlots + (data.cardStore?.has(.sealedWall) == true ? Balance.sealedWallSlots : 0) + (data.cardStore?.spaceSlots ?? 0)
     }
 
+    /// The loose packs that the pack display holds. Zero without the display.
+    var packDisplaySlots: Int { data.cardStore?.has(.packDisplay) == true ? Balance.packDisplaySlots : 0 }
+
+    /// The free room for sealed units, from the sealed items on the shelf (`storeStock.sealed`). Loose packs fill the
+    /// pack display first. Only the packs above it use sealed slots (docs/38-loose-packs-and-straight-buys.md).
+    func sealedRoom(_ shelf: [SealedItem]) -> SealedRoom {
+        let packs = shelf.filter(\.isLoosePack).count
+        let display = packDisplaySlots
+        let used = shelf.count - packs + max(0, packs - display)
+        return SealedRoom(display: max(0, display - packs), shelf: max(0, storeSealedSlots - used), used: used,
+                          packsOnDisplay: min(packs, display))
+    }
+
     /// Puts items in the store, up to the room in the cases and on the shelves. Returns how many went in.
     @discardableResult
     func stockStore(_ ids: Set<UUID>) -> Int {
         guard data.cardStore != nil else { return 0 }
         let stock = storeStock
         let cardRoom = storeCardSlots - storeCardsUsed
-        let sealedRoom = storeSealedSlots - stock.sealed.count
+        var room = sealedRoom(stock.sealed)
         let caseRoom = backRoomCapacity - backRoomCases.count
         let pick = stockable
         let cardIDs = Set(pick.cards.filter { ids.contains($0.id) }.sorted { $0.market > $1.market }.map(\.id)
             .prefix(max(0, cardRoom)))
         // Units use the shelf room. Cases use the back room.
-        let unitIDs = pick.sealed.filter { ids.contains($0.id) && !$0.isCase }.map(\.id).prefix(max(0, sealedRoom))
+        let unitIDs = pick.sealed.filter { ids.contains($0.id) && !$0.isCase && room.take($0) }.map(\.id)
         let caseIDs = pick.sealed.filter { ids.contains($0.id) && $0.isCase }.map(\.id).prefix(max(0, caseRoom))
         let sealedIDs = Set(unitIDs + caseIDs)
         let placed = ItemStatus.inStore(since: data.day)
@@ -628,17 +678,26 @@ extension GameStore {
         let crowd = max(1, expectedCustomers(day: data.day))
         let kidShare = min(0.6, event.league / crowd)
         let playerShare = min(0.6, (event.tournament + event.glow) / crowd)
+        // The pack display: one list of loose packs for the day. A sale takes its packs off the list.
+        var packs = packDisplaySlots > 0 ? storeShelf().filter(\.isPack) : []
         for _ in 0..<customers {
-            guard Double.random(in: 0..<1) >= Balance.storeBrowseChance else { continue }
+            let browses = Double.random(in: 0..<1) < Balance.storeBrowseChance
             // The clerk loses some sales that the owner would close.
             let clerk = (data.cardStore?.has(.pos) == true ? Balance.posClerkFactor : Balance.clerkSalesFactor) * staffSalesFactor
-            guard Double.random(in: 0..<1) < clerk * clerkPaymentFactor else { continue }
             let roll = Double.random(in: 0..<1)
             let kid = roll < kidShare
             let player = !kid && roll < kidShare + playerShare
             // The other customers come from the location's mix (Model/StoreBusiness.swift).
             let type: CustomerType? = kid ? .kids : player ? .players : rollCustomerType()
             let casual = type?.smallBudget ?? false
+            // Many customers, browsers too, grab a few packs from the display on the way out (docs/38).
+            if !packs.isEmpty, Double.random(in: 0..<1) < Balance.packBuyChance(type), Double.random(in: 0..<1) < clerk * clerkPaymentFactor {
+                let lot = sellPackLot(&packs, casual: casual, storeName: storeName)
+                sold += lot.count
+                revenue += lot.revenue
+            }
+            guard !browses else { continue }
+            guard Double.random(in: 0..<1) < clerk * clerkPaymentFactor else { continue }
             var items = storeShelf().filter { !casual || shelfPrice($0) <= Balance.storeCasualBudget }
             switch type {
             case .collectors?:
@@ -658,8 +717,36 @@ extension GameStore {
             guard perceivedPrice(item, price: price) <= limit else { continue }
             revenue += sellFromStore(item, price: price, storeName: storeName)
             sold += 1
+            if item.isPack { packs.removeAll { $0.id == item.id } }
         }
         return (customers, sold, revenue)
+    }
+
+    /// A pack buyer at the pack display: 1 to 5 packs of one product, at the shelf price. One price check covers the lot.
+    /// A small-budget customer stays in the casual budget. Returns the packs sold and the revenue.
+    func sellPackLot(_ packs: inout [StoreShelfItem], casual: Bool, storeName: String) -> (count: Int, revenue: Double) {
+        guard let first = pickForCustomer(packs) else { return (0, 0) }
+        let price = shelfPrice(first)
+        guard perceivedPrice(first, price: price) <= first.market * Double.random(in: Balance.storeBuyerLimit) else { return (0, 0) }
+        var want = Self.packLotSize()
+        if casual { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }
+        let lot = Array(packs.filter { $0.productKey == first.productKey }.prefix(max(0, want)))
+        var revenue = 0.0
+        for pack in lot { revenue += sellFromStore(pack, price: shelfPrice(pack), storeName: storeName) }
+        let sold = Set(lot.map(\.id))
+        packs.removeAll { sold.contains($0.id) }
+        return (lot.count, revenue)
+    }
+
+    /// How many packs a pack buyer takes: most take 1 or 2.
+    static func packLotSize() -> Int {
+        let roll = Double.random(in: 0..<1)
+        var total = 0.0
+        for (n, w) in Balance.packLotWeights.enumerated() {
+            total += w
+            if roll < total { return n + 1 }
+        }
+        return 1
     }
 
     /// The price that a customer judges. The acrylic cases make a sealed price look lower. The store still gets the full price.

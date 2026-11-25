@@ -700,6 +700,12 @@ struct Visitor: Identifiable {
     var stashCounterFor: Set<UUID> = []
     /// A buyer who wants a second item asks for a bundle.
     var extra: ShowItem?
+    /// A pack buyer at the store's pack display: the other packs in the lot (docs/38-loose-packs-and-straight-buys.md).
+    var extraPacks: [ShowItem] = []
+    /// A straight buy: the buyer pays the asking price and does not haggle (docs/38-loose-packs-and-straight-buys.md).
+    var straight = false
+    /// Everything that a buyer wants: the item, the bundle item, and the other packs.
+    var buyItems: [ShowItem] { item.map { [$0] + (extra.map { [$0] } ?? []) + extraPacks } ?? [] }
     /// A seller who turned down a trade instead of cash.
     var tradeAsked = false
     /// The deal closed on a coin flip. A flip is not scored for fairness. `lostFlip`: the player lost it.
@@ -1188,6 +1194,7 @@ final class ShowSession {
             strangerReputation(&visitor)
         }
         rollGoodsFake(&visitor)
+        maybeStraightBuy(&visitor)
         visitor.firstOffer = visitor.intent == .trade ? openingValuation(visitor) : visitor.offer
         maybeProposeFlip(&visitor)
         if heatAtOpen >= Balance.calloutCrowdHeat, visitor.intent != .sell, Double.random(in: 0..<1) < Balance.calloutCrowdChance {
@@ -1258,6 +1265,7 @@ final class ShowSession {
     private func makeBuyer(regular: String? = nil) -> Visitor? {
         let crowd = venue.crowd
         var type = Self.weighted(crowd.weights) ?? .collector
+        if let packs = makePackBuyer(type) { return packs }
         let budget = crowd.spendCap.map { $0 * Double.random(in: Balance.budgetRange) }
         var wanted = table.filter { item in type.wants(item) && (budget.map { asking(item) <= $0 } ?? true) }
         if wanted.isEmpty {
@@ -1359,6 +1367,56 @@ final class ShowSession {
         return v
     }
 
+    /// At the player's store with the pack display, many buyers come for a few loose packs. They take 1 to 5 packs of
+    /// one product at the asking price, with no haggle (docs/38-loose-packs-and-straight-buys.md).
+    private func makePackBuyer(_ type: VisitorType) -> Visitor? {
+        guard venue.kind == .store, store.packDisplaySlots > 0, Double.random(in: 0..<1) < Self.packBuyChance(type) else { return nil }
+        let packs = table.filter { $0.kind == .sealed && $0.packs == 1 && !$0.isCase && !$0.pc }
+        guard let first = pick(packs) else { return nil }
+        let price = asking(first)
+        let top = first.market * Double.random(in: Balance.storeBuyerLimit)
+        guard buyLimit(top: top, ask: price, item: first) >= price - 0.001 else { return nil }
+        var want = GameStore.packLotSize()
+        if type == .kid { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }
+        let lot = Array(packs.filter { $0.productID == first.productID && $0.name == first.name }.prefix(max(1, want)))
+        let total = lot.reduce(0) { $0 + asking($1) }
+        let line = lot.count == 1 ? "Just this pack, please." : "Just these \(lot.count) packs, please."
+        var v = Visitor(type: type, name: Self.names.randomElement() ?? "A buyer", intent: .buy, item: lot[0], limit: total,
+                        offer: total, patience: 2, line: line)
+        v.extraPacks = Array(lot.dropFirst())
+        v.straight = true
+        return v
+    }
+
+    /// The chance that a buyer at the counter comes for packs from the pack display.
+    static func packBuyChance(_ type: VisitorType) -> Double {
+        switch type {
+        case .kid: 0.55
+        case .player: 0.50
+        case .flipper, .dealer, .gradeHunter, .vintageFan: 0
+        default: 0.25
+        }
+    }
+
+    /// A buyer pays the asking price with no haggle, more often at the store, and less often as the two sides get to
+    /// know each other: a regular asks for a deal (docs/38-loose-packs-and-straight-buys.md). A flipper always haggles.
+    /// A buyer whose top is far under the ask still haggles.
+    private func maybeStraightBuy(_ v: inout Visitor) {
+        guard v.intent == .buy, !v.straight, v.type != .flipper, let item = v.item, !item.pc, v.extra?.pc != true else { return }
+        let ask = askingTotal(v)
+        let atStore = venue.kind == .store
+        let tolerance = atStore ? Balance.stickerToleranceStore : Balance.stickerToleranceShow
+        guard v.limit * tolerance >= ask - 0.001 else { return }
+        let range = atStore ? Balance.haggleChanceStore : Balance.haggleChanceShow
+        let rapport = v.contactID.map { store.rapport($0) } ?? 0
+        let haggle = range.lowerBound + (range.upperBound - range.lowerBound) * rapport / 100
+        guard Double.random(in: 0..<1) >= haggle else { return }
+        v.straight = true
+        v.offer = ask
+        v.limit = ask
+        v.line = v.buyItems.count == 1 ? "I'll take it." : "I'll take them."
+    }
+
     /// The most that a buyer pays: their top, or the ask. At the player's store, acrylic cases make a sealed price look
     /// lower to the buyer, so they reach a little further. The player still gets the full price.
     func buyLimit(top: Double, ask: Double, item: ShowItem) -> Double {
@@ -1368,11 +1426,11 @@ final class ShowSession {
     }
 
     /// The player's asking price for what the buyer wants: one item, or the bundle.
-    func askingTotal(_ v: Visitor) -> Double { (v.item.map(asking) ?? 0) + (v.extra.map(asking) ?? 0) }
+    func askingTotal(_ v: Visitor) -> Double { v.buyItems.reduce(0) { $0 + asking($1) } }
 
     /// The market of what the buyer wants: one item, or the bundle.
     /// A PC item counts with its premium, so a PC price is a fair price.
-    func marketTotal(_ v: Visitor) -> Double { (v.item?.dealMarket ?? 0) + (v.extra?.dealMarket ?? 0) }
+    func marketTotal(_ v: Visitor) -> Double { v.buyItems.reduce(0) { $0 + $1.dealMarket } }
 
     /// The lowest price the player takes from a buyer: the PC price of a PC item. Zero for other items.
     func pcFloor(_ v: Visitor) -> Double {
@@ -1535,7 +1593,7 @@ final class ShowSession {
         case .buy:
             guard let item = v.item else { return }
             // A bundle: the buyer checks each item. A fake that they catch ends the whole deal.
-            let items = [item] + (v.extra.map { [$0] } ?? [])
+            let items = v.buyItems
             if !fakeChecked, items.contains(where: { buyerCatchesFake(v, $0) }) { return }
             let names = items.map(\.name).joined(separator: " and ")
             let pay = store.rollPayment(price: v.offer, contactID: v.contactID, atStore: venue.kind == .store, buyer: v.name)
@@ -1725,7 +1783,7 @@ final class ShowSession {
     /// Flips the coin and closes the deal at the price it picks. A buyer looks the item over before the flip.
     private func flip(_ visitor: Visitor, full: Double) {
         var v = visitor
-        if v.intent == .buy, let item = v.item, ([item] + (v.extra.map { [$0] } ?? [])).contains(where: { buyerCatchesFake(v, $0) }) { return }
+        if v.intent == .buy, v.buyItems.contains(where: { buyerCatchesFake(v, $0) }) { return }
         let won = Bool.random()
         let half = flipHalf(full)
         let price: Double
@@ -2038,7 +2096,7 @@ final class ShowSession {
 
     /// The player can give a kid the item they wanted, for free (docs/35-callouts.md, The kid gift). Once a day.
     var canGiveToKid: Bool {
-        guard let v = current, v.type == .kid, v.intent == .buy, let item = v.item, v.extra == nil else { return false }
+        guard let v = current, v.type == .kid, v.intent == .buy, let item = v.item, v.buyItems.count == 1 else { return false }
         return item.market >= Balance.kidGiftMinValue && item.market <= Balance.kidGiftMaxValue && !item.fakeKnown
             && !item.showcase && store.data.callouts.kidGiftDay != store.day
     }
@@ -2090,6 +2148,14 @@ final class ShowSession {
     func testSeat(_ v: Visitor) {
         phase = .table
         visitor = v
+    }
+
+    /// Tests only: a buyer as `makeVisitor` builds one, with the regular's standing and the straight-buy roll.
+    func testBuyer(regular: String? = nil) -> Visitor? {
+        guard var v = makeBuyer(regular: regular) else { return nil }
+        if let regular { personalize(&v, regular) } else { strangerReputation(&v) }
+        maybeStraightBuy(&v)
+        return v
     }
     #endif
 

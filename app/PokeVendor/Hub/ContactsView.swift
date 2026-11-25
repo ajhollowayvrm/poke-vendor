@@ -208,6 +208,11 @@ private struct ContactRow: View {
                 Text("\(points)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             ProgressView(value: Double(points), total: 100).tint(Theme.cyan)
+            // Two opinions: theirs of the player, and the player's of them. The lower one sets how often they haggle (docs/38).
+            if contact.shop == nil {
+                Text("They think: \(StandingLevel(points: points).rawValue) · You think: \(Int(store.opinion(of: contact.id)))")
+                    .font(.caption2.monospaced()).foregroundStyle(Theme.muted)
+            }
             Text(details).font(.caption).foregroundStyle(Theme.muted).lineLimit(2)
             if let memory = contact.memory.first {
                 Text("Last: \(memory)").font(.caption2).foregroundStyle(Theme.muted).lineLimit(1)

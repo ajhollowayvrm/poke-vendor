@@ -4,6 +4,17 @@ import Foundation
 // daily cap, and deal stories that come out days later.
 
 extension Balance {
+    /// Straight buys (docs/38-loose-packs-and-straight-buys.md): the chance that a buyer haggles, from rapport 0 to 100.
+    static let haggleChanceStore = 0.20...0.75
+    static let haggleChanceShow = 0.45...0.90
+    /// A straight buyer pays the ask when it is at most this share over their top.
+    static let stickerToleranceStore = 1.15
+    static let stickerToleranceShow = 1.10
+    /// The player's opinion of a contact: the start, and the moves.
+    static let opinionStart = 20.0
+    static let opinionFairDeal = 3.0
+    static let opinionPlainDeal = 1.0
+    static let opinionWalkAway = 2.0
     /// The fair band, as a share of market: the player sells at or under, buys at or over, values trade cards at or over.
     static let fairSellMax = 1.00
     static let fairBuyMin = 0.70

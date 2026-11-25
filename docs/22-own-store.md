@@ -240,6 +240,7 @@ when the store closes.
 | Back room | $600 | Room for 12 sealed cases off the shelf. Each night, a product with 1 unit or fewer on the shelf is restocked: first from loose back-room units, then by opening a case of it. The store opens a case when the free shelf room is at least the smaller of the case size and a quarter of the sealed slots. The units that fit go on the shelf. The rest wait in the back room as loose stock. |
 | Back room shelving | $400 | The back room holds 24 cases, not 12. Needs the back room. |
 | Acrylic sealed cases | $150 | A customer judges the price of a sealed item on the shelf as 5% lower: the buyer check uses the price × 0.95. The store still gets the full price. Cards are not affected. |
+| Loose-pack display | $1,200 | Holds 150 loose packs off the sealed shelf. Many customers buy 1 to 5 packs from it, browsers too. See [38-loose-packs-and-straight-buys.md](38-loose-packs-and-straight-buys.md). |
 
 ## Events
 

@@ -629,6 +629,8 @@ struct SealedItem: Codable, Identifiable, Hashable {
     }
 
     var isCase: Bool { caseUnits != nil }
+    /// One pack out of its product: it can go on the pack display (docs/38-loose-packs-and-straight-buys.md).
+    var isLoosePack: Bool { packs == 1 && !isCase }
     /// In the store but off the shelf: a case, or a loose unit that waits in the back room. No customer sees it.
     var inBackRoom: Bool {
         guard case .inStore = status else { return false }

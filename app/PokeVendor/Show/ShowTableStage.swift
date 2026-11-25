@@ -201,6 +201,12 @@ struct DealButtons: View {
             switch visitor.intent {
             case .buy:
                 let market = visitor.item == nil ? visitor.offer : session.marketTotal(visitor)
+                if visitor.straight {
+                    // A straight buy: they pay the price on the item, and there is nothing to haggle (docs/38).
+                    primary("Ring it up · \(money(visitor.offer))", color: Theme.green) { session.accept() }
+                    Button { withAnimation { session.decline() } } label: { Text("Decline").frame(maxWidth: .infinity) }
+                        .buttonStyle(.bordered)
+                } else {
                 primary("Sell for \(money(visitor.offer))", color: Theme.green) { session.accept() }
                 flipRow
                 if session.canGiveToKid {
@@ -215,6 +221,7 @@ struct DealButtons: View {
                               verb: "Counter", passTitle: "Decline", pass: { session.decline() },
                               final: visitor.finalUsed ? nil : { session.finalOffer($0) }) { session.counter($0) }
                     .id(visitor.id)
+                }
             case .trade:
                 primary("Accept the trade", color: Theme.green) { session.accept() }
                 TradeSlider(session: session, visitor: visitor).id(visitor.id)
@@ -366,6 +373,10 @@ struct VisitorCard: View {
                             .foregroundStyle(Theme.muted)
                         OwnedItemLines(item: item)
                     }
+                }
+                if !visitor.extraPacks.isEmpty {
+                    Text("AND \(visitor.extraPacks.count) MORE OF THE SAME PACK")
+                        .font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
                 }
                 if let extra = visitor.extra {
                     HStack(alignment: .top, spacing: 12) {

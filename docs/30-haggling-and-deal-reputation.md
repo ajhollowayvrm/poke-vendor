@@ -7,6 +7,9 @@ questions that the change raises. It is now the design record
 `Model/Relationships.swift`, `Show/ShowTableStage.swift`, and
 `Show/ShowSummaryStage.swift`).
 
+**Update 2026-11-25:** not every buyer haggles now. Many buyers pay the asking price ("Ring it up"). The haggle chance
+rises with rapport. See [38-loose-packs-and-straight-buys.md](38-loose-packs-and-straight-buys.md).
+
 ## The problems
 
 1. **A fair counter makes people angry.** A flipper opens at about 49%

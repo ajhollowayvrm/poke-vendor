@@ -25,6 +25,7 @@ struct CardStoreView: View {
     @State private var selectingShelf = false
     @State private var shelfPick: Set<UUID> = []
     @State private var shelfKind: ShelfKind = .all
+    @State private var confirmShelfBreak = false
     @State private var seed = Balance.accountSeeds[1]
 
     enum ShelfKind: String, CaseIterable { case all = "All", singles = "Singles", slabs = "Slabs", sealed = "Sealed" }
@@ -279,6 +280,7 @@ struct CardStoreView: View {
 
     private var shelvesBox: some View {
         let stock = store.storeStock
+        let room = store.sealedRoom(stock.sealed)
         let all = store.showItems(stock)
         let value = all.reduce(0) { $0 + store.storePrice(item: $1) }
         let items = all.filter { item in
@@ -292,7 +294,10 @@ struct CardStoreView: View {
         return DetailBox(title: "Shelves") {
             HStack(spacing: 0) {
                 StatCell(label: "Cards", value: "\(store.storeCardsUsed) / \(store.storeCardSlots)")
-                StatCell(label: "Sealed", value: "\(stock.sealed.count) / \(store.storeSealedSlots)")
+                StatCell(label: "Sealed", value: "\(room.used) / \(store.storeSealedSlots)")
+                if store.packDisplaySlots > 0 {
+                    StatCell(label: "Pack display", value: "\(room.packsOnDisplay) / \(store.packDisplaySlots)")
+                }
                 StatCell(label: "At your price", value: money(value))
             }
             // The rep watches where hot distributor product goes: customers, or resellers.
@@ -390,6 +395,25 @@ struct CardStoreView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(slabs.isEmpty)
+            }
+            // A sealed product on the shelf breaks into loose packs (docs/38-loose-packs-and-straight-buys.md).
+            let products = store.data.sealed.filter { ids.contains($0.id) && !$0.isLoosePack }
+            if !products.isEmpty {
+                let breakable = products.filter { store.breakRefusal($0) == nil }
+                Button { confirmShelfBreak = true } label: {
+                    Text("Break \(breakable.count) into packs").lineLimit(1).minimumScaleFactor(0.8).frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(breakable.isEmpty)
+                .confirmationDialog(store.breakTitle(breakable), isPresented: $confirmShelfBreak, titleVisibility: .visible) {
+                    Button("Break into packs", role: .destructive) {
+                        for item in breakable { store.breakIntoPacks(item.id, save: false) }
+                        store.save()
+                        shelfPick = []
+                    }
+                } message: {
+                    Text(store.breakMessage(breakable, skipped: products.count - breakable.count))
+                }
             }
         }
         .padding(10)
@@ -663,7 +687,8 @@ struct StockShelvesSheet: View {
         let items = store.showItems(store.stockable)
         let stock = store.storeStock
         let cardRoom = max(0, store.storeCardSlots - store.storeCardsUsed)
-        let sealedRoom = max(0, store.storeSealedSlots - stock.sealed.count)
+        let room = store.sealedRoom(stock.sealed)
+        let sealedRoom = room.total
         let caseRoom = store.hasBackRoom ? max(0, store.backRoomCapacity - store.backRoomCases.count) : 0
         let pickedCards = items.filter { $0.kind == .card && picked.contains($0.id) }.count
         let pickedSealed = items.filter { $0.kind == .sealed && !$0.isCase && picked.contains($0.id) }.count
@@ -673,7 +698,7 @@ struct StockShelvesSheet: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s")\(store.hasBackRoom ? ", and \(caseRoom) case\(caseRoom == 1 ? "" : "s") in the back room" : ""). PC items, master set cards, listed items, and known fakes stay home.")
+                        Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s")\(room.display > 0 ? " (\(room.display) on the pack display, for loose packs only)" : "")\(store.hasBackRoom ? ", and \(caseRoom) case\(caseRoom == 1 ? "" : "s") in the back room" : ""). PC items, master set cards, listed items, and known fakes stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
                         if pickedCards > cardRoom || pickedSealed > sealedRoom || pickedCases > caseRoom {

@@ -250,7 +250,7 @@ extension GameStore {
         guard hasBackRoom else { return [] }
         // Read everything into locals first. `openCase` mutates `data.sealed`.
         let stock = storeStock.sealed
-        var room = storeSealedSlots - stock.count
+        var room = sealedRoom(stock)
         let quarter = max(1, storeSealedSlots / 4)
         let loose = backRoomUnits.filter { $0.onlineListing == nil && !$0.isKnownFake && !$0.pc }
         let cases = backRoomCases.filter { $0.onlineListing == nil && !$0.isKnownFake && !$0.pc }
@@ -259,33 +259,32 @@ extension GameStore {
         var lines: [String] = []
         let today = data.day
         // 1. Loose back-room units go back on the shelf first.
-        for product in Set(loose.compactMap(\.productID)).sorted() where room > 0 {
+        for product in Set(loose.compactMap(\.productID)).sorted() where room.total > 0 {
             let onShelf = stock.filter { $0.productID == product }.count
             guard onShelf <= Balance.backRoomRestockAt else { continue }
-            let ids = Set(loose.filter { $0.productID == product }.prefix(room).map(\.id))
+            let ids = Set(loose.filter { $0.productID == product && room.take($0) }.map(\.id))
             guard !ids.isEmpty else { continue }
             for i in data.sealed.indices where ids.contains(data.sealed[i].id) {
                 data.sealed[i].backRoom = nil
                 data.sealed[i].status = .inStore(since: today)
             }
             restocked.insert(product)
-            room -= ids.count
             let name = loose.first { $0.productID == product }?.name ?? "product"
             lines.append("The store put \(ids.count) more \(name) on the shelf from the back room.")
         }
         // 2. Open a case of a product that is low and has no loose units waiting.
-        for c in cases where room >= min(c.units, quarter) {
+        for c in cases where room.total >= min(c.units, quarter) {
             guard let product = c.product, !restocked.contains(product) else { continue }
             let onShelf = stock.filter { $0.productID == product }.count
             guard onShelf <= Balance.backRoomRestockAt else { continue }
             let ids = openCase(c.id, status: .inStore(since: today), save: false)
             guard !ids.isEmpty else { continue }
             // The units that fit stay on the shelf. The rest wait in the back room.
-            let onShelfNow = min(ids.count, room)
-            let waiting = Set(ids.dropFirst(onShelfNow))
+            let units = data.sealed.filter { ids.contains($0.id) }
+            let waiting = Set(units.filter { !room.take($0) }.map(\.id))
+            let onShelfNow = ids.count - waiting.count
             for i in data.sealed.indices where waiting.contains(data.sealed[i].id) { data.sealed[i].backRoom = true }
             restocked.insert(product)
-            room -= onShelfNow
             lines.append("The store opened the \(c.name) from the back room and put \(onShelfNow) on the shelf."
                          + (waiting.isEmpty ? "" : " \(waiting.count) stay in the back room."))
         }

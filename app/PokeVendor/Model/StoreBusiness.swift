@@ -313,7 +313,7 @@ extension GameStore {
     /// The share of the store's shelf room that holds stock.
     var stockFill: Double {
         let stock = storeStock
-        let room = max(1, storeCardSlots + storeSealedSlots)
+        let room = max(1, storeCardSlots + storeSealedSlots + packDisplaySlots)
         return min(1, Double(stock.cards.count + stock.sealed.count + consignedCount) / Double(room))
     }
 

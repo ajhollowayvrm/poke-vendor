@@ -735,7 +735,8 @@ final class GameStore {
     }
 
     /// A loose pack out of an opened product. A resealed product's packs are resealed too (docs/14).
-    private func loosePack(_ slug: String, from item: SealedItem) -> SealedItem {
+    /// `keepShelf`: a break (not a rip) keeps the packs on the store shelf or in the back room.
+    private func loosePack(_ slug: String, from item: SealedItem, keepShelf: Bool = false) -> SealedItem {
         var pack = SealedItem(setSlug: slug, name: "\(SetLibrary.set(slug).name) Booster Pack", packs: 1,
                               paid: item.paidPerPack, acquired: item.acquired,
                               source: "From an opened \(item.name)", productID: SetLibrary.loosePack(slug)?.id,
@@ -744,6 +745,9 @@ final class GameStore {
         pack.fakeKnown = item.fakeKnown
         switch item.status {
         case .soldToViewer, .openedAtShop: pack.status = item.status
+        case .inStore where keepShelf:
+            pack.status = item.status
+            pack.backRoom = item.backRoom
         default: break
         }
         return pack
@@ -754,15 +758,85 @@ final class GameStore {
     @discardableResult
     func openProduct(_ sourceID: UUID, ripID: UUID) -> [CardPrint] {
         guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return [] }
+        let item = data.sealed[i]
+        let extras = splitIntoPacks(sourceID, ripID: ripID, keepShelf: false).promos
+        log("Opened \(item.name).")
+        save()
+        return extras
+    }
+
+    /// Why a sealed product cannot break into loose packs, or nil when it can (docs/38-loose-packs-and-straight-buys.md).
+    func breakRefusal(_ item: SealedItem) -> String? {
+        if item.isCase { return "Open the case first." }
+        if item.packs <= 1 { return "This is already a loose pack." }
+        if item.onlineListing != nil { return "End the online listing first." }
+        if storeHolds.contains(where: { $0.itemID == item.id }) { return "A customer has it on hold." }
+        switch item.status {
+        case nil, .inStore: return nil
+        default: return "The product is not free."
+        }
+    }
+
+    /// The market of the loose packs in a sealed product, for the break dialog.
+    func loosePackValue(of item: SealedItem) -> Double {
+        packSlugs(of: item).reduce(0) { $0 + (SetLibrary.loosePack($1)?.market ?? SetLibrary.set($1).packCost ?? 0) }
+    }
+
+    /// The break dialog's title and message: what the packs are worth against the product, because a break can gain or
+    /// lose value.
+    func breakTitle(_ items: [SealedItem]) -> String {
+        let packs = items.reduce(0) { $0 + $1.packs }
+        return items.count == 1 ? "Break into \(packs) loose packs?" : "Break \(items.count) products into \(packs) loose packs?"
+    }
+
+    func breakMessage(_ items: [SealedItem], skipped: Int) -> String {
+        let product = items.reduce(0) { $0 + market(of: $1) }
+        let packs = items.reduce(0) { $0 + loosePackValue(of: $1) }
+        let count = items.reduce(0) { $0 + $1.packs }
+        let paid = items.reduce(0) { $0 + $1.paid }
+        var text = "Sealed: \(money(product)). Loose packs: \(money(packs)) (\(signedMoney(packs - product))). "
+            + "Cost per pack: \(money(paid / Double(max(count, 1)))). Promo cards go to Raw. You cannot seal the product again."
+        if skipped > 0 { text += " \(skipped) item\(skipped == 1 ? "" : "s") cannot break and stay as they are." }
+        return text
+    }
+
+    /// Breaks a sealed product into its loose packs, outside a rip. The packs stay where the product was: in hand, on
+    /// the store shelf, or in the back room. The promo cards go to Raw. Returns the promo cards.
+    @discardableResult
+    func breakIntoPacks(_ id: UUID, save saves: Bool = true) -> [CardPrint] {
+        guard let item = data.sealed.first(where: { $0.id == id }), breakRefusal(item) == nil else { return [] }
+        let onShelf = Self.isInStore(item.status) && !item.inBackRoom
+        // The room on the shelf without the product itself. Packs that do not fit go to the back room, or back in hand.
+        var room = sealedRoom(storeStock.sealed.filter { $0.id != id })
+        let split = splitIntoPacks(id, ripID: nil, keepShelf: true)
+        var moved = 0
+        if onShelf {
+            let packs = Set(split.packIDs)
+            for i in data.sealed.indices where packs.contains(data.sealed[i].id) && !room.take(data.sealed[i]) {
+                if hasBackRoom { data.sealed[i].backRoom = true } else { data.sealed[i].status = nil }
+                moved += 1
+            }
+        }
+        let rest = moved == 0 ? "" : hasBackRoom ? " \(moved) did not fit and went to the back room." : " \(moved) did not fit and came back to you."
+        log("Broke \(item.name) into \(item.packs) loose packs.\(rest)")
+        if saves { save() }
+        return split.promos
+    }
+
+    /// The shared work of an open and a break: the seal breaks, every pack goes back as a loose pack, and the
+    /// promo cards go to Raw. It does not save.
+    private func splitIntoPacks(_ sourceID: UUID, ripID: UUID?, keepShelf: Bool) -> (promos: [CardPrint], packIDs: [UUID]) {
+        guard let i = data.sealed.firstIndex(where: { $0.id == sourceID }) else { return ([], []) }
         let item = data.sealed.remove(at: i)
         noteAllocationOpened(item.id)
         let order = Self.shipOrderID(of: item)
         var newIDs: [UUID] = []
         for slug in packSlugs(of: item) {
-            let pack = loosePack(slug, from: item)
+            let pack = loosePack(slug, from: item, keepShelf: keepShelf)
             newIDs.append(pack.id)
             data.sealed.append(pack)
         }
+        let packIDs = newIDs
         var extras: [CardPrint] = []
         if let product = SetLibrary.product(item.productID) {
             let promos = product.pickOnePromo ? Array(product.promos.shuffled().prefix(1)) : product.promos
@@ -776,9 +850,7 @@ final class GameStore {
         }
         // What comes out of a P&L challenge product stays in the challenge (docs/32-short-form-video.md).
         inheritChallenge(from: sourceID, newIDs)
-        log("Opened \(item.name).")
-        save()
-        return extras
+        return (extras, packIDs)
     }
 
     /// Called when the rip tears a pack. The seal is broken, so the cards belong to the player at once.

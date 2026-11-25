@@ -613,6 +613,7 @@ struct ItemActions<Extra: View>: View {
     let done: () -> Void
     let extra: Extra
     @State private var confirmCrack = false
+    @State private var confirmBreak = false
 
     init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
          done: @escaping () -> Void = {}, @ViewBuilder extra: () -> Extra) {
@@ -663,6 +664,7 @@ struct ItemActions<Extra: View>: View {
                     .disabled(!ripFree)
                 }
             }
+            if kind == .sealed { breakTile }
             ActionTile(title: "Sell", icon: "dollarsign.circle", filled: kind != .sealed) { run { present(.sell(stackIDs)) } }
                 .disabled(!free || stackIDs.isEmpty)
             ActionTile(title: "Lot", icon: "square.stack.3d.up") { run { present(.lot(stackIDs)) } }
@@ -698,6 +700,27 @@ struct ItemActions<Extra: View>: View {
             }
             pcTile
             extra
+        }
+    }
+
+    /// "Break" opens sealed products into their loose packs, without a rip (docs/38-loose-packs-and-straight-buys.md).
+    /// The dialog shows what the packs are worth against the product, because a break can gain or lose value.
+    @ViewBuilder private var breakTile: some View {
+        let items = sealed(ids)
+        let breakable = items.filter { store.breakRefusal($0) == nil }
+        if !items.isEmpty, !items.allSatisfy({ $0.isLoosePack }) {
+            ActionTile(title: "Break", icon: "square.split.2x2") { confirmBreak = true }
+                .disabled(breakable.isEmpty)
+                .confirmationDialog(store.breakTitle(breakable), isPresented: $confirmBreak, titleVisibility: .visible) {
+                    Button("Break into packs", role: .destructive) {
+                        run {
+                            for item in breakable { store.breakIntoPacks(item.id, save: false) }
+                            store.save()
+                        }
+                    }
+                } message: {
+                    Text(store.breakMessage(breakable, skipped: items.count - breakable.count))
+                }
         }
     }
 
