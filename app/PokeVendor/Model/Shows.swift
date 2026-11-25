@@ -1371,7 +1371,9 @@ final class ShowSession {
     /// one product at the asking price, with no haggle (docs/38-loose-packs-and-straight-buys.md).
     private func makePackBuyer(_ type: VisitorType) -> Visitor? {
         guard venue.kind == .store, store.packDisplaySlots > 0, Double.random(in: 0..<1) < Self.packBuyChance(type) else { return nil }
-        let packs = table.filter { $0.kind == .sealed && $0.packs == 1 && !$0.isCase && !$0.pc }
+        let packs = table.filter {
+            $0.kind == .sealed && $0.packs == 1 && !$0.isCase && !$0.pc && !SetLibrary.promoProductIDs.contains($0.productID ?? "")
+        }
         guard let first = pick(packs) else { return nil }
         let price = asking(first)
         let top = first.market * Double.random(in: Balance.storeBuyerLimit)

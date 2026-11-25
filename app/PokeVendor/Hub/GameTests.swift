@@ -2447,6 +2447,28 @@ final class GameTests {
         check(packs.allSatisfy { GameStore.isInStore($0.status) && $0.isLoosePack }, "a pack from a box on the shelf left the shelf")
         check(store.data.raw.count - raw == box.promos.count || box.pickOnePromo, "the promo cards did not go to Raw")
         if let pack = packs.first { check(store.breakRefusal(pack) != nil, "a loose pack could break") }
+        // A one-pack blister with a promo breaks into its pack and its promo.
+        if let blister = SetLibrary.catalog.first(where: { $0.kind == "Blister" && $0.packs == 1 && !$0.promos.isEmpty && !$0.pickOnePromo }),
+           let one = store.addTestProduct(blister.id) {
+            let held = Set(store.data.sealed.map(\.id))
+            let cards = store.data.raw.count
+            check(!one.isLoosePack && store.breakRefusal(one) == nil, "a one-pack blister with a promo could not break")
+            store.breakIntoPacks(one.id)
+            let got = store.data.sealed.filter { !held.contains($0.id) }
+            check(got.count == 1 && got[0].isLoosePack && store.data.raw.count - cards == blister.promos.count,
+                  "the blister broke into \(got.count) packs and \(store.data.raw.count - cards) promos")
+            store.data.sealed.removeAll { got.map(\.id).contains($0.id) }
+        }
+        // Stolen plug stock stays seizable: the packs keep the gray order.
+        if let grayBox = store.addTestProduct(box.id), let j = store.data.sealed.firstIndex(where: { $0.id == grayBox.id }) {
+            let order = UUID()
+            store.data.sealed[j].grayOrder = order
+            let held = Set(store.data.sealed.map(\.id))
+            store.breakIntoPacks(grayBox.id)
+            let grayPacks = store.data.sealed.filter { !held.contains($0.id) }
+            check(!grayPacks.isEmpty && grayPacks.allSatisfy { $0.grayOrder == order }, "packs from stolen plug stock lost the gray order")
+            store.data.sealed.removeAll { grayPacks.map(\.id).contains($0.id) }
+        }
         // A PC product breaks into PC packs.
         if let pcBox = store.addTestProduct(box.id), let j = store.data.sealed.firstIndex(where: { $0.id == pcBox.id }) {
             store.data.sealed[j].pc = true

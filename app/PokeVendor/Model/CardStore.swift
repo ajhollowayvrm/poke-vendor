@@ -785,7 +785,7 @@ extension GameStore {
         }
         let sealed = stock.sealed.map { s in
             StoreShelfItem(id: s.id, name: s.name, market: realMarket(of: s), paid: s.paid, setSlug: s.setSlug, isCard: false,
-                      isPack: s.packs == 1, productKey: s.productID ?? s.name, fake: s.fake, known: s.isKnownFake,
+                      isPack: s.isLoosePack, productKey: s.productID ?? s.name, fake: s.fake, known: s.isKnownFake,
                       caseFresh: s.isCaseFresh)
         }
         return cards + sealed + consignedShelfItems()

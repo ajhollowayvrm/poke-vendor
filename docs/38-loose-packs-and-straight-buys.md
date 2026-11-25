@@ -21,7 +21,11 @@ rule that the game before the lease does not change ([22-own-store.md](22-own-st
 - The game refuses a break for: a closed case ("Open the case first"), a loose pack, an item with an online listing, an
   item on hold for a customer, and an item with any other status (listed, consigned, in transit, at auction, sold).
 - A P&L challenge product keeps its packs in the challenge. A PC product gives PC packs. Packs from a case-fresh unit
-  stay case-fresh.
+  stay case-fresh, and packs from a verified product stay verified.
+- Packs from stolen plug stock keep the gray order, so the police can still seize them (`Model/Plug.swift`). This also
+  applies to the loose packs that a rip leaves.
+- A one-pack blister with a promo card is not a loose pack. It breaks into its pack and its promo. A loose pack is a
+  sealed item with 1 pack, not a case, from a product with no promo (or out of a broken product).
 - The confirm dialog shows the sealed market, the loose-pack market, the difference, and the cost per pack.
 
 **A break is a real choice.** The value of the loose packs, divided by the product value, from the catalog on
@@ -42,7 +46,7 @@ sleeves, dice, and box are not packs.
 A store fixture: **Loose-pack display**, $1,200 ([22-own-store.md](22-own-store.md#fixtures)).
 
 - It holds **150 loose packs** off the sealed shelf. Loose packs fill the display first. Only packs above 150 use sealed
-  slots. A loose pack is a sealed item with 1 pack that is not a case.
+  slots. A one-pack blister with a promo uses a sealed slot.
 - **Clerk hours.** Each customer, a browser too, can stop at the display. The chance by type: kids 55%, players 50%,
   casual buyers 35%, collectors 20%, investors 0%. The clerk factor applies. This roll is in addition to the normal
   one-item purchase.

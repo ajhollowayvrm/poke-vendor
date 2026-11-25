@@ -684,16 +684,20 @@ struct StockShelvesSheet: View {
     @State private var picked: Set<UUID> = []
 
     var body: some View {
-        let items = store.showItems(store.stockable)
+        let stockable = store.stockable
+        let items = store.showItems(stockable)
         let stock = store.storeStock
         let cardRoom = max(0, store.storeCardSlots - store.storeCardsUsed)
         let room = store.sealedRoom(stock.sealed)
         let sealedRoom = room.total
+        // The same count as `stockStore`: a loose pack can use a display slot, other sealed items cannot.
+        var free = room
+        let sealedFits = stockable.sealed.filter { picked.contains($0.id) && !$0.isCase && free.take($0) }.count
         let caseRoom = store.hasBackRoom ? max(0, store.backRoomCapacity - store.backRoomCases.count) : 0
         let pickedCards = items.filter { $0.kind == .card && picked.contains($0.id) }.count
         let pickedSealed = items.filter { $0.kind == .sealed && !$0.isCase && picked.contains($0.id) }.count
         let pickedCases = items.filter { $0.isCase && picked.contains($0.id) }.count
-        let fits = min(pickedCards, cardRoom) + min(pickedSealed, sealedRoom) + min(pickedCases, caseRoom)
+        let fits = min(pickedCards, cardRoom) + sealedFits + min(pickedCases, caseRoom)
         NavigationStack {
             VStack(spacing: 0) {
                 ScrollView {
@@ -701,7 +705,7 @@ struct StockShelvesSheet: View {
                         Text("Room for \(cardRoom) card\(cardRoom == 1 ? "" : "s") and \(sealedRoom) sealed item\(sealedRoom == 1 ? "" : "s")\(room.display > 0 ? " (\(room.display) on the pack display, for loose packs only)" : "")\(store.hasBackRoom ? ", and \(caseRoom) case\(caseRoom == 1 ? "" : "s") in the back room" : ""). PC items, master set cards, listed items, and known fakes stay home.")
                             .font(.subheadline)
                             .foregroundStyle(Theme.muted)
-                        if pickedCards > cardRoom || pickedSealed > sealedRoom || pickedCases > caseRoom {
+                        if pickedCards > cardRoom || pickedSealed > sealedFits || pickedCases > caseRoom {
                             Text("Not everything fits. The dearest cards go in first.").font(.caption).foregroundStyle(Theme.orange)
                         }
                         HStack {

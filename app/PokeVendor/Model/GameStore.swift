@@ -743,6 +743,8 @@ final class GameStore {
                               brokenFrom: item.id, acquiredDay: data.day)
         pack.fake = item.fake
         pack.fakeKnown = item.fakeKnown
+        // Stolen plug stock stays seizable after its seal breaks (Model/Plug.swift).
+        pack.grayOrder = item.grayOrder
         switch item.status {
         case .soldToViewer, .openedAtShop: pack.status = item.status
         case .inStore where keepShelf:
@@ -754,6 +756,7 @@ final class GameStore {
         if keepShelf {
             pack.pc = item.pc
             pack.caseFresh = item.caseFresh
+            pack.verified = item.verified
         }
         return pack
     }
@@ -773,7 +776,7 @@ final class GameStore {
     /// Why a sealed product cannot break into loose packs, or nil when it can (docs/38-loose-packs-and-straight-buys.md).
     func breakRefusal(_ item: SealedItem) -> String? {
         if item.isCase { return "Open the case first." }
-        if item.packs <= 1 { return "This is already a loose pack." }
+        if item.packs < 1 || item.isLoosePack { return "This is already a loose pack." }
         if item.onlineListing != nil { return "End the online listing first." }
         if storeHolds.contains(where: { $0.itemID == item.id }) { return "A customer has it on hold." }
         switch item.status {

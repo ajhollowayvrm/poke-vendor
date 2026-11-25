@@ -99,6 +99,10 @@ enum SetLibrary {
         return catalog.first { $0.id == id }
     }
 
+    /// The products that hold promo cards. A one-pack blister with a promo is not a loose pack: it breaks into its pack
+    /// and its promo (docs/38-loose-packs-and-straight-buys.md).
+    static let promoProductIDs: Set<String> = Set(catalog.filter { !$0.promos.isEmpty }.map(\.id))
+
     /// The loose booster pack product of a set, when the catalog has one.
     static func loosePack(_ slug: String) -> Product? {
         catalog.first { $0.kind == "Booster pack" && $0.packs == 1 && $0.homeSlug == slug }
@@ -630,7 +634,10 @@ struct SealedItem: Codable, Identifiable, Hashable {
 
     var isCase: Bool { caseUnits != nil }
     /// One pack out of its product: it can go on the pack display (docs/38-loose-packs-and-straight-buys.md).
-    var isLoosePack: Bool { packs == 1 && !isCase }
+    /// A one-pack blister with a promo card is not one: it can still break.
+    var isLoosePack: Bool {
+        packs == 1 && !isCase && (brokenFrom != nil || !SetLibrary.promoProductIDs.contains(productID ?? ""))
+    }
     /// In the store but off the shelf: a case, or a loose unit that waits in the back room. No customer sees it.
     var inBackRoom: Bool {
         guard case .inStore = status else { return false }
