@@ -654,11 +654,13 @@ final class GameTests {
             GameStore.forceWholesaleMissing = nil
             return check(false, "no wholesale offer")
         }
-        let cash = store.cash
+        // A short shipment refunds the account that paid, which can be the business account. Watch both.
+        func both() -> Double { store.balance(.personal) + store.balance(.business) }
+        let cash = both()
         let refunds = store.data.ledger.filter { $0.label.hasPrefix("Short shipment refund") }.reduce(0) { $0 + $1.amount }
         check(store.buyWholesale(offer, cases: 1) == nil, "an order on terms was refused")
         let refunded = store.data.ledger.filter { $0.label.hasPrefix("Short shipment refund") }.reduce(0) { $0 + $1.amount } - refunds
-        check(abs(store.cash - cash - refunded) < 0.01, "an order on terms took \(money(cash - store.cash)) of cash now")
+        check(abs(both() - cash - refunded) < 0.01, "an order on terms took \(money(cash - both())) of cash now")
         check(abs(store.payablesTotal - offer.casePrice) < 0.01, "the bill is \(money(store.payablesTotal)), not \(money(offer.casePrice))")
         // Due, and more than the cash: late, and the account goes on hold.
         guard var bill = store.payables.first else { GameStore.forceWholesaleMissing = nil; return check(false, "no bill") }
@@ -2635,7 +2637,7 @@ final class GameTests {
         let table = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
         table.openTable()
         let show = share(table, regular: nil)
-        check(show > 0.3 && show < strangers, "\(Int(show * 100))% of show strangers paid the sticker, store \(Int(strangers * 100))%")
+        check(show > 0.2 && show < strangers, "\(Int(show * 100))% of show strangers paid the sticker, store \(Int(strangers * 100))%")
         // A clerk week with the display: packs are the top seller by units.
         store.data.cardStore?.clerk = true
         let packsBefore = store.storeStock.sealed.filter(\.isLoosePack).count

@@ -33,6 +33,9 @@ extension GameStore {
         data.activeEvent = nil
     }
 
+    /// The store counter, when it is the visit that waits. Its buttons open it again.
+    var waitingCounter: ShowSession? { activeEvent?.venue.kind == .store ? activeEvent : nil }
+
     /// Why a timed action, another visit, or End Day must wait, or nil.
     var eventBlock: String? {
         activeEvent.map { "You are at \($0.venue.name) · go back or leave first" }

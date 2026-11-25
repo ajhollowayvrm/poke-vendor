@@ -26,6 +26,7 @@ struct CardStoreView: View {
     @State private var shelfPick: Set<UUID> = []
     @State private var shelfKind: ShelfKind = .all
     @State private var confirmShelfBreak = false
+    @State private var confirmCloseToday = false
     @State private var seed = Balance.accountSeeds[1]
 
     enum ShelfKind: String, CaseIterable { case all = "All", singles = "Singles", slabs = "Slabs", sealed = "Sealed" }
@@ -247,10 +248,11 @@ struct CardStoreView: View {
         DetailBox(title: "Today") {
             let block = store.counterBlock
             Button {
-                if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
+                if let waiting = store.waitingCounter { nav.encounter = EncounterSession(session: waiting) }
+                else if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
             } label: {
                 ChevronRow(icon: "person.crop.square", title: "Work the counter",
-                           detail: block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(Balance.storeClose)) · buy, sell, and trade with walk-ins",
+                           detail: store.waitingCounter.map { "Your counter waits · \($0.clock)" } ?? block ?? "From \(GameStore.clock(store.counterStart)) to \(GameStore.clock(Balance.storeClose)) · buy, sell, and trade with walk-ins",
                            accent: block == nil)
             }
             .buttonStyle(.plain)
@@ -547,7 +549,10 @@ struct CardStoreView: View {
             HStack(spacing: 6) {
                 ForEach(0..<7, id: \.self) { d in
                     let on = s.openDays.contains(d)
-                    Button { store.toggleOpenDay(d) } label: {
+                    Button {
+                        // Closing today while the shift waits is a lock-up, so it asks first (Model/StoreShift.swift).
+                        if on, d == store.weekday, store.storeShiftPending { confirmCloseToday = true } else { store.toggleOpenDay(d) }
+                    } label: {
                         Text(String(GameStore.weekdays[d].prefix(2)))
                             .font(.caption.weight(.semibold))
                             .frame(maxWidth: .infinity, minHeight: 32)
@@ -560,6 +565,11 @@ struct CardStoreView: View {
                 }
             }
             Text("Saturday brings the most customers, then Sunday and Friday.").font(.caption).foregroundStyle(Theme.muted)
+        }
+        .confirmationDialog("Close today and lock up?", isPresented: $confirmCloseToday, titleVisibility: .visible) {
+            Button("Lock up", role: .destructive) { store.toggleOpenDay(store.weekday) }
+        } message: {
+            Text(store.lockUpWarning)
         }
     }
 

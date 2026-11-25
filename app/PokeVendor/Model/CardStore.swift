@@ -542,7 +542,9 @@ extension GameStore {
     /// Why the player cannot work the counter now, or nil when they can.
     var counterBlock: String? {
         guard let s = data.cardStore else { return "You have no store" }
-        if let block = eventBlock, activeEvent?.venue.kind != .store { return block }
+        // The counter that waits opens again from its buttons (Model/EventResume.swift).
+        if waitingCounter != nil { return nil }
+        if let block = eventBlock { return block }
         if !storeSells(on: data.day) { return "Opens on day \(s.openDay + 1)" }
         if !s.openDays.contains(weekday) { return "Closed today" }
         if s.counterDay == data.day { return "Done for today" }
@@ -555,7 +557,7 @@ extension GameStore {
 
     /// The player works the counter until closing: walk-in buyers, traders, and people who sell their collections.
     func startCounter() -> ShowSession? {
-        guard counterBlock == nil, var s = data.cardStore else { return nil }
+        guard waitingCounter == nil, counterBlock == nil, var s = data.cardStore else { return nil }
         data.hour = counterStart
         s.counterDay = data.day
         s.counterHours = 0

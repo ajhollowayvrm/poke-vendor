@@ -480,18 +480,22 @@ struct HubView: View {
             }
             if let show = store.showToday {
                 Button {
-                    if store.canGoToShowToday, let started = store.startShowDay() {
+                    // The show the player stepped out of opens again (Model/EventResume.swift).
+                    if let event = store.activeEvent, event.show?.id == show.id {
+                        nav.encounter = EncounterSession(session: event)
+                    } else if store.canGoToShowToday, let started = store.startShowDay() {
                         nav.showDay = ShowDaySession(show: started)
                     } else {
                         nav.path.append(.show(show.id))
                     }
                 } label: {
+                    let waiting = store.activeEvent?.show?.id == show.id
                     ChevronRow(icon: "tablecells", title: "Card show today: \(show.name)",
-                            detail: store.canGoToShowToday
+                            detail: waiting ? "Your show waits · \(store.activeEvent?.clock ?? "")" : store.canGoToShowToday
                                 ? (show.booked ? "Your table is booked · takes the rest of the day"
                                                : "Walk in for \(money(show.size.entryFee)) · takes the rest of the day")
                                 : store.storeShiftPending ? "You run the store today · lock up to go" : "Done for today",
-                            accent: store.canGoToShowToday)
+                            accent: waiting || store.canGoToShowToday)
                 }
                 .buttonStyle(.plain)
             }
@@ -530,10 +534,12 @@ struct HubView: View {
             if let shop = store.cardStore, store.storeOpenToday {
                 let block = store.counterBlock
                 Button {
-                    if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
+                    if let waiting = store.waitingCounter { nav.encounter = EncounterSession(session: waiting) }
+                    else if let session = store.startCounter() { nav.encounter = EncounterSession(session: session) }
                 } label: {
                     ChevronRow(icon: "storefront", title: store.storeShiftPending ? "Your shift at \(shop.name)" : "Work the counter at \(shop.name)",
-                            detail: block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(Balance.storeClose)) · walk-ins buy, trade, and sell",
+                            detail: store.waitingCounter.map { "Your counter waits · \($0.clock)" }
+                                ?? block ?? "\(GameStore.clock(store.counterStart)) – \(GameStore.clock(Balance.storeClose)) · walk-ins buy, trade, and sell",
                             accent: block == nil)
                 }
                 .buttonStyle(.plain)

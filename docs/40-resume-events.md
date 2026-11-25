@@ -21,6 +21,8 @@ was not. A quit lost the visit, the clock stayed at the start, and the hub said 
 - **A quit resumes.** At launch, the game rebuilds the session from the save, and the hub opens it once.
 - **Step out.** The circled chevron at the top left of the visit screen goes back to the hub. The visit waits with its
   clock stopped. The hub shows **Back to <visit>** at the top of "Plans for today". There is no step out at the summary.
+- The visit's own buttons open it again too: the counter rows on the hub and the store screen say "Your counter
+  waits", and the hub's show row says "Your show waits". The hub shows no free hours while a visit waits.
 - **While a visit waits:** End Day, every timed action, and every other visit are greyed out. The reason is "You are at
   <visit> · go back or leave first". Free actions (Inventory, buying online, a rip) are allowed.
 - **Back at the visit:** an item that left Inventory or changed status in the meantime leaves the table and the load.

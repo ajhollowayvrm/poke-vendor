@@ -32,7 +32,7 @@ The hub shows **Lock up today** under the shift row. The confirm dialog shows th
 - A 40% chance of a 1- or 2-star review.
 - 2 of today's regulars lose 1 point of standing.
 - Each lock-up in the last 28 days makes the next one cost 50% more: loyalty, and the review chance (at most 90%).
-- Closing today's weekday in the store schedule while the shift waits is a lock-up.
+- Closing today's weekday in the store schedule while the shift waits is a lock-up. The store screen asks first.
 - End Day from any other path with the shift open locks up (the hub does not allow it).
 
 **Leaving the counter early.** With no staff, an owner who leaves the counter an hour or more before 7 PM leaves the
