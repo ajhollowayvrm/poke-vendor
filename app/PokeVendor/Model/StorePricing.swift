@@ -60,6 +60,7 @@ extension GameStore {
         guard var s = data.cardStore else { return }
         s.packFactor = factor
         data.cardStore = s
+        storeShelfGouge()
         save()
     }
 

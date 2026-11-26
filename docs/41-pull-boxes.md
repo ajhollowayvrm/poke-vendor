@@ -16,8 +16,8 @@ reason to buy the distributor allocation, and it rewards a store that keeps its 
 
 ## Pickup
 
-- At End Day on the pickup day, the store needs one unit of that product: in hand or on the shelf (not in the back
-  room), not a case, not a known fake, not in the PC, not listed online, and not on hold. The oldest unit goes first.
+- At End Day on the pickup day, the store needs one unit of that product: in hand, on the shelf, or loose in the back room,
+  not a closed case, not a known fake, not in the PC, not listed online, and not on hold. The oldest unit goes first.
 - The regular pays the sealed shelf price less the **pull discount**: 0%, 5% (the default), 10%, or 15%, on the store
   screen. The money goes to the business account, with sales tax and a receipt. The deal counts with the contact.
 - The next pickup is one cycle later.

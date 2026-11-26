@@ -109,9 +109,12 @@ extension GameStore {
         return nil
     }
 
-    /// True when a new closed day around `day` goes past the allowance, so it costs as a lock-up.
+    /// True when a new closed day on `day` makes more than the allowance in some 28-day window, so it costs as a lock-up.
     func closureCostly(_ day: Int) -> Bool {
-        plannedClosures.filter { abs($0.day - day) < Balance.closureWindow }.count >= Balance.closureAllowance
+        let days = plannedClosures.map(\.day)
+        return ((day - Balance.closureWindow + 1)...day).contains { start in
+            days.filter { $0 >= start && $0 < start + Balance.closureWindow }.count >= Balance.closureAllowance
+        }
     }
 
     func planClosure(_ day: Int) {

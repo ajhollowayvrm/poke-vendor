@@ -78,13 +78,13 @@ extension GameStore {
         save()
     }
 
-    /// A unit for a pickup: the same product, free in hand or on the shelf, not a known fake, not in the PC, not listed,
-    /// and not on hold. The oldest first.
+    /// A unit for a pickup: the same product, free in hand, on the shelf, or loose in the back room, not a known fake,
+    /// not in the PC, not listed, and not on hold. A closed case does not count. The oldest first.
     private func pullUnit(_ productID: String) -> SealedItem? {
         let held = heldItemIDs
         return data.sealed.filter { s in
             s.productID == productID && !s.isCase && !s.isKnownFake && !s.pc && s.onlineListing == nil && !held.contains(s.id)
-                && (s.status == nil || (Self.isInStore(s.status) && !s.inBackRoom))
+                && (s.status == nil || Self.isInStore(s.status))
         }.min { $0.acquiredDay < $1.acquiredDay }
     }
 

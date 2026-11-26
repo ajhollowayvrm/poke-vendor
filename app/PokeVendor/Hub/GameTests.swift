@@ -2556,6 +2556,11 @@ final class GameTests {
         nextFree()
         store.planClosure(day0)
         check(store.plannedClosure(on: day0)?.costly == true, "a closed day past the allowance did not cost as a lock-up")
+        // Closed days spread out stay cheap: the allowance is for any 4 weeks, not 8.
+        store.updateBusiness { $0.plannedClosures = [] }
+        let far = store.day + 10
+        for k in 0..<Balance.closureAllowance { store.updateBusiness { $0.plannedClosures = ($0.plannedClosures ?? []) + [PlannedClosure(day: far + k * 8)] } }
+        check(!store.closureCostly(far + 40), "a closed day 2 weeks after 4 spread-out ones cost as a lock-up")
     }
 
     // MARK: - Resume a visit (docs/40-resume-events.md)
@@ -2604,6 +2609,7 @@ final class GameTests {
         if let stream = store.startStream(hours: 2, itemIDs: [], scheduled: false) {
             for _ in 0..<12 { stream.tick() }
             check(store.endDayBlock != nil, "End Day did not wait for the live stream")
+            check(store.slot(for: 1) == nil && store.hoursLeft == 0, "a timed action did not wait for the live stream")
             store.saveNow()
             if let json = try? JSONEncoder().encode(store.data), let data = try? JSONDecoder().decode(GameData.self, from: json),
                let snap = data.activeStream {

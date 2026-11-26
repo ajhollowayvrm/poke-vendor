@@ -411,7 +411,8 @@ final class GameStore {
     /// The free hours left today, outside the work shift.
     var hoursLeft: Double {
         // The player is at a visit, on screen or stepped out (Model/EventResume.swift).
-        if activeEvent != nil { return 0 }
+        // A store run spent its hours at the start, and its vendor wait uses this slot, so only a visit or a stream counts.
+        if activeEvent != nil || activeStream != nil { return 0 }
         var left = max(0, Balance.dayEnd - data.hour)
         if worksToday {
             let overlap = max(0, min(Balance.workEnd, Balance.dayEnd) - max(Balance.workStart, data.hour))
@@ -428,7 +429,7 @@ final class GameStore {
     /// A block can run past 11 PM, up to 2 AM. Those hours come out of sleep (docs/16, Late nights).
     func slot(for hours: Double) -> Double? {
         // The player is at a visit, on screen or stepped out (Model/EventResume.swift).
-        if activeEvent != nil { return nil }
+        if activeEvent != nil || activeStream != nil { return nil }
         var start = data.hour
         if worksToday && start < Balance.workEnd && start + hours > Balance.workStart {
             start = max(start, Balance.workEnd)

@@ -151,7 +151,7 @@ extension GameStore {
         let index = data.day - show.startDay
         // A show takes the day, so the owner's shift at the store must be locked up first (Model/StoreShift.swift).
         return !show.attended.contains(index) && data.hour < Balance.showClose - 1
-            && (show.booked || canAfford(show.size.entryFee)) && !storeShiftPending && activeEvent == nil
+            && (show.booked || canAfford(show.size.entryFee)) && !storeShiftPending && eventBlock == nil
     }
 
     /// Starts today's show day. It takes the rest of the day. A walk-in pays the entry fee.

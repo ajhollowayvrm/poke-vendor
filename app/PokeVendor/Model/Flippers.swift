@@ -88,7 +88,8 @@ extension GameStore {
     /// The own store shelf: checks the sealed items at the posted shelf price. It runs when the player sets the sealed
     /// price, and each night while the price stays up.
     func storeShelfGouge() {
-        guard let s = data.cardStore, s.sealedPrice >= Balance.gougeRatio - 0.05, data.retail.gougeDay != data.day else { return }
+        // The pack price counts too (docs/38-loose-packs-and-straight-buys.md).
+        guard let s = data.cardStore, max(s.sealedPrice, s.packPrice) >= Balance.gougeRatio - 0.05, data.retail.gougeDay != data.day else { return }
         let posts = storeShelf().filter { !$0.isCard && !$0.consigned }.map {
             SealedSale(productID: $0.productKey, name: $0.name, price: shelfPrice($0), market: $0.market)
         }
