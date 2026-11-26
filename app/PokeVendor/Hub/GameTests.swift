@@ -2480,6 +2480,16 @@ final class GameTests {
 
         // A personal card in Inventory stays out of the store side.
         check(!store.onStoreSide(store.card(ids[2])?.status, fromStore: store.card(ids[2])?.fromStore), "a personal card shows on the store side")
+
+        // A full store takes nothing, and the plan says so, so the "To store" tile can explain it.
+        check(store.stockPlan([ids[2]]).cards == [ids[2]], "the plan left out a card that fits")
+        let room = store.storeCardSlots - store.storeCardsUsed
+        for _ in 0..<max(0, room) { store.addTestCard(prints[0]) }
+        store.stockStore(Set(store.data.raw.map(\.id)).subtracting([ids[2]]))
+        let full = store.stockPlan([ids[2]])
+        check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
+              "a full store did not report zero room")
+        check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
     }
 
     // MARK: - Pull boxes (docs/41-pull-boxes.md)

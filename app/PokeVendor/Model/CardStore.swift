@@ -433,18 +433,6 @@ extension GameStore {
         return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc && (room || !$0.isCase) })
     }
 
-    /// True when one or more of these items can go in the store. It uses the same rule as `stockable`, but it looks
-    /// only at the given items, so a view can call it on each change.
-    func canStock(_ ids: Set<UUID>) -> Bool {
-        guard data.cardStore != nil, !ids.isEmpty else { return false }
-        let room = hasBackRoom
-        let cardOK: (OwnedCard) -> Bool = {
-            ids.contains($0.id) && $0.status == nil && !$0.inMasterSet && !$0.inShowcase && !$0.isKnownFake && !$0.pc
-        }
-        return data.raw.contains(where: cardOK) || data.slabs.contains(where: cardOK)
-            || data.sealed.contains { ids.contains($0.id) && $0.status == nil && !$0.isKnownFake && !$0.pc && (room || !$0.isCase) }
-    }
-
     var storeCardSlots: Int {
         Balance.storeCardSlots + (data.cardStore?.has(.extraCase) == true ? Balance.extraCaseSlots : 0) + (data.cardStore?.spaceSlots ?? 0)
     }
@@ -466,21 +454,29 @@ extension GameStore {
                           packsOnDisplay: min(packs, display))
     }
 
-    /// Puts items in the store, up to the room in the cases and on the shelves. Returns how many went in.
-    @discardableResult
-    func stockStore(_ ids: Set<UUID>) -> Int {
-        guard data.cardStore != nil else { return 0 }
+    /// The items of `ids` that fit in the store now: the dearest cards first, up to the room in the cases, on the
+    /// shelves, and in the back room. `wanted` is how many of `ids` could go in if the store had the room.
+    func stockPlan(_ ids: Set<UUID>) -> (cards: Set<UUID>, sealed: Set<UUID>, wanted: Int) {
+        guard data.cardStore != nil, !ids.isEmpty else { return ([], [], 0) }
         let stock = storeStock
         let cardRoom = storeCardSlots - storeCardsUsed
         var room = sealedRoom(stock.sealed)
         let caseRoom = backRoomCapacity - backRoomCases.count
         let pick = stockable
-        let cardIDs = Set(pick.cards.filter { ids.contains($0.id) }.sorted { $0.market > $1.market }.map(\.id)
-            .prefix(max(0, cardRoom)))
+        let cards = pick.cards.filter { ids.contains($0.id) }
+        let sealed = pick.sealed.filter { ids.contains($0.id) }
+        let cardIDs = Set(cards.sorted { $0.market > $1.market }.map(\.id).prefix(max(0, cardRoom)))
         // Units use the shelf room. Cases use the back room.
-        let unitIDs = pick.sealed.filter { ids.contains($0.id) && !$0.isCase && room.take($0) }.map(\.id)
-        let caseIDs = pick.sealed.filter { ids.contains($0.id) && $0.isCase }.map(\.id).prefix(max(0, caseRoom))
-        let sealedIDs = Set(unitIDs + caseIDs)
+        let unitIDs = sealed.filter { !$0.isCase && room.take($0) }.map(\.id)
+        let caseIDs = sealed.filter(\.isCase).map(\.id).prefix(max(0, caseRoom))
+        return (cardIDs, Set(unitIDs + caseIDs), cards.count + sealed.count)
+    }
+
+    /// Puts items in the store, up to the room in the cases and on the shelves. Returns how many went in.
+    @discardableResult
+    func stockStore(_ ids: Set<UUID>) -> Int {
+        let plan = stockPlan(ids)
+        let cardIDs = plan.cards, sealedIDs = plan.sealed
         let placed = ItemStatus.inStore(since: data.day)
         for i in data.raw.indices where cardIDs.contains(data.raw[i].id) { data.raw[i].status = placed }
         for i in data.slabs.indices where cardIDs.contains(data.slabs[i].id) { data.slabs[i].status = placed }

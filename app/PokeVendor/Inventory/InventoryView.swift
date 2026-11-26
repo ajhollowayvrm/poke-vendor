@@ -420,9 +420,9 @@ struct InventoryView: View {
         }
     }
 
-    /// The raw cards that a quick listing can take: in the regular tabs, not listed or at a grader, and not a known fake.
+    /// The raw cards that a quick listing can take: on the side that shows, not listed or at a grader, and not a known fake.
     private var listableRaw: [OwnedCard] {
-        sortedCards(store.data.raw).filter { !$0.setAside && $0.status == nil && !$0.isKnownFake }
+        sortedCards(rawInHand).filter { $0.status == nil && $0.fromStore != true && !$0.isKnownFake }
     }
 
     /// Select every listable raw card, and list the selection on TCGplayer at the lowest listing for its condition.
@@ -656,6 +656,29 @@ struct ItemActions<Extra: View>: View {
     }
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            tiles
+            // "To store" places only what fits. Say so when the cases or shelves are short of room.
+            if let note = storeRoomNote {
+                Text(note).font(.caption).foregroundStyle(Theme.orange)
+            }
+        }
+    }
+
+    /// The selected items that fit in the store, and how many could go in. Nil when "To store" does not show.
+    private var storePlan: (fits: Int, wanted: Int)? {
+        guard store.cardStore != nil, !ids.isEmpty, !ids.allSatisfy({ isInStore($0) }) else { return nil }
+        let plan = store.stockPlan(ids)
+        return (plan.cards.count + plan.sealed.count, plan.wanted)
+    }
+
+    private var storeRoomNote: String? {
+        guard let plan = storePlan, plan.wanted > plan.fits else { return nil }
+        if plan.fits == 0 { return "The store has no room. Take items out on the Store side first." }
+        return "The store has room for \(plan.fits) of \(plan.wanted). The dearest cards go in first."
+    }
+
+    @ViewBuilder private var tiles: some View {
         let all = ids.union(stackIDs)
         let aside = all.contains { isSetAside($0) }
         let free = !ids.isEmpty && !all.contains { store.hasStatus($0) } && !aside
@@ -725,7 +748,7 @@ struct ItemActions<Extra: View>: View {
                     ActionTile(title: "To personal", icon: "arrow.uturn.backward") { run { store.moveBetweenInventories(ids) } }
                 } else {
                     ActionTile(title: "To store", icon: "storefront") { run { store.moveBetweenInventories(ids) } }
-                        .disabled(aside || !store.canStock(ids))
+                        .disabled(aside || (storePlan?.fits ?? 0) == 0)
                 }
             }
             if kind != .sealed { masterSetTile }
