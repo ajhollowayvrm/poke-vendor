@@ -11,6 +11,8 @@ struct ItemLine: View {
                 HStack(spacing: 4) {
                     Text(item.name).font(.subheadline).lineLimit(1)
                     if item.pc { Tag(text: item.showcase ? "SHOWCASE" : "PC", color: Theme.green) }
+                    // Store stock away from the store: it goes back unsold, and its sale pays the business (docs/42).
+                    if item.fromStore, store.counterSession == nil { Tag(text: "STORE", color: Theme.cyan) }
                 }
                 if let c = item.condition {
                     RawLooks(condition: c)

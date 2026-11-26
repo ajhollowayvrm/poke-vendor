@@ -47,6 +47,7 @@ final class GameTests {
         timed("resume", resumeEvents)
         timed("storeHours", storeHours)
         timed("pulls", pullBoxes)
+        timed("inventories", twoInventories)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -73,7 +74,7 @@ final class GameTests {
         // The console is a pipe, so stdout is buffered. Push the report out now.
         fflush(stdout)
         // The console can drop lines, so the report also goes to a file that the run script reads.
-        let report = (fails.map { "TEST FAIL: " + $0 } + [fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms"])
+        let report = (fails.map { "TEST FAIL: " + $0 } + ["TEST TIMES (ms/checks): " + times.joined(separator: ", "), fails.isEmpty ? "TEST OK: \(checks) checks in \(ms) ms" : "TEST FAILED: \(fails.count) of \(checks) checks in \(ms) ms"])
             .joined(separator: "\n")
         let file = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("test-result.txt")
         try? report.write(to: file, atomically: true, encoding: .utf8)
@@ -2436,6 +2437,51 @@ final class GameTests {
 
     /// The counter walk-ins at the player's store: each answer moves the money and the items it should
     /// (Model/CounterEvents.swift).
+    // MARK: - Two inventories (docs/42-two-inventories.md)
+
+    /// The move action swaps an item between Personal and the Store. Store stock packed for a meet leaves the shelf, pays
+    /// the business account when it sells, and goes back to the shelf unsold.
+    private func twoInventories() {
+        fresh()
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 10 && ($0.market ?? 0) < 80 }
+        guard prints.count >= 3 else { return check(false, "no cards for the inventory test") }
+        for p in prints.prefix(3) { store.addTestCard(p) }
+        let ids = store.data.raw.suffix(3).map(\.id)
+
+        // The move: to the store, and back.
+        store.moveBetweenInventories([ids[0]])
+        check(GameStore.isInStore(store.card(ids[0])?.status), "To store did not put the card in the store")
+        store.moveBetweenInventories([ids[0]])
+        check(store.card(ids[0])?.status == nil, "To personal did not bring the card back")
+
+        // Two store cards go to a meet. One sells, one comes back.
+        store.stockStore([ids[0], ids[1]])
+        let venue = Venue(kind: .meet, name: "Test meet", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        let items = session.loadItems
+        check(items.contains { $0.id == ids[0] && $0.fromStore }, "store stock is not in the packing list")
+        check(!session.bring.contains(ids[0]), "store stock was in the default load")
+        for id in [ids[0], ids[1]] { if let item = items.first(where: { $0.id == id }), !session.bring.contains(id) { session.toggleBring(item, items: items) } }
+        session.openTable()
+        check(store.card(ids[0])?.fromStore == true && !store.storeStock.cards.contains { $0.id == ids[0] },
+              "packed store stock did not leave the shelf")
+        if let sold = session.table.first(where: { $0.id == ids[0] }) {
+            let biz = store.businessCash, cash = store.balance(.personal)
+            store.sellAtShow(sold, price: 50, at: venue.name)
+            check(store.businessCash - biz >= 50 - 0.01 && abs(store.balance(.personal) - cash) < 0.01,
+                  "a store item sold at a meet did not pay the business account")
+        } else { check(false, "the store card is not on the table") }
+        session.packUp()
+        store.finishEncounter(session)
+        check(GameStore.isInStore(store.card(ids[1])?.status) && store.card(ids[1])?.fromStore == nil, "unsold store stock did not go back to the shelf")
+
+        // A personal card in Inventory stays out of the store side.
+        check(!store.onStoreSide(store.card(ids[2])?.status, fromStore: store.card(ids[2])?.fromStore), "a personal card shows on the store side")
+    }
+
     // MARK: - Pull boxes (docs/41-pull-boxes.md)
 
     /// A regular's pull picks up with a unit in stock, at the discount. With none, it misses, and two misses end it.

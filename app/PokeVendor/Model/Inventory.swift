@@ -492,11 +492,13 @@ struct OwnedCard: Codable, Identifiable, Hashable {
     var masterSet: Bool?
     /// In the showcase (docs/08-ui-direction.md, The showcase). Optional, so old saves still load.
     var showcase: Bool?
+    /// Store stock that is out at a show or a meet. It goes back to the store when the visit ends (Model/StoreLoans.swift).
+    var fromStore: Bool?
 
     /// The save key of `pc` stays "keep", so old saves still load.
     enum CodingKeys: String, CodingKey {
         case id, print, setSlug, acquired, paid, ripID, pc = "keep", condition, grade, status, acquiredDay, fake, fakeKnown
-        case verified, onlineListing, shelfFactor, masterSet, showcase
+        case verified, onlineListing, shelfFactor, masterSet, showcase, fromStore
     }
 
     var isKnownFake: Bool { fake != nil && fakeKnown == true }
@@ -626,10 +628,13 @@ struct SealedItem: Codable, Identifiable, Hashable {
     /// A loose unit in the store's back room, off the shelf (Model/Cases.swift). Only meaningful with status `.inStore`.
     /// Nil: on the shelf. Cleared when the unit goes to the shelf or leaves the store.
     var backRoom: Bool?
+    /// Store stock that is out at a show or a meet (Model/StoreLoans.swift).
+    var fromStore: Bool?
 
     enum CodingKeys: String, CodingKey {
         case id, setSlug, name, packs, paid, acquired, source, pc = "keep", productID, status, brokenFrom, acquiredDay
         case fake, fakeKnown, verified, onlineListing, contents, caseUnits, caseFresh, caseChecked, checkedWithKit, grayOrder, backRoom
+        case fromStore
     }
 
     var isCase: Bool { caseUnits != nil }

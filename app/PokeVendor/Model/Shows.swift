@@ -225,9 +225,18 @@ extension GameStore {
         case .sealed:
             data.sealed.removeAll { $0.id == item.id }
         }
-        addLedger(price, .sale, "\(item.name) · \(venue)")
-        collectSalesTax(on: price, at: venue)
-        log("Sold \(item.name) at \(venue) for \(money(price)).", cash: price)
+        // Store stock pays the business account, wherever it sells (Model/StoreLoans.swift).
+        if item.fromStore {
+            asBusiness {
+                bizLedger(price, .sale, "\(item.name) · \(venue)")
+                collectSalesTax(on: price, at: venue)
+            }
+            log("Sold \(item.name) at \(venue) for \(money(price)), from the store's stock. The money went to the business account.")
+        } else {
+            addLedger(price, .sale, "\(item.name) · \(venue)")
+            collectSalesTax(on: price, at: venue)
+            log("Sold \(item.name) at \(venue) for \(money(price)).", cash: price)
+        }
         save()
     }
 
@@ -374,6 +383,8 @@ extension GameStore {
     /// takes its hours from the moment the player arrived.
     func finishEncounter(_ session: ShowSession) {
         endActiveEvent()
+        // Unsold store stock goes back to the shelf (Model/StoreLoans.swift).
+        if session.venue.kind != .store { returnStoreLoans() }
         let venue = session.venue
         // The visit can still be a vlog until the end of the day (docs/32-short-form-video.md).
         if session.canVlog, !session.vlogPosted { recordVlog(session.vlogInfo) }
@@ -522,16 +533,20 @@ extension GameStore {
     /// Items as a table shows them, dearest first. The price is the real one: buyers do not know a fake until they look.
     func showItems(_ stock: (cards: [OwnedCard], sealed: [SealedItem])) -> [ShowItem] {
         let cards = stock.cards.map { card in
-            ShowItem(id: card.id, kind: .card, name: card.print.name,
+            var one = ShowItem(id: card.id, kind: .card, name: card.print.name,
                      detail: card.grade?.label ?? "\(card.print.rarity) · \(card.print.num)", market: card.realMarket,
                      image: card.print.image, condition: card.grade == nil ? card.condition : nil, graded: card.grade != nil,
                      setSlug: card.setSlug, fake: card.fake, fakeKnown: card.isKnownFake, grade: card.grade, subgrades: card.slabSubgrades,
                      pc: card.pc)
+            one.fromStore = card.fromStore == true || Self.isInStore(card.status)
+            return one
         }
         let sealed = stock.sealed.map { item in
-            ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
+            var one = ShowItem(id: item.id, kind: .sealed, name: item.name, detail: "Sealed", market: realMarket(of: item),
                      image: SetLibrary.product(item.productID)?.image, condition: nil, graded: false, setSlug: item.setSlug,
                      fake: item.fake, fakeKnown: item.isKnownFake, packs: item.packs, productID: item.productID, isCase: item.isCase, pc: item.pc)
+            one.fromStore = item.fromStore == true || Self.isInStore(item.status)
+            return one
         }
         return (cards + sealed).sorted { $0.market > $1.market }
     }
@@ -571,6 +586,8 @@ struct ShowItem: Identifiable, Hashable, Codable {
     var dealMarket: Double { pc ? market * Balance.pcPremium : market }
 
     var isVintage: Bool { Balance.vintageSets.contains(setSlug) || Balance.olderSets.contains(setSlug) }
+    /// Store stock at a show or a meet: it goes back to the store unsold, and its sale pays the business (Model/StoreLoans.swift).
+    var fromStore = false
     /// One plain pack: it sells at the pack price (docs/38-loose-packs-and-straight-buys.md).
     var isLoosePack: Bool { kind == .sealed && packs == 1 && !isCase && !SetLibrary.promoProductIDs.contains(productID ?? "") }
 }
@@ -919,8 +936,8 @@ final class ShowSession {
         rival = show?.rivalID.flatMap { store.rival($0) }
         rivalItems = rival == nil ? [] : Set(stock.sealed.filter { SetLibrary.product($0.productID)?.isInPrint == true }.map(\.id))
         heatAtOpen = store.hottestCallout
-        // PC items come only when the player packs them.
-        bring = Set(stock.cards.filter { !$0.pc }.map(\.id) + stock.sealed.filter { !$0.pc }.map(\.id))
+        // PC items come only when the player packs them. Store stock too: the player packs it (Model/StoreLoans.swift).
+        bring = Set(stock.cards.filter { !$0.pc && $0.fromStore != true }.map(\.id) + stock.sealed.filter { !$0.pc && $0.fromStore != true }.map(\.id))
         self.vendors = vendors
         self.regulars = regulars
         for i in self.vendors.indices {
@@ -1027,7 +1044,7 @@ final class ShowSession {
     /// The raw cards the player can grade at the booth: free, and not known fakes.
     var gradableCards: [OwnedCard] {
         // With a table, only the cards the player brought (docs/29-packing-and-crowds.md).
-        store.data.raw.filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && (!venue.limitsLoad || bring.contains($0.id)) }
+        store.data.raw.filter { $0.status == nil && $0.fromStore != true && !$0.setAside && !$0.isKnownFake && (!venue.limitsLoad || bring.contains($0.id)) }
             .sorted { $0.market > $1.market }
     }
 
@@ -1068,8 +1085,10 @@ final class ShowSession {
             let held = store.heldItemIDs
             return store.showItems(store.storeStock).filter { !held.contains($0.id) }
         }
+        // Store stock can come too (Model/StoreLoans.swift). It leaves the shelf when the load leaves the car.
         let stock = store.showStock
-        return store.showItems((stock.cards, stock.sealed.filter { !store.bannedAtShow($0, show: show) }))
+        let shop = store.storeLoanable
+        return store.showItems((stock.cards + shop.cards, (stock.sealed + shop.sealed).filter { !store.bannedAtShow($0, show: show) }))
     }
 
     /// True when this show bans sealed product that is for sale at retail now.
@@ -1118,7 +1137,7 @@ final class ShowSession {
         let items = loadItems
         let last = Set(store.data.lastLoadout)
         let load = filled([], from: items.filter { last.contains($0.id.uuidString) })
-        return load.isEmpty ? filled([], from: items.filter { !$0.pc }) : load
+        return load.isEmpty ? filled([], from: items.filter { !$0.pc && !$0.fromStore }) : load
     }
 
     /// A walk-in's bag: the last bag, less what is gone. The first time, the bag is empty.
@@ -1185,6 +1204,7 @@ final class ShowSession {
 
     func openTable() {
         if !opened, venue.kind != .store { store.useTableSupplies() }
+        if phase == .setup { departLoad() }
         table = stockItems.filter { bring.contains($0.id) && $0.market >= 0.5 }
         // The price is set now. A hot in-print sealed item at a high ask is a gouge, even if it never sells.
         let productIDs = Dictionary(store.data.sealed.map { ($0.id, $0.productID) }, uniquingKeysWith: { a, _ in a })
@@ -2262,6 +2282,7 @@ final class ShowSession {
         if phase == .setup, !hasTable, venue.limitsLoad { store.data.lastBag = Array(bring).map(\.uuidString) }
         // The load leaves the car with the player. Back at the setup, it can only get smaller.
         if phase == .setup, venue.limitsLoad { packed = true }
+        if phase == .setup { departLoad() }
         visitor = nil
         openVendorID = nil
         phase = isOver ? .summary : .floor

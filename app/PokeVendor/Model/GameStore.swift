@@ -1414,6 +1414,8 @@ final class GameStore {
         if storeShiftPending, let line = asBusiness({ lockUp() }) { lines.append(line) }
         lines += asBusiness { openingDayEnd() }
         lines += asBusiness { storeDayEnd() }
+        // Store stock still out with no visit open goes back to the shelf (Model/StoreLoans.swift).
+        if activeEvent == nil { returnStoreLoans() }
         lines += asBusiness { businessDayEnd() }
         lines += asBusiness { counterEventsEndDay() }
         lines += shortsEndDay()

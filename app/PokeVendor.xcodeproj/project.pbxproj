@@ -190,6 +190,7 @@
 		94D4D216B5171391265B5753 /* Vendors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E045FCAD07023E23A8B677B4 /* Vendors.swift */; };
 		95BC6AA92A776C8DAF0608FB /* FlipperViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0678AC2694235093064DEC7 /* FlipperViews.swift */; };
 		976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */; };
+		9790B8F21CFD23A8748AD22F /* StoreLoans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97AB1FFA507AFF08FBB5D4BE /* StoreLoans.swift */; };
 		97A57C396463BC3FEA38FC13 /* GoalsMarketViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45590D9E41CDC734C72A2FA8 /* GoalsMarketViews.swift */; };
 		99A5753171BDEF56B82D7DF5 /* astral-radiance.json in Resources */ = {isa = PBXBuildFile; fileRef = 514263C9681529DF5523A095 /* astral-radiance.json */; };
 		9A7285B1FEC3B63592FC035D /* GradingBills.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5203F6759EAD53285517DF /* GradingBills.swift */; };
@@ -525,6 +526,7 @@
 		96BDDA1B76A85BD73D8A9400 /* Job.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Job.swift; sourceTree = "<group>"; };
 		96C7926C1973DA524FFEA029 /* arceus.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = arceus.json; sourceTree = "<group>"; };
 		97847C4D6D2636B60D6AC05E /* QuickShift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickShift.swift; sourceTree = "<group>"; };
+		97AB1FFA507AFF08FBB5D4BE /* StoreLoans.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreLoans.swift; sourceTree = "<group>"; };
 		9814967BDC613C1BD5438238 /* StoreConsignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreConsignment.swift; sourceTree = "<group>"; };
 		9881C74F0228AC7C882E6679 /* Payments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payments.swift; sourceTree = "<group>"; };
 		99D48054DE8D081D34F8C24C /* fossil.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = fossil.json; sourceTree = "<group>"; };
@@ -972,6 +974,7 @@
 				1AC9BC5161CF9AD3FDEC9A38 /* StoreFloor.swift */,
 				DE329925B6FADAD214AC1AB4 /* StoreHours.swift */,
 				70ACA35FF482097D0C0DC5A6 /* StoreLease.swift */,
+				97AB1FFA507AFF08FBB5D4BE /* StoreLoans.swift */,
 				E9C6899A5756FD01A03265AE /* StoreMarketing.swift */,
 				5A2BADDF7157E101C4CE6CC6 /* StoreOpening.swift */,
 				7DE930419AE3DBD7DEF58E6C /* StorePricing.swift */,
@@ -1472,6 +1475,7 @@
 				0B6CE3F969776442C748F954 /* StoreGrowthViews.swift in Sources */,
 				9DDE7C89D98F006D16FC7EBB /* StoreHours.swift in Sources */,
 				976A61AF3B14ACBB9F32DFEF /* StoreLease.swift in Sources */,
+				9790B8F21CFD23A8748AD22F /* StoreLoans.swift in Sources */,
 				2982DA3B3C7D612B5F4E2142 /* StoreMarketing.swift in Sources */,
 				9051563439DF4BC0856C9957 /* StoreOpening.swift in Sources */,
 				4A5CDF2C8DEBD81C3B49508F /* StorePricing.swift in Sources */,

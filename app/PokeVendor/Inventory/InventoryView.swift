@@ -23,6 +23,11 @@ extension OwnedCard {
     }
 }
 
+/// The two inventories: the player's own items, and the store's stock (docs/42-two-inventories.md).
+enum InventoryOwner: String, CaseIterable, Hashable {
+    case personal = "Personal", store = "Store"
+}
+
 enum SortOrder: String, CaseIterable {
     case psa10 = "PSA 10 price", newest = "Newest", value = "Highest value", setOrder = "Set order", condition = "Best condition"
 }
@@ -87,6 +92,7 @@ struct InventoryView: View {
     @Environment(GameStore.self) private var store
     @Environment(AppNav.self) private var nav
     @State private var section: InventorySection = .stock
+    @AppStorage("inventoryOwner") private var owner: InventoryOwner = .personal
     @State private var tab: InventoryTab
     @State private var sort: SortOrder = .psa10
     @State private var filter: InventoryFilter = .all
@@ -113,6 +119,13 @@ struct InventoryView: View {
                 .pickerStyle(.segmented)
                 switch section {
                 case .stock:
+                    // Personal or the store's stock (docs/42-two-inventories.md).
+                    if store.cardStore != nil {
+                        Picker("Owner", selection: $owner) {
+                            ForEach(InventoryOwner.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                        }
+                        .pickerStyle(.segmented)
+                    }
                     tabPicker
                     controls
                     if tab == .grading, !store.gradingBills.isEmpty { GradingBillsBox() }
@@ -151,6 +164,10 @@ struct InventoryView: View {
             }
         }
         .onChange(of: tab) { _, _ in selection = [] }
+        .onChange(of: owner) { _, _ in
+            selection = []
+            if showsStore, ![.sealed, .raw, .slabs].contains(tab) { tab = .sealed }
+        }
         #if DEBUG
         // Screenshot aid: `-gradesheet` opens the grade sheet with the 3 most valuable free raw cards.
         .onAppear {
@@ -205,7 +222,8 @@ struct InventoryView: View {
 
     private var tabPicker: some View {
         Picker("Tab", selection: $tab) {
-            ForEach(InventoryTab.allCases, id: \.self) { t in
+            // The store has no bulk and nothing at a grader.
+            ForEach(InventoryTab.allCases.filter { showsStore ? [.sealed, .raw, .slabs].contains($0) : true }, id: \.self) { t in
                 Text("\(t.label) \(count(t))").tag(t)
             }
         }
@@ -500,11 +518,23 @@ struct InventoryView: View {
     }
 
     /// The regular tabs leave out the PC and the master sets.
-    private var sealedInHand: [SealedItem] { store.data.sealed.filter { !$0.setAside } }
+    /// True when the Store side shows. Without a store, everything is personal.
+    private var showsStore: Bool { owner == .store && store.cardStore != nil }
+
+    private var sealedInHand: [SealedItem] {
+        let side = showsStore
+        return store.data.sealed.filter { !$0.setAside && store.onStoreSide($0.status, fromStore: $0.fromStore) == side }
+    }
     /// The raw cards that are not at a grader.
-    private var rawInHand: [OwnedCard] { store.data.raw.filter { !$0.isAtGrader && !$0.setAside } }
+    private var rawInHand: [OwnedCard] {
+        let side = showsStore
+        return store.data.raw.filter { !$0.isAtGrader && !$0.setAside && store.onStoreSide($0.status, fromStore: $0.fromStore) == side }
+    }
     /// A slab that PSA holds shows in the Grading tab until its bill is paid.
-    private var slabsInHand: [OwnedCard] { store.data.slabs.filter { !$0.setAside && !$0.isAtGrader } }
+    private var slabsInHand: [OwnedCard] {
+        let side = showsStore
+        return store.data.slabs.filter { !$0.setAside && !$0.isAtGrader && store.onStoreSide($0.status, fromStore: $0.fromStore) == side }
+    }
 
     private var atGrading: [OwnedCard] { (store.data.raw + store.data.slabs).filter(\.isAtGrader) }
 
@@ -688,10 +718,15 @@ struct ItemActions<Extra: View>: View {
                         Text("The grade is gone for good. The card goes back to Raw. Rarely, the case breaks badly and nicks the card.")
                     }
             }
-            // Put the items on the shelves of the player's own store (docs/22-own-store.md).
+            // Move between the two inventories: personal items to the store, store items back (docs/42-two-inventories.md).
             if store.cardStore != nil {
-                ActionTile(title: "Store", icon: "storefront") { run { store.stockStore(ids) } }
-                    .disabled(aside || !store.canStock(ids))
+                let inStore = !ids.isEmpty && ids.allSatisfy { isInStore($0) }
+                if inStore {
+                    ActionTile(title: "To personal", icon: "arrow.uturn.backward") { run { store.moveBetweenInventories(ids) } }
+                } else {
+                    ActionTile(title: "To store", icon: "storefront") { run { store.moveBetweenInventories(ids) } }
+                        .disabled(aside || !store.canStock(ids))
+                }
             }
             if kind != .sealed { masterSetTile }
             if store.series(.pnl) != nil {
@@ -756,6 +791,11 @@ struct ItemActions<Extra: View>: View {
 
     private func sealed(_ ids: Set<UUID>) -> [SealedItem] {
         store.data.sealed.filter { ids.contains($0.id) }
+    }
+
+    private func isInStore(_ id: UUID) -> Bool {
+        if let c = store.card(id) { return GameStore.isInStore(c.status) }
+        return GameStore.isInStore(store.data.sealed.first { $0.id == id }?.status)
     }
 
     private func isSetAside(_ id: UUID) -> Bool {
