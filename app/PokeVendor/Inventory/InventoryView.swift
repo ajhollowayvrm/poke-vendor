@@ -644,6 +644,7 @@ struct ItemActions<Extra: View>: View {
     let extra: Extra
     @State private var confirmCrack = false
     @State private var confirmBreak = false
+    @State private var confirmBreakAll = false
 
     init(kind: Kind, ids: Set<UUID>, stackIDs: Set<UUID>? = nil, present: @escaping (ItemSheet) -> Void,
          done: @escaping () -> Void = {}, @ViewBuilder extra: () -> Extra) {
@@ -762,15 +763,23 @@ struct ItemActions<Extra: View>: View {
     }
 
     /// "Break" opens sealed products into their loose packs, without a rip (docs/38-loose-packs-and-straight-buys.md).
-    /// The dialog shows what the packs are worth against the product, because a break can gain or lose value.
+    /// On a detail screen, "Break all" breaks every product in the stack, the same as "Rip all".
     @ViewBuilder private var breakTile: some View {
-        let items = sealed(ids)
+        breakTile(ids, title: "Break", confirm: $confirmBreak)
+        if stackIDs.count > ids.count {
+            breakTile(stackIDs, title: "Break all \(stackIDs.count)", confirm: $confirmBreakAll)
+        }
+    }
+
+    /// The dialog shows what the packs are worth against the products, because a break can gain or lose value.
+    @ViewBuilder private func breakTile(_ group: Set<UUID>, title: String, confirm: Binding<Bool>) -> some View {
+        let items = sealed(group)
         let breakable = items.filter { store.breakRefusal($0) == nil }
         // A closed case opens first, and a loose pack has nothing to break.
         if !items.isEmpty, !items.allSatisfy({ $0.isLoosePack || $0.isCase }) {
-            ActionTile(title: "Break", icon: "square.split.2x2") { confirmBreak = true }
+            ActionTile(title: title, icon: "square.split.2x2") { confirm.wrappedValue = true }
                 .disabled(breakable.isEmpty)
-                .confirmationDialog(store.breakTitle(breakable), isPresented: $confirmBreak, titleVisibility: .visible) {
+                .confirmationDialog(store.breakTitle(breakable), isPresented: confirm, titleVisibility: .visible) {
                     Button("Break into packs", role: .destructive) {
                         run {
                             for item in breakable { store.breakIntoPacks(item.id, save: false) }
