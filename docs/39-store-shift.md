@@ -81,3 +81,26 @@ Added on 2026-11-25 (docs/proposals/shop-experience.md, part 2; `Model/QuickShif
 - The shift applies to a store from an older save (legacy) too. AJ asked for the rule for every store.
 - Some screens give their own reason for a greyed-out action, for example "Not enough time today". The hub shift row
   and the End Day bar say why.
+
+## Package offers
+
+At the player's store, a seller at the counter can take a package: stock
+from the counter plus cash, in one offer. **Offer trade + cash** opens
+the package sheet.
+
+- Each counter item counts at 110% of its market to the seller, the
+  same as a single trade. A closet cleaner wants cash, so an item counts
+  80% of that to them.
+- The cash comes from the business account. The sheet shows the
+  balance, and an offer with more cash than the account holds cannot go.
+- The seller takes the package when the items and the cash reach their
+  lowest price. Under it, the same haggle rules as a cash counter apply:
+  a fair offer gets one "my best is" answer, and each low offer uses
+  patience until the seller walks away.
+- The seller does not give change. When the items alone are worth more
+  than 150% of the seller's item, they turn the package down.
+- With no items picked, the offer is a cash counter.
+- The item from the seller goes to the player's own inventory, the same
+  as a cash buy at the counter.
+- Shows and meets keep the single trade ("Offer a trade instead"), so
+  the game before the store does not change.

@@ -52,6 +52,7 @@ final class GameTests {
         timed("buyAccount", buyAccount)
         timed("showInfo", showInfo)
         timed("psaBox", psaBoxTest)
+        timed("package", packageOffer)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2501,6 +2502,46 @@ final class GameTests {
         check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
               "a full store did not report zero room")
         check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
+    }
+
+    // MARK: - Package offers at the store counter
+
+    /// A seller at the store takes counter stock plus cash when the value reaches their lowest price, and not under it.
+    private func packageOffer() {
+        fresh()
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 10 && ($0.market ?? 0) < 40 }
+        guard prints.count >= 3 else { return check(false, "no cards for the package test") }
+        for p in prints.prefix(2) { store.addTestCard(p) }
+        let stockIDs = Set(store.data.raw.suffix(2).map(\.id))
+        store.stockStore(stockIDs)
+        let venue = Venue(kind: .store, name: "Test store", open: 11, close: 19, hours: 8, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        store.counterSession = session
+        session.openTable()
+        guard session.canOfferPackage, let cheap = session.table.min(by: { $0.market < $1.market }) else {
+            store.counterSession = nil
+            return check(false, "the counter has no stock for a package")
+        }
+        let goodsPrint = prints[2]
+        var seller = Visitor(type: .collector, name: "Seller", intent: .sell, item: nil, limit: 0, offer: 0, patience: 3, line: "")
+        seller.goods = .single(goodsPrint, slug: "prismatic-evolutions", condition: Condition.packFresh())
+        seller.goodsMarket = (goodsPrint.market ?? 20) * 3
+        seller.limit = (session.packageValue(cheap, for: seller) + 30).rounded()
+        seller.offer = seller.limit + 10
+        session.testSeat(seller)
+        // Not enough: the cheap item alone.
+        session.proposePackage(items: [cheap.id], cash: 0)
+        check(store.card(cheap.id) != nil, "a package under the seller's lowest price went through")
+        // Enough: the item and cash.
+        session.testSeat(seller)
+        let business = store.businessCash, rawBefore = store.data.raw.count
+        session.proposePackage(items: [cheap.id], cash: 35)
+        check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
+              "a package at the seller's price did not trade the stock and the cash for the item")
+        store.counterSession = nil
     }
 
     // MARK: - The PSA box (Model/PsaBox.swift)

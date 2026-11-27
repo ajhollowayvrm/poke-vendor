@@ -201,6 +201,7 @@ struct DealButtons: View {
     @Environment(GameStore.self) private var store
     let session: ShowSession
     let visitor: Visitor
+    @State private var buildingPackage = false
 
     /// The kid gift (docs/35-callouts.md). A straight buyer can be a kid too.
     @ViewBuilder private var giveToKidButton: some View {
@@ -264,7 +265,15 @@ struct DealButtons: View {
                         .tint(Theme.orange)
                     }
                 }
-                if session.hasTable, !session.table.isEmpty, !visitor.tradeAsked {
+                if session.canOfferPackage {
+                    // At the player's store: stock from the counter and cash, in one offer (docs/39-store-shift.md).
+                    Button { buildingPackage = true } label: {
+                        Text("Offer trade + cash").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Color(red: 0.7, green: 0.55, blue: 1))
+                    .sheet(isPresented: $buildingPackage) { PackageOfferSheet(session: session, visitor: visitor) }
+                } else if session.hasTable, !session.table.isEmpty, !visitor.tradeAsked {
                     // Offer an item from the table instead of cash, at 110% of its market (docs/30).
                     Menu {
                         ForEach(session.table) { item in
@@ -500,4 +509,93 @@ struct VisitorCard: View {
         case .sell: Theme.cyan
         }
     }
+}
+
+/// A package offer to a seller at the player's store: stock from the counter plus cash (ShowSession.proposePackage).
+struct PackageOfferSheet: View {
+    @Environment(GameStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let session: ShowSession
+    let visitor: Visitor
+    @State private var picked: Set<UUID> = []
+    @State private var cash: Double = 0
+
+    var body: some View {
+        let items = session.table.sorted { $0.market > $1.market }
+        let goodsPart = items.filter { picked.contains($0.id) }.reduce(0) { $0 + session.packageValue($1, for: visitor) }
+        let total = goodsPart + cash
+        let cashShort = cash > 0 && !store.canAfford(cash)
+        NavigationStack {
+            VStack(spacing: 0) {
+                List {
+                    Section {
+                        HStack {
+                            Text(visitor.goods.map { VendorItem(goods: $0, price: visitor.offer, market: visitor.goodsMarket).name } ?? "Their item").font(.subheadline.weight(.medium))
+                            Spacer()
+                            Text("asks \(money(visitor.offer))").font(.subheadline.monospaced())
+                        }
+                        Text("Market \(money(visitor.goodsMarket)). Your stock counts at \(Int(Balance.tradeInstead * 100))% of market to them\(visitor.type == .closetCleaner ? ", less to someone who wants cash" : "").")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                    Section("Cash") {
+                        HStack {
+                            Text(money(cash)).font(.title3.monospaced())
+                            Spacer()
+                            Stepper("", value: $cash, in: 0...max(0, visitor.offer * 2), step: cashStep).labelsHidden()
+                        }
+                        HStack {
+                            ForEach([0.0, 0.25, 0.5, 1.0], id: \.self) { share in
+                                Button(share == 0 ? "None" : "\(Int(share * 100))%") { cash = (visitor.offer * share).rounded() }
+                                    .buttonStyle(.bordered).controlSize(.small)
+                            }
+                        }
+                        Text("\(store.activeAccount == .business ? "Business" : "Cash") \(money(store.cash))")
+                            .font(.caption.monospaced()).foregroundStyle(cashShort ? Theme.orange : Theme.muted)
+                    }
+                    Section("Stock from the counter") {
+                        ForEach(items) { item in
+                            Button {
+                                if picked.contains(item.id) { picked.remove(item.id) } else { picked.insert(item.id) }
+                            } label: {
+                                HStack(spacing: 10) {
+                                    Image(systemName: picked.contains(item.id) ? "checkmark.circle.fill" : "circle")
+                                        .foregroundStyle(picked.contains(item.id) ? Theme.cyan : Theme.muted)
+                                    ItemLine(item: item, storeTag: false)
+                                    Spacer()
+                                    Text(money(session.packageValue(item, for: visitor))).font(.subheadline.monospaced())
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                VStack(spacing: 6) {
+                    HStack {
+                        Text("Your offer").font(.subheadline)
+                        Spacer()
+                        Text(money(total)).font(.headline.monospaced())
+                            .foregroundStyle(total >= visitor.offer - 0.001 ? Theme.green : Theme.text)
+                    }
+                    Button {
+                        session.proposePackage(items: picked, cash: cash)
+                        dismiss()
+                    } label: {
+                        Text(picked.isEmpty ? "Offer \(money(cash)) cash" : "Offer \(picked.count) item\(picked.count == 1 ? "" : "s")\(cash > 0 ? " + \(money(cash))" : "")")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .primaryButton()
+                    .disabled(total <= 0 || cashShort)
+                }
+                .padding(16)
+                .background(Theme.background)
+            }
+            .navigationTitle("Trade + cash")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+        }
+    }
+
+    /// The cash step: $1 under $50, $5 under $500, else $25.
+    private var cashStep: Double { visitor.offer < 50 ? 1 : visitor.offer < 500 ? 5 : 25 }
 }

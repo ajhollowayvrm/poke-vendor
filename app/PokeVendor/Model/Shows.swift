@@ -2195,6 +2195,86 @@ final class ShowSession {
         spend(2)
     }
 
+    // MARK: Package offers at the store counter
+
+    /// True when the player can offer a seller a package of store stock and cash: at the player's own store, with stock
+    /// at the counter (docs/39-store-shift.md, Package offers).
+    var canOfferPackage: Bool { venue.kind == .store && !table.isEmpty }
+
+    /// What a counter item is worth to a seller in a package: its trade value, less to a closet cleaner, who wants cash.
+    func packageValue(_ item: ShowItem, for v: Visitor) -> Double {
+        tradeInsteadValue(item) * (v.type == .closetCleaner ? Balance.cleanerTradeShare : 1)
+    }
+
+    /// The player offers stock from the counter and cash for the seller's goods. The seller takes it when the value
+    /// reaches their lowest price. Under it, the same haggle rules as a cash counter apply. With no items, it is a cash
+    /// counter.
+    func proposePackage(items ids: Set<UUID>, cash: Double) {
+        guard var v = current, v.intent == .sell, let goods = v.goods else { return }
+        let items = table.filter { ids.contains($0.id) && !store.isChallengeItem($0.id) }
+        let cash = max(0, Self.round(cash))
+        guard !items.isEmpty else {
+            counter(cash)
+            return
+        }
+        if cash > 0, !store.canAfford(cash) {
+            note = "You do not have \(money(cash))."
+            return
+        }
+        let goodsPart = items.reduce(0) { $0 + packageValue($1, for: v) }
+        let total = goodsPart + cash
+        // The seller does not give change: a pile of stock far over their item is too much to take.
+        if goodsPart > v.goodsMarket * Balance.tradeInsteadMax {
+            v.line = "That's more stuff than this is worth. I can't take all of that."
+            setCurrent(v)
+            spend(2)
+            return
+        }
+        if total >= v.limit - 0.001 {
+            for item in items where buyerCatchesFake(v, item) { return }
+            let got = VendorItem(goods: goods, price: total, market: v.goodsMarket, fake: v.goodsFake, looksOff: v.goodsLooksOff)
+            for item in items { store.settleOnlineListing(item.id, name: item.name) }
+            store.tradeWithVendor(give: items, get: [got], cash: cash, vendor: v.name, at: venue.name)
+            for item in items {
+                guard let fake = item.fake else { continue }
+                store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
+                                    refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
+            }
+            table.removeAll { ids.contains($0.id) }
+            bring.subtract(ids)
+            let gave = items.map(\.name).joined(separator: " + ") + (cash > 0 ? " + \(money(cash))" : "")
+            trades.append("\(gave) → \(got.name)")
+            store.recordDeal(v.contactID, what: "Traded \(gave) for \(got.name)", price: total, market: v.goodsMarket,
+                             slug: goodsSlug(goods), scored: true)
+            score(.buy, price: total, market: v.goodsMarket, pushed: false, v)
+            maybePromote(v, points: 12)
+            finish(minutes: .random(in: 8...14))
+            Haptics.hit()
+            return
+        }
+        let gap = v.goodsMarket > 0 ? abs(total - v.limit) / v.goodsMarket : 1
+        if v.goodsMarket > 0, Haggle.fair(.buy, share: total / v.goodsMarket) {
+            if v.fairRefusals >= 1 {
+                leavePolitely(v)
+                return
+            }
+            v.fairRefusals += 1
+            v.offer = Self.round(v.limit)
+            v.line = "\(Haggle.tell(gap)) That's fair, but I need \(money(v.offer)) in value for it."
+            setCurrent(v)
+            spend(3)
+            return
+        }
+        if v.patience <= 0 {
+            walkAway(v, line: "No, that's not enough for it. I'll find someone else.")
+            return
+        }
+        v.patience -= 1
+        v.line = "\(Haggle.tell(gap)) Add a bit more and we can talk."
+        setCurrent(v)
+        spend(3)
+    }
+
     /// Scores a table deal for fairness (docs/30-haggling-and-deal-reputation.md).
     func score(_ side: DealSide, price: Double, market: Double, pushed: Bool, _ v: Visitor, share: Double? = nil) {
         guard !v.flipped, market > 0 else { return }

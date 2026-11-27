@@ -37,6 +37,8 @@ extension Balance {
     /// Offer trade instead of cash: the seller's value on the player's item, and the largest trade they take.
     static let tradeInstead = 1.10
     static let tradeInsteadMax = 1.5
+    /// A closet cleaner wants cash: a table item in a package counts this share of its trade value to them.
+    static let cleanerTradeShare = 0.8
     /// A trader's binder, and the share of buyers who ask for a bundle.
     static let binderSize = 3...5
     static let bundleChance = 0.20
