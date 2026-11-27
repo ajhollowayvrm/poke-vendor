@@ -1339,7 +1339,8 @@ final class GameStore {
     // MARK: - Grading
 
     func submit(_ ids: Set<UUID>, to company: GradingCompany, tier: GradingTier) {
-        let cards = data.raw.filter { ids.contains($0.id) && $0.status == nil }
+        // A card in the PSA box can go to any grader (Model/PsaBox.swift).
+        let cards = data.raw.filter { ids.contains($0.id) && Self.gradable($0.status) }
         guard !cards.isEmpty, cards.count >= tier.minCards, !tier.membersOnly || hasUpgrade(.psaMembership) else { return }
         // The PSA membership lowers the fee and the turnaround.
         let fee = gradingFee(tier, company) * Double(cards.count)
@@ -1354,7 +1355,7 @@ final class GameStore {
         } else {
             orderID = addLedger(-fee, .grading, label, pending: true)
         }
-        for i in data.raw.indices where ids.contains(data.raw[i].id) && data.raw[i].status == nil {
+        for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.gradable(data.raw[i].status) {
             data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: days, ledgerID: orderID)
         }
         if company.billsOnReturn {

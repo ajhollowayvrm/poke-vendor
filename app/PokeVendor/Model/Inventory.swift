@@ -427,6 +427,8 @@ enum ItemStatus: Codable, Hashable {
     case openedAtShop
     /// In the player's storage unit. A visit to the unit brings it home (Model/Storage.swift).
     case inStorage
+    /// Set aside for the next PSA Value Bulk order (Model/PsaBox.swift). It stays home, and no sell path offers it.
+    case inPsaBox
 
     /// A listing that the player can take down: any listing except a running eBay auction.
     var isRemovableListing: Bool {
@@ -448,6 +450,7 @@ enum ItemStatus: Codable, Hashable {
         case .soldToViewer: "SOLD · SHIPS TO A VIEWER"
         case .openedAtShop: "OPENED · RIP IT"
         case .inStorage: "IN STORAGE"
+        case .inPsaBox: "IN YOUR PSA BOX"
         }
     }
 }

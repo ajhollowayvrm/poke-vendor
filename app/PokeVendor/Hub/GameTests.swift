@@ -51,6 +51,7 @@ final class GameTests {
         timed("quickStock", quickStock)
         timed("buyAccount", buyAccount)
         timed("showInfo", showInfo)
+        timed("psaBox", psaBoxTest)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2500,6 +2501,29 @@ final class GameTests {
         check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
               "a full store did not report zero room")
         check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
+    }
+
+    // MARK: - The PSA box (Model/PsaBox.swift)
+
+    /// Cards in the box stay home. The box sends as one Value Bulk order at 20 cards, and the bill shows its upcharges.
+    private func psaBoxTest() {
+        fresh()
+        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 2 }
+        guard prints.count >= 20, let tier = store.psaBulkTier else { return check(false, "no cards for the PSA box test") }
+        for p in prints.prefix(20) { store.addTestCard(p) }
+        let ids = Array(store.data.raw.suffix(20).map(\.id))
+        store.addToPsaBox(Set(ids.prefix(19)))
+        check(store.psaBox.count == 19 && !store.showStock.cards.contains { ids.prefix(19).contains($0.id) },
+              "a card in the PSA box can still go out")
+        check(store.psaBoxBlock != nil, "the box could go to PSA with no membership and 19 cards")
+        store.data.upgrades.append(Upgrade.psaMembership.rawValue)
+        check(store.psaBoxBlock != nil, "the box could go to PSA with 19 cards")
+        store.addToPsaBox([ids[19]])
+        check(store.psaBoxBlock == nil, "a full box of 20 could not go to PSA")
+        store.submit(Set(store.psaBox.map(\.id)), to: .psa, tier: tier)
+        let bill = store.gradingBills.last
+        check(store.psaBox.isEmpty && bill?.cards == 20 && bill?.tier == tier.name, "the box did not go to PSA as one Value Bulk order")
+        if let bill { check(store.possibleUpcharge(bill) >= 0, "the possible upcharge is negative") }
     }
 
     // MARK: - Show info and Sunday shows (docs/20-card-shows.md, Show info)

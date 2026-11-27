@@ -396,6 +396,29 @@ takes its fee on the spot.
 
 A held order has no deadline and no storage fee.
 
+## The PSA box
+
+PSA's Value Bulk level needs 20 cards or more in one order, and only a
+PSA member can use it. The player fills a box over time:
+
+- The **PSA box** action on raw cards puts them in the box. A card in
+  the box has the status "In your PSA box". It stays home: no sell,
+  list, shelf, show, or trade path offers it. **Leave box** takes it
+  out.
+- The Raw and Grading tabs show the box: the count against 20, the Value
+  Bulk fee for the cards in it, and the cards whose PSA 10 price is over
+  the $500 cap, which PSA could upcharge.
+- **Send the box to PSA** opens the grade sheet with the box's cards and
+  Value Bulk. It works at 20 cards with the membership.
+
+### Bills on the hub
+
+Plans for today lists each PSA bill under Rent: the fees, the days until
+the grades come back, and "up to" the fees plus the most that the
+upcharges could add. That most is each card at PSA graded a 10, against
+its level's cap. A bill shows in orange when PSA holds the order, or when
+the cash does not cover the most it could come to.
+
 ## Counterfeit interaction
 
 Submitting a card for grading also authenticates it: PSA/BGS/CGC reject

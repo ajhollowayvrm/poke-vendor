@@ -85,6 +85,12 @@ struct StatusBox: View {
                 Text("Opened at the shop. Rip it to see what is inside.").font(.subheadline)
             case .inStorage:
                 Text("In your storage unit. Drive to the unit to take it home.").font(.subheadline)
+            case .inPsaBox:
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("In your PSA box · \(store.psaBox.count) card\(store.psaBox.count == 1 ? "" : "s") for the next Value Bulk order").font(.subheadline)
+                    Button("Take it out") { store.removeFromPsaBox([id]) }
+                        .buttonStyle(.bordered)
+                }
             case .atAuctionHouse(let a):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("At \(a.house.rawValue) · auction on day \(a.auctionDay + 1)").font(.subheadline)

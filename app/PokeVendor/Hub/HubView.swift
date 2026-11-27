@@ -334,8 +334,9 @@ struct HubView: View {
         }
     }
 
-    /// Rent, the one standing bill of the day. The store opens from its tile. Auctions open from the Buy screen,
-    /// Storage from the Inventory screen, and Upgrades from Settings.
+    /// The bills to come: rent, and each PSA order's bill with the most that its upcharges could add (Model/PsaBox.swift).
+    /// The store opens from its tile. Auctions open from the Buy screen, Storage from the Inventory screen, and Upgrades
+    /// from Settings.
     @ViewBuilder private var placeRows: some View {
         HStack {
             Text("Rent \(money(store.rentNow))").font(.subheadline)
@@ -343,6 +344,26 @@ struct HubView: View {
             Text("due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s")")
                 .font(.subheadline.monospaced())
                 .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
+        }
+        ForEach(store.gradingBills.sorted { $0.dueDay < $1.dueDay }) { bill in
+            let extra = store.possibleUpcharge(bill)
+            let days = max(0, bill.dueDay - store.day)
+            Button { nav.path.append(.inventory(.grading)) } label: {
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(bill.company.rawValue) bill \(money(bill.amount))").font(.subheadline)
+                            .foregroundStyle(bill.held ? Theme.orange : Theme.text)
+                        Text("\(bill.cards) card\(bill.cards == 1 ? "" : "s") · \(bill.tier)" + (extra > 0 ? " · up to \(money(bill.amount + extra)) with upcharges" : ""))
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                    Spacer()
+                    Text(bill.held ? "unpaid · order held" : days == 0 ? "due today" : "due in \(days) day\(days == 1 ? "" : "s")")
+                        .font(.subheadline.monospaced())
+                        .foregroundStyle(bill.held || !store.canAfford(bill.amount + extra) ? Theme.orange : Theme.muted)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
     }
 

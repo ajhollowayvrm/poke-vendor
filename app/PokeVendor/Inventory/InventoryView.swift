@@ -53,6 +53,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     case soldToViewer = "Sold to a viewer"
     case openedAtShop = "Opened · rip it"
     case inStorage = "In storage"
+    case inPsaBox = "In your PSA box"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -78,6 +79,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
         case .soldToViewer: return self == .soldToViewer
         case .openedAtShop: return self == .openedAtShop
         case .inStorage: return self == .inStorage
+        case .inPsaBox: return self == .inPsaBox
         case nil: return false
         }
     }
@@ -137,6 +139,9 @@ struct InventoryView: View {
                     }
                     tabPicker
                     controls
+                    if (tab == .raw || tab == .grading), !showsStore, !store.psaBox.isEmpty {
+                        PsaBoxBanner { gradeIDs = GradeRequest(ids: Set(store.psaBox.map(\.id))) }
+                    }
                     if tab == .grading, !store.gradingBills.isEmpty { GradingBillsBox() }
                     rows
                 case .pc:
@@ -765,6 +770,13 @@ struct ItemActions<Extra: View>: View {
                     .disabled(!free)
                 ActionTile(title: "Bulk", icon: "archivebox") { run { store.moveToBulk(ids) } }
                     .disabled(!free)
+                // The PSA box: cards set aside for the next Value Bulk order (Model/PsaBox.swift).
+                if !ids.isEmpty, ids.allSatisfy({ store.card($0)?.status == .inPsaBox }) {
+                    ActionTile(title: "Leave box", icon: "tray.and.arrow.up") { run { store.removeFromPsaBox(ids) } }
+                } else {
+                    ActionTile(title: "PSA box", icon: "tray.and.arrow.down") { run { store.addToPsaBox(ids) } }
+                        .disabled(aside || !store.canBox(ids))
+                }
             }
             if kind == .slab {
                 // Crack and resubmit (docs/10-grading.md). The sheet reviews or crosses over the slabs.
@@ -1146,5 +1158,34 @@ struct RawLooks: View {
             CutLine(reading: .front(condition.cut, tool: store.data.centeringTool))
         }
         .lineLimit(1)
+    }
+}
+
+/// The PSA box: the cards set aside for the next Value Bulk order, and the button that sends them (Model/PsaBox.swift).
+struct PsaBoxBanner: View {
+    @Environment(GameStore.self) private var store
+    let send: () -> Void
+
+    var body: some View {
+        let box = store.psaBox
+        let tier = store.psaBulkTier
+        let need = tier?.minCards ?? 20
+        let risk = store.psaBoxUpchargeRisk.count
+        DetailBox(title: "PSA box · \(box.count) of \(need)") {
+            ProgressView(value: Double(min(box.count, need)), total: Double(need)).tint(Theme.cyan)
+            if let tier {
+                Text("Value Bulk: \(money(store.gradingFee(tier, .psa) * Double(box.count))) for \(box.count) card\(box.count == 1 ? "" : "s"), billed when the grades come back. Cards in the box stay home.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
+            if risk > 0, let cap = tier?.maxValue {
+                Text("\(risk) card\(risk == 1 ? "" : "s") could grade over \(money(cap)). PSA upcharges a card worth more than the level allows.")
+                    .font(.caption).foregroundStyle(Theme.orange)
+            }
+            Button(action: send) {
+                Text(store.psaBoxBlock ?? "Send the box to PSA").frame(maxWidth: .infinity)
+            }
+            .primaryButton()
+            .disabled(store.psaBoxBlock != nil)
+        }
     }
 }

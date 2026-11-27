@@ -350,7 +350,7 @@ struct GradeSheet: View {
 
     var body: some View {
         let resubmit = !slabs.isEmpty
-        let cards = resubmit ? slabs : store.data.raw.filter { ids.contains($0.id) && $0.status == nil }
+        let cards = resubmit ? slabs : store.data.raw.filter { ids.contains($0.id) && GameStore.gradable($0.status) }
         let tiers = Balance.gradingTiers[company] ?? []
         let tier = tiers[min(tierIndex, tiers.count - 1)]
         // The PSA membership lowers the fee and the turnaround.
