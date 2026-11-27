@@ -547,3 +547,21 @@ extension VendorGoods {
         return false
     }
 }
+
+@MainActor
+extension GameStore {
+    /// The player's auctions in one line, for the Auctions row: items up for auction, open bids, and bids outbid.
+    var auctionSummary: String {
+        func atAuction(_ status: ItemStatus?) -> Bool {
+            switch status {
+            case .listed(let l): l.auctionEndDay != nil
+            case .atAuctionHouse: true
+            default: false
+            }
+        }
+        let selling = (data.raw + data.slabs).filter { atAuction($0.status) }.count + data.sealed.filter { atAuction($0.status) }.count
+        let mine = openLots.filter { $0.playerMax != nil }
+        let outbid = mine.filter { !lotView($0).playerLeads }.count
+        return "\(selling) selling · \(mine.count) bid\(mine.count == 1 ? "" : "s")\(outbid > 0 ? " · \(outbid) outbid" : "")"
+    }
+}

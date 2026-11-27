@@ -273,3 +273,15 @@ extension GameStore {
         return loseItems(taken, event: "Someone broke into your home and took")
     }
 }
+
+@MainActor
+extension GameStore {
+    /// The home space and the storage unit in one line, for the Storage row. `over`: more items than the home holds.
+    var storageSummary: (text: String, over: Bool) {
+        let used = homeSpaceUsed
+        let home = homeSpaceLimit.map { "home \(used)/\($0)" } ?? "home \(used)"
+        let over = homeSpaceLimit.map { used > $0 } ?? false
+        guard let size = storageSize else { return (home, over) }
+        return ("\(home) · unit \(storageUsed)/\(size.capacity)", over)
+    }
+}

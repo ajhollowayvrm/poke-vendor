@@ -297,37 +297,6 @@ struct HubView: View {
         }
     }
 
-    /// The home space and the unit, for the hub row.
-    /// The home space and the unit, computed once for the row.
-    private var storageSpace: (text: String, over: Bool) {
-        let used = store.homeSpaceUsed
-        let limit = store.homeSpaceLimit
-        let home = limit.map { "home \(used)/\($0)" } ?? "home \(used)"
-        let over = limit.map { used > $0 } ?? false
-        guard let size = store.storageSize else { return (home, over) }
-        return ("\(home) · unit \(store.storageUsed)/\(size.capacity)", over)
-    }
-
-    /// Your auctions and bids, for the hub row.
-    private var auctionDetail: String {
-        let selling = (store.data.raw + store.data.slabs).filter {
-            switch $0.status {
-            case .listed(let l): l.auctionEndDay != nil
-            case .atAuctionHouse: true
-            default: false
-            }
-        }.count + store.data.sealed.filter {
-            switch $0.status {
-            case .listed(let l): l.auctionEndDay != nil
-            case .atAuctionHouse: true
-            default: false
-            }
-        }.count
-        let mine = store.openLots.filter { $0.playerMax != nil }
-        let outbid = mine.filter { !store.lotView($0).playerLeads }.count
-        return "\(selling) selling · \(mine.count) bid\(mine.count == 1 ? "" : "s")\(outbid > 0 ? " · \(outbid) outbid" : "")"
-    }
-
     /// The day job. A player with no job sees the job board, unless they own a store: then the store is the job, and
     /// its shift shows in the plans. A store owner who keeps a day job sees both.
     @ViewBuilder private var jobRows: some View {
@@ -365,7 +334,8 @@ struct HubView: View {
         }
     }
 
-    /// The places the player manages: rent, the store, auctions, storage, and upgrades.
+    /// Rent, the one standing bill of the day. The store opens from its tile. Auctions open from the Buy screen,
+    /// Storage from the Inventory screen, and Upgrades from Settings.
     @ViewBuilder private var placeRows: some View {
         HStack {
             Text("Rent \(money(store.rentNow))").font(.subheadline)
@@ -374,73 +344,8 @@ struct HubView: View {
                 .font(.subheadline.monospaced())
                 .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
         }
-        Divider().overlay(Theme.line)
-        Button { nav.path.append(.cardStore) } label: {
-            HStack {
-                Image(systemName: "storefront").foregroundStyle(Theme.cyan)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(store.cardStore?.name ?? "Open your own store").font(.subheadline)
-                    Text(storeDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                }
-                Spacer()
-                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        Divider().overlay(Theme.line)
-        Button { nav.path.append(.auctions) } label: {
-            HStack {
-                Image(systemName: "hammer").foregroundStyle(Theme.cyan)
-                Text("Auctions").font(.subheadline)
-                Spacer()
-                Text(auctionDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        Divider().overlay(Theme.line)
-        let space = storageSpace
-        Button { nav.path.append(.storage) } label: {
-            HStack {
-                Image(systemName: "shippingbox").foregroundStyle(space.over ? Theme.orange : Theme.cyan)
-                Text("Storage").font(.subheadline)
-                Spacer()
-                Text(space.text).font(.caption.monospaced())
-                    .foregroundStyle(space.over ? Theme.orange : Theme.muted)
-                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        Divider().overlay(Theme.line)
-        Button { nav.path.append(.upgrades) } label: {
-            HStack {
-                Image(systemName: "wrench.and.screwdriver").foregroundStyle(Theme.cyan)
-                Text("Upgrades").font(.subheadline)
-                Spacer()
-                Text("\(ownedUpgrades) owned").font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 
-    private var storeDetail: String {
-        guard let s = store.cardStore else {
-            let ready = store.storeRequirements.filter(\.met).count
-            return "\(ready) of \(store.storeRequirements.count) ready · a lease, a clerk, walk-ins"
-        }
-        if store.day < s.openDay { return "Building · opens day \(s.openDay + 1)" }
-        let stock = store.storeStock
-        return "\(store.storeOpenToday ? "Open today" : "Closed today")\(s.clerk ? " · clerk" : "") · \(stock.cards.count + stock.sealed.count) items · rent in \(store.daysUntilStoreRent ?? 0) d"
-    }
-
-    private var ownedUpgrades: Int {
-        store.data.upgrades.count + (store.data.vendorKit ? 1 : 0) + store.data.centeringTool + (store.social.analytics ? 1 : 0)
-    }
 
     /// Facebook Marketplace offers that wait for an answer (docs/15-selling.md, Facebook Marketplace).
     @ViewBuilder private var offersBox: some View {
@@ -471,7 +376,7 @@ struct HubView: View {
     private var freeActions: some View {
         HStack(spacing: 8) {
             ActionTile(title: "Inventory", icon: "shippingbox") { nav.path.append(.inventory(.sealed)) }
-            ActionTile(title: "Grade", icon: "seal") { nav.path.append(.inventory(.raw)) }
+            ActionTile(title: "Store", icon: "storefront") { nav.path.append(.cardStore) }
             ActionTile(title: "Buy", icon: "cart") { nav.path.append(.buy) }
             if store.hasAccount {
                 ActionTile(title: "Post", icon: "square.and.pencil") { nav.path.append(.social) }

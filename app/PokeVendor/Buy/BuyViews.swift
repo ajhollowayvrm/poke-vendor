@@ -27,6 +27,7 @@ struct BuyView: View {
                         }
                         channelRow(title: "Big-store sites", detail: sitesDetail) { nav.path.append(.chainSites) }
                         channelRow(title: "Supplies", detail: store.suppliesSummary) { nav.path.append(.supplies) }
+                        channelRow(title: "Auctions", detail: store.auctionSummary) { nav.path.append(.auctions) }
                         // Locked channels do not show (docs/12, Distributor / wholesale; Case splits).
                         // The plug opens at reputation Known, so the row shows for a player with no wholesale yet.
                         if store.wholesaleOpen || store.plugOpen {

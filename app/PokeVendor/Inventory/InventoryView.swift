@@ -113,6 +113,15 @@ struct InventoryView: View {
         ScrollView {
             VStack(spacing: 14) {
                 PortfolioHeader()
+                // The home space and the storage unit (Model/Storage.swift).
+                let space = store.storageSummary
+                Button { nav.path.append(.storage) } label: {
+                    ChevronRow(icon: "shippingbox", title: "Storage", detail: space.text, accent: space.over)
+                        .padding(12)
+                }
+                .buttonStyle(.plain)
+                .background(Theme.surface)
+                .framed()
                 Picker("Section", selection: $section) {
                     ForEach(InventorySection.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                 }

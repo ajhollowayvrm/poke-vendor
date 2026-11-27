@@ -13,6 +13,16 @@ struct SettingsView: View {
         let rule = store.data.settings.stopRule
         Form {
             Section {
+                Button { nav.path.append(.upgrades) } label: {
+                    HStack {
+                        Label("Upgrades", systemImage: "wrench.and.screwdriver")
+                        Spacer()
+                        Text("\(store.upgradesOwned) owned").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+                    }
+                }
+            }
+            Section {
                 Toggle("Sounds", isOn: $soundOn)
             } footer: {
                 Text("The sounds follow the mute switch.")

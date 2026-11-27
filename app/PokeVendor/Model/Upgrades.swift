@@ -382,3 +382,11 @@ extension GameStore {
         Balance.productionQuality[hasUpgrade(.cameraKit) ? 2 : hasUpgrade(.studioLights) ? 1 : 0]
     }
 }
+
+@MainActor
+extension GameStore {
+    /// The upgrades the player owns, with the vendor kit, each centering tool level, and analytics.
+    var upgradesOwned: Int {
+        data.upgrades.count + (data.vendorKit ? 1 : 0) + data.centeringTool + (social.analytics ? 1 : 0)
+    }
+}
