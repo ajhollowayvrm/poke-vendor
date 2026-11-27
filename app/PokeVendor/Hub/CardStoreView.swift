@@ -490,7 +490,7 @@ struct CardStoreView: View {
             } label: {
                 HStack(spacing: 10) {
                     Image(systemName: on ? "checkmark.circle.fill" : "circle").foregroundStyle(on ? Theme.cyan : Theme.muted)
-                    ItemLine(item: item)
+                    ItemLine(item: item, storeTag: false)
                     Spacer()
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(money(store.storePrice(item: item))).font(.subheadline.monospaced())
@@ -508,7 +508,7 @@ struct CardStoreView: View {
 
     private func plainStockRow(_ item: ShowItem) -> some View {
         HStack(spacing: 10) {
-            ItemLine(item: item)
+            ItemLine(item: item, storeTag: false)
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text(money(store.storePrice(item: item))).font(.subheadline.monospaced())
