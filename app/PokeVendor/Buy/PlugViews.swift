@@ -77,7 +77,7 @@ struct PlugSection: View {
                     .primaryButton()
                     .tint(Theme.orange)
                     .controlSize(.small)
-                    .disabled(!store.canAfford(total) || total > Balance.plugMaxOrder)
+                    .disabled(!store.canAffordBuy(total) || total > Balance.plugMaxOrder)
             }
         }
         .padding(12)

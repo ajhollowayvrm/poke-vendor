@@ -130,7 +130,7 @@ struct StoreView: View {
                 HStack {
                     Text(header).font(.caption).foregroundStyle(Theme.muted)
                     Spacer()
-                    Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                    Text(store.buyCashLabel).font(.caption.monospaced())
                 }
                 if let message {
                     Banner(text: message, color: Theme.cyan)
@@ -210,8 +210,8 @@ struct StoreView: View {
 
     private func purchase(_ offer: StoreOffer, bot: Bool = false) {
         let total = offer.price + offer.shipping
-        guard store.canAfford(total) else {
-            message = "You need \(money(total)). You have \(money(store.cash))."
+        guard store.canAffordBuy(total) else {
+            message = "You need \(money(total)). You have \(money(store.buyCash))."
             return
         }
         if store_ == .pokemonCenter {

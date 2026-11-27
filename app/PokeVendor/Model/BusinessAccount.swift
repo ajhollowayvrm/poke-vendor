@@ -55,6 +55,22 @@ extension GameStore {
         save()
     }
 
+    /// The buy account's balance and label, for the Buy screens. A screen checks a buy with `canAffordBuy`, because
+    /// `canAfford` reads the active account, which is the player's own outside a buy.
+    var buyCash: Double { balance(buyAccount) }
+    var buyCashLabel: String { "\(buyAccount == .business ? "Business" : "Cash") \(money(buyCash))" }
+    func canAffordBuy(_ amount: Double) -> Bool { buyCash >= amount - 0.001 }
+
+    /// The account that pays the distributor: the business account when the player has one (Model/Wholesale.swift).
+    var distributorAccount: MoneyAccount { hasBusinessAccount ? .business : .personal }
+
+    /// Makes `account` the active account until the returned function runs.
+    func paying(from account: MoneyAccount) -> () -> Void {
+        let before = accountOverride
+        accountOverride = account
+        return { self.accountOverride = before }
+    }
+
     /// Makes the buy account the active account until the returned function runs, so `canAfford`, `cash`, and
     /// `addLedger` use it. Each buy on the Buy screen starts with `let restore = payAsBuyer(); defer { restore() }`.
     func payAsBuyer() -> () -> Void {

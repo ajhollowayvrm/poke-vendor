@@ -259,11 +259,12 @@ struct HubView: View {
                 store.claimDrawingWin(win.id)
             } label: {
                 ChevronRow(icon: "ticket", title: "Claim your drawing win: \(name)",
-                           detail: "Pay \(money(win.price)) · until \(GameCalendar.date(win.claimUntil).text)",
-                           accent: store.canAfford(win.price))
+                           // The claim pays from the Buy screen's account, so the row names it.
+                           detail: "Pay \(money(win.price))\(store.hasBusinessAccount ? " from \(store.buyAccount == .business ? "the business" : "your own") account" : "") · until \(GameCalendar.date(win.claimUntil).text)",
+                           accent: store.canAffordBuy(win.price))
             }
             .buttonStyle(.plain)
-            .disabled(!store.canAfford(win.price))
+            .disabled(!store.canAffordBuy(win.price))
         }
         if store.salesToday.isEmpty, store.restocksNow.isEmpty, store.machineRestocksNow.isEmpty, store.meetsToday.isEmpty, store.showToday == nil, store.meetupsToday.isEmpty,
            store.data.retail.drawingWins.isEmpty {

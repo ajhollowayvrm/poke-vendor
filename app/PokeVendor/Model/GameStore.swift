@@ -1000,6 +1000,8 @@ final class GameStore {
     /// One attempt per Pokemon Center drop (docs/12-acquiring-product.md, Pokemon Center drops). The checkout bot raises
     /// the chance, adds scalper heat, and raises the risk that the store cancels the order (proposals 1.5 and 2.6).
     func attemptDrop(_ offer: StoreOffer, bot: Bool = false) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         let useBot = bot && hasUpgrade(.checkoutBot)
         guard !data.pokemonCenterAttempted, canAfford(offer.price + offer.shipping) else { return false }
         data.pokemonCenterAttempted = true

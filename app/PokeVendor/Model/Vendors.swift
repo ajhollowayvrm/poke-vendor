@@ -284,9 +284,12 @@ enum VendorFloor {
     static func tables(for size: ShowSize, recurring: [Contact], total: Int? = nil) -> [Vendor] {
         var vendors = recurring.map { Vendor(name: $0.name, kind: $0.kind.vendorKind, items: stock($0.kind.vendorKind), contactID: $0.id) }
         var fill = tables(for: size, total: total)
-        // Drop one stranger of the same kind for each recurring vendor, so the table count stays the same.
+        // Drop one stranger for each recurring vendor, so the table count stays the same: one of the same kind, else
+        // any stranger, when a small show has fewer tables of that kind than the player's contacts.
         for v in vendors {
-            if let i = fill.firstIndex(where: { $0.kind == v.kind && $0.contactID == nil }) { fill.remove(at: i) }
+            if let i = fill.firstIndex(where: { $0.kind == v.kind && $0.contactID == nil }) ?? fill.firstIndex(where: { $0.contactID == nil }) {
+                fill.remove(at: i)
+            }
         }
         let names = Set(vendors.map(\.name))
         vendors += fill.filter { !names.contains($0.name) }
@@ -313,8 +316,7 @@ enum VendorFloor {
         var i = 0
         while diff != 0 && i < 50 {
             let k = counts.indices.max { counts[$0].1 < counts[$1].1 } ?? 0
-            let j = diff > 0 ? i % counts.count : k
-            if diff > 0 { counts[j].1 += 1; diff -= 1 } else if counts[j].1 > 1 { counts[j].1 -= 1; diff += 1 }
+            if diff > 0 { counts[k].1 += 1; diff -= 1 } else if counts[k].1 > 1 { counts[k].1 -= 1; diff += 1 }
             i += 1
         }
         return counts

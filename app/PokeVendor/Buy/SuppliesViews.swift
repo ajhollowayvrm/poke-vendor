@@ -15,7 +15,7 @@ struct SuppliesView: View {
                     Text("Packs arrive at once. With none in hand, you pay \(Int(Balance.supplyRushFactor))x for each piece.")
                         .font(.caption).foregroundStyle(Theme.muted)
                     Spacer()
-                    Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                    Text(store.buyCashLabel).font(.caption.monospaced())
                 }
                 if let message { Banner(text: message, color: Theme.cyan, icon: "info.circle.fill") }
                 DetailBox(title: "What it costs") {
@@ -40,7 +40,7 @@ struct SuppliesView: View {
                             Button("Buy") { message = store.buySupply(item, packs: n) ?? "Bought \(n * item.packSize) \(item.name.lowercased())." }
                                 .primaryButton()
                                 .controlSize(.small)
-                                .disabled(!store.canAfford(store.supplyPackPrice(item) * Double(n)))
+                                .disabled(!store.canAffordBuy(store.supplyPackPrice(item) * Double(n)))
                         }
                     }
                     .padding(12)
@@ -69,7 +69,7 @@ struct SuppliesView: View {
                                 }
                                 .primaryButton()
                                 .controlSize(.small)
-                                .disabled(!store.canAfford(item.casePrice * Double(n)))
+                                .disabled(!store.bizAfford(item.casePrice * Double(n)))
                             }
                         }
                         .padding(12)

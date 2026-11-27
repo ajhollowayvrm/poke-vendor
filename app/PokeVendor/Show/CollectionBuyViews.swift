@@ -416,7 +416,7 @@ struct EbayLotSheet: View {
                             Text("Buy · \(money(listing.total))").frame(maxWidth: .infinity)
                         }
                         .primaryButton()
-                        .disabled(!store.canAfford(listing.total))
+                        .disabled(!store.canAffordBuy(listing.total))
                         Text("\(money(listing.price)) and \(money(Balance.ebayLotShipping)) shipping. It arrives in \(Balance.ebayLotShipDays.lowerBound) to \(Balance.ebayLotShipDays.upperBound) days. You cannot return it.")
                             .font(.caption)
                             .foregroundStyle(Theme.muted)

@@ -19,7 +19,7 @@ struct WholesaleView: View {
                         Text(header).font(.caption).foregroundStyle(Theme.muted)
                         Spacer()
                         // A store owner's distributor orders bill the business account (Model/Wholesale.swift).
-                        Text(store.hasBusinessAccount ? "Business \(money(store.businessCash))" : "Cash \(money(store.cash))")
+                        Text("\(store.distributorAccount == .business ? "Business" : "Cash") \(money(store.balance(store.distributorAccount)))")
                             .font(.caption.monospaced())
                     }
                     if store.hasStoreAccount { repBox } else { hobbyBox }
@@ -161,7 +161,7 @@ struct WholesaleView: View {
                 Button("Order") { message = store.buyWholesale(offer, cases: n) ?? "Ordered. It arrives in \(Balance.wholesaleDeliveryDays) days." }
                     .primaryButton()
                     .controlSize(.small)
-                    .disabled(left == 0 || !store.canAfford(offer.casePrice * Double(n)))
+                    .disabled(left == 0 || !store.canAffordWholesale(offer.casePrice * Double(n)))
             }
         }
         .padding(12)
@@ -207,7 +207,7 @@ struct CaseSplitsView: View {
                                 Button("Take \(n)") { message = store.joinSplit(split.id, boxes: n) ?? "You are in. The boxes arrive on day \(split.arrivesDay + 1)." }
                                     .primaryButton()
                                     .controlSize(.small)
-                                    .disabled(!store.canAfford(split.pricePerBox * Double(n)))
+                                    .disabled(!store.canAffordBuy(split.pricePerBox * Double(n)))
                                 if split.mine == 0 {
                                     Button("Pass") { store.declineSplit(split.id) }.buttonStyle(.bordered).controlSize(.small)
                                 }

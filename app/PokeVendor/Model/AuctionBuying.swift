@@ -61,6 +61,8 @@ struct AuctionLot: Codable, Identifiable, Hashable {
     var looksOff: Bool?
     /// The player led at the last End Day, so the morning report can say when another bidder passes them.
     var leading: Bool?
+    /// The account the player bid from. The lot charges it when it closes. Nil: the player's own.
+    var payAccount: MoneyAccount?
 
     var hasRival: Bool { rivalMax > opening }
 
@@ -313,8 +315,11 @@ extension GameStore {
     }
 
     /// The cash that the player's other top bids can take: the total at each top bid of each open lot.
-    func committedBids(except id: UUID? = nil) -> Double {
-        openLots.filter { $0.id != id }.reduce(0) { sum, lot in sum + (lot.playerMax.map { lotTotal(lot, hammer: $0) } ?? 0) }
+    /// The top bids that hold money in an account: the active account, or `account`.
+    func committedBids(except id: UUID? = nil, account: MoneyAccount? = nil) -> Double {
+        let from = account ?? activeAccount
+        return openLots.filter { $0.id != id && ($0.payAccount ?? .personal) == from }
+            .reduce(0) { sum, lot in sum + (lot.playerMax.map { lotTotal(lot, hammer: $0) } ?? 0) }
     }
 
     /// True while the lot offers Buy It Now: an eBay lot with no bid yet.
@@ -344,6 +349,7 @@ extension GameStore {
         defer { restore() }
         guard let i = data.auctionLots.firstIndex(where: { $0.id == lotID }), bidBlock(data.auctionLots[i], max: max) == nil else { return false }
         data.auctionLots[i].playerMax = (max * 100).rounded() / 100
+        data.auctionLots[i].payAccount = activeAccount == .business ? .business : nil
         let lot = data.auctionLots[i]
         let view = lotView(lot)
         data.auctionLots[i].leading = view.playerLeads
@@ -379,7 +385,8 @@ extension GameStore {
     /// The player wins when their top bid beats the rivals' top bid by a step. The price is one step over the rivals,
     /// or the opening bid when no rival bid.
     private func closeLot(_ lot: AuctionLot) -> String? {
-        let restore = payAsBuyer()
+        // The lot charges the account the player bid from, not the one picked now.
+        let restore = paying(from: lot.payAccount ?? .personal)
         defer { restore() }
         guard let mine = lot.playerMax else { return nil }
         let step = Self.bidIncrement(lot.rivalMax)

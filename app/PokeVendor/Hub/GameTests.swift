@@ -2560,6 +2560,10 @@ final class GameTests {
               "the show info did not reach the show day")
         check(VendorFloor.plan(.local, total: 20).reduce(0) { $0 + $1.1 } == 20 && VendorFloor.plan(.local, total: 9).reduce(0) { $0 + $1.1 } == 9,
               "the booth plan does not add up to the booth count")
+        // The player's dealers take strangers' tables, so the floor keeps the booth count.
+        let dealers = store.data.contacts.filter { $0.kind.isVendor }.prefix(4)
+        let floor = VendorFloor.tables(for: .local, recurring: Array(dealers), total: 9)
+        check(dealers.isEmpty || floor.count <= 9, "the floor has more tables than the show's booths: \(floor.count)")
     }
 
     // MARK: - The account that buying pays from
@@ -2590,6 +2594,30 @@ final class GameTests {
             GameStore.forceFill = nil
             GameStore.forceWholesaleMissing = nil
         } else { check(false, "no wholesale offer for the account test") }
+
+        // A cancelled drop order refunds the account that paid.
+        store.setBuyAccount(.business)
+        if let product = SetLibrary.catalog.first(where: { $0.kind == "Booster bundle" }), var item = store.addTestProduct(product.id) {
+            item.status = .arriving(daysLeft: 3, from: "Target.com")
+            if let i = store.data.sealed.firstIndex(where: { $0.id == item.id }) { store.data.sealed[i] = item }
+            let restore = store.payAsBuyer()
+            store.addDropOrder(item: item, source: "Target.com", bot: false, refund: 40, deliveryDays: 3)
+            restore()
+            personal = store.personalCash; business = store.businessCash
+            if let order = store.dropOrder(for: item.id) { _ = store.cancelOrder(order) }
+            check(store.businessCash - business > 39.99 && abs(store.personalCash - personal) < 0.001,
+                  "a cancelled business order refunded the player's own account")
+        } else { check(false, "no product for the refund test") }
+        // A top bid holds money only in the account it was placed from.
+        if let lot = store.openLots.first, let i = store.data.auctionLots.firstIndex(where: { $0.id == lot.id }) {
+            store.data.auctionLots[i].playerMax = lot.opening
+            store.data.auctionLots[i].payAccount = .business
+            check(store.committedBids(account: .business) > 0 && store.committedBids(account: .personal) == 0,
+                  "a business bid held the player's own cash")
+            store.data.auctionLots[i].playerMax = nil
+            store.data.auctionLots[i].payAccount = nil
+        }
+        store.setBuyAccount(.personal)
     }
 
     // MARK: - Quick pick for the shelves

@@ -108,7 +108,7 @@ extension GameStore {
         let onTerms = buyingOnTerms && termsBlock(requested) == nil
         // A player with a store buys from a distributor with the business account: the hobby account and the secondary
         // wholesaler both (Model/BusinessAccount.swift). Without a store, the player's own account pays.
-        let account: MoneyAccount = hasBusinessAccount ? .business : .personal
+        let account = distributorAccount
         guard onTerms || balance(account) >= requested - 0.001 else {
             return "You need \(money(requested)). \(account == .business ? "The business account has" : "You have") \(money(balance(account)))."
         }
@@ -281,4 +281,12 @@ extension GameStore {
         save()
     }
     #endif
+}
+
+@MainActor
+extension GameStore {
+    /// True when a distributor order of this amount can go through: on net-30 terms, or paid by the distributor account.
+    func canAffordWholesale(_ amount: Double) -> Bool {
+        (buyingOnTerms && termsBlock(amount) == nil) || balance(distributorAccount) >= amount - 0.001
+    }
 }

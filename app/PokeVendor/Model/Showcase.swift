@@ -114,9 +114,11 @@ extension ShowSession {
 
     /// A whale: a big buyer with no budget cap. Some ask about a showcase card. The rest want the dearest items on the
     /// table, and pay up to 115% of market (or the PC price, for a PC item).
-    func makeWhale() -> Visitor? {
+    /// `showcase`: the showcase is out at this visit. Without it, the whale asks only about the table, and does not mention
+    /// a case (a big-spender show sends whales with no showcase, docs/20-card-shows.md).
+    func makeWhale(showcase: Bool = true) -> Visitor? {
         let name = Self.names.randomElement() ?? "A collector"
-        if Double.random(in: 0..<1) < Balance.showcaseAskShare || table.isEmpty, let v = makeShowcaseBuyer(name: name) {
+        if showcase, Double.random(in: 0..<1) < Balance.showcaseAskShare || table.isEmpty, let v = makeShowcaseBuyer(name: name) {
             return v
         }
         let dearest = Array(table.sorted { $0.market > $1.market }.prefix(max(1, table.count / 3)))
@@ -126,7 +128,7 @@ extension ShowSession {
         if item.pc, top < ask - 0.001 { return nil }
         let offer = item.pc ? ask : Self.round(min(ask, top * Double.random(in: 0.85...0.95)))
         return Visitor(type: .collector, name: name, intent: .buy, item: item, limit: min(top, ask), offer: offer, patience: 2,
-                       line: "Nice case. I'm here for the big cards. " + (offer >= ask ? "I'll take the \(item.name) at your price."
+                       line: (showcase ? "Nice case. " : "") + "I'm here for the big cards. " + (offer >= ask ? "I'll take the \(item.name) at your price."
                                                                                        : "Would you take \(money(offer)) for the \(item.name)?"))
     }
 

@@ -155,7 +155,8 @@ extension GameStore {
             day += 1
         }
         // Every show to come gets its info. A show from an older build gets it here too.
-        for i in data.shows.indices where data.shows[i].spenders == nil && data.shows[i].startDay > data.day {
+        // A booked show keeps no info, so its table fee stays what the player paid.
+        for i in data.shows.indices where data.shows[i].spenders == nil && data.shows[i].startDay > data.day && !data.shows[i].booked {
             Self.fillShowInfo(&data.shows[i])
         }
         let oldest = data.day - 14
@@ -1349,7 +1350,7 @@ final class ShowSession {
         // With the showcase out, a whale comes more often. Some whales ask about a showcase card.
         if showcaseOut, Double.random(in: 0..<1) < store.showcaseWhaleChance { v = makeWhale() }
         // A show with many big spenders sends whales to the table (docs/20-card-shows.md, Show info).
-        if v == nil, !table.isEmpty, let w = venue.whaleShare, Double.random(in: 0..<1) < w { v = makeWhale() }
+        if v == nil, !table.isEmpty, let w = venue.whaleShare, Double.random(in: 0..<1) < w { v = makeWhale(showcase: showcaseOut) }
         // At the player's store, some people come with a job for the player (Model/CounterEvents.swift).
         if v == nil, venue.kind == .store, Double.random(in: 0..<1) < Balance.counterEventShare {
             if let event = makeCounterEvent() { return event }

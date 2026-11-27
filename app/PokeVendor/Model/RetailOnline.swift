@@ -14,6 +14,8 @@ struct DrawingEntry: Codable, Identifiable, Hashable {
 /// An online order that the store can still cancel (proposal 1.5).
 /// A new field must be Optional. This type decodes inside an array or a dictionary, so a missing key drops all of it.
 struct DropOrder: Codable, Identifiable, Hashable {
+    /// The account that paid. The refund of a cancelled order goes back to it. Nil: the player's own.
+    var account: MoneyAccount?
     var id = UUID()
     let itemID: UUID
     /// "Pokemon Center" or "Target.com".
@@ -187,8 +189,10 @@ extension GameStore {
     /// at `daysLeft <= 1`, and `retailOrdersEndDay` runs after it (A-M2).
     func addDropOrder(item: SealedItem, source: String, bot: Bool, refund: Double, deliveryDays: Int) {
         let window = 1...max(1, min(Balance.dropCancelWindowMax, deliveryDays - 1))
-        let order = DropOrder(itemID: item.id, source: source, name: item.name, rollDay: data.day + Int.random(in: window),
+        var order = DropOrder(itemID: item.id, source: source, name: item.name, rollDay: data.day + Int.random(in: window),
                               chance: bot ? Balance.dropCancelBotChance : Balance.dropCancelChance, refund: refund, bot: bot)
+        // The buy runs inside payAsBuyer, so the active account is the one that paid.
+        order.account = activeAccount == .business ? .business : nil
         data.retail.dropOrders.append(order)
     }
 
@@ -204,7 +208,7 @@ extension GameStore {
         default: return nil
         }
         data.sealed.removeAll { $0.id == id }
-        addLedger(order.refund, .sealed, "Order cancelled · \(order.name) · \(order.source)")
+        addLedger(order.refund, .sealed, "Order cancelled · \(order.name) · \(order.source)", account: order.account ?? .personal)
         if order.bot {
             recordHiddenAct(.botOrderCancelled, weight: 0.5, note: "\(order.source) flagged your bot order for \(order.name)")
         }

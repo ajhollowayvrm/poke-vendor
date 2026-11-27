@@ -11,7 +11,7 @@ struct ChainSitesView: View {
             VStack(spacing: 14) {
                 HStack {
                     Spacer()
-                    Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                    Text(store.buyCashLabel).font(.caption.monospaced())
                 }
                 if let message { Banner(text: message, color: Theme.cyan) }
 
@@ -89,8 +89,8 @@ struct ChainSitesView: View {
     }
 
     private func attempt(_ offer: StoreOffer, bot: Bool) {
-        guard store.canAfford(offer.price) else {
-            message = "You need \(money(offer.price)). You have \(money(store.cash))."
+        guard store.canAffordBuy(offer.price) else {
+            message = "You need \(money(offer.price)). You have \(money(store.buyCash))."
             return
         }
         let used = { store.data.retail.targetAttemptDay == store.day ? store.data.retail.targetAttempts : 0 }

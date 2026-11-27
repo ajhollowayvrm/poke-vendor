@@ -23,7 +23,7 @@ struct AuctionsView: View {
                 }
                 .pickerStyle(.segmented)
                 HStack {
-                    Text("Cash \(money(store.cash))").font(.subheadline.monospaced())
+                    Text(store.buyCashLabel).font(.subheadline.monospaced())
                     Spacer()
                     Text("Day \(store.day + 1)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                 }
@@ -139,9 +139,9 @@ struct AuctionsView: View {
     @ViewBuilder private var ebay: some View {
         Text("Set your top bid. eBay bids for you, one step at a time, up to it. Other bidders often wait for the last day. A lot can be a fake. Buy It Now goes away with the first bid.")
             .font(.caption).foregroundStyle(Theme.muted)
-        let held = store.committedBids()
+        let held = store.committedBids(account: store.buyAccount)
         if held > 0 {
-            Text("Your top bids hold \(money(held)) of your cash. A new bid can use \(money(max(0, store.cash - held))).")
+            Text("Your top bids hold \(money(held)) of your cash. A new bid can use \(money(max(0, store.buyCash - held))).")
                 .font(.caption.monospaced()).foregroundStyle(Theme.cyan)
         }
         ForEach(store.ebayLots) { lot in lotRow(lot) }
