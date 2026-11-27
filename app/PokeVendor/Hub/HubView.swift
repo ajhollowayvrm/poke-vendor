@@ -25,7 +25,6 @@ struct HubView: View {
                     dayHeader
                     alerts
                     tiles
-                    todayCard
                     freeActions
                     timeActions
                     offersBox
@@ -329,8 +328,10 @@ struct HubView: View {
         return "\(selling) selling · \(mine.count) bid\(mine.count == 1 ? "" : "s")\(outbid > 0 ? " · \(outbid) outbid" : "")"
     }
 
-    private var todayCard: some View {
-        DetailBox(title: "Today") {
+    /// The day job. A player with no job sees the job board, unless they own a store: then the store is the job, and
+    /// its shift shows in the plans. A store owner who keeps a day job sees both.
+    @ViewBuilder private var jobRows: some View {
+        if store.job != nil || store.cardStore == nil {
             Button { nav.path.append(.job) } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
@@ -361,66 +362,70 @@ struct HubView: View {
                 .controlSize(.small)
             }
             Divider().overlay(Theme.line)
-            HStack {
-                Text("Rent \(money(store.rentNow))").font(.subheadline)
-                Spacer()
-                Text("due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s")")
-                    .font(.subheadline.monospaced())
-                    .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
-            }
-            Divider().overlay(Theme.line)
-            Button { nav.path.append(.cardStore) } label: {
-                HStack {
-                    Image(systemName: "storefront").foregroundStyle(Theme.cyan)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(store.cardStore?.name ?? "Open your own store").font(.subheadline)
-                        Text(storeDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            Divider().overlay(Theme.line)
-            Button { nav.path.append(.auctions) } label: {
-                HStack {
-                    Image(systemName: "hammer").foregroundStyle(Theme.cyan)
-                    Text("Auctions").font(.subheadline)
-                    Spacer()
-                    Text(auctionDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            Divider().overlay(Theme.line)
-            let space = storageSpace
-            Button { nav.path.append(.storage) } label: {
-                HStack {
-                    Image(systemName: "shippingbox").foregroundStyle(space.over ? Theme.orange : Theme.cyan)
-                    Text("Storage").font(.subheadline)
-                    Spacer()
-                    Text(space.text).font(.caption.monospaced())
-                        .foregroundStyle(space.over ? Theme.orange : Theme.muted)
-                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            Divider().overlay(Theme.line)
-            Button { nav.path.append(.upgrades) } label: {
-                HStack {
-                    Image(systemName: "wrench.and.screwdriver").foregroundStyle(Theme.cyan)
-                    Text("Upgrades").font(.subheadline)
-                    Spacer()
-                    Text("\(ownedUpgrades) owned").font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                    Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
         }
+    }
+
+    /// The places the player manages: rent, the store, auctions, storage, and upgrades.
+    @ViewBuilder private var placeRows: some View {
+        HStack {
+            Text("Rent \(money(store.rentNow))").font(.subheadline)
+            Spacer()
+            Text("due in \(store.daysUntilRent) day\(store.daysUntilRent == 1 ? "" : "s")")
+                .font(.subheadline.monospaced())
+                .foregroundStyle(store.daysUntilRent <= Balance.rentWarningDays ? Theme.orange : Theme.muted)
+        }
+        Divider().overlay(Theme.line)
+        Button { nav.path.append(.cardStore) } label: {
+            HStack {
+                Image(systemName: "storefront").foregroundStyle(Theme.cyan)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(store.cardStore?.name ?? "Open your own store").font(.subheadline)
+                    Text(storeDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        Divider().overlay(Theme.line)
+        Button { nav.path.append(.auctions) } label: {
+            HStack {
+                Image(systemName: "hammer").foregroundStyle(Theme.cyan)
+                Text("Auctions").font(.subheadline)
+                Spacer()
+                Text(auctionDetail).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        Divider().overlay(Theme.line)
+        let space = storageSpace
+        Button { nav.path.append(.storage) } label: {
+            HStack {
+                Image(systemName: "shippingbox").foregroundStyle(space.over ? Theme.orange : Theme.cyan)
+                Text("Storage").font(.subheadline)
+                Spacer()
+                Text(space.text).font(.caption.monospaced())
+                    .foregroundStyle(space.over ? Theme.orange : Theme.muted)
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        Divider().overlay(Theme.line)
+        Button { nav.path.append(.upgrades) } label: {
+            HStack {
+                Image(systemName: "wrench.and.screwdriver").foregroundStyle(Theme.cyan)
+                Text("Upgrades").font(.subheadline)
+                Spacer()
+                Text("\(ownedUpgrades) owned").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Image(systemName: "chevron.right").foregroundStyle(Theme.muted)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     private var storeDetail: String {
@@ -478,6 +483,8 @@ struct HubView: View {
 
     private var timeActions: some View {
         DetailBox(title: "Plans for today") {
+            jobRows
+            seriesRows
             // A visit that waits: the player stepped out, or the app quit during it (docs/40-resume-events.md).
             if let event = store.activeEvent {
                 Button { nav.encounter = EncounterSession(session: event) } label: {
@@ -593,6 +600,8 @@ struct HubView: View {
                 .disabled(block != nil)
             }
             eventRows
+            Divider().overlay(Theme.line)
+            placeRows
         }
         .confirmationDialog(meetChoice.map { $0 == .leagueNight ? "League night" : $0.label } ?? "",
                             isPresented: Binding(get: { meetChoice != nil }, set: { if !$0 { meetChoice = nil } }),
@@ -601,6 +610,43 @@ struct HubView: View {
             Button("Just browse") { goToMeet(kind, browse: true) }
         } message: { _ in
             Text("Just browse: no spot. Pack a bag, look through other people's binders, and buy or trade. Nothing of yours is for sale.")
+        }
+    }
+
+    /// Videos due today: a daily series episode, a show vlog to post, and grading reveals to post (Model/Shorts.swift).
+    /// Auctions you bid on that end today.
+    @ViewBuilder private var seriesRows: some View {
+        let today = store.day
+        ForEach(store.shorts.series.filter { $0.format.daily && $0.lastEpisodeDay != today && ($0.format != .pnl || today <= $0.lastDay) }) { s in
+            Button { nav.path.append(.social) } label: {
+                ChevronRow(icon: "film", title: "Record today's episode: \(s.name)",
+                           detail: "Episode \(s.episodes + 1)" + (s.missed > 0 ? " · \(s.missed) day\(s.missed == 1 ? "" : "s") missed" : " · momentum \(String(format: "%.1f", s.momentum))×"),
+                           accent: true)
+            }
+            .buttonStyle(.plain)
+        }
+        if let vlog = store.data.shorts.vlog, !vlog.posted, vlog.day == today {
+            Button { nav.path.append(.social) } label: {
+                ChevronRow(icon: "video", title: "Post your vlog of \(vlog.venue)", detail: "Only today · a long video", accent: true)
+            }
+            .buttonStyle(.plain)
+        }
+        let reveals = store.openReveals
+        if !reveals.isEmpty {
+            Button { nav.path.append(.social) } label: {
+                ChevronRow(icon: "seal", title: "Post a grading reveal",
+                           detail: "\(reveals.count) submission\(reveals.count == 1 ? "" : "s") back · post within \(Balance.revealDays) days", accent: true)
+            }
+            .buttonStyle(.plain)
+        }
+        let endingBids = store.openLots.filter { $0.endDay == today && $0.playerMax != nil }
+        if !endingBids.isEmpty {
+            let outbid = endingBids.filter { !store.lotView($0).playerLeads }.count
+            Button { nav.path.append(.auctions) } label: {
+                ChevronRow(icon: "hammer", title: "Auction\(endingBids.count == 1 ? "" : "s") ending today",
+                           detail: "\(endingBids.count) with your bid" + (outbid > 0 ? " · outbid on \(outbid)" : " · you lead"), accent: outbid > 0)
+            }
+            .buttonStyle(.plain)
         }
     }
 

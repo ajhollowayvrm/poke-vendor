@@ -584,19 +584,29 @@ struct CardStoreView: View {
         return DetailBox(title: "Hours and closed days") {
             HStack {
                 Menu {
+                    // With a day job, only hours that the owner can work show as choices (storeHoursBlock).
                     ForEach(Balance.storeOpenChoices, id: \.self) { h in
-                        Button(GameStore.clock(h)) { store.setStoreHours(open: h, length: (next ?? now).length) }
+                        let length = store.storeHoursBlock(open: h, length: (next ?? now).length) == nil ? (next ?? now).length
+                            : Balance.storeLengthChoices.first { store.storeHoursBlock(open: h, length: $0) == nil } ?? (next ?? now).length
+                        Button(GameStore.clock(h)) { store.setStoreHours(open: h, length: length) }
+                            .disabled(store.storeHoursBlock(open: h, length: length) != nil)
                     }
                 } label: { Text("Open \(GameStore.clock((next ?? now).open))").frame(maxWidth: .infinity) }
                 .buttonStyle(.bordered)
                 Menu {
                     ForEach(Balance.storeLengthChoices, id: \.self) { l in
                         Button("\(Int(l)) hours") { store.setStoreHours(open: (next ?? now).open, length: l) }
+                            .disabled(store.storeHoursBlock(open: (next ?? now).open, length: l) != nil)
                     }
                 } label: { Text("\(Int((next ?? now).length)) hours").frame(maxWidth: .infinity) }
                 .buttonStyle(.bordered)
             }
             .controlSize(.small)
+            // The posted hours run into the day job: the store stands locked until the owner gets there.
+            if let block = store.storeHoursBlock(open: (next ?? now).open, length: (next ?? now).length) {
+                Text("\(block) The store stands locked until you get there. Pick later hours or schedule staff.")
+                    .font(.caption).foregroundStyle(Theme.orange)
+            }
             Text("Today: \(GameStore.clock(now.open)) – \(GameStore.clock(now.close))."
                  + (next.map { " From tomorrow: \(GameStore.clock($0.open)) – \(GameStore.clock($0.close))." } ?? "")
                  + " Most customers come from 3 to 7 PM. Staff are paid for every open hour they work.")

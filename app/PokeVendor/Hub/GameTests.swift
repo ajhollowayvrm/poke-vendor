@@ -2595,6 +2595,14 @@ final class GameTests {
         check(store.storeOpenHour == 11 && store.storeCloseHour == 23, "the new hours did not start tomorrow")
         check(store.storeHoursTrafficFactor > 1, "a 12-hour day did not bring more people than 11 AM to 7 PM")
 
+        // With a day job and no staff, the owner can post only hours that start when the job ends.
+        store.data.jobIndex = 0
+        check(store.storeHoursBlock(open: 11, length: 8) != nil, "hours in the day job were allowed")
+        check(store.storeHoursBlock(open: Balance.workEnd, length: 6) == nil, "hours after the day job were blocked")
+        store.setStoreHours(open: 12, length: 8)
+        check(store.data.cardStore?.pendingHours == nil, "hours in the day job were posted")
+        store.data.jobIndex = nil
+
         // An opener: the closing half is the owner's shift.
         guard let hire = store.candidates.first else { return check(false, "no candidate to hire") }
         store.hire(hire)

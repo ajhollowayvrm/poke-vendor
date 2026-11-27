@@ -34,7 +34,8 @@ struct PlannedClosure: Codable, Hashable {
 }
 
 extension Balance {
-    static let storeOpenChoices: [Double] = [9, 10, 11, 12, 13, 14, 15]
+    /// 5 PM lets an owner with a day job and no morning staff open when the job ends.
+    static let storeOpenChoices: [Double] = [9, 10, 11, 12, 13, 14, 15, 17]
     static let storeLengthChoices: [Double] = [6, 8, 10, 12]
     static let storeLatestClose = 23.0
     /// Customers by the clock hour: fewer in the morning, the most after school and work.
@@ -75,9 +76,28 @@ extension GameStore {
         return Self.traffic(from: max(from, storeOpenHour), to: min(to, storeCloseHour)) / all
     }
 
+    /// Why the owner cannot post these hours, or nil. With a day job, the owner's shift on a weekday must start when
+    /// the job ends or later. The shift is the part of the day that the staff schedules leave open.
+    func storeHoursBlock(open: Double, length: Double) -> String? {
+        guard job != nil, let s = data.cardStore else { return nil }
+        let h = StoreHours(open: open, close: min(Balance.storeLatestClose, open + length))
+        for day in 0..<5 where s.openDays.contains(day) {
+            let c = covered(weekday: day)
+            let start: Double? = switch (c.opening, c.closing) {
+            case (true, true): nil
+            case (true, false): h.mid
+            case (false, _): h.open
+            }
+            if let start, start < Balance.workEnd {
+                return "Your job ends at \(GameStore.clock(Balance.workEnd)) on \(GameStore.weekdays[day]). Nobody covers \(GameStore.clock(start))."
+            }
+        }
+        return nil
+    }
+
     /// Posts new hours. They start tomorrow, so today's customers still find the old ones.
     func setStoreHours(open: Double, length: Double) {
-        guard var s = data.cardStore else { return }
+        guard var s = data.cardStore, storeHoursBlock(open: open, length: length) == nil else { return }
         let close = min(Balance.storeLatestClose, open + length)
         let hours = StoreHours(open: open, close: close)
         s.pendingHours = hours == storeHours ? nil : hours
