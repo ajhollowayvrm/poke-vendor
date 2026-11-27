@@ -164,6 +164,8 @@ extension GameStore {
     /// before the charge, so one win never charges twice.
     @discardableResult
     func claimDrawingWin(_ id: UUID) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         let today = data.day
         guard let win = data.retail.drawingWins.first(where: { $0.id == id }), win.claimUntil >= today,
               canAfford(win.price), let p = SetLibrary.product(win.productID) else { return false }
@@ -300,6 +302,8 @@ extension GameStore {
     /// One Target.com attempt. Without the bot, one attempt. With the bot owned, two, and the second needs the bot.
     /// Each bot attempt adds heat.
     func attemptTargetDrop(_ offer: StoreOffer, bot: Bool) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         let owns = hasUpgrade(.checkoutBot)
         let useBot = bot && owns
         let today = data.day

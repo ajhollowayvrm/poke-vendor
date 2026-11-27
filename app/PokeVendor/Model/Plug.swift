@@ -122,6 +122,8 @@ extension GameStore {
 
     /// Prepays a plug order from the cash balance. No invoice: the ledger uses `.grayMarket`, which income tax ignores.
     func orderFromPlug(_ offer: WholesaleOffer, cases: Int) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard plugOpen, cases > 0, cases <= Balance.plugMaxCases else { return nil }
         let total = offer.casePrice * Double(cases)
         guard total <= Balance.plugMaxOrder else { return "The plug does not take orders over \(money(Balance.plugMaxOrder))." }

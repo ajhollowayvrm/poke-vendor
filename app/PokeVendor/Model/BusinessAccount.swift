@@ -46,6 +46,23 @@ extension GameStore {
         return body()
     }
 
+    /// The account that buying on the Buy screen pays from: the player's choice there. Without a business account, it is
+    /// always the player's own. The distributor always uses the business account (Model/Wholesale.swift).
+    var buyAccount: MoneyAccount { hasBusinessAccount ? (data.settings.buyAccount ?? .personal) : .personal }
+
+    func setBuyAccount(_ account: MoneyAccount) {
+        data.settings.buyAccount = account
+        save()
+    }
+
+    /// Makes the buy account the active account until the returned function runs, so `canAfford`, `cash`, and
+    /// `addLedger` use it. Each buy on the Buy screen starts with `let restore = payAsBuyer(); defer { restore() }`.
+    func payAsBuyer() -> () -> Void {
+        let before = accountOverride
+        accountOverride = buyAccount
+        return { self.accountOverride = before }
+    }
+
     /// A ledger entry on the business account. Store code uses it for every store cost and sale.
     @discardableResult
     func bizLedger(_ amount: Double, _ category: LedgerEntry.Category, _ label: String, pending: Bool = false) -> UUID {

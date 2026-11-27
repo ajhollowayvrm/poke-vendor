@@ -959,6 +959,8 @@ final class GameStore {
     // MARK: - Buying
 
     func buy(_ offer: StoreOffer) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         let total = offer.price + offer.shipping
         guard canAfford(total), !data.boughtToday.contains(offer.id) else { return false }
         // A pickup set for a later day goes on the calendar (docs/12, Facebook Marketplace).

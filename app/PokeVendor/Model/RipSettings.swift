@@ -46,6 +46,8 @@ struct StopRule: Codable, Hashable {
 struct Settings: Codable, Hashable {
     var ripMode = RipMode.normal
     var stopRule = StopRule()
+    /// The account that online buying pays from, when the player has a business account. Nil: the player's own.
+    var buyAccount: MoneyAccount?
 }
 
 extension Balance {

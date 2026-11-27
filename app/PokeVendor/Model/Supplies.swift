@@ -145,6 +145,8 @@ extension GameStore {
 
     /// Buys packs from the online Supplies storefront. The packs arrive at once.
     func buySupply(_ item: SupplyItem, packs: Int) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard packs > 0 else { return nil }
         let total = supplyPackPrice(item) * Double(packs)
         guard canAfford(total) else { return "You need \(money(total)). You have \(money(cash))." }

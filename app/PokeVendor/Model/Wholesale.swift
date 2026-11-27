@@ -106,8 +106,9 @@ extension GameStore {
         guard requested >= wholesaleMinOrderNow else { return "The minimum order is \(money(Balance.wholesaleMinOrder))." }
         // A Preferred or Premier account can buy on net-30 terms (Model/DistributionLadder.swift).
         let onTerms = buyingOnTerms && termsBlock(requested) == nil
-        // The hobby account belongs to the store, so the business account pays for it (Model/BusinessAccount.swift).
-        let account: MoneyAccount = distributorTier == .hobby ? .business : .personal
+        // A player with a store buys from a distributor with the business account: the hobby account and the secondary
+        // wholesaler both (Model/BusinessAccount.swift). Without a store, the player's own account pays.
+        let account: MoneyAccount = hasBusinessAccount ? .business : .personal
         guard onTerms || balance(account) >= requested - 0.001 else {
             return "You need \(money(requested)). \(account == .business ? "The business account has" : "You have") \(money(balance(account)))."
         }
@@ -201,6 +202,8 @@ extension GameStore {
 
     /// Joins a split: pay now, and the boxes arrive after the case does.
     func joinSplit(_ id: UUID, boxes: Int) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let i = data.splits.firstIndex(where: { $0.id == id }) else { return "The split is gone." }
         let split = data.splits[i]
         guard split.closesDay >= data.day else { return "The split closed." }

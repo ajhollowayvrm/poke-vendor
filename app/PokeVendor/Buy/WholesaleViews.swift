@@ -18,7 +18,9 @@ struct WholesaleView: View {
                     HStack {
                         Text(header).font(.caption).foregroundStyle(Theme.muted)
                         Spacer()
-                        Text("Cash \(money(store.cash))").font(.caption.monospaced())
+                        // A store owner's distributor orders bill the business account (Model/Wholesale.swift).
+                        Text(store.hasBusinessAccount ? "Business \(money(store.businessCash))" : "Cash \(money(store.cash))")
+                            .font(.caption.monospaced())
                     }
                     if store.hasStoreAccount { repBox } else { hobbyBox }
                     if store.hasStoreAccount { LadderBox() }

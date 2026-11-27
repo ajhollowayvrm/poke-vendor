@@ -615,6 +615,8 @@ extension GameStore {
 
     /// Buys an eBay lot. Returns a problem, or nil when it worked.
     func buyEbayLot(_ id: UUID) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let i = data.ebayLots.firstIndex(where: { $0.id == id }) else { return "That lot sold." }
         let listing = data.ebayLots[i]
         guard canAfford(listing.total) else { return "You need \(money(listing.total))." }

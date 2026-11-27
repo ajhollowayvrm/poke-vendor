@@ -49,6 +49,7 @@ final class GameTests {
         timed("pulls", pullBoxes)
         timed("inventories", twoInventories)
         timed("quickStock", quickStock)
+        timed("buyAccount", buyAccount)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2498,6 +2499,36 @@ final class GameTests {
         check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
               "a full store did not report zero room")
         check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
+    }
+
+    // MARK: - The account that buying pays from
+
+    /// A buy on the Buy screen pays from the chosen account. A distributor order pays from the business account, also
+    /// from the secondary wholesaler.
+    private func buyAccount() {
+        fresh()
+        openTestStore()
+        store.data.cash = 10_000
+        store.moveToBusiness(5_000)
+        var personal = store.personalCash, business = store.businessCash
+        store.setBuyAccount(.business)
+        check(store.buySupply(.pennySleeve, packs: 1) == nil && store.businessCash < business && abs(store.personalCash - personal) < 0.001,
+              "a business buy did not pay from the business account")
+        personal = store.personalCash; business = store.businessCash
+        store.setBuyAccount(.personal)
+        check(store.buySupply(.pennySleeve, packs: 1) == nil && store.personalCash < personal && abs(store.businessCash - business) < 0.001,
+              "a personal buy did not pay from the player's own account")
+        check(store.activeAccount == .personal, "a buy left the business account active")
+        store.addReputation(400)
+        if let offer = store.wholesaleOffers.filter({ $0.casePrice >= Balance.wholesaleMinOrder && $0.casePrice < 4_000 }).min(by: { $0.casePrice < $1.casePrice }) {
+            GameStore.forceFill = 1
+            GameStore.forceWholesaleMissing = false
+            personal = store.personalCash; business = store.businessCash
+            check(store.buyWholesale(offer, cases: 1) == nil && store.businessCash < business && abs(store.personalCash - personal) < 0.001,
+                  "a distributor order did not pay from the business account")
+            GameStore.forceFill = nil
+            GameStore.forceWholesaleMissing = nil
+        } else { check(false, "no wholesale offer for the account test") }
     }
 
     // MARK: - Quick pick for the shelves

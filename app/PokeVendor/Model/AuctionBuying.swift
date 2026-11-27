@@ -298,6 +298,8 @@ extension GameStore {
 
     /// Why the player cannot place this top bid, or nil.
     func bidBlock(_ lot: AuctionLot, max: Double) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         if lot.endDay < data.day { return "The auction is over." }
         let least = minimumBid(lot)
         if max < least - 0.004 { return "The lowest bid you can place is \(money(least))." }
@@ -317,6 +319,8 @@ extension GameStore {
 
     /// True while the lot offers Buy It Now: an eBay lot with no bid yet.
     func canBuyNow(_ lot: AuctionLot) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let price = lot.buyNow, lot.endDay >= data.day, lot.playerMax == nil else { return false }
         return lotView(lot).bids == 0 && lotTotal(lot, hammer: price) <= cash - committedBids(except: lot.id)
     }
@@ -324,6 +328,8 @@ extension GameStore {
     /// Buys a lot at its Buy It Now price. The lot closes.
     @discardableResult
     func buyNow(_ lotID: UUID) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let lot = data.auctionLots.first(where: { $0.id == lotID }), let price = lot.buyNow, canBuyNow(lot) else { return false }
         log(deliver(lot, hammer: price, how: "Bought \(lot.name) on eBay with Buy It Now"), cash: -lotTotal(lot, hammer: price))
         data.auctionLots.removeAll { $0.id == lotID }
@@ -334,6 +340,8 @@ extension GameStore {
     /// Sets the player's top bid on a lot. A top bid can only go up.
     @discardableResult
     func placeBid(_ lotID: UUID, max: Double) -> Bool {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let i = data.auctionLots.firstIndex(where: { $0.id == lotID }), bidBlock(data.auctionLots[i], max: max) == nil else { return false }
         data.auctionLots[i].playerMax = (max * 100).rounded() / 100
         let lot = data.auctionLots[i]
@@ -371,6 +379,8 @@ extension GameStore {
     /// The player wins when their top bid beats the rivals' top bid by a step. The price is one step over the rivals,
     /// or the opening bid when no rival bid.
     private func closeLot(_ lot: AuctionLot) -> String? {
+        let restore = payAsBuyer()
+        defer { restore() }
         guard let mine = lot.playerMax else { return nil }
         let step = Self.bidIncrement(lot.rivalMax)
         // The higher top bid wins. On a tie, the rival wins: the rival bid first.

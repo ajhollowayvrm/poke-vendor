@@ -18,6 +18,18 @@ struct BuyView: View {
                     Text("Local").tag(true)
                 }
                 .pickerStyle(.segmented)
+                // The account that online buys and auction bids pay from (Model/BusinessAccount.swift, buyAccount).
+                if !local, store.hasBusinessAccount {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Picker("Pay from", selection: Binding(get: { store.buyAccount }, set: { store.setBuyAccount($0) })) {
+                            Text("Personal \(money(store.personalCash))").tag(MoneyAccount.personal)
+                            Text("Business \(money(store.businessCash))").tag(MoneyAccount.business)
+                        }
+                        .pickerStyle(.segmented)
+                        Text("Online buys, case splits, and auction bids pay from this account. The distributor always bills the business account.")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                }
                 if local {
                     StoreRunPlanner()
                 } else {
