@@ -50,6 +50,7 @@ final class GameTests {
         timed("inventories", twoInventories)
         timed("quickStock", quickStock)
         timed("buyAccount", buyAccount)
+        timed("showInfo", showInfo)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2499,6 +2500,42 @@ final class GameTests {
         check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
               "a full store did not report zero room")
         check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
+    }
+
+    // MARK: - Show info and Sunday shows (docs/20-card-shows.md, Show info)
+
+    /// Some weekends have two shows, never two on one day. Each show to come has its info, and the info reaches the show:
+    /// the crowd, the whales, the booths, and the table fee.
+    private func showInfo() {
+        fresh()
+        var seen: [Int: CardShow] = [:]
+        let start = store.day
+        for d in stride(from: start, through: start + 7 * 40, by: 7) {
+            store.data.day = d
+            store.scheduleShows()
+            for show in store.data.shows { seen[show.startDay] = show }
+        }
+        let shows = Array(seen.values)
+        var covered: [Int: Int] = [:]
+        for show in shows { for day in show.startDay...show.endDay { covered[day, default: 0] += 1 } }
+        check(covered.values.allSatisfy { $0 == 1 }, "two shows fall on one day")
+        let doubles = shows.filter { $0.size == .local && $0.startDay % 7 == 6 && seen[$0.startDay - 1] != nil }.count
+        check(doubles > 0, "no weekend had a Saturday and a Sunday show in 40 weeks")
+        check(shows.filter { $0.startDay > start }.allSatisfy { $0.spenders != nil && $0.turnout != nil && $0.booths != nil },
+              "a planned show has no info")
+        store.data.day = start
+
+        // The info reaches the show day.
+        var rich = CardShow(name: "Test Show", venue: "Hall", size: .local, startDay: store.day)
+        rich.spenders = 5; rich.turnout = 1.4; rich.booths = 20
+        var poor = rich
+        poor.spenders = 1; poor.turnout = 0.7; poor.booths = 9
+        check(rich.tableFee > poor.tableFee, "a show with more spenders does not cost more for a table")
+        let session = ShowSession(show: rich, store: store)
+        check(session.venue.whaleShare == Balance.showWhaleShares[4] && abs(session.venue.visitorsMean - rich.buyersPerDay) < 0.001,
+              "the show info did not reach the show day")
+        check(VendorFloor.plan(.local, total: 20).reduce(0) { $0 + $1.1 } == 20 && VendorFloor.plan(.local, total: 9).reduce(0) { $0 + $1.1 } == 9,
+              "the booth plan does not add up to the booth count")
     }
 
     // MARK: - The account that buying pays from

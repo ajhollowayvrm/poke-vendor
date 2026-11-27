@@ -12,7 +12,8 @@ balancing. They are in `Balance` and in `ShowSize`
 ## Shows on the calendar
 
 The calendar shows card shows up to 6 weeks ahead. Shows are on
-Saturdays.
+Saturdays and Sundays. Some weekends have two shows: a local show on
+Saturday and another one on Sunday. Two shows never fall on one day.
 
 1 show in 6 bans in-print sealed product. The calendar marks it "no
 in-print sealed". At that show, floor vendors bring no in-print sealed
@@ -22,8 +23,31 @@ banned too.
 
 | Size | Days | How often | Table fee | Walk-in entry | Buyers at a table | Booking closes |
 | --- | --- | --- | --- | --- | --- | --- |
-| Local show | 1 (Saturday) | About half of the Saturdays that have no regional show | $40 | $5 a day | About 20 visitors a day | 1 day before |
-| Regional show | 2 (Saturday and Sunday) | About 1 every 4 weeks | $150 for both days | $15 a day | About 40 visitors a day | 7 days before |
+| Local show | 1 (Saturday or Sunday) | About half of the Saturdays and 40% of the Sundays that have no regional show | About $40 | $5 a day | About 20 visitors a day | 1 day before |
+| Regional show | 2 (Saturday and Sunday) | About 1 every 4 weeks | About $150 for both days | $15 a day | About 40 visitors a day | 7 days before |
+
+### Show info
+
+Each show posts the organizer's numbers when it goes on the calendar.
+The show's screen shows them under "What to expect". Each number
+changes the show day.
+
+| Number | Range | What it changes |
+| --- | --- | --- |
+| Big spenders | 1 to 5 stars | A local buyer's budget: ×0.6, ×0.8, ×1, ×1.4, ×1.9. From 3 stars, some visitors are whales who want the dearest cards on the table: 1%, 3%, 6% of visitors. |
+| Expected crowd | ×0.7 to ×1.4 | The buyers who come to the table each day. |
+| Booths | 6 and up (local about 10 to 16, regional about 26 to 40) | The vendor tables on the floor. Each kind scales from the usual plan, with at least one of each. |
+| Table fee | | The base fee × (0.7 + 0.1 × stars + 0.3 × (crowd − 1)), to the nearest $5. A better show costs more. |
+
+- A regional show has 3 to 5 stars. A local show has 1 to 5, and most
+  have 2 or 3.
+- The booths confirm as the show comes closer: about half six weeks
+  out, and all of them in the last week. The player's vendor contacts
+  who come are always confirmed, and the screen names them.
+- The numbers are the organizer's estimate. The crowd on the day is
+  random around the expected crowd.
+- A show that an older build planned gets its numbers when the save
+  loads, or at the next End Day.
 
 - The same day always gives the same show, so the calendar does not
   change when the player looks again.

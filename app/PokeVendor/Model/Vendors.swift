@@ -280,9 +280,10 @@ extension Balance {
 enum VendorFloor {
     /// Local shows are small. Regional shows are big, and they are where the vintage is.
     /// Recurring vendors take some of the tables. The rest are strangers.
-    static func tables(for size: ShowSize, recurring: [Contact]) -> [Vendor] {
+    /// The floor at a show. `total` is the show's booth count (CardShow.booths). Nil: the usual count for the size.
+    static func tables(for size: ShowSize, recurring: [Contact], total: Int? = nil) -> [Vendor] {
         var vendors = recurring.map { Vendor(name: $0.name, kind: $0.kind.vendorKind, items: stock($0.kind.vendorKind), contactID: $0.id) }
-        var fill = tables(for: size)
+        var fill = tables(for: size, total: total)
         // Drop one stranger of the same kind for each recurring vendor, so the table count stays the same.
         for v in vendors {
             if let i = fill.firstIndex(where: { $0.kind == v.kind && $0.contactID == nil }) { fill.remove(at: i) }
@@ -292,10 +293,35 @@ enum VendorFloor {
         return vendors.shuffled()
     }
 
-    static func tables(for size: ShowSize) -> [Vendor] {
-        let plan: [(VendorKind, Int)] = size == .regional
+    /// The usual tables of each kind at a show of the size.
+    nonisolated static func plan(_ size: ShowSize) -> [(VendorKind, Int)] {
+        size == .regional
             ? [(.vintageDealer, 8), (.modernDealer, 8), (.gameShop, 4), (.collector, 7), (.mysteryPacks, 3), (.sealedDealer, 3)]
             : [(.vintageDealer, 2), (.modernDealer, 3), (.gameShop, 2), (.collector, 4), (.mysteryPacks, 1), (.sealedDealer, 1)]
+    }
+
+    nonisolated static func baseCount(_ size: ShowSize) -> Int { plan(size).reduce(0) { $0 + $1.1 } }
+
+    /// The tables of each kind for a show with `total` booths: the usual plan, scaled, with at least one of each kind.
+    nonisolated static func plan(_ size: ShowSize, total: Int?) -> [(VendorKind, Int)] {
+        let base = plan(size)
+        guard let total, total != baseCount(size) else { return base }
+        let scale = Double(total) / Double(baseCount(size))
+        var counts = base.map { ($0.0, max(1, Int((Double($0.1) * scale).rounded()))) }
+        // Rounding can miss the total by a table or two: the biggest kinds take up the difference.
+        var diff = total - counts.reduce(0) { $0 + $1.1 }
+        var i = 0
+        while diff != 0 && i < 50 {
+            let k = counts.indices.max { counts[$0].1 < counts[$1].1 } ?? 0
+            let j = diff > 0 ? i % counts.count : k
+            if diff > 0 { counts[j].1 += 1; diff -= 1 } else if counts[j].1 > 1 { counts[j].1 -= 1; diff += 1 }
+            i += 1
+        }
+        return counts
+    }
+
+    static func tables(for size: ShowSize, total: Int? = nil) -> [Vendor] {
+        let plan = plan(size, total: total)
         var used: Set<String> = []
         var vendors: [Vendor] = []
         for (kind, count) in plan {

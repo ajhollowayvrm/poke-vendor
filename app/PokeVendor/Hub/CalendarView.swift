@@ -154,12 +154,12 @@ struct ShowDetailView: View {
                         }
                         Text(dates(show)).font(.subheadline.monospaced()).foregroundStyle(Theme.cyan)
                     }
+                    expectBox(show)
                     DetailBox(title: "The show") {
-                        row("Days", show.size.days == 2 ? "2 (Saturday and Sunday)" : "1 (Saturday)")
+                        row("Days", show.size.days == 2 ? "2 (Saturday and Sunday)" : "1 (\(GameStore.weekdays[show.startDay % 7]))")
                         row("Doors", "\(GameStore.clock(Balance.showOpen)) – \(GameStore.clock(Balance.showClose))")
-                        row("Visitors at a table", "About \(Int(show.size.buyersPerDay)) a day")
                         row("Crowd", (show.size == .regional ? Crowd.regionalShow : Crowd.localShow).short)
-                        row("Table fee", money(show.size.tableFee) + (show.size.days == 2 ? " for both days" : ""))
+                        row("Table fee", money(show.tableFee) + (show.size.days == 2 ? " for both days" : ""))
                         row("Walk-in entry", money(show.size.entryFee) + " a day")
                         row("Booking closes", show.lastBookingDay < store.day ? "Closed"
                             : "\(GameCalendar.date(show.lastBookingDay).text) (\(show.lastBookingDay - store.day) days left)")
@@ -185,13 +185,13 @@ struct ShowDetailView: View {
                         }
                     } else if show.lastBookingDay >= store.day {
                         Button { store.bookTable(show.id) } label: {
-                            Text("Book a table · \(money(show.size.tableFee))").frame(maxWidth: .infinity)
+                            Text("Book a table · \(money(show.tableFee))").frame(maxWidth: .infinity)
                         }
                         .primaryButton()
                         .tint(Theme.cyan)
                         .controlSize(.large)
                         .disabled(!store.canBook(show))
-                        if !store.canAfford(show.size.tableFee) {
+                        if !store.canAfford(show.tableFee) {
                             Text("You have \(money(store.cash)).").font(.caption).foregroundStyle(Theme.orange)
                         }
                     } else {
@@ -237,7 +237,59 @@ struct ShowDetailView: View {
         let days = show.startDay - store.day
         let when = days <= 0 ? "Today" : days == 1 ? "Tomorrow" : "In \(days) days"
         return show.size.days == 2 ? "\(when) · Sat \(GameCalendar.date(show.startDay).shortText) and Sun \(GameCalendar.date(show.endDay).shortText)"
-                                   : "\(when) · Saturday, \(GameCalendar.date(show.startDay).text)"
+                                   : "\(when) · \(GameStore.weekdays[show.startDay % 7]), \(GameCalendar.date(show.startDay).text)"
+    }
+
+    /// What the organizer expects: big spenders, the crowd, and the booths that have confirmed (docs/20-card-shows.md).
+    @ViewBuilder private func expectBox(_ show: CardShow) -> some View {
+        DetailBox(title: "What to expect") {
+            if let stars = show.spenders {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Big spenders").font(.subheadline).foregroundStyle(Theme.muted)
+                    Spacer()
+                    Text(String(repeating: "★", count: stars) + String(repeating: "☆", count: 5 - stars))
+                        .font(.subheadline).foregroundStyle(stars >= 4 ? Theme.green : stars <= 1 ? Theme.orange : Theme.cyan)
+                    Text(Balance.showSpenderWords[stars - 1]).font(.subheadline.monospaced())
+                }
+            }
+            row("Buyers at a table", "About \(Int(show.buyersPerDay.rounded())) a day")
+            let confirmed = store.confirmedBooths(show)
+            row("Booths", confirmed >= show.boothCount ? "\(show.boothCount), all confirmed" : "\(confirmed) of \(show.boothCount) confirmed")
+            Text(VendorFloor.plan(show.size, total: show.booths).map { "\($0.1) \(Self.boothWord($0.0, $0.1))" }.joined(separator: " · "))
+                .font(.caption).foregroundStyle(Theme.muted)
+            let friends = store.attendingVendors(show).map(\.name)
+            if !friends.isEmpty {
+                row("Dealers you know", friends.joined(separator: ", "))
+            }
+            Text(Self.organizerNote(show)).font(.caption).foregroundStyle(Theme.muted)
+        }
+    }
+
+    private static func boothWord(_ kind: VendorKind, _ n: Int) -> String {
+        let one = switch kind {
+        case .vintageDealer: "vintage dealer"
+        case .modernDealer: "modern dealer"
+        case .gameShop: "game shop"
+        case .collector: "collector"
+        case .mysteryPacks: "mystery pack table"
+        case .sealedDealer: "sealed dealer"
+        case .garageSale, .estateSale: "table"
+        }
+        return n == 1 ? one : one + "s"
+    }
+
+    /// One line from the organizer, from the numbers.
+    private static func organizerNote(_ show: CardShow) -> String {
+        guard let stars = show.spenders else { return "The organizer has not posted the numbers yet." }
+        let crowd = (show.turnout ?? 1) >= 1.15 ? "a big crowd" : (show.turnout ?? 1) <= 0.85 ? "a small crowd" : "a usual crowd"
+        let money = switch stars {
+        case 5: "Whales are coming: buyers with big budgets for the best cards."
+        case 4: "Serious buyers with big budgets."
+        case 3: "A usual mix of budgets."
+        case 2: "Most buyers spend small."
+        default: "Mostly small spenders and kids."
+        }
+        return "The organizer expects \(crowd). \(money)"
     }
 
     private func row(_ label: String, _ value: String) -> some View {

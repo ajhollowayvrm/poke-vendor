@@ -16,7 +16,8 @@ enum ShowSize: String, Codable, Hashable {
     var label: String { self == .regional ? "Regional show" : "Local show" }
 }
 
-/// One card show on the calendar. A regional show is two days, Saturday and Sunday.
+/// One card show on the calendar. A regional show is two days, Saturday and Sunday. A local show is one day, on a
+/// Saturday or a Sunday.
 struct CardShow: Codable, Identifiable, Hashable {
     var id = UUID()
     let name: String
@@ -34,6 +35,28 @@ struct CardShow: Codable, Identifiable, Hashable {
     var rivalID: UUID?
     /// The show bans sealed product that is for sale at retail now (docs/20-card-shows.md). Optional, so old saves still load.
     var noInPrintSealed: Bool?
+    /// What the organizer expects, fixed when the show goes on the calendar (docs/20-card-shows.md, Show info). Nil on a
+    /// show from an older build until `scheduleShows` fills it in (at load and at End Day). A nil show plays as before.
+    /// Big spenders, from 1 to 5: buyer budgets at a local show, and whale buyers from 3 up.
+    var spenders: Int?
+    /// The expected crowd against a usual show of the size, from 0.7 to 1.4.
+    var turnout: Double?
+    /// The vendor tables on the floor.
+    var booths: Int?
+
+    /// The mean number of buyers who come to one table in one day.
+    var buyersPerDay: Double { size.buyersPerDay * (turnout ?? 1) }
+    /// A local buyer's budget against a usual show. Nil: as before.
+    var spendFactor: Double? { spenders.map { Balance.showSpendFactors[max(1, min(5, $0)) - 1] } }
+    /// The chance that a visitor is a whale who wants the dearest cards on the table. Nil: none.
+    var whaleShare: Double? { spenders.map { Balance.showWhaleShares[max(1, min(5, $0)) - 1] } }
+    /// The table fee: more for a show with more spenders and a bigger crowd. Rounded to $5.
+    var tableFee: Double {
+        guard let s = spenders else { return size.tableFee }
+        let factor = 0.7 + 0.1 * Double(s) + 0.3 * ((turnout ?? 1) - 1)
+        return (size.tableFee * factor / 5).rounded() * 5
+    }
+    var boothCount: Int { booths ?? VendorFloor.baseCount(size) }
 
     var endDay: Int { startDay + size.days - 1 }
     var lastBookingDay: Int { startDay - size.bookingCloses }
@@ -77,6 +100,13 @@ struct CalendarEntry: Identifiable {
 extension Balance {
     /// The share of shows that ban sealed product that is for sale at retail now.
     static let noInPrintSealedShare = 1.0 / 6
+    /// A local show on Sunday, on a weekend with no regional show.
+    static let sundayShowChance = 0.4
+    /// By big-spender stars, 1 to 5: a local buyer's budget, and the chance that a visitor is a whale.
+    static let showSpendFactors = [0.6, 0.8, 1.0, 1.4, 1.9]
+    static let showWhaleShares = [0.0, 0.0, 0.01, 0.03, 0.06]
+    /// The words for the big-spender stars.
+    static let showSpenderWords = ["Few", "Some", "A usual number", "Many", "Lots of whales"]
 }
 
 extension GameStore {
@@ -108,11 +138,53 @@ extension GameStore {
                     data.shows.append(show)
                 }
             }
+            // Some weekends have a second show: a local show on Sunday, when no regional show takes the weekend.
+            if day % 7 == 6, (day / 7) % 4 != 2 {
+                var rng = SeededRandom(seed: UInt64(day) &* 15_485_863 &+ 211)
+                if Double(rng.next()) < Balance.sundayShowChance {
+                    let saturday = data.shows.first { $0.startDay == day - 1 }?.name
+                    let names = Self.showNames.filter { $0 != saturday }
+                    let name = names[Int(rng.next() * CGFloat(names.count)) % names.count]
+                    let venue = Self.localVenues[Int(rng.next() * CGFloat(Self.localVenues.count)) % Self.localVenues.count]
+                    var show = CardShow(name: name, venue: venue, size: .local, startDay: day)
+                    show.noInPrintSealed = Double(rng.next()) < Balance.noInPrintSealedShare
+                    data.shows.append(show)
+                }
+            }
             data.showsPlannedThrough = day
             day += 1
         }
+        // Every show to come gets its info. A show from an older build gets it here too.
+        for i in data.shows.indices where data.shows[i].spenders == nil && data.shows[i].startDay > data.day {
+            Self.fillShowInfo(&data.shows[i])
+        }
         let oldest = data.day - 14
         data.shows.removeAll { $0.endDay < oldest }
+    }
+
+    /// The organizer's numbers for a show: big spenders, the crowd, and the booths. The same day gives the same numbers.
+    static func fillShowInfo(_ show: inout CardShow) {
+        var rng = SeededRandom(seed: UInt64(show.startDay) &* 2_654_435_761 &+ (show.size == .regional ? 977 : 389))
+        let roll = Double(rng.next())
+        // A regional show draws serious buyers. A local show is mostly a usual crowd, with a few big days.
+        let stars: [(Int, Double)] = show.size == .regional ? [(3, 0.30), (4, 0.45), (5, 0.25)]
+                                                            : [(1, 0.20), (2, 0.35), (3, 0.30), (4, 0.12), (5, 0.03)]
+        var sum = 0.0
+        show.spenders = stars.first { sum += $0.1; return roll < sum }?.0 ?? stars.last?.0
+        // A bigger crowd brings more booths: one roll drives both, with a little noise.
+        let size = Double(rng.next())
+        show.turnout = ((0.75 + 0.55 * size) * 20).rounded() / 20
+        let base = Double(VendorFloor.baseCount(show.size))
+        show.booths = max(6, Int((base * (0.8 + 0.4 * size + 0.1 * (Double(rng.next()) - 0.5))).rounded()))
+    }
+
+    /// The booths that have confirmed by today: all of them in the last week, about half six weeks out. The player's
+    /// vendor contacts who come are always confirmed: they told the player.
+    func confirmedBooths(_ show: CardShow) -> Int {
+        let total = show.boothCount
+        let out = show.startDay - data.day
+        let share = out <= 7 ? 1 : max(0.5, 1 - 0.5 * Double(out - 7) / Double(Balance.showHorizonDays - 7))
+        return min(total, max(attendingVendors(show).count, Int((Double(total) * share).rounded())))
     }
 
     var upcomingShows: [CardShow] { data.shows.filter { $0.endDay >= data.day }.sorted { $0.startDay < $1.startDay } }
@@ -123,7 +195,7 @@ extension GameStore {
     var showToday: CardShow? { data.shows.first { $0.covers(data.day) } }
 
     func canBook(_ show: CardShow) -> Bool {
-        data.vendorKit && !show.booked && data.day <= show.lastBookingDay && canAfford(show.size.tableFee)
+        data.vendorKit && !show.booked && data.day <= show.lastBookingDay && canAfford(show.tableFee)
     }
 
     func buyVendorKit() {
@@ -140,8 +212,8 @@ extension GameStore {
         data.shows[i].booked = true
         // Reputation Trusted and up gets a better spot (docs/04-reputation-and-followers-unlocks.md).
         if reputationTier >= 2 { data.shows[i].goodSpot = true }
-        addLedger(-show.size.tableFee, .showFees, "Table · \(show.name)")
-        log("Booked a table at \(show.name) for \(money(show.size.tableFee)).", cash: -show.size.tableFee)
+        addLedger(-show.tableFee, .showFees, "Table · \(show.name)")
+        log("Booked a table at \(show.name) for \(money(show.tableFee)).", cash: -show.tableFee)
         save()
     }
 
@@ -480,7 +552,7 @@ extension GameStore {
         for show in data.shows where show.covers(day) {
             let dayText = show.size.days > 1 ? " · day \(day - show.startDay + 1) of \(show.size.days)" : ""
             out.append(CalendarEntry(kind: .show, title: show.name,
-                                     detail: "\(show.size.label)\(dayText) · \(show.booked ? "table booked" : "no table")\(show.noInPrintSealed == true ? " · no in-print sealed" : "")",
+                                     detail: "\(show.size.label)\(dayText)\(show.spenders.map { " · " + String(repeating: "★", count: $0) } ?? "") · \(show.booked ? "table booked" : "no table")\(show.noInPrintSealed == true ? " · no in-print sealed" : "")",
                                      showID: show.id))
         }
         for kind in MeetKind.allCases where kind.weekday == weekday {
@@ -781,6 +853,9 @@ struct Venue: Hashable, Codable {
     var eventID: UUID?
     /// Who comes, what they spend, and how many trade (docs/29-packing-and-crowds.md).
     var crowd = Crowd.general
+    /// A show's big spenders (CardShow.spendFactor and whaleShare). Nil: as before.
+    var spendFactor: Double?
+    var whaleShare: Double?
     /// The table rules apply: setup time, the crowd's turnout, buyers who find nothing, and the stale record. Not at
     /// the player's own store.
     var tableRules: Bool { hasTable && kind != .store }
@@ -889,11 +964,12 @@ final class ShowSession {
         let venue = Venue(kind: .show, name: show.name,
                           detail: "\(show.size.label)\(show.size.days > 1 ? " · day \(store.day - show.startDay + 1) of 2" : "") · \(show.booked ? "your table" : "walk-in")",
                           open: Balance.showOpen, close: Balance.showClose, hours: Balance.showClose - Balance.showOpen,
-                          visitorsMean: show.size.buyersPerDay * (show.booked && store.hasUpgrade(.premiumBooth) ? Balance.premiumBoothFactor : 1),
+                          visitorsMean: show.buyersPerDay * (show.booked && store.hasUpgrade(.premiumBooth) ? Balance.premiumBoothFactor : 1),
                           hasFloor: true, hasTable: show.booked, showID: show.id,
-                          crowd: show.size == .regional ? .regionalShow : .localShow)
+                          crowd: show.size == .regional ? .regionalShow : .localShow,
+                          spendFactor: show.spendFactor, whaleShare: show.whaleShare)
         store.seedContacts()
-        var vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show))
+        var vendors = VendorFloor.tables(for: show.size, recurring: store.attendingVendors(show), total: show.booths)
         // At a show with the rule, no floor vendor sells in-print sealed. A sealed dealer then carries only older sealed.
         if show.noInPrintSealed == true {
             func inPrint(_ item: VendorItem) -> Bool {
@@ -1272,6 +1348,8 @@ final class ShowSession {
         var v: Visitor?
         // With the showcase out, a whale comes more often. Some whales ask about a showcase card.
         if showcaseOut, Double.random(in: 0..<1) < store.showcaseWhaleChance { v = makeWhale() }
+        // A show with many big spenders sends whales to the table (docs/20-card-shows.md, Show info).
+        if v == nil, !table.isEmpty, let w = venue.whaleShare, Double.random(in: 0..<1) < w { v = makeWhale() }
         // At the player's store, some people come with a job for the player (Model/CounterEvents.swift).
         if v == nil, venue.kind == .store, Double.random(in: 0..<1) < Balance.counterEventShare {
             if let event = makeCounterEvent() { return event }
@@ -1370,7 +1448,7 @@ final class ShowSession {
         let crowd = venue.crowd
         var type = Self.weighted(crowd.weights) ?? .collector
         if let packs = makePackBuyer(type) { return packs }
-        let budget = crowd.spendCap.map { $0 * Double.random(in: Balance.budgetRange) }
+        let budget = crowd.spendCap.map { $0 * (venue.spendFactor ?? 1) * Double.random(in: Balance.budgetRange) }
         var wanted = table.filter { item in type.wants(item) && (budget.map { asking(item) <= $0 } ?? true) }
         if wanted.isEmpty {
             guard !venue.tableRules else {
