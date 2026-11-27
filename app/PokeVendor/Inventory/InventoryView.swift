@@ -391,7 +391,12 @@ struct InventoryView: View {
         let chosen = selection
         let blocked = chosen.contains { store.hasStatus($0) }
         return VStack(alignment: .leading, spacing: 10) {
-            if tab == .raw { quickListRow(chosen, blocked: blocked) }
+            // The Personal raw tab lists on TCGplayer. Every other tab, and the Store side, gets Select all.
+            if tab == .raw && !showsStore {
+                quickListRow(chosen, blocked: blocked)
+            } else if [.sealed, .raw, .slabs].contains(tab) {
+                selectAllRow(chosen)
+            }
             if !listedInTab.isEmpty { unlistRow(chosen) }
             switch tab {
             case .sealed, .raw, .slabs:
@@ -443,6 +448,29 @@ struct InventoryView: View {
             .primaryButton()
             .disabled(chosen.isEmpty || blocked || chosen.contains { id in store.data.raw.contains { $0.id == id && $0.isKnownFake } })
         }
+    }
+
+    /// Every item that the tab shows, with the filter. Store stock that is out at a show or a meet stays out: it is not on
+    /// the shelf, so it cannot move.
+    private var shownInTab: Set<UUID> {
+        let ids: [UUID] = switch tab {
+        case .sealed: sortedSealed.filter { $0.fromStore != true }.map(\.id)
+        case .raw: sortedCards(rawInHand).filter { $0.fromStore != true }.map(\.id)
+        case .slabs: sortedCards(slabsInHand).filter { $0.fromStore != true }.map(\.id)
+        case .bulk, .grading: []
+        }
+        return Set(ids)
+    }
+
+    /// Select every item that the tab shows, or clear the selection.
+    private func selectAllRow(_ chosen: Set<UUID>) -> some View {
+        let shown = shownInTab
+        let allChosen = !shown.isEmpty && shown == chosen
+        return Button {
+            selection = allChosen ? [] : shown
+        } label: { wideLabel(allChosen ? "Clear" : "Select all \(shown.count)") }
+        .buttonStyle(.bordered)
+        .disabled(shown.isEmpty)
     }
 
     /// The items in this tab with a listing that can come down (not a running eBay auction).
