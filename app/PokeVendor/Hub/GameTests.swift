@@ -48,6 +48,7 @@ final class GameTests {
         timed("storeHours", storeHours)
         timed("pulls", pullBoxes)
         timed("inventories", twoInventories)
+        timed("quickStock", quickStock)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2497,6 +2498,31 @@ final class GameTests {
         check(store.storeCardsUsed == store.storeCardSlots && full.cards.isEmpty && full.wanted == 1,
               "a full store did not report zero room")
         check(store.stockStore([ids[2]]) == 0 && store.card(ids[2])?.status == nil, "a full store took a card")
+    }
+
+    // MARK: - Quick pick for the shelves
+
+    /// The quick pick keeps a clean, centered card with a PSA 10 of $1,000 or more home for grading. A worn copy of the
+    /// same card goes in, and the picks go most valuable first.
+    private func quickStock() {
+        fresh()
+        openTestStore()
+        let prints = SetLibrary.set("prismatic-evolutions").prints
+        guard let big = prints.first(where: { ($0.gradedPrice("psa10") ?? 0) >= Balance.gradeKeepPSA10 && ($0.market ?? 0) > 20 }),
+              let small = prints.first(where: { ($0.gradedPrice("psa10") ?? 0) < Balance.gradeKeepPSA10 && ($0.market ?? 0) > 1 }) else {
+            return check(false, "no cards for the quick pick test")
+        }
+        let centered = Cut(frontLR: 50, frontTB: 50, backLR: 50, backTB: 50, eye: [0, 0, 0, 0])
+        func add(_ print: CardPrint, corners: Double) -> UUID {
+            store.addTestCard(print)
+            store.data.raw[store.data.raw.count - 1].condition = Condition(cut: centered, corners: corners, edges: 10, surface: 10)
+            return store.data.raw[store.data.raw.count - 1].id
+        }
+        let keep = add(big, corners: 10), worn = add(big, corners: 7), cheap = add(small, corners: 10)
+        let quick = store.quickStockSingles
+        check(store.keepForGrading(store.card(keep)!) && !quick.ids.contains(keep) && quick.kept == 1,
+              "the quick pick did not keep the clean card home for grading")
+        check(quick.ids.first == worn && quick.ids.contains(cheap), "the quick pick is not most valuable first: \(quick.ids.count)")
     }
 
     // MARK: - Pull boxes (docs/41-pull-boxes.md)

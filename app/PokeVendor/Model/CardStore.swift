@@ -208,6 +208,10 @@ extension Balance {
     static let counterVisitorShare = 0.6
     /// A store gets more people who want to sell than a show table does.
     static let storeSellerShare = 0.32
+    /// The quick pick keeps a raw card home for grading when it looks Near Mint, its front reads this centered or
+    /// better (CutReading rank: 57 is "Slightly off center"), and its PSA 10 price is at least the amount below.
+    static let gradeKeepCenterRank = 57
+    static let gradeKeepPSA10 = 1000.0
     static let storeCardSlots = 40
     static let storeSealedSlots = 40
     static let extraCaseSlots = 60
@@ -431,6 +435,25 @@ extension GameStore {
         let stock = showStock
         let room = hasBackRoom
         return (stock.cards.filter { !$0.isKnownFake && !$0.pc }, stock.sealed.filter { !$0.isKnownFake && !$0.pc && (room || !$0.isCase) })
+    }
+
+    /// A raw card worth keeping for grading, by what the player can see: Near Mint wear, a front that reads centered
+    /// (with the player's centering tool), and a PSA 10 price of at least Balance.gradeKeepPSA10.
+    func keepForGrading(_ c: OwnedCard) -> Bool {
+        c.grade == nil && c.condition.wear == .nearMint
+            && CutReading.front(c.condition.cut, tool: data.centeringTool).rank <= Balance.gradeKeepCenterRank
+            && (c.print.gradedPrice("psa10") ?? 0) >= Balance.gradeKeepPSA10
+    }
+
+    /// The quick pick for the shelves: the raw cards that can go in the store, without the ones to keep for grading,
+    /// the most valuable first, up to the free card slots. `kept` counts the cards kept for grading.
+    var quickStockSingles: (ids: [UUID], kept: Int) {
+        let raw = stockable.cards.filter { $0.grade == nil }
+        let keep = raw.filter(keepForGrading)
+        let keepIDs = Set(keep.map(\.id))
+        let room = max(0, storeCardSlots - storeCardsUsed)
+        let ids = raw.filter { !keepIDs.contains($0.id) }.sorted { $0.market > $1.market }.prefix(room).map(\.id)
+        return (Array(ids), keep.count)
     }
 
     var storeCardSlots: Int {

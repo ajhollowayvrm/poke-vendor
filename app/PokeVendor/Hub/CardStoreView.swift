@@ -85,6 +85,10 @@ struct CardStoreView: View {
         .navigationTitle(store.cardStore?.name ?? "Your own store")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $stocking) { StockShelvesSheet() }
+        #if DEBUG
+        // Screenshot aid: `-stocking` opens the Stock the shelves sheet.
+        .onAppear { if ProcessInfo.processInfo.arguments.contains("-stocking"), store.cardStore != nil { stocking = true } }
+        #endif
         .sheet(item: $onlineSheet) { SellSheet(ids: $0.ids, startAll: false, alsoOnline: true) }
         .sheet(item: $caseRequest) { CaseOpenSheet(source: $0.source, onDone: { _ in }) }
         .confirmationDialog("Sign the lease?", isPresented: Binding(isPresent: $signing),
@@ -817,6 +821,21 @@ struct StockShelvesSheet: View {
                         if pickedCards > cardRoom || pickedSealed > sealedFits || pickedCases > caseRoom {
                             Text("Not everything fits. The dearest cards go in first.").font(.caption).foregroundStyle(Theme.orange)
                         }
+                        // The quick pick: every raw card except the ones to keep for grading, the most valuable
+                        // first, up to the free card slots. It replaces the raw cards in the picks.
+                        let quick = store.quickStockSingles
+                        let rawIDs = Set(stockable.cards.filter { $0.grade == nil }.map(\.id))
+                        Button {
+                            picked = picked.subtracting(rawIDs).union(quick.ids)
+                        } label: {
+                            Label("Quick pick \(quick.ids.count) single\(quick.ids.count == 1 ? "" : "s")", systemImage: "bolt.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(quick.ids.isEmpty)
+                        Text("Keeps \(quick.kept) card\(quick.kept == 1 ? "" : "s") home for grading: Near Mint, centered by eye, and \(money(Balance.gradeKeepPSA10)) or more in a PSA 10. Then the most valuable singles go in first, up to the free card slots.")
+                            .font(.caption)
+                            .foregroundStyle(Theme.muted)
                         HStack {
                             Text("PICKED · \(picked.count) of \(items.count)")
                                 .font(.system(size: 11, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
