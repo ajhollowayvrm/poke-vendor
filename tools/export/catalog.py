@@ -21,7 +21,7 @@ Writes app/PokeVendor/Resources/catalog.json: every sealed product that the game
 A product is in the catalog when its pack mix is exact, every pack comes from a set the app has, and it has a
 price. "inPrint" is true when every pack is from a Scarlet & Violet set. Only in-print product sells at retail.
 """
-import glob, json, os, random, re, sys
+import datetime, glob, json, os, random, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, "..", "..")
@@ -33,6 +33,8 @@ CONTENTS = os.path.join(ROOT, "tools", "ppt", "cache", "sealed_contents.json")
 OVERRIDES = os.path.join(ROOT, "tools", "ppt", "sealed_overrides.json")
 # PriceCharting prices for old sealed product with no TCGplayer price (tools/ppt/pricecharting_sealed.py).
 PRICECHARTING = os.path.join(ROOT, "tools", "ppt", "sealed_pricecharting.json")
+# Real sold prices for loose packs and booster boxes with no fresh price (tools/ppt/pricecharting_sales.py).
+SALES = os.path.join(ROOT, "tools", "ppt", "sealed_sales.json")
 SEALED = os.path.join(ROOT, "tools", "ppt", "cache", "sealed")
 TCGCSV = os.path.join(ROOT, "tools", "cardlist", "cache", "tcgcsv")
 TCGDEX_MAP = os.path.join(ROOT, "tools", "cardlist", "tcgdex-map.json")
@@ -54,6 +56,16 @@ PROMO_GROUPS = {
 MISC_GROUP = "2374"
 STAMP = "Prismatic Evolutions Stamp"
 HOME = "prismatic-evolutions"
+# A box median from fewer sales than this does not count, so one odd sale cannot set a box price (AJ, 2026-11-26).
+MIN_BOX_SALES = 3
+# A PPT price this many days older than the newest PPT price of the pull is stale.
+STALE_DAYS = 30
+# Special expansions (docs/sets/: "special set" or "special expansion"). Their packs sell only in their own products,
+# so a product with assorted Series packs never holds one by chance. guess_mix leaves them out of its pools.
+SPECIAL_SETS = {"151", "30th-celebration", "ascended-heroes", "black-bolt", "celebrations", "champions-path", "crown-zenith",
+                "detective-pikachu", "double-crisis", "dragon-majesty", "dragon-vault", "generations", "hidden-fates",
+                "paldean-fates", "pokemon-go", "prismatic-evolutions", "shining-fates", "shining-legends", "shrouded-fable",
+                "white-flare"}
 # Only product from these eras is still in print, so only it sells at retail.
 IN_PRINT_ERAS = {"scarlet-violet", "mega-evolution"}
 
@@ -163,6 +175,34 @@ def tcgcsv_price(group, product_id):
                     table[r["productId"]] = price
         _tcgcsv_prices[group] = table
     return _tcgcsv_prices[group].get(int(product_id))
+
+
+def tcgcsv_market(group, product_id):
+    """The TCGCSV market price only: a price from real sales. The midPrice is an ask."""
+    path = os.path.join(TCGCSV, f"{group}-prices.json")
+    if group not in _tcgcsv_markets:
+        rows = json.load(open(path)) if os.path.exists(path) else []
+        _tcgcsv_markets[group] = {r["productId"]: r["marketPrice"] for r in (rows.get("results", rows) if isinstance(rows, dict) else rows)
+                                  if r.get("marketPrice")}
+    return _tcgcsv_markets[group].get(int(product_id))
+
+
+_tcgcsv_markets = {}
+
+
+def newest_scrape(prices):
+    """The date of the newest PPT sealed price in the pull."""
+    dates = [p["lastScrapedAt"][:10] for p in prices.values() if p.get("unopenedPrice") and p.get("lastScrapedAt")]
+    return datetime.date.fromisoformat(max(dates)) if dates else None
+
+
+def fresh_price(ppt, group, product_id, newest):
+    """A price from recent real sales, or None: a PPT price at most STALE_DAYS older than the pull, else the TCGCSV
+    market price. A stale PPT price, a TCGCSV ask, and a PriceCharting set-page price do not count."""
+    price, date = ppt.get("unopenedPrice"), (ppt.get("lastScrapedAt") or "")[:10]
+    if price and date and newest and (newest - datetime.date.fromisoformat(date)).days <= STALE_DAYS:
+        return price
+    return tcgcsv_market(group, product_id)
 
 
 def set_releases(sets):
@@ -283,7 +323,7 @@ def guess_mix(it, sets, releases, dates=None):
         if era is None and len(known_eras) == 1:
             era = next(iter(known_eras))
         out_then = [s for s in sets if releases.get(s) and (date is None or releases[s] <= date)
-                    and not s.startswith("mcdonalds")]
+                    and not s.startswith("mcdonalds") and s not in SPECIAL_SETS]
         if era is None:
             if not out_then:
                 return None
@@ -415,6 +455,10 @@ def main():
     guessed = 0
     contents = json.load(open(CONTENTS))
     pricecharting = json.load(open(PRICECHARTING)) if os.path.exists(PRICECHARTING) else {}
+    sales = json.load(open(SALES)) if os.path.exists(SALES) else {}
+    newest = newest_scrape(prices)
+    # The products whose price came from sold listings, and the boxes that the floor checks after the loop.
+    sold_price, open_boxes = {}, set()
     dates = base_dates(contents)
     # A researched promo list (tools/ppt/sealed_overrides.json) is exact, so the name filter below does not touch it.
     overrides = {k: v for k, v in json.load(open(OVERRIDES)).items() if not k.startswith("_")}
@@ -439,7 +483,22 @@ def main():
         # A product with no stated mix, or with only a series named, gets a guessed mix (guess_mix).
         guess = False
         known, pools = None, []
-        if it.get("confidence") not in ("Exact", "Product set") or not mix or sum(mix.values()) != packs \
+        # Researched production waves (tools/ppt/sealed_overrides.json "pools"): the named packs, plus one pool for each
+        # other pack. The expected mix draws once from each pool, the same way as guess_mix.
+        if it.get("pools"):
+            pools = [{"packs": q["packs"], "slugs": list(q["slugs"])} for q in it["pools"]]
+            if any(slug not in sets for slug in mix) or any(slug not in sets for q in pools for slug in q["slugs"]) \
+                    or sum(mix.values()) + sum(q["packs"] for q in pools) != packs:
+                skipped.append(f"{it['name']}: bad pools {it['pools']}")
+                continue
+            known = dict(mix)
+            rng = random.Random(int(it["id"]))
+            mix = dict(known)
+            for q in pools:
+                for _ in range(q["packs"]):
+                    slug = rng.choice(q["slugs"])
+                    mix[slug] = mix.get(slug, 0) + 1
+        elif it.get("confidence") not in ("Exact", "Product set") or not mix or sum(mix.values()) != packs \
                 or any(slug not in sets for slug in mix):
             guessed_mix = guess_mix(it, sets, releases, dates)
             if not guessed_mix:
@@ -451,7 +510,15 @@ def main():
         # PPT gives the sealed price and image. TCGCSV fills in when PPT has no price, then PriceCharting.
         p = prices.get(str(it["id"])) or {}
         market = p.get("unopenedPrice") or tcgcsv_price(it["group"], it["id"]) or (pricecharting.get(str(it["id"])) or {}).get("market")
-        if not market:
+        # AJ's rules (2026-11-26): a loose pack or a booster box with no fresh price uses real sold listings. A loose
+        # pack gets its median sale of the last 6 months. A box gets the floor below, after every loose pack is known.
+        if fresh_price(p, it["group"], it["id"], newest) is None:
+            sale = sales.get(str(it["id"]))
+            if it.get("kind") == "Booster pack" and packs == 1 and sale:
+                market = sold_price[str(it["id"])] = sale["median"]
+            elif it.get("kind") == "Booster box" and len(mix) == 1:
+                open_boxes.add(str(it["id"]))
+        if not market and str(it["id"]) not in open_boxes:
             continue
         image = p.get("imageCdnUrl800") or p.get("imageUrl") or f"https://tcgplayer-cdn.tcgplayer.com/product/{it['id']}_in_800x800.jpg"
         guessed += guess
@@ -491,7 +558,7 @@ def main():
                     "promos": promos, "pickOnePromo": "Surprise Box" in name,
                     "market": market, "msrp": msrp, "image": image, "mixGuess": guess,
                     **({"known": [{"slug": k, "packs": n} for k, n in sorted(known.items())], "pools": pools}
-                       if guess and pools else {})})
+                       if pools else {})})
     # A "[Set of N]" holds one box of each variant, so it gets the promos of its variants in the catalog, each print once.
     for x in out:
         if x["id"] in researched or not re.search(r"\[Set of \d+\]", x["name"]):
@@ -505,6 +572,27 @@ def main():
                     union.append(p)
             x["promos"] = union
     out.sort(key=lambda x: (x["mix"][0]["slug"] != HOME, x["kind"], x["name"]))
+    # The box floor: a booster box with no fresh price gets the larger of its median sale of the last 12 months (from
+    # MIN_BOX_SALES sales or more) and its packs at the loose-pack price. A sealed box is never worth less than its own packs. The loose pack is the first one
+    # in the catalog for the set, the same as SetLibrary.loosePack in the app, else the set's pack cost.
+    loose = {}
+    for x in out:
+        if x["kind"] == "Booster pack" and x["packs"] == 1:
+            loose.setdefault(x["mix"][0]["slug"], x["market"])
+    floored = []
+    for x in out:
+        if x["id"] not in open_boxes:
+            continue
+        slug = x["mix"][0]["slug"]
+        each = loose.get(slug) or (sets.get(slug) or {}).get("packCost")
+        packs_value = round(each * x["packs"], 2) if each else None
+        record = sales.get(x["id"]) or {}
+        sale = record.get("median") if len(record.get("sales", [])) >= MIN_BOX_SALES else None
+        new = max(v for v in (sale, packs_value) if v) if (sale or packs_value) else x["market"]
+        if new and new != x["market"]:
+            floored.append(f"{x['name']}: ${x['market']} -> ${new} (sales {sale}, packs {packs_value})")
+            x["market"] = new
+    out = [x for x in out if x["market"]]
     json.dump(out, open(OUT, "w"), ensure_ascii=False, indent=1)
     print(f"{len(out)} products ({guessed} with a guessed pack mix) -> {os.path.relpath(OUT, ROOT)}")
     for x in out:
@@ -513,6 +601,10 @@ def main():
         print(f"  {x['id']} {x['name']} | {mix} | ${x['market']} | {promos}")
     for s in skipped:
         print("  SKIPPED PROMO:", s)
+    for k, v in sorted(sold_price.items()):
+        print(f"  PACK FROM SALES: {k} ${v}")
+    for f in floored:
+        print("  BOX FLOOR:", f)
 
 
 if __name__ == "__main__":

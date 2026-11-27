@@ -1230,7 +1230,8 @@ final class GameTests {
 
     // MARK: - Look inside a box (docs/12-acquiring-product.md)
 
-    /// Each copy keeps its packs, an assorted box stays in one era, and a bought box holds the packs that the player saw.
+    /// Each copy keeps its packs, a guessed assorted box stays in one era, and a bought box holds the packs that the
+    /// player saw. Researched production waves can mix eras.
     private func boxes() {
         fresh()
         var unstable: [String] = [], wrongCount: [String] = [], mixedEra: [String] = []
@@ -1238,13 +1239,19 @@ final class GameTests {
             let packs = BoxContents.draw(product, key: "test")
             if packs != BoxContents.draw(product, key: "test") { unstable.append(product.name) }
             if packs.count != product.packs { wrongCount.append(product.name) }
-            for pool in product.pools ?? [] where Set(pool.slugs.compactMap { SetLibrary.info($0)?.era }).count != 1 {
+            for pool in product.pools ?? [] where product.mixGuess == true && Set(pool.slugs.compactMap { SetLibrary.info($0)?.era }).count != 1 {
                 mixedEra.append(product.name)
             }
         }
         check(unstable.isEmpty, "one key drew different packs: \(unstable.prefix(3))")
         check(wrongCount.isEmpty, "a draw has the wrong pack count: \(wrongCount.prefix(3))")
         check(mixedEra.isEmpty, "an assorted pool mixes eras: \(mixedEra.prefix(3))")
+        // A box never breaks into loose packs worth more than twice its price (tools/export/catalog.py, the box floor).
+        let cheapBoxes = SetLibrary.catalog.filter { product in
+            guard product.kind == "Booster box", product.mix.count == 1, let pack = SetLibrary.loosePack(product.homeSlug) else { return false }
+            return pack.baseMarket * Double(product.packs) > 2 * product.baseMarket
+        }
+        check(cheapBoxes.isEmpty, "a booster box is worth less than half its loose packs: \(cheapBoxes.prefix(3).map(\.name))")
         guard let product = SetLibrary.catalog.first(where: { $0.isAssorted && $0.packs >= 3 }) else {
             return check(false, "no assorted product")
         }

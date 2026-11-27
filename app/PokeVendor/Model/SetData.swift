@@ -92,9 +92,12 @@ struct Product: Codable, Hashable, Identifiable {
     /// Nil for a product that lists all its packs. Each copy draws its own packs (`BoxContents`).
     var known: [PackMix]? = nil
     var pools: [PackPool]? = nil
+    /// True when tools/export/catalog.py guessed the pools. False for researched production waves, which can mix eras
+    /// (tools/ppt/sealed_overrides.json).
+    var mixGuess: Bool? = nil
 
     enum CodingKeys: String, CodingKey {
-        case id, name, kind, packs, mix, promos, pickOnePromo, baseMarket = "market", msrp, image, inPrint, known, pools
+        case id, name, kind, packs, mix, promos, pickOnePromo, baseMarket = "market", msrp, image, inPrint, known, pools, mixGuess
     }
 
     var market: Double { PriceCycle.price(baseMarket, marketFactor()) }

@@ -449,7 +449,7 @@ def contents_for(row, slug, era, text, index, overrides, own_set=frozenset()):
            "confidence": confidence, "packs_note": note}
     o = overrides.get(str(row["id"]))
     if o:
-        out.update({k: o[k] for k in ("packs", "mix", "promos", "other", "note") if k in o})
+        out.update({k: o[k] for k in ("packs", "mix", "promos", "other", "note", "pools") if k in o})
         out.update(source="Research", sources=o["sources"], confidence=confidence_of(out["packs"], out["mix"]), packs_note="")
     return out
 
@@ -470,6 +470,11 @@ def load_overrides():
         bad = [k for k in o.get("mix", {}) if k != "unknown" and k not in series and k not in SETS.values()]
         if bad or not o.get("sources") or sum(o.get("mix", {}).values()) > (o.get("packs") or 0):
             raise SystemExit(f"tools/ppt/sealed_overrides.json {pid}: bad mix keys {bad}, no sources, or more packs in the mix")
+        # Production waves: one pool of set slugs for each pack that the mix does not name. The game draws each copy.
+        if "pools" in o:
+            slugs = [s for q in o["pools"] for s in q["slugs"]]
+            if any(s not in SETS.values() for s in slugs) or sum(o.get("mix", {}).values()) + sum(q["packs"] for q in o["pools"]) != o.get("packs"):
+                raise SystemExit(f"tools/ppt/sealed_overrides.json {pid}: a pool slug is not a set, or the mix and pools do not add up to the packs")
     return out
 
 
