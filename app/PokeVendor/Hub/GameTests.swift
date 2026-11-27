@@ -2602,9 +2602,12 @@ final class GameTests {
         check(VendorFloor.plan(.local, total: 20).reduce(0) { $0 + $1.1 } == 20 && VendorFloor.plan(.local, total: 9).reduce(0) { $0 + $1.1 } == 9,
               "the booth plan does not add up to the booth count")
         // The player's dealers take strangers' tables, so the floor keeps the booth count.
-        let dealers = store.data.contacts.filter { $0.kind.isVendor }.prefix(4)
+        // Four vintage dealers, at a 9-booth show whose plan has about one vintage table.
+        store.seedContacts()
+        let dealers = store.data.contacts.filter { $0.kind == .vintageDealer }.prefix(4)
         let floor = VendorFloor.tables(for: .local, recurring: Array(dealers), total: 9)
-        check(dealers.isEmpty || floor.count <= 9, "the floor has more tables than the show's booths: \(floor.count)")
+        check(dealers.count == 4 && floor.count <= 9 && floor.count >= dealers.count,
+              "the floor has \(floor.count) tables for a 9-booth show with \(dealers.count) of the player's dealers")
     }
 
     // MARK: - The account that buying pays from

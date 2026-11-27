@@ -403,11 +403,12 @@ extension GameStore {
 
     /// A trade at a vendor table: the player's items go, and the vendor's items come in. Only the cash goes to the
     /// ledger. `cash` is positive when the player pays. A trade is not a sale, so it adds no receipt.
-    func tradeWithVendor(give: [ShowItem], get: [VendorItem], cash: Double, vendor: String, at venue: String) {
+    /// `offShelf`: a trade to a dealer is a sale to a reseller channel. A trade with a walk-in at the player's own counter
+    /// is a retail sale, so it passes false (the distributor's back-door check, Model/Distributor.swift).
+    func tradeWithVendor(give: [ShowItem], get: [VendorItem], cash: Double, vendor: String, at venue: String, offShelf: Bool = true) {
         let giveIDs = Set(give.map(\.id))
         let day = data.day
-        // A trade to a dealer is a sale to a reseller channel.
-        noteAllocationSold(Array(giveIDs), offShelf: true)
+        noteAllocationSold(Array(giveIDs), offShelf: offShelf)
         // Build every new item first, so the closures below do not read `data` while they change it.
         var cards: [OwnedCard] = []
         var slabs: [OwnedCard] = []
@@ -2212,8 +2213,11 @@ final class ShowSession {
     func proposePackage(items ids: Set<UUID>, cash: Double) {
         guard var v = current, v.intent == .sell, let goods = v.goods else { return }
         let items = table.filter { ids.contains($0.id) && !store.isChallengeItem($0.id) }
+        let itemIDs = Set(items.map(\.id))
         let cash = max(0, Self.round(cash))
         guard !items.isEmpty else {
+            // A P&L challenge item cannot go in a package. With no other item, it is a cash counter.
+            if !ids.isEmpty && cash <= 0 { note = "A challenge item cannot go in a trade."; return }
             counter(cash)
             return
         }
@@ -2234,16 +2238,18 @@ final class ShowSession {
             for item in items where buyerCatchesFake(v, item) { return }
             let got = VendorItem(goods: goods, price: total, market: v.goodsMarket, fake: v.goodsFake, looksOff: v.goodsLooksOff)
             for item in items { store.settleOnlineListing(item.id, name: item.name) }
-            store.tradeWithVendor(give: items, get: [got], cash: cash, vendor: v.name, at: venue.name)
+            store.tradeWithVendor(give: items, get: [got], cash: cash, vendor: v.name, at: venue.name, offShelf: false)
             for item in items {
                 guard let fake = item.fake else { continue }
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
                                     refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
             }
-            table.removeAll { ids.contains($0.id) }
-            bring.subtract(ids)
+            table.removeAll { itemIDs.contains($0.id) }
+            bring.subtract(itemIDs)
             let gave = items.map(\.name).joined(separator: " + ") + (cash > 0 ? " + \(money(cash))" : "")
             trades.append("\(gave) → \(got.name)")
+            // The cash part counts in the shift's spending.
+            if cash > 0 { bought.append((name: "\(got.name) (trade)", price: cash)) }
             store.recordDeal(v.contactID, what: "Traded \(gave) for \(got.name)", price: total, market: v.goodsMarket,
                              slug: goodsSlug(goods), scored: true)
             score(.buy, price: total, market: v.goodsMarket, pushed: false, v)
@@ -2252,6 +2258,8 @@ final class ShowSession {
             Haptics.hit()
             return
         }
+        // An offer under 60% of market is a lowball, as with a cash counter. A contact remembers it.
+        if v.goodsMarket > 0, total < v.goodsMarket * 0.6, !v.naive { store.lowballed(v.contactID) }
         let gap = v.goodsMarket > 0 ? abs(total - v.limit) / v.goodsMarket : 1
         if v.goodsMarket > 0, Haggle.fair(.buy, share: total / v.goodsMarket) {
             if v.fairRefusals >= 1 {
@@ -2270,7 +2278,10 @@ final class ShowSession {
             return
         }
         v.patience -= 1
-        v.line = "\(Haggle.tell(gap)) Add a bit more and we can talk."
+        // The seller's ask moves toward their lowest price, as with a cash counter.
+        let moved = v.offer + (v.limit - v.offer) * Double.random(in: 0.5...0.9) * store.tiredFactor
+        v.offer = Self.round(max(v.limit, moved))
+        v.line = "\(Haggle.tell(gap)) Add a bit more. I could do \(money(v.offer)) in value."
         setCurrent(v)
         spend(3)
     }

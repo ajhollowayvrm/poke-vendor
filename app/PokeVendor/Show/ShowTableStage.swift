@@ -521,7 +521,8 @@ struct PackageOfferSheet: View {
     @State private var cash: Double = 0
 
     var body: some View {
-        let items = session.table.sorted { $0.market > $1.market }
+        // A P&L challenge item cannot go in a trade (ShowSession.proposePackage).
+        let items = session.table.filter { !store.isChallengeItem($0.id) }.sorted { $0.market > $1.market }
         let goodsPart = items.filter { picked.contains($0.id) }.reduce(0) { $0 + session.packageValue($1, for: visitor) }
         let total = goodsPart + cash
         let cashShort = cash > 0 && !store.canAfford(cash)

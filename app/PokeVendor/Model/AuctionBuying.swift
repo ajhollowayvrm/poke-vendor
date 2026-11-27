@@ -317,8 +317,9 @@ extension GameStore {
     /// The cash that the player's other top bids can take: the total at each top bid of each open lot.
     /// The top bids that hold money in an account: the active account, or `account`.
     func committedBids(except id: UUID? = nil, account: MoneyAccount? = nil) -> Double {
-        let from = account ?? activeAccount
-        return openLots.filter { $0.id != id && ($0.payAccount ?? .personal) == from }
+        // resolve() maps the business account to the player's own after the store closes, the same as closeLot.
+        let from = resolve(account ?? activeAccount)
+        return openLots.filter { $0.id != id && resolve($0.payAccount ?? .personal) == from }
             .reduce(0) { sum, lot in sum + (lot.playerMax.map { lotTotal(lot, hammer: $0) } ?? 0) }
     }
 
