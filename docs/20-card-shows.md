@@ -26,6 +26,25 @@ banned too.
 | Local show | 1 (Saturday or Sunday) | About half of the Saturdays and 40% of the Sundays that have no regional show | About $40 | $5 a day | About 20 visitors a day | 1 day before |
 | Regional show | 2 (Saturday and Sunday) | About 1 every 4 weeks | About $150 for both days | $15 a day | About 40 visitors a day | 7 days before |
 
+### Small shows
+
+A small show is an evening pop-up (AJ, 2026-11-27: "a small show might
+happen anytime"). It can come on any day that has no other show: 22% of
+weekdays and 15% of weekend days.
+
+| | Small show |
+| --- | --- |
+| Doors | 5 PM – 9 PM, after the day job |
+| Table fee | About $20 |
+| Walk-in entry | $2 |
+| Buyers at a table | About 10 |
+| Booking | Open until the day itself |
+| Floor | About 6 tables |
+| Big spenders | Mostly 1 or 2 stars |
+
+It plays like a local show, and like any show it can ban in-print
+sealed product.
+
 ### Show info
 
 Each show posts the organizer's numbers when it goes on the calendar.

@@ -4,16 +4,50 @@ import Observation
 // Card shows (docs/20-card-shows.md) and the calendar (docs/17-calendar-and-events.md).
 
 enum ShowSize: String, Codable, Hashable {
-    case local, regional
+    /// A small show is an evening pop-up on any day, after work (docs/20-card-shows.md, Small shows).
+    case local, regional, small
 
     var days: Int { self == .regional ? 2 : 1 }
-    var tableFee: Double { self == .regional ? Balance.regionalTableFee : Balance.localTableFee }
-    var entryFee: Double { self == .regional ? 15 : 5 }
+    var tableFee: Double {
+        switch self {
+        case .regional: Balance.regionalTableFee
+        case .local: Balance.localTableFee
+        case .small: Balance.smallTableFee
+        }
+    }
+    var entryFee: Double {
+        switch self {
+        case .regional: 15
+        case .local: 5
+        case .small: 2
+        }
+    }
     /// The mean number of buyers who come to one table in one day.
-    var buyersPerDay: Double { self == .regional ? 40 : 20 }
-    /// Booking closes this many days before the first day.
-    var bookingCloses: Int { self == .regional ? 7 : 1 }
-    var label: String { self == .regional ? "Regional show" : "Local show" }
+    var buyersPerDay: Double {
+        switch self {
+        case .regional: 40
+        case .local: 20
+        case .small: 10
+        }
+    }
+    /// Booking closes this many days before the first day. A small show takes tables on the day.
+    var bookingCloses: Int {
+        switch self {
+        case .regional: 7
+        case .local: 1
+        case .small: 0
+        }
+    }
+    var label: String {
+        switch self {
+        case .regional: "Regional show"
+        case .local: "Local show"
+        case .small: "Small show"
+        }
+    }
+    /// The doors: a small show runs in the evening.
+    var open: Double { self == .small ? Balance.smallShowOpen : Balance.showOpen }
+    var close: Double { self == .small ? Balance.smallShowClose : Balance.showClose }
 }
 
 /// One card show on the calendar. A regional show is two days, Saturday and Sunday. A local show is one day, on a
@@ -102,6 +136,12 @@ extension Balance {
     static let noInPrintSealedShare = 1.0 / 6
     /// A local show on Sunday, on a weekend with no regional show.
     static let sundayShowChance = 0.4
+    /// A small show on a day with no other show: more on weekdays, when there are no big shows.
+    static let smallShowWeekdayChance = 0.22
+    static let smallShowWeekendChance = 0.15
+    static let smallTableFee = 20.0
+    static let smallShowOpen = 17.0
+    static let smallShowClose = 21.0
     /// By big-spender stars, 1 to 5: a local buyer's budget, and the chance that a visitor is a whale.
     static let showSpendFactors = [0.6, 0.8, 1.0, 1.4, 1.9]
     static let showWhaleShares = [0.0, 0.0, 0.01, 0.03, 0.06]
@@ -117,6 +157,9 @@ extension GameStore {
                                     "Metro Trading Card Expo"]
     private static let localVenues = ["VFW Hall", "Community Center gym", "Elks Lodge", "Library meeting room"]
     private static let regionalVenues = ["Convention Center, Hall B", "Expo Center", "Holiday Inn ballroom"]
+    private static let smallShowNames = ["Pop-Up Card Show", "Evening Card Show", "Card Market Night", "Mini Card Show",
+                                         "After-Work Card Show"]
+    private static let smallVenues = ["Brewery taproom", "Church hall", "Mall atrium", "Coffee shop back room"]
 
     /// Keeps the calendar full for the next six weeks. The same day always gives the same show.
     func scheduleShows() {
@@ -151,6 +194,18 @@ extension GameStore {
                     data.shows.append(show)
                 }
             }
+            // A small show can happen on any day that has no other show.
+            if !data.shows.contains(where: { $0.covers(day) }) {
+                var rng = SeededRandom(seed: UInt64(day) &* 32_452_843 &+ 577)
+                let chance = day % 7 >= 5 ? Balance.smallShowWeekendChance : Balance.smallShowWeekdayChance
+                if Double(rng.next()) < chance {
+                    let name = Self.smallShowNames[Int(rng.next() * CGFloat(Self.smallShowNames.count)) % Self.smallShowNames.count]
+                    let venue = Self.smallVenues[Int(rng.next() * CGFloat(Self.smallVenues.count)) % Self.smallVenues.count]
+                    var show = CardShow(name: name, venue: venue, size: .small, startDay: day)
+                    show.noInPrintSealed = Double(rng.next()) < Balance.noInPrintSealedShare
+                    data.shows.append(show)
+                }
+            }
             data.showsPlannedThrough = day
             day += 1
         }
@@ -168,8 +223,11 @@ extension GameStore {
         var rng = SeededRandom(seed: UInt64(show.startDay) &* 2_654_435_761 &+ (show.size == .regional ? 977 : 389))
         let roll = Double(rng.next())
         // A regional show draws serious buyers. A local show is mostly a usual crowd, with a few big days.
-        let stars: [(Int, Double)] = show.size == .regional ? [(3, 0.30), (4, 0.45), (5, 0.25)]
-                                                            : [(1, 0.20), (2, 0.35), (3, 0.30), (4, 0.12), (5, 0.03)]
+        let stars: [(Int, Double)] = switch show.size {
+        case .regional: [(3, 0.30), (4, 0.45), (5, 0.25)]
+        case .local: [(1, 0.20), (2, 0.35), (3, 0.30), (4, 0.12), (5, 0.03)]
+        case .small: [(1, 0.35), (2, 0.40), (3, 0.20), (4, 0.05)]
+        }
         var sum = 0.0
         show.spenders = stars.first { sum += $0.1; return roll < sum }?.0 ?? stars.last?.0
         // A bigger crowd brings more booths: one roll drives both, with a little noise.
@@ -223,7 +281,7 @@ extension GameStore {
         guard let show = showToday else { return false }
         let index = data.day - show.startDay
         // A show takes the day, so the owner's shift at the store must be locked up first (Model/StoreShift.swift).
-        return !show.attended.contains(index) && data.hour < Balance.showClose - 1
+        return !show.attended.contains(index) && data.hour < show.size.close - 1
             && (show.booked || canAfford(show.size.entryFee)) && !storeShiftPending && eventBlock == nil
     }
 
@@ -972,7 +1030,7 @@ final class ShowSession {
     convenience init(show: CardShow, store: GameStore) {
         let venue = Venue(kind: .show, name: show.name,
                           detail: "\(show.size.label)\(show.size.days > 1 ? " · day \(store.day - show.startDay + 1) of 2" : "") · \(show.booked ? "your table" : "walk-in")",
-                          open: Balance.showOpen, close: Balance.showClose, hours: Balance.showClose - Balance.showOpen,
+                          open: show.size.open, close: show.size.close, hours: show.size.close - show.size.open,
                           visitorsMean: show.buyersPerDay * (show.booked && store.hasUpgrade(.premiumBooth) ? Balance.premiumBoothFactor : 1),
                           hasFloor: true, hasTable: show.booked, showID: show.id,
                           crowd: show.size == .regional ? .regionalShow : .localShow,

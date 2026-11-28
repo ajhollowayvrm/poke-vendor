@@ -298,9 +298,11 @@ enum VendorFloor {
 
     /// The usual tables of each kind at a show of the size.
     nonisolated static func plan(_ size: ShowSize) -> [(VendorKind, Int)] {
-        size == .regional
-            ? [(.vintageDealer, 8), (.modernDealer, 8), (.gameShop, 4), (.collector, 7), (.mysteryPacks, 3), (.sealedDealer, 3)]
-            : [(.vintageDealer, 2), (.modernDealer, 3), (.gameShop, 2), (.collector, 4), (.mysteryPacks, 1), (.sealedDealer, 1)]
+        switch size {
+        case .regional: [(.vintageDealer, 8), (.modernDealer, 8), (.gameShop, 4), (.collector, 7), (.mysteryPacks, 3), (.sealedDealer, 3)]
+        case .local: [(.vintageDealer, 2), (.modernDealer, 3), (.gameShop, 2), (.collector, 4), (.mysteryPacks, 1), (.sealedDealer, 1)]
+        case .small: [(.vintageDealer, 1), (.modernDealer, 2), (.gameShop, 1), (.collector, 2)]
+        }
     }
 
     nonisolated static func baseCount(_ size: ShowSize) -> Int { plan(size).reduce(0) { $0 + $1.1 } }

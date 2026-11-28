@@ -157,7 +157,7 @@ struct ShowDetailView: View {
                     expectBox(show)
                     DetailBox(title: "The show") {
                         row("Days", show.size.days == 2 ? "2 (Saturday and Sunday)" : "1 (\(GameStore.weekdays[show.startDay % 7]))")
-                        row("Doors", "\(GameStore.clock(Balance.showOpen)) – \(GameStore.clock(Balance.showClose))")
+                        row("Doors", "\(GameStore.clock(show.size.open)) – \(GameStore.clock(show.size.close))")
                         row("Crowd", (show.size == .regional ? Crowd.regionalShow : Crowd.localShow).short)
                         row("Table fee", money(show.tableFee) + (show.size.days == 2 ? " for both days" : ""))
                         row("Walk-in entry", money(show.size.entryFee) + " a day")

@@ -614,7 +614,7 @@ extension GameStore {
         return data.contacts.filter { c in
             guard c.kind.isVendor else { return false }
             let roll = r.next()
-            return show.size == .regional ? c.atRegionalShows : (c.atLocalShows && roll < 0.7)
+            return show.size == .regional ? c.atRegionalShows : (c.atLocalShows && roll < (show.size == .small ? 0.3 : 0.7))
         }
     }
 

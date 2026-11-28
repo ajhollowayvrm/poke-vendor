@@ -14,6 +14,9 @@ struct ShopEncounter: Identifiable, Hashable {
         case ownerHold
         /// Another player tells the player about a garage sale tomorrow.
         case tip
+        /// A player wants to trade: their card for one of the player's cards, with cash to even it out. `price` is the
+        /// cash they add, and a negative price is cash the player adds.
+        case trader
     }
 
     let id = UUID()
@@ -54,7 +57,7 @@ extension GameStore {
         let who = names.randomElement() ?? "Someone"
         let mine = (data.raw + data.slabs).filter { $0.status == nil && !$0.setAside && !$0.isKnownFake && $0.market >= 10 }
         var kinds: [ShopEncounter.Kind] = [.kidWithHit, .seller, .seller, .tip]
-        if !mine.isEmpty { kinds += [.buyer, .buyer] }
+        if !mine.isEmpty { kinds += [.buyer, .buyer, .trader] }
         if standing(shop).rank >= StandingLevel.regular.rank { kinds.append(.ownerHold) }
         guard let kind = forced ?? kinds.randomElement() else { return nil }
         switch kind {
@@ -109,7 +112,45 @@ extension GameStore {
             return ShopEncounter(kind: kind, shop: shop, who: who,
                                  line: "There's a garage sale tomorrow. The guy said he has a box of old cards. It's not posted anywhere.",
                                  price: 0, market: 0)
+        case .trader:
+            guard let card = mine.randomElement() else { return nil }
+            let sets = Bool.random() ? Balance.modernSets : Balance.vintageSets + Balance.olderSets
+            guard let (print, slug) = VendorFloor.randomPrint(from: sets, minMarket: card.market * 0.5, maxMarket: card.market * 1.3) else {
+                return nil
+            }
+            let condition: Condition = Balance.modernSets.contains(slug) ? .packFresh() : .played()
+            let theirs = (print.market ?? 0) * condition.wear.valueFactor
+            // They value the trade near the market of the player's card, and the cash evens it out.
+            let cash = ShowSession.round(card.market * Double.random(in: 0.88...1.02) - theirs)
+            let fake = Counterfeit.roll(source: .stranger, sealed: false, slug: slug, market: theirs)
+            let mineName = card.print.name + (card.grade.map { " " + $0.label } ?? "")
+            let cashText = cash >= 0.5 ? ", and I add \(money(cash))" : cash <= -0.5 ? ", if you add \(money(-cash))" : ""
+            return ShopEncounter(kind: kind, shop: shop, who: who,
+                                 line: "Want to trade? My \(print.name) for your \(mineName)\(cashText).",
+                                 price: abs(cash) < 0.5 ? 0 : cash, market: theirs, cardID: card.id,
+                                 goods: .single(print, slug: slug, condition: condition), fake: fake)
         }
+    }
+
+    /// Takes a trade from a player at the shop: the player's card goes, theirs comes in, and the cash evens it out.
+    func tradeWithShopPlayer(_ e: ShopEncounter) -> String {
+        guard let id = e.cardID, let mine = card(id), mine.status == nil, !mine.setAside,
+              case .single(let print, let slug, let condition) = e.goods else { return "The card is gone." }
+        if e.price < 0, !canAfford(-e.price) { return "You do not have \(money(-e.price))." }
+        data.raw.removeAll { $0.id == id }
+        data.slabs.removeAll { $0.id == id }
+        var theirs = OwnedCard(print: print, setSlug: slug, acquired: .now, paid: e.market, ripID: nil, condition: condition,
+                               acquiredDay: data.day)
+        theirs.fake = e.fake
+        data.raw.append(theirs)
+        if e.price > 0 { addLedger(e.price, .sale, "\(mine.print.name) · trade at \(e.shop.rawValue)") }
+        if e.price < 0 { addLedger(e.price, .singles, "Cash added in a trade at \(e.shop.rawValue)") }
+        addPoints(shopContactID(e.shop), 1)
+        recordDeal(nil, what: "Traded \(mine.print.name) for \(print.name)", price: e.market + e.price, market: mine.market, slug: slug)
+        log("Traded your \(mine.print.name) to \(e.who) at \(e.shop.rawValue) for \(print.name)\(e.price > 0 ? " plus \(money(e.price))" : e.price < 0 ? ", adding \(money(-e.price))" : "").",
+            cash: e.price != 0 ? e.price : nil)
+        save()
+        return "You traded for the \(print.name)."
     }
 
     /// The kid's card: the player tells them what it is worth. Nothing changes hands. The shop sees it.

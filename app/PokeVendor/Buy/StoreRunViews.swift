@@ -666,6 +666,14 @@ struct ShopEncounterBox: View {
                     .disabled(!store.canAfford(e.price))
                 choice("Pass", tint: Theme.muted) { "You passed." }
             }
+        case .trader:
+            HStack(spacing: 8) {
+                choice(e.price > 0 ? "Trade · +\(money(e.price))" : e.price < 0 ? "Trade · you add \(money(-e.price))" : "Trade", tint: Theme.green) {
+                    store.tradeWithShopPlayer(e)
+                }
+                .disabled(e.price < 0 && !store.canAfford(-e.price))
+                choice("No thanks", tint: Theme.muted) { "\(e.who) shrugged and went back to their binder." }
+            }
         case .tip:
             HStack(spacing: 8) {
                 choice("Add to calendar", tint: Theme.green) { store.takeShopTip(e) }

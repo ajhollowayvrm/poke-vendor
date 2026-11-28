@@ -58,6 +58,7 @@ final class GameTests {
         timed("masterChase", masterSetChase)
         timed("splitPay", splitPay)
         timed("tradeExtras", tradeExtras)
+        timed("smallShows", smallShowsAndShopTrades)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2548,6 +2549,43 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - Small shows and trades at game shops
+
+    /// Small evening shows come on weekdays too, never two shows on one day. A player at a game shop trades a card.
+    private func smallShowsAndShopTrades() {
+        fresh()
+        let start = store.day
+        var small: [CardShow] = []
+        var clash = false
+        for d in stride(from: start, through: start + 7 * 40, by: 7) {
+            store.data.day = d
+            store.scheduleShows()
+            let days = store.data.shows.flatMap { Array($0.startDay...$0.endDay) }
+            if Set(days).count != days.count { clash = true }
+            small += store.data.shows.filter { $0.size == .small && !small.map(\.id).contains($0.id) }
+        }
+        store.data.day = start
+        check(!clash, "two shows fell on one day")
+        check(small.contains { $0.startDay % 7 < 5 }, "no small show on a weekday in 40 weeks")
+        check(ShowSize.small.open >= Balance.workEnd, "a small show opens before work ends")
+
+        // A trade with a player at a game shop.
+        fresh()
+        guard let shop = LocalStore.allCases.first(where: \.isGameShop),
+              let print = SetLibrary.set("prismatic-evolutions").prints.first(where: { ($0.market ?? 0) > 30 && ($0.market ?? 0) < 80 }) else {
+            return check(false, "no card for the shop trade test")
+        }
+        store.addTestCard(print)
+        store.data.cash = 1_000
+        var offer: ShopEncounter?
+        for _ in 0..<20 where offer == nil { offer = store.makeShopEncounter(shop, kind: .trader) }
+        guard let e = offer, let mine = e.cardID else { return check(false, "no trader at the game shop") }
+        let cash = store.personalCash, raw = store.data.raw.count
+        _ = store.tradeWithShopPlayer(e)
+        check(store.card(mine) == nil && store.data.raw.count == raw && abs(store.personalCash - cash - e.price) < 0.01,
+              "the shop trade did not swap the cards and the cash")
     }
 
     // MARK: - More items on the player's side of a trade
