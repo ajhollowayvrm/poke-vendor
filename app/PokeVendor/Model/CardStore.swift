@@ -206,6 +206,10 @@ extension Balance {
     static let storeCasualBudget = 30.0
     /// The share of customers who come to the counter when the player works it: to buy, to trade, or to sell.
     static let counterVisitorShare = 0.6
+    /// The rest of the counter-hour customers grab something small and pay at the register (docs/39-store-shift.md,
+    /// Register sales). A register sale is a pack lot or one item up to this price.
+    static let registerShare = 1 - counterVisitorShare
+    static let registerMaxPrice = 30.0
     /// A store gets more people who want to sell than a show table does.
     static let storeSellerShare = 0.32
     /// The quick pick keeps a raw card home for grading when it looks Near Mint, its front reads this centered or
@@ -783,7 +787,7 @@ extension GameStore {
 
     /// A pack buyer at the pack display: 1 to 5 packs of one product, at the shelf price. One price check covers the lot.
     /// A small-budget customer stays in the casual budget. Returns the packs sold and the revenue.
-    func sellPackLot(_ packs: inout [StoreShelfItem], casual: Bool, storeName: String) -> (count: Int, revenue: Double) {
+    func sellPackLot(_ packs: inout [StoreShelfItem], casual: Bool, storeName: String, receipt: Bool = true) -> (count: Int, revenue: Double) {
         guard let first = pickForCustomer(packs) else { return (0, 0) }
         let price = shelfPrice(first)
         guard perceivedPrice(first, price: price) <= first.market * Double.random(in: Balance.packBuyerLimit) else { return (0, 0) }
@@ -791,7 +795,7 @@ extension GameStore {
         if casual { want = min(want, Int(Balance.storeCasualBudget / max(price, 0.01))) }
         let lot = Array(packs.filter { $0.productKey == first.productKey }.prefix(max(0, want)))
         var revenue = 0.0
-        for pack in lot { revenue += sellFromStore(pack, price: shelfPrice(pack), storeName: storeName) }
+        for pack in lot { revenue += sellFromStore(pack, price: shelfPrice(pack), storeName: storeName, receipt: receipt) }
         let sold = Set(lot.map(\.id))
         packs.removeAll { sold.contains($0.id) }
         return (lot.count, revenue)
@@ -863,9 +867,32 @@ extension GameStore {
         return items.last
     }
 
+    /// One register customer while the owner works the counter: a pack lot from the display, or one small item, at the
+    /// shelf price. The owner sells as well as anyone, so there is no clerk factor. Returns what sold.
+    func registerCustomer(storeName: String) -> [(id: UUID, name: String, price: Double)] {
+        let type = rollCustomerType()
+        let shelf = storeShelf()
+        var packs = packDisplaySlots > 0 ? shelf.filter(\.isPack) : []
+        if !packs.isEmpty, Double.random(in: 0..<1) < Balance.packBuyChance(type) {
+            let before = Dictionary(uniqueKeysWithValues: packs.map { ($0.id, $0) })
+            let lot = sellPackLot(&packs, casual: type?.smallBudget ?? false, storeName: storeName, receipt: false)
+            if lot.count > 0 {
+                let left = Set(packs.map(\.id))
+                return before.values.filter { !left.contains($0.id) }.map { ($0.id, $0.name, shelfPrice($0)) }
+            }
+        }
+        let small = shelf.filter { !$0.isPack && !$0.consigned && shelfPrice($0) <= Balance.registerMaxPrice }
+        guard let item = pickForCustomer(small) else { return [] }
+        let price = shelfPrice(item)
+        guard perceivedPrice(item, price: price) <= item.market * Double.random(in: Balance.storeBuyerLimit) else { return [] }
+        sellFromStore(item, price: price, storeName: storeName, receipt: false)
+        return [(item.id, item.name, price)]
+    }
+
     /// Returns what the store earns: the price, or the cut of a consigned card.
+    /// `receipt`: false for a register sale at the counter, so no receipt covers the counter. The sale still counts.
     @discardableResult
-    func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String) -> Double {
+    func sellFromStore(_ item: StoreShelfItem, price: Double, storeName: String, receipt: Bool = true) -> Double {
         if item.consigned { return sellConsigned(item, price: price, storeName: storeName) }
         let id = item.id
         settleOnlineListing(id, name: item.name)
@@ -878,6 +905,7 @@ extension GameStore {
         bizLedger(price, .sale, "\(item.name) · \(storeName)")
         collectSalesTax(on: price, at: storeName)
         addReceipt(name: item.name, venue: storeName, price: price, net: price, paid: item.paid, ids: [item.id])
+        if !receipt { receipts.removeLast() }
         if let fake = item.fake {
             recordBadSale(item: item.name, channel: storeName, price: price, fake: fake, known: item.known, refunds: false,
                           sealed: !item.isCard)

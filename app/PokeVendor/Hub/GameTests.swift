@@ -53,6 +53,7 @@ final class GameTests {
         timed("showInfo", showInfo)
         timed("psaBox", psaBoxTest)
         timed("package", packageOffer)
+        timed("register", registerSales)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2512,7 +2513,8 @@ final class GameTests {
         openTestStore()
         let today = store.day
         store.data.cardStore?.openDay = today
-        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 10 && ($0.market ?? 0) < 40 }
+        // Over the register limit, so no register sale takes the stock while the clock moves (Balance.registerMaxPrice).
+        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > Balance.registerMaxPrice + 10 && ($0.market ?? 0) < 90 }
         guard prints.count >= 3 else { return check(false, "no cards for the package test") }
         for p in prints.prefix(2) { store.addTestCard(p) }
         let stockIDs = Set(store.data.raw.suffix(2).map(\.id))
@@ -2542,6 +2544,41 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - Register sales at the counter
+
+    /// While the player works the counter, walk-ins buy small items at the register. They pay the business account,
+    /// leave no receipt on the screen, and count in the shift's sales.
+    private func registerSales() {
+        fresh()
+        openTestStore()
+        let today = store.day
+        store.data.cardStore?.openDay = today
+        let prints = SetLibrary.set("prismatic-evolutions").prints.filter { ($0.market ?? 0) > 2 && ($0.market ?? 0) < 12 }
+        guard prints.count >= 15 else { return check(false, "no cheap cards for the register test") }
+        for p in prints.prefix(15) { store.addTestCard(p) }
+        store.stockStore(Set(store.data.raw.suffix(15).map(\.id)))
+        let venue = Venue(kind: .store, name: "Test store", open: store.storeOpenHour, close: store.storeCloseHour,
+                          hours: store.storeHoursLength, visitorsMean: 4, hasFloor: false, hasTable: true)
+        // A new store has few customers, so one day can pass with no register sale. Up to 10 days.
+        var session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        var business = store.businessCash
+        for _ in 0..<10 {
+            session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+            store.counterSession = session
+            session.openTable()
+            store.clearReceipts()
+            business = store.businessCash
+            session.spend(session.closeMinute)
+            store.counterSession = nil
+            if session.registerCount > 0 { break }
+        }
+        check(session.registerCount > 0, "ten full days at the counter had no register sales")
+        check(abs(store.businessCash - business - session.registerTotal) < 0.01 || store.businessCash > business,
+              "the register sales did not pay the business account")
+        check(store.receipts.isEmpty, "a register sale left a receipt on the counter")
+        check(session.soldTotal >= session.registerTotal - 0.001, "the register sales are not in the shift's sales")
     }
 
     // MARK: - The PSA box (Model/PsaBox.swift)
@@ -3157,6 +3194,9 @@ final class GameTests {
         let pick = store.stockable
         store.stockStore(Set(pick.cards.map(\.id) + pick.sealed.map(\.id)))
         store.data.hour = 12
+        // This test checks exact money, so no register sales (Balance.registerShare) run in it.
+        GameStore.registerOff = true
+        defer { GameStore.registerOff = false }
         guard let session = store.startCounter() else { return check(false, "no counter session for the walk-ins") }
         func seat(_ kind: CounterEventKind) -> Visitor? {
             for _ in 0..<20 { if let v = session.makeCounterEvent(kind) { session.testSeat(v); return v } }
@@ -3816,6 +3856,8 @@ final class GameTests {
         for day in 0..<14 {
             // A Sunday: the player has the day free for the wait.
             if day == 6 {
+                // A sick call can make the day a store shift. The test locks up, so the day stays free for the wait.
+                if store.storeShiftPending { _ = store.asBusiness { store.lockUp() } }
                 let restock = MachineRestock(machine: .pharmacy, day: store.day, hour: 12)
                 campBlock = store.machineCampBlock(restock)
                 if let haul = store.campMachine(restock) {

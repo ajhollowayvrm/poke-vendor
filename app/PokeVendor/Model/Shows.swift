@@ -937,6 +937,10 @@ final class ShowSession {
     private var arrivals: [Double] = []
     private(set) var missed = 0
     private(set) var sold: [(name: String, price: Double)] = []
+    /// Register sales at the player's store: walk-ins who grab something small and pay (GameStore.registerCustomer).
+    private(set) var registerCount = 0
+    private(set) var registerTotal = 0.0
+    private var registerMinute = 0.0
     private(set) var bought: [(name: String, price: Double)] = []
     private(set) var trades: [String] = []
     private(set) var walkedAway = 0
@@ -2286,6 +2290,34 @@ final class ShowSession {
         spend(3)
     }
 
+    /// Register sales for the minutes since the last ring: the counter-hour customers who do not come to the counter
+    /// (Balance.registerShare) buy at the register. They count in the shift's sales.
+    func ringRegister() {
+        guard venue.kind == .store, opened, minute > registerMinute + 0.001 else { return }
+        #if DEBUG
+        if GameStore.registerOff { registerMinute = minute; return }
+        #endif
+        let from = venue.open + registerMinute / 60, to = venue.open + min(minute, closeMinute) / 60
+        registerMinute = minute
+        let mean = store.expectedCustomers(day: store.day) * store.trafficShare(from: from, to: to) * Balance.registerShare
+        // A Poisson count around the mean.
+        var count = 0, p = 1.0
+        let limit = exp(-mean)
+        while count < 60 {
+            p *= Double.random(in: 0..<1)
+            if p <= limit { break }
+            count += 1
+        }
+        for _ in 0..<count {
+            for sale in store.registerCustomer(storeName: venue.name) {
+                sold.append((name: sale.name, price: sale.price))
+                table.removeAll { $0.id == sale.id }
+                registerCount += 1
+                registerTotal += sale.price
+            }
+        }
+    }
+
     /// Scores a table deal for fairness (docs/30-haggling-and-deal-reputation.md).
     func score(_ side: DealSide, price: Double, market: Double, pushed: Bool, _ v: Visitor, share: Double? = nil) {
         guard !v.flipped, market > 0 else { return }
@@ -2393,6 +2425,7 @@ final class ShowSession {
     func finish(minutes: Double) {
         if phase == .table {
             minute += minutes
+            ringRegister()
             visitor = nil
             if isOver { phase = .summary } else { nextVisitor() }
         } else {
@@ -2487,6 +2520,7 @@ final class ShowSession {
     func spend(_ minutes: Double) {
         if hasTable, opened, phase == .floor { awayMinutes += min(minutes, closeMinute - minute) }
         minute = min(closeMinute, minute + minutes)
+        ringRegister()
         let gone = arrivals.filter { $0 < minute - 30 }.count
         missed += gone
         arrivals.removeAll { $0 < minute - 30 }

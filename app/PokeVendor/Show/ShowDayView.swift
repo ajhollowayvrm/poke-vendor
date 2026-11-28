@@ -157,6 +157,11 @@ struct ShowDayView: View {
                 StatCell(label: "Bought", value: money(session.boughtTotal))
                 StatCell(label: "Cash", value: money(store.cash))
             }
+            // Walk-ins who grab something small and pay while you handle the counter (docs/39-store-shift.md).
+            if session.venue.kind == .store, session.registerCount > 0 {
+                Text("Register · \(session.registerCount) small sale\(session.registerCount == 1 ? "" : "s") · \(money(session.registerTotal))")
+                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+            }
         }
         .padding(16)
         .background(Theme.surface)

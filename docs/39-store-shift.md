@@ -104,3 +104,19 @@ the package sheet.
   as a cash buy at the counter.
 - Shows and meets keep the single trade ("Offer a trade instead"), so
   the game before the store does not change.
+
+## Register sales
+
+At the counter, 60% of the hour's customers come up as visitors to deal
+with. The other 40% grab something small and pay at the register while
+the player works:
+
+- A register customer buys a lot of 1 to 5 packs from the pack display,
+  or one item at $30 or less, at the shelf price. The usual price check
+  applies, and the owner sells with no clerk factor.
+- The sales happen as the counter clock moves, and follow the store's
+  traffic by the hour.
+- They pay the business account and count in the shift's sales. They
+  leave no receipt on the screen. The counter shows "Register · N small
+  sales · $X".
+- An item that sells at the register leaves the counter.

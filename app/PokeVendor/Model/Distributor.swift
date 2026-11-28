@@ -187,6 +187,8 @@ extension GameStore {
     /// Test tools: they replace the random rolls of the distributor.
     static var forceFill: Double?
     static var forceBackDoorNotice: Bool?
+    /// Test tool: no register sales, for a test that checks exact money at the counter.
+    static var registerOff = false
     #endif
 
     /// The chance that one requested hot case arrives. The secondary wholesaler has no rep, so its rep term is 0.
