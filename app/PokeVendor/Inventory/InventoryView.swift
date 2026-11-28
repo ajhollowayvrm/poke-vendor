@@ -140,7 +140,7 @@ struct InventoryView: View {
                     tabPicker
                     controls
                     if (tab == .raw || tab == .grading), !showsStore, !store.psaBox.isEmpty {
-                        PsaBoxBanner { gradeIDs = GradeRequest(ids: Set(store.psaBox.map(\.id))) }
+                        PsaBoxBanner { gradeIDs = GradeRequest(ids: Set(store.psaBox.map(\.id)), bulk: true) }
                     }
                     if tab == .grading, !store.gradingBills.isEmpty { GradingBillsBox() }
                     rows
@@ -216,7 +216,7 @@ struct InventoryView: View {
             SellSheet(ids: request.ids, startAll: request.startAll, startChannel: request.channel)
         }
         .sheet(item: $gradeIDs) { request in
-            GradeSheet(ids: request.ids)
+            GradeSheet(ids: request.ids, bulk: request.bulk)
         }
         .sheet(item: $lotIDs) { request in
             LotSheet(ids: request.ids)
@@ -658,6 +658,8 @@ struct SellRequest: Identifiable {
 struct GradeRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
+    /// The PSA box opens the sheet on Value Bulk. Any other selection opens it on Regular.
+    var bulk = false
 }
 
 /// A sheet that an item action opens. The screen that shows the actions owns the sheet.

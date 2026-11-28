@@ -343,7 +343,16 @@ struct GradeSheet: View {
     @Environment(\.dismiss) private var dismiss
     let ids: Set<UUID>
     @State private var company: GradingCompany = .psa
-    @State private var tierIndex = 0
+    @State private var tierIndex: Int
+
+    /// `bulk`: the PSA box sends its cards, so the sheet opens on Value Bulk. Otherwise it opens on PSA Regular: a
+    /// selection is not a Value Bulk order unless the player picks it.
+    init(ids: Set<UUID>, bulk: Bool = false) {
+        self.ids = ids
+        let tiers = Balance.gradingTiers[.psa] ?? []
+        let start = bulk ? tiers.firstIndex { $0.minCards > 1 } : tiers.firstIndex { $0.name == GradingTier.psaStandard.name }
+        _tierIndex = State(initialValue: start ?? 0)
+    }
 
     /// The slabs to resubmit. Empty when the sheet sends raw cards.
     private var slabs: [OwnedCard] { store.data.slabs.filter { ids.contains($0.id) && store.canResubmit($0) } }
