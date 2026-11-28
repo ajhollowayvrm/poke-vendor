@@ -57,8 +57,11 @@ extension GameStore {
     }
 
     /// Pays a held order. Its cards come back to Inventory. Returns false when the cash does not cover the bill.
+    /// `from`: the account that pays, chosen in the Wallet. Nil: the active account.
     @discardableResult
-    func payGradingBill(_ id: UUID) -> Bool {
+    func payGradingBill(_ id: UUID, from: MoneyAccount? = nil) -> Bool {
+        let restore = paying(from: from ?? activeAccount)
+        defer { restore() }
         guard let i = data.gradingBills.firstIndex(where: { $0.id == id }), data.gradingBills[i].held else { return false }
         let bill = data.gradingBills[i]
         guard canAfford(bill.amount) else { return false }

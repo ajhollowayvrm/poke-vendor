@@ -178,7 +178,10 @@ extension GameStore {
     }
 
     /// The player pays what they owe now: the sales tax, or the income tax that came due and is unpaid.
-    func payTaxes(income: Bool) {
+    /// `from`: the account that pays, chosen in the Wallet. Nil: the active account.
+    func payTaxes(income: Bool, from: MoneyAccount? = nil) {
+        let restore = paying(from: from ?? activeAccount)
+        defer { restore() }
         let owed = income ? data.taxes.incomeTaxOwed : data.taxes.salesTaxOwed
         guard owed >= 0.01, canAfford(owed) else { return }
         addLedger(-owed, .tax, income ? "Income tax paid" : "Sales tax paid")

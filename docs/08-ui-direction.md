@@ -57,7 +57,15 @@ state and be the fastest way to get anywhere in the app.
 ### 1. Wallet / cash ledger
 
 The Cash tap target's destination. Answers one question: where did my
-money go, and where did it come from.
+money go, and where did it come from. It is also the place for the
+finance actions (AJ, 2026-11-27): with a store, the transfers between
+the two accounts (Move in, Pay yourself) and a link to the store
+numbers; for everyone, a **Bills** list of every payment to come (rent,
+store rent and overhead, wages, taxes, PSA bills, distributor bills,
+loan payments, the insurance premium) with the account that pays each.
+A bill that waits for the player (a tax, a held PSA order, a
+distributor bill) has a Pay button, and a "Pay from" switch picks the
+account. These sit right under the balance, above the in/out summary.
 
 **Layout, top to bottom:**
 

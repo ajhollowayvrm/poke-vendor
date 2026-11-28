@@ -36,6 +36,18 @@ struct WalletView: View {
                     }
                 }
                 .padding(.top, 8)
+                // The transfers between the two accounts (Model/BusinessAccount.swift).
+                if store.hasBusinessAccount {
+                    BusinessAccountBox()
+                    NavigationLink(value: AppRoute.business) {
+                        ChevronRow(icon: "chart.bar", title: "Store numbers", detail: "Sales, costs, and the month by month")
+                            .padding(12)
+                    }
+                    .buttonStyle(.plain)
+                    .background(Theme.surface)
+                    .framed()
+                }
+                BillsBox()
                 DetailBox(title: month ? "Last 4 weeks" : "Last 7 days") {
                     Picker("Period", selection: $month) {
                         Text("Week").tag(false)

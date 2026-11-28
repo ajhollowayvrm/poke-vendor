@@ -107,11 +107,12 @@ extension GameStore {
         data.distributor.payables = list
     }
 
-    /// Pays a bill now.
+    /// Pays a bill now. `from`: the account that pays, chosen in the Wallet. Nil: the business account.
     @discardableResult
-    func payPayable(_ id: UUID, quiet: Bool = false) -> Bool {
-        guard let p = payables.first(where: { $0.id == id }), bizAfford(p.amount) else { return false }
-        bizLedger(-p.amount, .wholesale, "Distributor bill · \(p.label)")
+    func payPayable(_ id: UUID, quiet: Bool = false, from: MoneyAccount? = nil) -> Bool {
+        let account = resolve(from ?? .business)
+        guard let p = payables.first(where: { $0.id == id }), balance(account) >= p.amount - 0.001 else { return false }
+        addLedger(-p.amount, .wholesale, "Distributor bill · \(p.label)", account: account)
         data.distributor.payables = payables.filter { $0.id != id }
         if !p.late { data.distributor.onTime = (data.distributor.onTime ?? 0) + 1 }
         if !quiet {

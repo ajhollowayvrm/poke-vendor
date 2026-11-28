@@ -53,7 +53,7 @@ struct CardStoreView: View {
                         todayBox(s)
                         OrdersAndHoldsBox()
                         PullListBox()
-                        BusinessAccountBox()
+                        WalletLinkRow()
                         numbersBox
                         BusinessLink()
                     case .shelves:

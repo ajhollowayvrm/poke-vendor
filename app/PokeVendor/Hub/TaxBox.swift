@@ -17,18 +17,12 @@ struct TaxBox: View {
                 note: "The buyers paid this at your store and your table. It is not your money.")
             row("Estimated income tax", money(taxes.incomeTaxOwed + estimate), due: store.daysUntilIncomeTax,
                 note: "\(Int(Balance.incomeTaxRate * 100))% of the net profit from card sales this quarter. A loss lowers the next quarter.")
-            if taxes.salesTaxOwed >= 0.01 {
-                Button("Pay the sales tax now · \(money(taxes.salesTaxOwed))") { store.payTaxes(income: false) }
-                    .buttonStyle(.bordered)
-                    .disabled(!store.canAfford(taxes.salesTaxOwed))
-            }
             if taxes.incomeTaxOwed >= 0.01 {
                 Text("You owe \(money(taxes.incomeTaxOwed)) of income tax from an earlier quarter. It includes the penalty.")
                     .font(.caption).foregroundStyle(Theme.orange)
-                Button("Pay the back tax now · \(money(taxes.incomeTaxOwed))") { store.payTaxes(income: true) }
-                    .buttonStyle(.bordered)
-                    .tint(Theme.orange)
-                    .disabled(!store.canAfford(taxes.incomeTaxOwed))
+            }
+            if taxes.salesTaxOwed >= 0.01 || taxes.incomeTaxOwed >= 0.01 {
+                Text("Pay a tax now from either account under Bills.").font(.caption).foregroundStyle(Theme.muted)
             }
             Divider().overlay(Theme.line)
             HStack {

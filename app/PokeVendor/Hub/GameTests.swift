@@ -54,6 +54,7 @@ final class GameTests {
         timed("psaBox", psaBoxTest)
         timed("package", packageOffer)
         timed("register", registerSales)
+        timed("walletBills", walletBills)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2544,6 +2545,30 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - Bills in the Wallet (Model/Bills.swift)
+
+    /// The Wallet lists the bills, and a bill paid now comes out of the account the player picks.
+    private func walletBills() {
+        fresh()
+        openTestStore()
+        store.data.cash = 5_000
+        store.moveToBusiness(2_000)
+        store.data.taxes.salesTaxOwed = 50
+        store.data.distributor.payables = [Payable(amount: 120, label: "Test case", dueDay: store.day + 30)]
+        let bills = store.walletBills
+        check(bills.contains { $0.payment == .salesTax } && bills.contains { $0.title == "Distributor bill" } && bills.contains { $0.id == "rent" },
+              "the Wallet did not list the tax, the distributor bill, and the rent")
+        var personal = store.personalCash, business = store.businessCash
+        check(store.payWalletBill(.salesTax, from: .business) && store.businessCash < business - 49.99 && abs(store.personalCash - personal) < 0.001,
+              "the sales tax did not come out of the business account")
+        personal = store.personalCash; business = store.businessCash
+        if let id = store.payables.first?.id {
+            check(store.payWalletBill(.distributor(id), from: .personal) && store.personalCash < personal - 119.99 && abs(store.businessCash - business) < 0.001,
+                  "the distributor bill did not come out of the player's own account")
+        }
+        check(store.activeAccount == .personal, "a Wallet payment left the business account active")
     }
 
     // MARK: - Register sales at the counter

@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// The business account on the store screen: the two balances, the money in and out, the bills soon due, and the
-/// transfers (Model/BusinessAccount.swift).
+/// The business account in the Wallet: the two balances, the money in and out, the bills soon due, and the transfers
+/// (Model/BusinessAccount.swift).
 struct BusinessAccountBox: View {
     @Environment(GameStore.self) private var store
     @State private var amount = 500.0
@@ -69,5 +69,82 @@ struct AccountsLine: View {
             }
         }
         .font(.caption.monospaced())
+    }
+}
+
+/// The two balances on the store screen. The Wallet holds the transfers and the bills.
+struct WalletLinkRow: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        let short = store.businessBillsDue(within: 14) > store.businessCash + 0.001
+        NavigationLink(value: AppRoute.wallet) {
+            ChevronRow(icon: "dollarsign.circle", title: "Wallet",
+                       detail: "Business \(money(store.businessCash)) · yours \(money(store.personalCash))" + (short ? " · bills due soon" : ""),
+                       accent: short)
+                .padding(12)
+        }
+        .buttonStyle(.plain)
+        .background(Theme.surface)
+        .framed()
+    }
+}
+
+/// Every bill to come, and the ones that wait for the player, with the account that pays each. The player picks the
+/// account for a bill they pay now (Model/Bills.swift).
+struct BillsBox: View {
+    @Environment(GameStore.self) private var store
+    @State private var payFrom: MoneyAccount = .personal
+    @State private var note: String?
+
+    var body: some View {
+        let bills = store.walletBills
+        DetailBox(title: "Bills") {
+            if bills.isEmpty {
+                Text("Nothing is due.").font(.subheadline).foregroundStyle(Theme.muted)
+            }
+            if store.hasBusinessAccount, bills.contains(where: { $0.payment != nil }) {
+                Picker("Pay from", selection: $payFrom) {
+                    Text("Pay from yours · \(money(store.personalCash))").tag(MoneyAccount.personal)
+                    Text("Business · \(money(store.businessCash))").tag(MoneyAccount.business)
+                }
+                .pickerStyle(.segmented)
+            }
+            ForEach(bills) { bill in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(bill.title).font(.subheadline).foregroundStyle(bill.urgent ? Theme.orange : Theme.text)
+                            Text(bill.detail).font(.caption).foregroundStyle(Theme.muted).lineLimit(2)
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(money(bill.amount)).font(.subheadline.monospaced().weight(.semibold))
+                            Text(due(bill)).font(.caption.monospaced()).foregroundStyle(bill.urgent ? Theme.orange : Theme.muted)
+                        }
+                    }
+                    if let payment = bill.payment {
+                        let from = store.hasBusinessAccount ? payFrom : .personal
+                        Button("Pay \(money(bill.amount)) now\(store.hasBusinessAccount ? (from == .business ? " from the business" : " from yours") : "")") {
+                            note = store.payWalletBill(payment, from: from) ? nil : "That account cannot cover \(money(bill.amount))."
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(bill.urgent ? Theme.orange : Theme.cyan)
+                        .controlSize(.small)
+                        .disabled(store.balance(from) < bill.amount - 0.001)
+                    } else if store.hasBusinessAccount {
+                        Text(bill.account == .business ? "The business account pays it on its day." : "Your own account pays it on its day.")
+                            .font(.caption2).foregroundStyle(Theme.muted)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            if let note { Text(note).font(.caption).foregroundStyle(Theme.orange) }
+        }
+    }
+
+    private func due(_ bill: WalletBill) -> String {
+        guard let days = bill.dueIn else { return "due now" }
+        return days == 0 ? "today" : days == 1 ? "tomorrow" : "in \(days) days"
     }
 }
