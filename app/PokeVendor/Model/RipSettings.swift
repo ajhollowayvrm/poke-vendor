@@ -48,6 +48,8 @@ struct Settings: Codable, Hashable {
     var stopRule = StopRule()
     /// The account that online buying pays from, when the player has a business account. Nil: the player's own.
     var buyAccount: MoneyAccount?
+    /// The account that the graders charge: PSA's bills and the fees of CGC and BGS. Nil: the player's own.
+    var gradingAccount: MoneyAccount?
 }
 
 extension Balance {

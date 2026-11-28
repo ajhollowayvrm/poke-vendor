@@ -54,9 +54,9 @@ struct StatusBox: View {
                 if let bill = store.gradingBills.first(where: { $0.id == billID }) {
                     Button("Pay \(money(bill.amount)) for \(bill.cards) card\(bill.cards == 1 ? "" : "s")") { store.payGradingBill(billID) }
                         .primaryButton()
-                        .disabled(!store.canAfford(bill.amount))
-                    if !store.canAfford(bill.amount) {
-                        Text("You have \(money(store.cash)).").font(.caption).foregroundStyle(Theme.orange)
+                        .disabled(store.balance(store.gradingAccount) < bill.amount - 0.001)
+                    if store.balance(store.gradingAccount) < bill.amount - 0.001 {
+                        Text("You have \(money(store.balance(store.gradingAccount))) in the account the graders charge.").font(.caption).foregroundStyle(Theme.orange)
                     }
                 }
             case .atAuthenticator(let days, _):

@@ -455,8 +455,12 @@ struct GradeSheet: View {
                     Text("Card savers: \(cards.count) needed, \(store.supplyCount(.cardSaver)) in hand. Missing ones cost \(money(SupplyItem.cardSaver.rushPrice)) each.")
                         .font(.caption).foregroundStyle(Theme.muted)
                     }
-                    if !company.billsOnReturn, !store.canAfford(total) {
-                        Text("You have \(money(store.cash)). That is not enough.").foregroundStyle(Theme.orange)
+                    if store.hasBusinessAccount {
+                        Text("Charged to \(store.gradingAccount == .business ? "the business account" : "your own account") (Finances, Bills).")
+                            .font(.caption).foregroundStyle(Theme.muted)
+                    }
+                    if !company.billsOnReturn, store.balance(store.gradingAccount) < total - 0.001 {
+                        Text("You have \(money(store.balance(store.gradingAccount))) there. That is not enough.").foregroundStyle(Theme.orange)
                     }
                 }
             }
@@ -479,7 +483,7 @@ struct GradeSheet: View {
                         }
                         dismiss()
                     }
-                    .disabled(cards.isEmpty || block != nil || (!company.billsOnReturn && !store.canAfford(total)))
+                    .disabled(cards.isEmpty || block != nil || (!company.billsOnReturn && store.balance(store.gradingAccount) < total - 0.001))
                 }
             }
         }

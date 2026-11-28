@@ -55,6 +55,15 @@ extension GameStore {
         save()
     }
 
+    /// The account the graders charge, the player's card on file (Finances, Bills). Without a business account, the
+    /// player's own.
+    var gradingAccount: MoneyAccount { hasBusinessAccount ? (data.settings.gradingAccount ?? .personal) : .personal }
+
+    func setGradingAccount(_ account: MoneyAccount) {
+        data.settings.gradingAccount = account
+        save()
+    }
+
     /// The buy account's balance and label, for the Buy screens. A screen checks a buy with `canAffordBuy`, because
     /// `canAfford` reads the active account, which is the player's own outside a buy.
     var buyCash: Double { balance(buyAccount) }

@@ -64,7 +64,7 @@ extension GameStore {
             let extra = possibleUpcharge(bill)
             out.append(WalletBill(id: "grading-\(bill.id)", title: "\(bill.company.rawValue) bill · \(bill.cards) card\(bill.cards == 1 ? "" : "s")",
                                   detail: bill.held ? "\(bill.company.rawValue) holds the order until you pay" : "\(bill.tier)" + (extra > 0 ? " · up to \(money(bill.amount + extra)) with upcharges" : ""),
-                                  amount: bill.amount, dueIn: bill.held ? nil : max(0, bill.dueDay - today), account: .personal,
+                                  amount: bill.amount, dueIn: bill.held ? nil : max(0, bill.dueDay - today), account: gradingAccount,
                                   payment: bill.held ? .grading(bill.id) : nil, urgent: bill.held))
         }
         for p in payables {

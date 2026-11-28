@@ -57,10 +57,10 @@ extension GameStore {
     }
 
     /// Pays a held order. Its cards come back to Inventory. Returns false when the cash does not cover the bill.
-    /// `from`: the account that pays, chosen in the Wallet. Nil: the active account.
+    /// `from`: the account that pays, chosen under Bills. Nil: the grading account (the card on file).
     @discardableResult
     func payGradingBill(_ id: UUID, from: MoneyAccount? = nil) -> Bool {
-        let restore = paying(from: from ?? activeAccount)
+        let restore = paying(from: from ?? gradingAccount)
         defer { restore() }
         guard let i = data.gradingBills.firstIndex(where: { $0.id == id }), data.gradingBills[i].held else { return false }
         let bill = data.gradingBills[i]
@@ -93,7 +93,7 @@ extension GameStore {
             if payGradingBill(bill.id) {
                 lines.append("\(bill.company.rawValue) charged \(money(bill.amount)) for \(bill.cards) card\(bill.cards == 1 ? "" : "s"). The slabs are back.")
             } else if newlyHeld.contains(bill.id) {
-                lines.append("\(bill.company.rawValue) graded \(bill.cards) card\(bill.cards == 1 ? "" : "s"). The bill is \(money(bill.amount)), and you have \(money(cash)). \(bill.company.rawValue) holds the order until you pay.")
+                lines.append("\(bill.company.rawValue) graded \(bill.cards) card\(bill.cards == 1 ? "" : "s"). The bill is \(money(bill.amount)), and \(gradingAccount == .business ? "the business account has" : "you have") \(money(balance(gradingAccount))). \(bill.company.rawValue) holds the order until you pay.")
             }
         }
         return lines

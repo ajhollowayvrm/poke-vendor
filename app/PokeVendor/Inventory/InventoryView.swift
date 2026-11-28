@@ -913,7 +913,7 @@ struct GradingBillsBox: View {
                     if bill.held {
                         Button("Pay \(money(bill.amount))") { store.payGradingBill(bill.id) }
                             .primaryButton()
-                            .disabled(!store.canAfford(bill.amount))
+                            .disabled(store.balance(store.gradingAccount) < bill.amount - 0.001)
                     } else {
                         Text(money(bill.amount)).font(.subheadline.monospaced())
                     }

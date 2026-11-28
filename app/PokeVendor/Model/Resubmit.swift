@@ -68,7 +68,8 @@ extension GameStore {
             data.gradingBills.append(GradingBill(id: orderID, company: company, tier: tier.name, cards: slabs.count, amount: fee,
                                                  dueDay: data.day + days))
         } else {
-            orderID = addLedger(-fee, .grading, label, pending: true)
+            guard balance(gradingAccount) >= fee - 0.001 else { return }
+            orderID = addLedger(-fee, .grading, label, pending: true, account: gradingAccount)
         }
         let sent = Set(slabs.map(\.id))
         for i in data.slabs.indices where sent.contains(data.slabs[i].id) {

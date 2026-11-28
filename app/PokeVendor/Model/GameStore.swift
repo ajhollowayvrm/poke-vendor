@@ -1363,6 +1363,8 @@ final class GameStore {
         let fee = gradingFee(tier, company) * Double(cards.count)
         let days = gradingDays(tier, company)
         let label = "\(cards.count) card\(cards.count == 1 ? "" : "s") to \(company.rawValue) \(tier.name)"
+        // A grader that takes the fee now charges the grading account (the card on file).
+        if !company.billsOnReturn, balance(gradingAccount) < fee - 0.001 { return }
         // PSA bills when the grades come back. The order's ID ties its cards to the bill (docs/10, Paying PSA).
         let orderID: UUID
         if company.billsOnReturn {
@@ -1370,7 +1372,7 @@ final class GameStore {
             data.gradingBills.append(GradingBill(id: orderID, company: company, tier: tier.name, cards: cards.count, amount: fee,
                                                  dueDay: data.day + days))
         } else {
-            orderID = addLedger(-fee, .grading, label, pending: true)
+            orderID = addLedger(-fee, .grading, label, pending: true, account: gradingAccount)
         }
         for i in data.raw.indices where ids.contains(data.raw[i].id) && Self.gradable(data.raw[i].status) {
             data.raw[i].status = .atGrader(company: company, tier: tier.name, daysLeft: days, ledgerID: orderID)

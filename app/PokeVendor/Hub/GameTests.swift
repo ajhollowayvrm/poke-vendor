@@ -2618,6 +2618,16 @@ final class GameTests {
                   "the distributor bill did not come out of the player's own account")
         }
         check(store.activeAccount == .personal, "a Wallet payment left the business account active")
+
+        // With the graders set to charge the business, a held PSA bill comes out of the business account at End Day.
+        store.setGradingAccount(.business)
+        let billID = UUID()
+        store.data.gradingBills.append(GradingBill(id: billID, company: .psa, tier: "Regular", cards: 1, amount: 79.99, dueDay: store.day, held: true))
+        personal = store.personalCash; business = store.businessCash
+        _ = store.gradingBillsEndDay()
+        check(!store.gradingBills.contains { $0.id == billID } && store.businessCash < business - 79.98 && abs(store.personalCash - personal) < 0.001,
+              "a PSA bill did not charge the business account")
+        store.setGradingAccount(.personal)
     }
 
     // MARK: - Register sales at the counter

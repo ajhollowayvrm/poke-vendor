@@ -140,6 +140,18 @@ struct BillsBox: View {
                 .padding(.vertical, 2)
             }
             if let note { Text(note).font(.caption).foregroundStyle(Theme.orange) }
+            if store.hasBusinessAccount {
+                Divider().overlay(Theme.line)
+                // The card on file for PSA, CGC, and BGS (GameStore.gradingAccount).
+                Text("GRADERS CHARGE").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                Picker("Graders charge", selection: Binding(get: { store.gradingAccount }, set: { store.setGradingAccount($0) })) {
+                    Text("Yours").tag(MoneyAccount.personal)
+                    Text("Business").tag(MoneyAccount.business)
+                }
+                .pickerStyle(.segmented)
+                Text("PSA's bills when the grades come back, and the fees of CGC and BGS when the cards go in.")
+                    .font(.caption).foregroundStyle(Theme.muted)
+            }
         }
     }
 
