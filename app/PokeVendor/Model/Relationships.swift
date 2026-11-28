@@ -491,14 +491,15 @@ extension GameStore {
     func pickUp(_ item: SavedItem, credit: Bool = false) -> Bool {
         guard let c = contact(item.contactID), data.saved.contains(where: { $0.id == item.id }) else { return false }
         if let shop = c.shop {
+            // Store credit first, then cash for the rest (GameStore.shopSplit).
             var state = self.shop(shop)
-            if credit {
-                guard state.credit >= item.price - 0.001 else { return false }
-                state.credit -= item.price
-                data.shops[shop.rawValue] = state
-            } else {
-                guard canAfford(item.price) else { return false }
-                addLedger(-item.price, item.goodsIsSealed ? .sealed : .singles, "\(item.name) · saved at \(c.name)")
+            let split = shopSplit(item.price, at: shop, credit: credit)
+            guard split.cash < 0.005 || canAfford(split.cash) else { return false }
+            state.credit -= split.credit
+            data.shops[shop.rawValue] = state
+            if split.cash >= 0.005 {
+                addLedger(-split.cash, item.goodsIsSealed ? .sealed : .singles, "\(item.name) · saved at \(c.name)"
+                          + (split.credit >= 0.005 ? " · \(money(split.credit)) in store credit" : ""))
             }
         } else {
             guard canAfford(item.price) else { return false }

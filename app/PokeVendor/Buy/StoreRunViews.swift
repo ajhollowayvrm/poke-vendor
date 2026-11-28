@@ -239,8 +239,8 @@ struct StoreRunView: View {
                             .font(.caption.monospaced())
                             .foregroundStyle(Theme.muted)
                         Spacer()
-                        Toggle("Pay with credit", isOn: $useCredit).labelsHidden()
-                        Text("Credit").font(.caption)
+                        Toggle("Use credit", isOn: $useCredit).labelsHidden()
+                        Text("Credit first").font(.caption)
                     }
                 }
                 if let encounter, encounter.shop == s {
@@ -458,7 +458,7 @@ struct ShopView: View {
                 BuyInBox(shop: shop, useCredit: useCredit)
                 ConsignBox(shop: shop)
                 DetailBox(title: "Display case · changes weekly") {
-                    Toggle("Pay with store credit", isOn: $useCredit).font(.subheadline)
+                    Toggle("Use store credit first, cash for the rest", isOn: $useCredit).font(.subheadline)
                     ForEach(Market.displayCase(shop, day: store.day, discount: store.shopDiscount(shop))) { single in
                         let bought = store.data.weekBought.contains(single.id)
                         HStack(spacing: 10) {

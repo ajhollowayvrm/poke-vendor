@@ -1062,7 +1062,7 @@ final class GameStore {
     @discardableResult
     func buyShelf(_ item: ShelfItem, at store: LocalStore, credit: Bool) -> Bool {
         guard shelfLeft(item) > 0, limitLeft(item, at: store) > 0,
-              pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
+              let split = pay(item.price, at: store, credit: credit, label: "\(item.product.name) · \(store.rawValue)", category: .sealed) else { return false }
         // The player takes the front box: the copy that the look-inside view showed.
         let key = BoxContents.shelfKey(item.id, copy: shelfCopy(item))
         data.shelfBought[item.id, default: 0] += 1
@@ -1079,8 +1079,8 @@ final class GameStore {
             data.retail.ripHereWeek[store.rawValue] = data.day / 7
         }
         data.sealed.append(bought)
-        log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
-            cash: credit ? nil : -item.price)
+        log("Bought \(item.product.name) at \(store.rawValue) for \(money(item.price))\(splitText(split)).",
+            cash: split.cash >= 0.005 ? -split.cash : nil)
         save()
         return true
     }
@@ -1088,7 +1088,7 @@ final class GameStore {
     @discardableResult
     func buyCaseSingle(_ single: CaseSingle, at store: LocalStore, credit: Bool) -> Bool {
         guard !data.weekBought.contains(single.id),
-              pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
+              let split = pay(single.price, at: store, credit: credit, label: "\(single.print.name) · \(store.rawValue) case", category: .singles) else { return false }
         data.weekBought.append(single.id)
         recordDeal(shopContactID(store), what: "Bought \(single.print.name)", price: single.price, market: single.print.market ?? 0,
                    slug: single.setSlug)
@@ -1097,8 +1097,8 @@ final class GameStore {
         card.fake = single.fake
         if single.looksOff, single.fake != nil { card.fakeKnown = true }
         data.raw.append(card)
-        log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price)).",
-            cash: credit ? nil : -single.price)
+        log("Bought \(single.print.name) from the \(store.rawValue) display case for \(money(single.price))\(splitText(split)).",
+            cash: split.cash >= 0.005 ? -split.cash : nil)
         save()
         return true
     }
@@ -1107,8 +1107,8 @@ final class GameStore {
     @discardableResult
     func buyBuyIn(_ item: BuyIn, at store: LocalStore, credit: Bool) -> Bool {
         guard !data.weekBought.contains(item.id),
-              pay(item.price, at: store, credit: credit, label: "\(item.name) · \(store.rawValue)",
-                  category: item.isSealed ? .sealed : .singles) else { return false }
+              let split = pay(item.price, at: store, credit: credit, label: "\(item.name) · \(store.rawValue)",
+                              category: item.isSealed ? .sealed : .singles) else { return false }
         data.weekBought.append(item.id)
         recordDeal(shopContactID(store), what: "Bought \(item.name)", price: item.price, market: item.market, slug: nil)
         let known: Bool? = item.looksOff && item.fake != nil ? true : nil
@@ -1136,22 +1136,37 @@ final class GameStore {
         case .mystery:
             break
         }
-        log("Bought \(item.name) at \(store.rawValue) for \(money(item.price))\(credit ? " in store credit" : "").",
-            cash: credit ? nil : -item.price)
+        log("Bought \(item.name) at \(store.rawValue) for \(money(item.price))\(splitText(split)).",
+            cash: split.cash >= 0.005 ? -split.cash : nil)
         save()
         return true
     }
 
-    /// Pays with cash (a ledger entry) or with the shop's store credit (not in the Wallet). Spending earns standing.
-    private func pay(_ amount: Double, at store: LocalStore, credit: Bool, label: String, category: LedgerEntry.Category) -> Bool {
+    /// How a game-shop price splits when the player uses store credit: the credit covers what it can, and cash pays the
+    /// rest, in one purchase. With `credit` false, or at a store with no credit, it is all cash.
+    func shopSplit(_ amount: Double, at store: LocalStore, credit: Bool) -> (credit: Double, cash: Double) {
+        guard credit, store.isGameShop else { return (0, amount) }
+        let fromCredit = min(shop(store).credit, amount)
+        return (fromCredit, max(0, ((amount - fromCredit) * 100).rounded() / 100))
+    }
+
+    /// The words for a split payment in the log: "in store credit", or "$5.00 in credit and $7.00 in cash".
+    func splitText(_ split: (credit: Double, cash: Double)) -> String {
+        if split.credit < 0.005 { return "" }
+        if split.cash < 0.005 { return " in store credit" }
+        return " (\(money(split.credit)) in store credit, \(money(split.cash)) in cash)"
+    }
+
+    /// Pays with the shop's store credit first when the player uses it, and cash for the rest (a ledger entry). Store
+    /// credit is not in the ledger. Spending earns standing. Returns the split, or nil when the cash cannot cover its part.
+    @discardableResult
+    private func pay(_ amount: Double, at store: LocalStore, credit: Bool, label: String, category: LedgerEntry.Category)
+        -> (credit: Double, cash: Double)? {
         var state = shop(store)
-        if credit {
-            guard store.isGameShop, state.credit >= amount - 0.001 else { return false }
-            state.credit -= amount
-        } else {
-            guard canAfford(amount) else { return false }
-            addLedger(-amount, category, label)
-        }
+        let split = shopSplit(amount, at: store, credit: credit)
+        guard split.cash < 0.005 || canAfford(split.cash) else { return nil }
+        state.credit -= split.credit
+        if split.cash >= 0.005 { addLedger(-split.cash, category, label + (split.credit >= 0.005 ? " · \(money(split.credit)) in store credit" : "")) }
         if store.isGameShop {
             state.spendTowardPoint += amount
             let points = Int(state.spendTowardPoint / 50)
@@ -1159,7 +1174,7 @@ final class GameStore {
             state.points = min(100, state.points + points)
         }
         data.shops[store.rawValue] = state
-        return true
+        return split
     }
 
     /// The buylist offer. The shop does not know a fake yet, so it quotes the real price.

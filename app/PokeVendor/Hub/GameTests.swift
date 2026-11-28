@@ -56,6 +56,7 @@ final class GameTests {
         timed("register", registerSales)
         timed("walletBills", walletBills)
         timed("masterChase", masterSetChase)
+        timed("splitPay", splitPay)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2546,6 +2547,25 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - Store credit and cash in one purchase
+
+    /// At a game shop, the player's store credit pays what it can, and cash pays the rest of the same purchase.
+    private func splitPay() {
+        fresh()
+        guard let shop = LocalStore.allCases.first(where: \.isGameShop),
+              let single = Market.displayCase(shop, day: store.day, discount: store.shopDiscount(shop)).first(where: { $0.price > 12 }) else {
+            return check(false, "no display case card for the split payment test")
+        }
+        var state = store.shop(shop)
+        state.credit = 10
+        store.data.shops[shop.rawValue] = state
+        store.data.cash = 1_000
+        let cash = store.personalCash
+        check(store.buyCaseSingle(single, at: shop, credit: true), "the split purchase failed")
+        check(store.shop(shop).credit < 0.005 && abs(cash - store.personalCash - (single.price - 10)) < 0.01,
+              "credit and cash did not split the price: credit left \(store.shop(shop).credit), cash paid \(cash - store.personalCash)")
     }
 
     // MARK: - Master set chase (docs/32-short-form-video.md)
