@@ -418,6 +418,7 @@ struct RipView: View {
                      shipsTo: model.shipBuyer,
                      canPalm: shown.map { model.canPalm($0) } ?? false,
                      onPalm: { palmAsk = shown },
+                     newForMasterSet: shown.map { model.isNewForMasterSet($0) } ?? false,
                      hint: !sealed ? "Tap the card to reveal it.\nHold the stack to peek at the cards."
                          : model.willCombine && model.packsLeft > 1 ? "Hits only. One swipe opens all \(model.packsLeft) packs."
                          : "Tap or swipe across the top of the pack to open it.",

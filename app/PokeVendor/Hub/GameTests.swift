@@ -2568,6 +2568,12 @@ final class GameTests {
         check(post?.subject?.contains("+3 cards") == true && store.series(.masterSet)?.lastHave == 5,
               "the episode did not show the 3 new cards: \(post?.subject ?? "no post")")
         check(store.postMasterSetEpisode() == nil, "the chase posted two episodes in one day")
+
+        // The rip screen marks a pulled card that an active master set still needs.
+        let next = slots[6]
+        check(store.masterSetMissing(slug)?.contains(MasterSet.key(next)) == true, "a missing card is not new for the master set")
+        check(store.masterSetMissing(slug)?.contains(MasterSet.key(slots[0])) == false, "a card in the binder is new for the master set")
+        check(store.masterSetMissing("surging-sparks") == nil, "a master set that is not started is active")
     }
 
     // MARK: - Bills in the Wallet (Model/Bills.swift)

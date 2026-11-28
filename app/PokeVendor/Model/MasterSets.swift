@@ -97,6 +97,15 @@ extension GameStore {
         save()
     }
 
+    /// The cards an active master set still needs, by key: a set that is started and not complete. Nil when the set is
+    /// not active. The rip screen marks a pulled card that is in it (Rip/Panels.swift).
+    func masterSetMissing(_ slug: String) -> Set<String>? {
+        guard isMasterSetStarted(slug) else { return nil }
+        let have = Set(masterSetCards.filter { $0.setSlug == slug }.map(\.masterKey))
+        let missing = Set(MasterSet.slots(slug).map(MasterSet.key)).subtracting(have)
+        return missing.isEmpty ? nil : missing
+    }
+
     func masterSetProgress(_ slug: String) -> MasterSetProgress {
         let cards = masterSetCards.filter { $0.setSlug == slug }
         return MasterSetProgress(slug: slug, have: Set(cards.map(\.masterKey)).count, total: MasterSet.slots(slug).count,

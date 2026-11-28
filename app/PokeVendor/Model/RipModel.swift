@@ -610,3 +610,39 @@ final class RipModel {
         }
     }
 }
+
+// MARK: - Master sets
+
+extension RipModel {
+    /// The sets of this rip: every pack of a combined rip, else the pack on screen.
+    private var ripSlugs: [String] { combinedSlugs ?? [currentPack?.setSlug].compactMap { $0 } }
+
+    /// The set a pulled card belongs to, among the sets of this rip.
+    private func masterSlug(of print: CardPrint) -> String? {
+        let key = MasterSet.key(print)
+        return Set(ripSlugs).first { slug in MasterSet.slots(slug).contains { MasterSet.key($0) == key && $0.name == print.name } }
+    }
+
+    /// True when the card is one that an active master set still needs (GameStore.masterSetMissing).
+    func isNewForMasterSet(_ card: RipCard) -> Bool {
+        guard let print = card.print, let store, let slug = masterSlug(of: print) else { return false }
+        return store.masterSetMissing(slug)?.contains(MasterSet.key(print)) == true
+    }
+
+    /// The cards of this rip that an active master set still needs, each print once, the dearest first.
+    func newMasterSetCards(_ cards: [RipCard]) -> [RipCard] {
+        guard let store else { return [] }
+        var missing: [String: Set<String>] = [:]
+        for slug in Set(ripSlugs) { if let m = store.masterSetMissing(slug) { missing[slug] = m } }
+        guard !missing.isEmpty else { return [] }
+        var seen: Set<String> = []
+        return cards.filter { card in
+            guard let print = card.print, let slug = masterSlug(of: print) else { return false }
+            let key = MasterSet.key(print)
+            guard missing[slug]?.contains(key) == true, !seen.contains(slug + key) else { return false }
+            seen.insert(slug + key)
+            return true
+        }
+        .sorted { $0.market > $1.market }
+    }
+}

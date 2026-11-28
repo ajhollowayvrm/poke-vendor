@@ -113,6 +113,8 @@ struct CardInfo: View {
     /// The card is a big hit in a Rip & Ship rip, so the player can palm it.
     var canPalm = false
     var onPalm: () -> Void = {}
+    /// An active master set still needs this card (RipModel.isNewForMasterSet).
+    var newForMasterSet = false
     let hint: String
     @Binding var gradesOpen: Bool
 
@@ -141,6 +143,10 @@ struct CardInfo: View {
                     .lineLimit(1)
                 Spacer(minLength: 4)
                 if let card, card.print != nil { WearText(wear: card.condition.wear).lineLimit(1) }
+            }
+            if newForMasterSet {
+                Label("New for your master set", systemImage: "star.fill")
+                    .font(.caption.weight(.semibold)).foregroundStyle(Theme.cyan)
             }
             cutLine
             grades
@@ -319,6 +325,7 @@ struct SummaryView: View {
         let cards = model.everyCard
         let hits = cards.filter(\.isHit).sorted { $0.market > $1.market }
         let bulk = cards.filter { $0.print != nil && !$0.isHit }.count
+        let fresh = model.newMasterSetCards(cards)
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text(model.combinedSlugs == nil ? "Pack summary" : "Rip summary").font(.title2.bold())
@@ -351,12 +358,12 @@ struct SummaryView: View {
             // A long rip holds many hits. The list scrolls, and the buttons stay on the screen. A Hits only rip
             // can hold hundreds, so a long list goes straight to a lazy scroll and is not measured first.
             if hits.count > 12 {
-                ScrollView { details(hits: hits, bulk: bulk) }
+                ScrollView { details(hits: hits, bulk: bulk, fresh: fresh) }
                     .scrollIndicators(.visible)
             } else {
                 ViewThatFits(in: .vertical) {
-                    details(hits: hits, bulk: bulk)
-                    ScrollView { details(hits: hits, bulk: bulk) }
+                    details(hits: hits, bulk: bulk, fresh: fresh)
+                    ScrollView { details(hits: hits, bulk: bulk, fresh: fresh) }
                         .scrollIndicators(.visible)
                 }
             }
@@ -380,8 +387,26 @@ struct SummaryView: View {
     }
 
     /// The promos, the hits, the bulk count, and the post button.
-    private func details(hits: [RipCard], bulk: Int) -> some View {
+    private func details(hits: [RipCard], bulk: Int, fresh: [RipCard]) -> some View {
         VStack(alignment: .leading, spacing: 14) {
+            // The cards that an active master set still needs (docs/33-collections.md, Master sets).
+            if !fresh.isEmpty {
+                Label("NEW FOR YOUR MASTER SET · \(fresh.count)", systemImage: "star.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                    .kerning(0.8)
+                    .foregroundStyle(Theme.cyan)
+                ForEach(fresh) { card in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(card.name).font(.subheadline.weight(.medium))
+                            Text("\(card.print?.num ?? "") · \(card.print?.variant ?? "")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                        }
+                        Spacer()
+                        Text(money(card.market)).font(.subheadline.monospaced())
+                    }
+                }
+                Text("Add them in Inventory: select, then Master set.").font(.caption).foregroundStyle(Theme.muted)
+            }
             if !model.packExtras.isEmpty {
                 Text("ALSO IN THE BOX · \(model.packExtras.count)")
                     .font(.system(size: 11, weight: .semibold))
