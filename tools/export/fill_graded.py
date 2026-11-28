@@ -15,7 +15,9 @@ How it works (docs/10-grading.md, Estimated prices):
   keys. A print has a raw price and a real price for each key with eBay sales (tools/export/rip_set.py), with the
   sale count of each key in `gradedSales`. The script removes `gradedSales` when it writes the files.
 - A real price wins over the math. The file keeps every real price as its sold value, and the math fills only the
-  other keys. Only the order of the grades (below) can turn a real price into an estimate. A real price from 1 sale is noisy, so the fit of the ratios uses only real prices with MIN_SALES sales or
+  other keys. Only the order of the grades (below) can turn a real price into an estimate, and one more rule that AJ
+  approved on 2026-11-27: a real grade 10 below the card's real raw price is a bad eBay match (for example, the 10
+  Dittos of Delta Species mixed up), so it becomes an estimate (drop_tens_below_raw). A real price from 1 sale is noisy, so the fit of the ratios uses only real prices with MIN_SALES sales or
   more. A real price with fewer sales still anchors its own print, with a smaller weight.
 - Each print is in a group: set, era (vintage, classic, current), rarity bucket, and raw price tier. The narrowest
   group is the set, rarity bucket, and tier. It needs MIN_N_SET prints. The wider groups need MIN_N prints.
@@ -398,6 +400,27 @@ def bounds(keys, i, real, company):
     return min(max(SLAB_FLOOR[company], below), hi), hi
 
 
+TEN_KEYS = ("psa10", "cgc10", "bgs10")
+
+
+def drop_tens_below_raw(items):
+    """A real grade 10 below the real raw price of its print is a bad match. It leaves the real prices before the fit, so
+    it does not pull the ratios, and the fill estimates it. Returns how many."""
+    dropped = 0
+    for it in items:
+        p = it.p
+        raw = p.get("market")
+        graded = p.get("graded") or {}
+        if not raw or p.get("marketEstimated"):
+            continue
+        for k in TEN_KEYS:
+            if graded.get(k) and graded[k] < raw:
+                graded.pop(k)
+                (p.get("gradedSales") or {}).pop(k, None)
+                dropped += 1
+    return dropped
+
+
 def fill(items, fit):
     stats = collections.Counter()
     for it in items:
@@ -692,11 +715,13 @@ def main():
         print("The files already hold estimates. Run tools/export/rip_set.py and tools/export/catalog.py first.")
         return 1
     reset(items)
+    dropped = drop_tens_below_raw(items)
     fit = Fit(items)
     if args.report:
         report(items, fit)
         return 0
     stats = fill(items, fit)
+    stats["real grade 10s below raw, now estimates"] = dropped
     stats.update(run_order(items))
     save(files)
     for k, v in stats.items():
