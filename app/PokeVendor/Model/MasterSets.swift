@@ -106,6 +106,19 @@ extension GameStore {
         return missing.isEmpty ? nil : missing
     }
 
+    /// True when an active master set still needs this print: on a trader's card, a collection piece, or a stash item.
+    func isNewForMasterSet(_ print: CardPrint, slug: String) -> Bool {
+        masterSetMissing(slug)?.contains(MasterSet.key(print)) == true
+    }
+
+    /// The same for goods: a raw card or a slab. Sealed product is never part of a master set.
+    func isNewForMasterSet(_ goods: VendorGoods) -> Bool {
+        switch goods {
+        case .single(let print, let slug, _), .slab(let print, let slug, _): isNewForMasterSet(print, slug: slug)
+        default: false
+        }
+    }
+
     func masterSetProgress(_ slug: String) -> MasterSetProgress {
         let cards = masterSetCards.filter { $0.setSlug == slug }
         return MasterSetProgress(slug: slug, have: Set(cards.map(\.masterKey)).count, total: MasterSet.slots(slug).count,

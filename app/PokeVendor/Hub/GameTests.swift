@@ -57,6 +57,7 @@ final class GameTests {
         timed("walletBills", walletBills)
         timed("masterChase", masterSetChase)
         timed("splitPay", splitPay)
+        timed("tradeExtras", tradeExtras)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2547,6 +2548,40 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - More items on the player's side of a trade
+
+    /// A trader's cash follows the extra items the player adds, and the trade takes them all.
+    private func tradeExtras() {
+        fresh()
+        let slug = "prismatic-evolutions"
+        let prints = SetLibrary.set(slug).prints.filter { ($0.market ?? 0) > 10 && ($0.market ?? 0) < 60 }
+        guard prints.count >= 4 else { return check(false, "no cards for the trade test") }
+        for p in prints.prefix(3) { store.addTestCard(p, slug: slug) }
+        let venue = Venue(kind: .meet, name: "Test meet", open: 10, close: 16, hours: 6, visitorsMean: 4, hasFloor: false, hasTable: true)
+        let session = ShowSession(venue: venue, store: store, vendors: [], regulars: [])
+        let items = session.loadItems
+        for item in items where !session.bring.contains(item.id) { session.toggleBring(item, items: items) }
+        session.openTable()
+        guard session.table.count >= 2 else { return check(false, "the trade test table is empty") }
+        let wanted = session.table[0], extra = session.table[1]
+        let listing = FloorListing(print: prints[3], setSlug: slug, condition: .packFresh(), price: prints[3].market ?? 20)
+        var v = Visitor(type: .collector, name: "Trader", intent: .trade, item: wanted, limit: 0, offer: 0, patience: 3, line: "")
+        v.tradeCards = [listing]
+        v.binder = [listing]
+        v.firstOffer = 80
+        v.minValuation = 50
+        v.cashLimit = 10_000
+        session.testSeat(v)
+        let before = session.tradeCash(v, valuing: 80)
+        session.toggleGiveItem(extra.id)
+        guard let seated = session.current else { return check(false, "the trader left") }
+        // The cash rounds to whole dollars from $20, so two rounded amounts can be up to $1 apart (ShowSession.round).
+        check(abs(session.tradeCash(seated, valuing: 80) - before - extra.dealMarket) <= 1.0,
+              "the cash did not follow the extra item: before \(before), after \(session.tradeCash(seated, valuing: 80)), extra \(extra.dealMarket), extras \(seated.extraGive ?? []), give \(session.giveValue(seated))")
+        session.proposeTrade(valuing: 80)
+        check(store.card(wanted.id) == nil && store.card(extra.id) == nil, "the trade did not take both items")
     }
 
     // MARK: - Store credit and cash in one purchase

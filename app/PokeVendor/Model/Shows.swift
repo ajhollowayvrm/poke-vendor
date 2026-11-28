@@ -369,17 +369,17 @@ extension GameStore {
 
     /// A trade: the player's item goes, and the other person's cards plus any cash come in.
     /// `credit`: the player pays their part (`cash` under 0) in store credit at their own store.
-    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String, credit: Double? = nil) {
-        settleOnlineListing(item.id, name: item.name)
+    /// `extra`: more of the player's table items that go in the same trade.
+    func tradeAtShow(_ item: ShowItem, for cards: [FloorListing], cash: Double, at venue: String, credit: Double? = nil,
+                     extra: [ShowItem] = []) {
+        let given = [item] + extra
+        let ids = Set(given.map(\.id))
+        for one in given { settleOnlineListing(one.id, name: one.name) }
         // A trade at the table is a deal with a person, so it counts as a retail sale of a hot unit.
-        noteAllocationSold([item.id], offShelf: false)
-        switch item.kind {
-        case .card:
-            data.raw.removeAll { $0.id == item.id }
-            data.slabs.removeAll { $0.id == item.id }
-        case .sealed:
-            data.sealed.removeAll { $0.id == item.id }
-        }
+        noteAllocationSold(Array(ids), offShelf: false)
+        data.raw.removeAll { ids.contains($0.id) }
+        data.slabs.removeAll { ids.contains($0.id) }
+        data.sealed.removeAll { ids.contains($0.id) }
         // Each card that came in carries its value as its cost, so the portfolio header stays honest.
         for card in cards {
             var owned = OwnedCard(print: card.print, setSlug: card.setSlug, acquired: .now, paid: card.dealMarket, ripID: nil,
@@ -394,9 +394,9 @@ extension GameStore {
         } else if cash < 0 {
             addLedger(cash, .singles, "Cash added in a trade at \(venue)")
         }
-        let extra = cash > 0 ? " plus \(money(cash))" : cash < 0
+        let cashText = cash > 0 ? " plus \(money(cash))" : cash < 0
             ? (credit.map { ", adding \(money($0)) in store credit" } ?? ", adding \(money(-cash)) of your own") : ""
-        log("Traded \(item.name) for \(cards.map(\.print.name).joined(separator: " and "))\(extra) at \(venue).",
+        log("Traded \(given.map(\.name).joined(separator: " and ")) for \(cards.map(\.print.name).joined(separator: " and "))\(cashText) at \(venue).",
             cash: cash != 0 && !(cash < 0 && credit != nil) ? cash : nil)
         save()
     }
@@ -818,6 +818,9 @@ struct Visitor: Identifiable, Codable {
     var event: CounterEvent?
 
     var tradeValue: Double { tradeCards.reduce(0) { $0 + $1.dealMarket } + tradeCash }
+    /// A trade: more of the player's table items, on top of the item the trader asked for. Optional, so a saved visit
+    /// from an older build still loads.
+    var extraGive: [UUID]?
 }
 
 /// Where an encounter happens: a card show, a meet, league night, a garage or estate sale, or a surprise
@@ -1827,15 +1830,19 @@ final class ShowSession {
                 note = "You do not have \(money(-v.tradeCash))."
                 return
             }
-            if buyerCatchesFake(v, item) { return }
-            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name, credit: credit)
-            if let fake = item.fake {
-                store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
-                                    refunds: false, contactID: v.contactID, sealed: item.kind == .sealed)
+            let given = giveItems(v)
+            for one in given where buyerCatchesFake(v, one) { return }
+            store.tradeAtShow(item, for: v.tradeCards, cash: v.tradeCash, at: venue.name, credit: credit, extra: Array(given.dropFirst()))
+            for one in given {
+                guard let fake = one.fake else { continue }
+                store.recordBadSale(item: one.name, channel: venue.name, price: one.market, fake: fake, known: one.fakeKnown,
+                                    refunds: false, contactID: v.contactID, sealed: one.kind == .sealed)
             }
             let extra = v.tradeCash > 0 ? " + \(money(v.tradeCash))" : v.tradeCash < 0 ? ", you added \(money(-v.tradeCash))" : ""
-            trades.append("\(item.name) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
-            table.removeAll { $0.id == item.id }
+            trades.append("\(given.map(\.name).joined(separator: " + ")) → \(v.tradeCards.map(\.print.name).joined(separator: " + "))\(extra)")
+            let givenIDs = Set(given.map(\.id))
+            table.removeAll { givenIDs.contains($0.id) }
+            bring.subtract(givenIDs)
             store.recordDeal(v.contactID, what: "Traded \(item.name)", price: tradeCardsValue(v) + v.tradeCash, market: item.dealMarket,
                              slug: item.setSlug, scored: true)
             // A trade is scored by the valuation of the trader's cards.
@@ -2142,6 +2149,28 @@ final class ShowSession {
 
     /// Adds a card from the trader's binder to the offer, or takes one out. The trader keeps their own valuation, so
     /// the cash follows the cards, up to what they carry.
+    /// The player's side of a trade: the item the trader asked for and the extra items, at their deal value.
+    func giveItems(_ v: Visitor) -> [ShowItem] {
+        let extra = Set(v.extraGive ?? [])
+        return (v.item.map { [$0] } ?? []) + table.filter { extra.contains($0.id) && $0.id != v.item?.id }
+    }
+
+    func giveValue(_ v: Visitor) -> Double { giveItems(v).reduce(0) { $0 + $1.dealMarket } }
+
+    /// Adds a table item to the player's side of a trade, or takes it out. The cash follows, at the trader's valuation.
+    func toggleGiveItem(_ id: UUID) {
+        guard var v = current, v.intent == .trade, id != v.item?.id, table.contains(where: { $0.id == id }),
+              !store.isChallengeItem(id) else { return }
+        var extra = v.extraGive ?? []
+        if extra.contains(id) { extra.removeAll { $0 == id } } else { extra.append(id) }
+        v.extraGive = extra
+        let wanted = giveValue(v) - tradeCardsValue(v) * v.firstOffer / 100
+        v.tradeCash = Self.round(min(v.cashLimit, wanted))
+        v.line = wanted > v.cashLimit + 0.001 ? "That's a lot. I can add \(money(v.tradeCash)) at most."
+            : v.tradeCash >= 0 ? "Sure. Then I add \(money(v.tradeCash))." : "Sure. Then you add \(money(-v.tradeCash))."
+        setCurrent(v)
+    }
+
     func toggleTradeCard(_ id: UUID) {
         guard var v = current, v.intent == .trade, let item = v.item, let card = v.binder.first(where: { $0.id == id }) else { return }
         // The trader's valuation of their own offer stays fixed. Only the cash cap can change what they give.
@@ -2153,7 +2182,8 @@ final class ShowSession {
             v.tradeCards.append(card)
         }
         let cards = tradeCardsValue(v)
-        let wanted = item.dealMarket - cards * valuation / 100
+        _ = item
+        let wanted = giveValue(v) - cards * valuation / 100
         v.tradeCash = Self.round(min(v.cashLimit, wanted))
         v.line = wanted > v.cashLimit + 0.001 ? "Sure, but I don't have that much on me. I can add \(money(v.tradeCash)) at most."
             : v.tradeCash >= 0 ? "Sure. Then I add \(money(v.tradeCash))." : "Sure. Then you add \(money(-v.tradeCash))."
@@ -2332,8 +2362,8 @@ final class ShowSession {
     /// The cash that evens a trade when the player values the trader's cards at this share of market.
     /// Positive: the trader adds cash. Negative: the player adds cash.
     func tradeCash(_ v: Visitor, valuing percent: Double) -> Double {
-        guard let item = v.item else { return 0 }
-        return Self.round(item.dealMarket - tradeCardsValue(v) * percent / 100)
+        guard v.item != nil else { return 0 }
+        return Self.round(giveValue(v) - tradeCardsValue(v) * percent / 100)
     }
 
     /// The player sets a value on the trader's cards, and the cash follows. The trader takes it when the real

@@ -124,6 +124,7 @@ struct CollectionPanel: View {
                     HStack(spacing: 4) {
                         Text(piece.name).font(.caption.weight(.semibold)).lineLimit(1)
                         if piece.looksOff { Tag(text: "LOOKS OFF", color: Theme.orange) }
+                        if store.isNewForMasterSet(piece.goods) { MasterSetTag() }
                     }
                     GoodsDetail(goods: piece.goods, tool: store.data.centeringTool)
                 }
@@ -152,10 +153,11 @@ struct CollectionTradeSheet: View {
     let visitor: Visitor
     let picked: Set<UUID>?
     @State private var give: Set<UUID> = []
+    @State private var cash: Double = 0
 
     var body: some View {
         let items = session.table.filter { give.contains($0.id) }
-        let value = session.tradeValue(items)
+        let value = session.tradeValue(items) + cash
         let ask = session.collectionAsk(visitor, picked)
         NavigationStack {
             List {
@@ -180,6 +182,20 @@ struct CollectionTradeSheet: View {
                 } footer: {
                     Text("Your items count at 110% of market to them. Their price for \(picked == nil ? "all of it" : "the picks") is \(money(ask)) in cash.")
                 }
+                // Cash on top of the items (ShowSession.tradeForCollection).
+                Section("Cash") {
+                    HStack {
+                        Text(money(cash)).font(.title3.monospaced())
+                        Spacer()
+                        Stepper("", value: $cash, in: 0...max(0, ask * 2), step: ask < 100 ? 5 : ask < 1000 ? 25 : 100).labelsHidden()
+                    }
+                    HStack {
+                        ForEach([0.0, 0.25, 0.5], id: \.self) { share in
+                            Button(share == 0 ? "None" : "\(Int(share * 100))% of ask") { cash = (ask * share).rounded() }
+                                .buttonStyle(.bordered).controlSize(.small)
+                        }
+                    }
+                }
             }
             .navigationTitle("Trade \(money(value))")
             .navigationBarTitleDisplayMode(.inline)
@@ -187,7 +203,7 @@ struct CollectionTradeSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Propose") {
-                        session.tradeForCollection(give, picked: picked)
+                        session.tradeForCollection(give, picked: picked, cash: cash)
                         dismiss()
                     }
                     .disabled(give.isEmpty)

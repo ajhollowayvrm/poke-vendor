@@ -48,6 +48,7 @@ struct StashPanel: View {
                                 Text(one.item.name).font(.caption).lineLimit(1)
                                 if one.pc { Tag(text: "PC", color: Theme.green) }
                                 if one.item.looksOff { Tag(text: "LOOKS OFF", color: Theme.orange) }
+                                if store.isNewForMasterSet(one.item.goods) { MasterSetTag() }
                             }
                             Text("market \(money(one.market))").font(.caption2.monospaced()).foregroundStyle(Theme.muted)
                         }

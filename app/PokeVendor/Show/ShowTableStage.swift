@@ -155,6 +155,7 @@ struct TradeSlider: View {
                                     .foregroundStyle(inTrade ? Color(red: 0.7, green: 0.55, blue: 1) : Theme.muted)
                                 Text(card.print.name).font(.caption)
                                 if card.pc { Tag(text: "PC", color: Theme.green) }
+                                if store.isNewForMasterSet(card.print, slug: card.setSlug) { MasterSetTag() }
                                 Spacer()
                                 Text(money(card.dealMarket)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             }
@@ -165,6 +166,31 @@ struct TradeSlider: View {
                     }
                 }
             }
+            // Your side: more of your table items, on top of the one they asked for (ShowSession.toggleGiveItem).
+            let others = session.table.filter { $0.id != visitor.item?.id && !store.isChallengeItem($0.id) }
+            if !others.isEmpty {
+                DisclosureGroup {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(others) { item in
+                            let on = visitor.extraGive?.contains(item.id) == true
+                            Button { withAnimation { session.toggleGiveItem(item.id) } } label: {
+                                HStack {
+                                    Image(systemName: on ? "checkmark.circle.fill" : "circle").foregroundStyle(on ? Theme.cyan : Theme.muted)
+                                    Text(item.name).font(.caption).lineLimit(1)
+                                    Spacer()
+                                    Text(money(item.dealMarket)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                } label: {
+                    Text("YOUR SIDE · ADD FROM YOUR TABLE\((visitor.extraGive ?? []).isEmpty ? "" : " · \(visitor.extraGive?.count ?? 0)")")
+                        .font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                }
+                .tint(Theme.muted)
+            }
             Slider(value: $percent, in: 50...120, step: 5)
                 .padding(.vertical, -4)
                 .tint(Color(red: 0.7, green: 0.55, blue: 1))
@@ -174,7 +200,8 @@ struct TradeSlider: View {
                     .font(.caption.monospaced())
                     .foregroundStyle(cash >= 0 ? Theme.green : Theme.orange)
                 Spacer()
-                Text("for your \(money(visitor.item?.dealMarket ?? 0)) item").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                let given = session.giveItems(visitor)
+                Text("for your \(money(session.giveValue(visitor))) \(given.count == 1 ? "item" : "of \(given.count) items")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             if session.canPayCredit, cash < 0 {
                 Toggle("Add store credit instead · \(money(store.storeCreditOffer(cash: -cash)))", isOn: $credit)
@@ -449,7 +476,10 @@ struct VisitorCard: View {
                             .frame(width: 44, height: 61)
                             .clipShape(RoundedRectangle(cornerRadius: 3))
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(card.print.name).font(.subheadline.weight(.semibold))
+                            HStack(spacing: 6) {
+                                Text(card.print.name).font(.subheadline.weight(.semibold))
+                                if store.isNewForMasterSet(card.print, slug: card.setSlug) { MasterSetTag() }
+                            }
                             Text(SetLibrary.set(card.setSlug).name).font(.caption).foregroundStyle(Theme.muted)
                             HStack(spacing: 6) {
                                 WearText(wear: card.condition.wear)

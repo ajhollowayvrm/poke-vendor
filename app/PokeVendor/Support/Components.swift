@@ -103,3 +103,8 @@ struct ActionGrid<Content: View>: View {
         }
     }
 }
+
+/// A card that an active master set still needs (GameStore.isNewForMasterSet).
+struct MasterSetTag: View {
+    var body: some View { Tag(text: "MASTER SET", color: Theme.cyan) }
+}

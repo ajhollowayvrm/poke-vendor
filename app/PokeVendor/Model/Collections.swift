@@ -813,9 +813,9 @@ extension ShowSession {
         Haptics.hit()
     }
 
-    /// Trades items from the table for the whole collection or the picked pieces. Each item counts at 110% of market,
-    /// and a PC item at its PC price, the same as a trade instead of cash.
-    func tradeForCollection(_ give: Set<UUID>, picked: Set<UUID>?) {
+    /// Trades items from the table, plus `cash`, for the whole collection or the picked pieces. Each item counts at 110%
+    /// of market, and a PC item at its PC price, the same as a trade instead of cash. The cash counts at its face value.
+    func tradeForCollection(_ give: Set<UUID>, picked: Set<UUID>?, cash: Double = 0) {
         guard var v = current, let lot = v.collection else { return }
         let items = table.filter { give.contains($0.id) && !store.isChallengeItem($0.id) }
         guard !items.isEmpty else { return }
@@ -831,7 +831,13 @@ extension ShowSession {
                 return
             }
         }
-        let value = tradeValue(items)
+        let cash = max(0, Self.round(cash))
+        if cash > 0, !store.canAfford(cash) {
+            note = "You do not have \(money(cash))."
+            return
+        }
+        let itemsValue = tradeValue(items)
+        let value = itemsValue + cash
         let market = collectionMarket(v, picked)
         var floor = collectionFloor(v, picked)
         if v.want == .trade { floor *= Balance.preferredPayDiscount }
@@ -841,7 +847,8 @@ extension ShowSession {
             spend(2)
             return
         }
-        guard value <= market * Balance.tradeInsteadMax else {
+        // The seller does not give change: the items alone cannot be worth far more than what they get.
+        guard itemsValue <= market * Balance.tradeInsteadMax else {
             v.line = "That's too much. I can't take all that for this."
             setCurrent(v)
             spend(2)
@@ -849,8 +856,9 @@ extension ShowSession {
         }
         for item in items where buyerCatchesFake(v, item) { return }
         for item in items { store.settleOnlineListing(item.id, name: item.name) }
-        let cost = items.reduce(0) { $0 + $1.market }
+        let cost = items.reduce(0) { $0 + $1.market } + cash
         store.receiveCollection(lot, pieces: picked, price: cost, payment: .trade(items), from: v.name, at: venue.name)
+        if cash > 0 { store.addLedger(-cash, .singles, "Cash added for a collection · \(v.name)") }
         for item in items {
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,
@@ -858,7 +866,7 @@ extension ShowSession {
             }
         }
         removeFromTable(Set(items.map(\.id)))
-        recordTrade("\(items.map(\.name).joined(separator: " + ")) → \(picked == nil ? "a collection" : "\(picked?.count ?? 0) cards from a collection")")
+        recordTrade("\(items.map(\.name).joined(separator: " + "))\(cash > 0 ? " + \(money(cash))" : "") → \(picked == nil ? "a collection" : "\(picked?.count ?? 0) cards from a collection")")
         store.recordDeal(v.contactID, what: "Traded for their collection", price: cost, market: market, slug: lot.pieces.first?.slug, scored: true)
         score(.buy, price: cost, market: market, pushed: false, v)
         maybePromote(v, points: 15)
