@@ -5,6 +5,8 @@ import SwiftUI
 struct StoreShelfControls: View {
     @Environment(GameStore.self) private var store
     let id: UUID
+    /// The copies that List online too lists: `id` alone, or a quantity of its stack.
+    var ids: [UUID] = []
     @Binding var sheet: SellRequest?
 
     var body: some View {
@@ -39,7 +41,8 @@ struct StoreShelfControls: View {
                         .buttonStyle(.bordered)
                 }
             } else {
-                Button("List online too") { sheet = SellRequest(ids: [id], startAll: false) }
+                let list = ids.isEmpty ? [id] : ids
+                Button(list.count > 1 ? "List \(list.count) online too" : "List online too") { sheet = SellRequest(ids: Set(list), startAll: false) }
                     .buttonStyle(.bordered)
             }
         }

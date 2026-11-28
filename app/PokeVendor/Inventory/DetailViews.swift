@@ -34,6 +34,10 @@ struct StatusBox: View {
     let id: UUID
     let status: ItemStatus?
     @State private var onlineSheet: SellRequest?
+    /// The copies in the stack with the same status, this one first. Take it back and List online too act on
+    /// `quantity` of them.
+    var stack: [UUID] = []
+    @State private var quantity = 1
 
     var body: some View {
         DetailBox(title: "Status") {
@@ -75,8 +79,15 @@ struct StatusBox: View {
             case .inStore(let since):
                 VStack(alignment: .leading, spacing: 6) {
                     Text("In \(store.cardStore?.name ?? "your store") since day \(since + 1)").font(.subheadline)
-                    StoreShelfControls(id: id, sheet: $onlineSheet)
-                    Button("Take it back") { store.takeBackFromStore([id]) }
+                    // A stack in the store: how many copies the actions move.
+                    let copies = [id] + stack.filter { $0 != id }
+                    let n = min(quantity, copies.count)
+                    if copies.count > 1 {
+                        Stepper("Quantity: \(n) of \(copies.count)", value: $quantity, in: 1...copies.count)
+                            .font(.subheadline)
+                    }
+                    StoreShelfControls(id: id, ids: Array(copies.prefix(n)), sheet: $onlineSheet)
+                    Button(n > 1 ? "Take \(n) back" : "Take it back") { store.takeBackFromStore(Set(copies.prefix(n))) }
                         .buttonStyle(.bordered)
                 }
             case .soldToViewer:
@@ -194,7 +205,7 @@ struct CardDetailView: View {
                                         status: card.status, sealed: false, eyeball: store.eyeballWarning(card),
                                         tool: store.toolReading(fake: card.fake, id: card.id))
                     }
-                    StatusBox(id: card.id, status: card.status)
+                    StatusBox(id: card.id, status: card.status, stack: store.mates(of: card).map(\.id))
                     DetailBox(title: "Where it came from") {
                         if let paid = card.paid {
                             Text("Bought for \(money(paid)) on day \(card.acquiredDay + 1)").font(.subheadline)
@@ -547,7 +558,7 @@ struct SealedDetailView: View {
                                         status: item.status, sealed: true, eyeball: store.eyeballWarning(item),
                                         tool: store.toolReading(fake: item.fake, id: item.id))
                     }
-                    StatusBox(id: item.id, status: item.status)
+                    StatusBox(id: item.id, status: item.status, stack: mates.map(\.id))
                     if item.isKnownFake {
                         Banner(text: "You know this product is resealed. It is worth nothing. If you sell it and the buyer finds out, it is a scam.",
                                color: .red)
