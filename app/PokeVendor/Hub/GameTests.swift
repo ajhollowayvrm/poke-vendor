@@ -2578,8 +2578,8 @@ final class GameTests {
         session.toggleGiveItem(extra.id)
         guard let seated = session.current else { return check(false, "the trader left") }
         // The cash rounds to whole dollars from $20, so two rounded amounts can be up to $1 apart (ShowSession.round).
-        check(abs(session.tradeCash(seated, valuing: 80) - before - extra.dealMarket) <= 1.0,
-              "the cash did not follow the extra item: before \(before), after \(session.tradeCash(seated, valuing: 80)), extra \(extra.dealMarket), extras \(seated.extraGive ?? []), give \(session.giveValue(seated))")
+        check(abs(session.tradeCash(seated, valuing: 80) - before - session.extraValue(extra)) <= 1.0,
+              "the cash did not follow the extra item: before \(before), after \(session.tradeCash(seated, valuing: 80)), extra \(session.extraValue(extra)), extras \(seated.extraGive ?? []), give \(session.giveValue(seated))")
         session.proposeTrade(valuing: 80)
         check(store.card(wanted.id) == nil && store.card(extra.id) == nil, "the trade did not take both items")
     }

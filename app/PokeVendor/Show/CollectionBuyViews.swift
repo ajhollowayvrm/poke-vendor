@@ -44,7 +44,8 @@ struct CollectionPanel: View {
             let price = ShowSession.round(market * percent / 100)
             VStack(alignment: .leading, spacing: 8) {
                 Text("THE COLLECTION · TAP TO CHERRY-PICK").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
-                ForEach(lot.pieces) { piece in row(piece, on: chosen.contains(piece.id)) }
+                let needs = store.masterSetNeeds(Set(lot.pieces.compactMap(\.goods.cardSlug)))
+                ForEach(lot.pieces) { piece in row(piece, on: chosen.contains(piece.id), needs: needs) }
                 if lot.bulkCount > 0 {
                     HStack {
                         Image(systemName: "square.stack.3d.down.right").foregroundStyle(Theme.muted)
@@ -113,7 +114,8 @@ struct CollectionPanel: View {
         }
     }
 
-    private func row(_ piece: CollectionPiece, on: Bool) -> some View {
+    /// `needs`: the master set needs of the lot, from one scan (GameStore.masterSetNeeds).
+    private func row(_ piece: CollectionPiece, on: Bool, needs: [String: Set<String>]) -> some View {
         Button {
             if on { picked.remove(piece.id) } else { picked.insert(piece.id) }
         } label: {
@@ -124,7 +126,7 @@ struct CollectionPanel: View {
                     HStack(spacing: 4) {
                         Text(piece.name).font(.caption.weight(.semibold)).lineLimit(1)
                         if piece.looksOff { Tag(text: "LOOKS OFF", color: Theme.orange) }
-                        if store.isNewForMasterSet(piece.goods) { MasterSetTag() }
+                        if GameStore.needed(needs, piece.goods) { MasterSetTag() }
                     }
                     GoodsDetail(goods: piece.goods, tool: store.data.centeringTool)
                 }
@@ -187,11 +189,12 @@ struct CollectionTradeSheet: View {
                     HStack {
                         Text(money(cash)).font(.title3.monospaced())
                         Spacer()
-                        Stepper("", value: $cash, in: 0...max(0, ask * 2), step: ask < 100 ? 5 : ask < 1000 ? 25 : 100).labelsHidden()
+                        // The seller gives no change: the cash goes up to the part of the ask that the items do not cover.
+                        Stepper("", value: $cash, in: 0...max(0, (ask - session.tradeValue(items)).rounded(.up)), step: ask < 100 ? 5 : ask < 1000 ? 25 : 100).labelsHidden()
                     }
                     HStack {
                         ForEach([0.0, 0.25, 0.5], id: \.self) { share in
-                            Button(share == 0 ? "None" : "\(Int(share * 100))% of ask") { cash = (ask * share).rounded() }
+                            Button(share == 0 ? "None" : "\(Int(share * 100))% of ask") { cash = min((ask * share).rounded(), max(0, (ask - session.tradeValue(items)).rounded(.up))) }
                                 .buttonStyle(.bordered).controlSize(.small)
                         }
                     }

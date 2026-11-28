@@ -137,6 +137,7 @@ struct TradeSlider: View {
     var body: some View {
         let cards = session.tradeCardsValue(visitor)
         let cash = session.tradeCash(visitor, valuing: percent)
+        let needs = store.masterSetNeeds(Set(visitor.binder.map(\.setSlug)))
         VStack(spacing: 6) {
             HStack(alignment: .firstTextBaseline) {
                 Text("Their cards at \(Int(percent))%").font(.subheadline.monospaced())
@@ -155,7 +156,7 @@ struct TradeSlider: View {
                                     .foregroundStyle(inTrade ? Color(red: 0.7, green: 0.55, blue: 1) : Theme.muted)
                                 Text(card.print.name).font(.caption)
                                 if card.pc { Tag(text: "PC", color: Theme.green) }
-                                if store.isNewForMasterSet(card.print, slug: card.setSlug) { MasterSetTag() }
+                                if GameStore.needed(needs, card.print, slug: card.setSlug) { MasterSetTag() }
                                 Spacer()
                                 Text(money(card.dealMarket)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                             }
@@ -178,7 +179,7 @@ struct TradeSlider: View {
                                     Image(systemName: on ? "checkmark.circle.fill" : "circle").foregroundStyle(on ? Theme.cyan : Theme.muted)
                                     Text(item.name).font(.caption).lineLimit(1)
                                     Spacer()
-                                    Text(money(item.dealMarket)).font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                                    Text(money(session.extraValue(item))).font(.caption.monospaced()).foregroundStyle(Theme.muted)
                                 }
                                 .contentShape(Rectangle())
                             }
@@ -201,7 +202,8 @@ struct TradeSlider: View {
                     .foregroundStyle(cash >= 0 ? Theme.green : Theme.orange)
                 Spacer()
                 let given = session.giveItems(visitor)
-                Text("for your \(money(session.giveValue(visitor))) \(given.count == 1 ? "item" : "of \(given.count) items")").font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Text(given.count == 1 ? "for your \(money(session.giveValue(visitor))) item" : "for your \(given.count) items · \(money(session.giveValue(visitor)))")
+                    .font(.caption.monospaced()).foregroundStyle(Theme.muted)
             }
             if session.canPayCredit, cash < 0 {
                 Toggle("Add store credit instead · \(money(store.storeCreditOffer(cash: -cash)))", isOn: $credit)
@@ -470,6 +472,7 @@ struct VisitorCard: View {
             switch visitor.event == nil ? visitor.intent : nil {
             case .trade:
                 Text("THEY OFFER").font(.system(size: 10, weight: .semibold)).foregroundStyle(Theme.muted)
+                let offerNeeds = store.masterSetNeeds(Set(visitor.tradeCards.map(\.setSlug)))
                 ForEach(visitor.tradeCards) { card in
                     HStack(spacing: 12) {
                         RemoteCardImage(url: card.print.image.flatMap(URL.init(string:)), name: "")
@@ -478,7 +481,7 @@ struct VisitorCard: View {
                         VStack(alignment: .leading, spacing: 3) {
                             HStack(spacing: 6) {
                                 Text(card.print.name).font(.subheadline.weight(.semibold))
-                                if store.isNewForMasterSet(card.print, slug: card.setSlug) { MasterSetTag() }
+                                if GameStore.needed(offerNeeds, card.print, slug: card.setSlug) { MasterSetTag() }
                             }
                             Text(SetLibrary.set(card.setSlug).name).font(.caption).foregroundStyle(Theme.muted)
                             HStack(spacing: 6) {

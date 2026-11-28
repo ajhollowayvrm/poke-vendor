@@ -1634,8 +1634,8 @@ final class ShowSession {
     /// The valuation, in percent, at which the trader's current offer values their own cards.
     func openingValuation(_ v: Visitor) -> Double {
         let cards = tradeCardsValue(v)
-        guard let item = v.item, cards > 0 else { return 100 }
-        return (item.dealMarket - v.tradeCash) / cards * 100
+        guard v.item != nil, cards > 0 else { return 100 }
+        return (giveValue(v) - v.tradeCash) / cards * 100
     }
 
     /// A trade: one or two of their cards, and sometimes cash, for one of the player's items.
@@ -1843,11 +1843,11 @@ final class ShowSession {
             let givenIDs = Set(given.map(\.id))
             table.removeAll { givenIDs.contains($0.id) }
             bring.subtract(givenIDs)
-            store.recordDeal(v.contactID, what: "Traded \(item.name)", price: tradeCardsValue(v) + v.tradeCash, market: item.dealMarket,
-                             slug: item.setSlug, scored: true)
+            store.recordDeal(v.contactID, what: "Traded \(given.map(\.name).joined(separator: " + "))", price: tradeCardsValue(v) + v.tradeCash,
+                             market: giveValue(v), slug: item.setSlug, scored: true)
             // A trade is scored by the valuation of the trader's cards.
             let valuation = openingValuation(v)
-            score(.trade, price: item.dealMarket, market: item.dealMarket, pushed: valuation < v.firstOffer - 0.001, v, share: valuation / 100)
+            score(.trade, price: giveValue(v), market: giveValue(v), pushed: valuation < v.firstOffer - 0.001, v, share: valuation / 100)
         case .sell:
             guard let goods = v.goods else { return }
             guard store.canAfford(v.offer) else {
@@ -2147,15 +2147,21 @@ final class ShowSession {
         }
     }
 
-    /// Adds a card from the trader's binder to the offer, or takes one out. The trader keeps their own valuation, so
-    /// the cash follows the cards, up to what they carry.
-    /// The player's side of a trade: the item the trader asked for and the extra items, at their deal value.
+    /// The player's side of a trade: the item the trader asked for, then the extra items.
     func giveItems(_ v: Visitor) -> [ShowItem] {
         let extra = Set(v.extraGive ?? [])
         return (v.item.map { [$0] } ?? []) + table.filter { extra.contains($0.id) && $0.id != v.item?.id }
     }
 
-    func giveValue(_ v: Visitor) -> Double { giveItems(v).reduce(0) { $0 + $1.dealMarket } }
+    /// What an extra item is worth to a trader: less than market, the way a buyer pays, and with no PC premium. The
+    /// trader did not ask for it.
+    func extraValue(_ item: ShowItem) -> Double { item.market * Balance.traderExtraShare }
+
+    /// The value of the player's side: the asked item at its deal value, and each extra at `extraValue`.
+    func giveValue(_ v: Visitor) -> Double {
+        let given = giveItems(v)
+        return (given.first?.dealMarket ?? 0) + given.dropFirst().reduce(0) { $0 + extraValue($1) }
+    }
 
     /// Adds a table item to the player's side of a trade, or takes it out. The cash follows, at the trader's valuation.
     func toggleGiveItem(_ id: UUID) {
@@ -2171,8 +2177,10 @@ final class ShowSession {
         setCurrent(v)
     }
 
+    /// Adds a card from the trader's binder to the offer, or takes one out. The trader keeps their own valuation, so
+    /// the cash follows the cards, up to what they carry.
     func toggleTradeCard(_ id: UUID) {
-        guard var v = current, v.intent == .trade, let item = v.item, let card = v.binder.first(where: { $0.id == id }) else { return }
+        guard var v = current, v.intent == .trade, v.item != nil, let card = v.binder.first(where: { $0.id == id }) else { return }
         // The trader's valuation of their own offer stays fixed. Only the cash cap can change what they give.
         let valuation = v.firstOffer
         if v.tradeCards.contains(where: { $0.id == id }) {
@@ -2182,7 +2190,6 @@ final class ShowSession {
             v.tradeCards.append(card)
         }
         let cards = tradeCardsValue(v)
-        _ = item
         let wanted = giveValue(v) - cards * valuation / 100
         v.tradeCash = Self.round(min(v.cashLimit, wanted))
         v.line = wanted > v.cashLimit + 0.001 ? "Sure, but I don't have that much on me. I can add \(money(v.tradeCash)) at most."

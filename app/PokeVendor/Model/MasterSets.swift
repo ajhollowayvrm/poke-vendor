@@ -106,15 +106,31 @@ extension GameStore {
         return missing.isEmpty ? nil : missing
     }
 
-    /// True when an active master set still needs this print: on a trader's card, a collection piece, or a stash item.
-    func isNewForMasterSet(_ print: CardPrint, slug: String) -> Bool {
-        masterSetMissing(slug)?.contains(MasterSet.key(print)) == true
+    /// The cards that each active master set among `slugs` still needs, by key, from one scan of the binders. A screen
+    /// calls it once in its body and passes the result to its rows, so no row scans the collection
+    /// (memory: project_view_performance).
+    func masterSetNeeds(_ slugs: Set<String>) -> [String: Set<String>] {
+        guard !slugs.isEmpty else { return [:] }
+        let binder = masterSetCards
+        let started = Set(data.startedMasterSets.keys).union(binder.map(\.setSlug)).union(data.completedMasterSets.keys)
+        var out: [String: Set<String>] = [:]
+        for slug in slugs where started.contains(slug) {
+            let have = Set(binder.filter { $0.setSlug == slug }.map(\.masterKey))
+            let missing = Set(MasterSet.slots(slug).map(MasterSet.key)).subtracting(have)
+            if !missing.isEmpty { out[slug] = missing }
+        }
+        return out
+    }
+
+    /// True when `needs` (masterSetNeeds) holds this print.
+    nonisolated static func needed(_ needs: [String: Set<String>], _ print: CardPrint, slug: String) -> Bool {
+        needs[slug]?.contains(MasterSet.key(print)) == true
     }
 
     /// The same for goods: a raw card or a slab. Sealed product is never part of a master set.
-    func isNewForMasterSet(_ goods: VendorGoods) -> Bool {
+    nonisolated static func needed(_ needs: [String: Set<String>], _ goods: VendorGoods) -> Bool {
         switch goods {
-        case .single(let print, let slug, _), .slab(let print, let slug, _): isNewForMasterSet(print, slug: slug)
+        case .single(let print, let slug, _), .slab(let print, let slug, _): needed(needs, print, slug: slug)
         default: false
         }
     }
@@ -193,5 +209,15 @@ extension GameStore {
         }
         log("You completed the \(SetLibrary.set(slug).name) master set. \(reward).")
         Haptics.hit()
+    }
+}
+
+extension VendorGoods {
+    /// The set of a raw card or a slab, for master set checks. Nil for sealed product and mystery packs.
+    var cardSlug: String? {
+        switch self {
+        case .single(_, let slug, _), .slab(_, let slug, _): slug
+        default: nil
+        }
     }
 }

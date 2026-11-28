@@ -831,12 +831,13 @@ extension ShowSession {
                 return
             }
         }
-        let cash = max(0, Self.round(cash))
+        let itemsValue = tradeValue(items)
+        // The seller gives no change: cash past the part of the ask that the items do not cover is not paid.
+        let cash = min(max(0, Self.round(cash)), max(0, (collectionAsk(v, picked) - itemsValue).rounded(.up)))
         if cash > 0, !store.canAfford(cash) {
             note = "You do not have \(money(cash))."
             return
         }
-        let itemsValue = tradeValue(items)
         let value = itemsValue + cash
         let market = collectionMarket(v, picked)
         var floor = collectionFloor(v, picked)
@@ -858,7 +859,10 @@ extension ShowSession {
         for item in items { store.settleOnlineListing(item.id, name: item.name) }
         let cost = items.reduce(0) { $0 + $1.market } + cash
         store.receiveCollection(lot, pieces: picked, price: cost, payment: .trade(items), from: v.name, at: venue.name)
-        if cash > 0 { store.addLedger(-cash, .singles, "Cash added for a collection · \(v.name)") }
+        if cash > 0 {
+            store.addLedger(-cash, .singles, "Cash added for a collection · \(v.name)")
+            store.log("Added \(money(cash)) in cash to the trade for \(v.name)'s collection.", cash: -cash)
+        }
         for item in items {
             if let fake = item.fake {
                 store.recordBadSale(item: item.name, channel: venue.name, price: item.market, fake: fake, known: item.fakeKnown,

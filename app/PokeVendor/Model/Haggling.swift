@@ -39,6 +39,8 @@ extension Balance {
     static let tradeInsteadMax = 1.5
     /// A closet cleaner wants cash: a table item in a package counts this share of its trade value to them.
     static let cleanerTradeShare = 0.8
+    /// An extra item that the player adds to a trader's trade counts at this share of market (ShowSession.extraValue).
+    static let traderExtraShare = 0.85
     /// A trader's binder, and the share of buyers who ask for a bundle.
     static let binderSize = 3...5
     static let bundleChance = 0.20

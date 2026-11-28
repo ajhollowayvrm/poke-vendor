@@ -15,9 +15,9 @@ How it works (docs/10-grading.md, Estimated prices):
   keys. A print has a raw price and a real price for each key with eBay sales (tools/export/rip_set.py), with the
   sale count of each key in `gradedSales`. The script removes `gradedSales` when it writes the files.
 - A real price wins over the math. The file keeps every real price as its sold value, and the math fills only the
-  other keys. Only the order of the grades (below) can turn a real price into an estimate, and one more rule that AJ
-  approved on 2026-11-27: a real grade 10 below the card's real raw price is a bad eBay match (for example, the 10
-  Dittos of Delta Species mixed up), so it becomes an estimate (drop_tens_below_raw). A real price from 1 sale is noisy, so the fit of the ratios uses only real prices with MIN_SALES sales or
+  other keys. Two rules turn a real price into an estimate. The first is the order of the grades (below). The second
+  is a real grade 10 below the card's real raw price (drop_tens_below_raw, AJ, 2026-11-27). That is a bad eBay match,
+  for example two look-alike cards of one set. An estimated grade 10 is at least the real raw price. A real price from 1 sale is noisy, so the fit of the ratios uses only real prices with MIN_SALES sales or
   more. A real price with fewer sales still anchors its own print, with a smaller weight.
 - Each print is in a group: set, era (vintage, classic, current), rarity bucket, and raw price tier. The narrowest
   group is the set, rarity bucket, and tier. It needs MIN_N_SET prints. The wider groups need MIN_N prints.
@@ -518,6 +518,9 @@ def fill(items, fit):
                 price[k] = round(min(max(math.exp(fitted[k]), lo), hi), 2)
                 if i == len(keys) - 1:
                     price[k] = max(price[k], math.ceil(TOP_PREMIUM * price[keys[-2]] * 100) / 100)
+                    # A grade 10 is never cheaper than the raw card (drop_tens_below_raw).
+                    if p.get("market") and not p.get("marketEstimated"):
+                        price[k] = max(price[k], round(p["market"], 2))
         p["graded"] = {k: price[k] for k in ALL_KEYS}
         p["gradedReal"] = [k for k in ALL_KEYS if k in real]
         p.pop("gradedSales", None)
@@ -624,6 +627,8 @@ def check(items):
                     bad["ladder that does not rise"] += 1
                 if vals[-1] <= vals[-2] or (keys[-1] not in real and vals[-1] < TOP_PREMIUM * vals[-2] - 0.01):
                     bad["grade 10 not above the grade below it"] += 1
+                if keys[-1] not in real and p.get("market") and not p.get("marketEstimated") and vals[-1] < p["market"] - 0.005:
+                    bad["estimated grade 10 below the real raw price"] += 1
                 for i, k in enumerate(keys):
                     if k in real or not graded.get(k):
                         continue
