@@ -76,8 +76,16 @@ struct ShortsSection: View {
             }
             switch s.format {
             case .ripUntil:
+                // The target: one card in a filmed rip worth this much at raw market (Model/Shorts.swift, postRipEpisode).
+                HStack(spacing: 6) {
+                    Text("Best \(money(s.bestValue)) of \(money(s.target))").font(.caption.monospaced())
+                        .foregroundStyle(s.bestValue >= s.target * Balance.nearMissShare ? Theme.green : Theme.text)
+                    ProgressView(value: min(s.bestValue, s.target), total: max(s.target, 1)).tint(Theme.green)
+                }
                 Text("\(s.packs) packs · \(money(s.spent)) spent · best \(s.bestName.map { "\($0) \(money(s.bestValue))" } ?? "none yet")")
                     .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                Text("The finale is a filmed rip with one card worth \(money(s.target)) or more at its raw market price. A card at \(Int(Balance.nearMissShare * 100))% is a near miss.")
+                    .font(.caption2).foregroundStyle(Theme.muted)
                 if s.lastEpisodeDay == store.day {
                     Text("Today's episode is up.").font(.caption).foregroundStyle(Theme.green)
                 } else {
