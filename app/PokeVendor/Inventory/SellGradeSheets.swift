@@ -345,7 +345,7 @@ struct GradeSheet: View {
     @State private var company: GradingCompany = .psa
     @State private var tierIndex: Int
 
-    /// `bulk`: the PSA box sends its cards, so the sheet opens on Value Bulk. Otherwise it opens on PSA Regular: a
+    /// `bulk`: the grading box can go as a Value Bulk order, so the sheet opens on Value Bulk. Otherwise it opens on PSA Regular: a
     /// selection is not a Value Bulk order unless the player picks it.
     init(ids: Set<UUID>, bulk: Bool = false) {
         self.ids = ids

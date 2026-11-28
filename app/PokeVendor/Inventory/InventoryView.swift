@@ -53,7 +53,7 @@ enum InventoryFilter: String, CaseIterable, Hashable {
     case soldToViewer = "Sold to a viewer"
     case openedAtShop = "Opened · rip it"
     case inStorage = "In storage"
-    case inPsaBox = "In your PSA box"
+    case inPsaBox = "In your grading box"
     case fake = "Fake", looksOff = "Looks off", verified = "Verified"
 
     func matches(_ item: some Tagged) -> Bool {
@@ -140,7 +140,7 @@ struct InventoryView: View {
                     tabPicker
                     controls
                     if (tab == .raw || tab == .grading), !showsStore, !store.psaBox.isEmpty {
-                        PsaBoxBanner { gradeIDs = GradeRequest(ids: Set(store.psaBox.map(\.id)), bulk: true) }
+                        PsaBoxBanner { bulk in gradeIDs = GradeRequest(ids: Set(store.psaBox.map(\.id)), bulk: bulk) }
                     }
                     if tab == .grading, !store.gradingBills.isEmpty { GradingBillsBox() }
                     rows
@@ -658,7 +658,7 @@ struct SellRequest: Identifiable {
 struct GradeRequest: Identifiable {
     let id = UUID()
     let ids: Set<UUID>
-    /// The PSA box opens the sheet on Value Bulk. Any other selection opens it on Regular.
+    /// The grading box opens the sheet on Value Bulk when it can go as one. Any other selection opens it on Regular.
     var bulk = false
 }
 
@@ -772,11 +772,11 @@ struct ItemActions<Extra: View>: View {
                     .disabled(!free)
                 ActionTile(title: "Bulk", icon: "archivebox") { run { store.moveToBulk(ids) } }
                     .disabled(!free)
-                // The PSA box: cards set aside for the next Value Bulk order (Model/PsaBox.swift).
+                // The grading box: cards set aside for the next grading order (Model/PsaBox.swift).
                 if !ids.isEmpty, ids.allSatisfy({ store.card($0)?.status == .inPsaBox }) {
                     ActionTile(title: "Leave box", icon: "tray.and.arrow.up") { run { store.removeFromPsaBox(ids) } }
                 } else {
-                    ActionTile(title: "PSA box", icon: "tray.and.arrow.down") { run { store.addToPsaBox(ids) } }
+                    ActionTile(title: "Grading box", icon: "tray.and.arrow.down") { run { store.addToPsaBox(ids) } }
                         .disabled(aside || !store.canBox(ids))
                 }
             }
@@ -1163,31 +1163,39 @@ struct RawLooks: View {
     }
 }
 
-/// The PSA box: the cards set aside for the next Value Bulk order, and the button that sends them (Model/PsaBox.swift).
+/// The grading box: cards set aside for the next grading order, to any company and level, and the button that sends
+/// them (Model/PsaBox.swift). It shows the progress to PSA Value Bulk, which needs 20 cards.
 struct PsaBoxBanner: View {
     @Environment(GameStore.self) private var store
-    let send: () -> Void
+    /// `bulk`: the box can go as a Value Bulk order now, so the sheet opens on it.
+    let send: (_ bulk: Bool) -> Void
 
     var body: some View {
         let box = store.psaBox
         let tier = store.psaBulkTier
         let need = tier?.minCards ?? 20
         let risk = store.psaBoxUpchargeRisk.count
-        DetailBox(title: "PSA box · \(box.count) of \(need)") {
-            ProgressView(value: Double(min(box.count, need)), total: Double(need)).tint(Theme.cyan)
+        let bulkReady = store.psaBoxBlock == nil
+        DetailBox(title: "Grading box · \(box.count) card\(box.count == 1 ? "" : "s")") {
+            Text("Cards in the box stay home. Send them to any grader, at any level.").font(.caption).foregroundStyle(Theme.muted)
+            HStack {
+                Text("PSA Value Bulk · \(min(box.count, need)) of \(need)").font(.caption.monospaced())
+                ProgressView(value: Double(min(box.count, need)), total: Double(need)).tint(Theme.cyan)
+            }
             if let tier {
-                Text("Value Bulk: \(money(store.gradingFee(tier, .psa) * Double(box.count))) for \(box.count) card\(box.count == 1 ? "" : "s"), billed when the grades come back. Cards in the box stay home.")
+                Text(bulkReady ? "Value Bulk is ready: \(money(store.gradingFee(tier, .psa) * Double(box.count))) for \(box.count) cards, billed when the grades come back."
+                               : (store.psaBoxBlock ?? "").hasSuffix(".") ? (store.psaBoxBlock ?? "") : "Value Bulk: \(store.psaBoxBlock ?? "").")
                     .font(.caption).foregroundStyle(Theme.muted)
             }
             if risk > 0, let cap = tier?.maxValue {
                 Text("\(risk) card\(risk == 1 ? "" : "s") could grade over \(money(cap)). PSA upcharges a card worth more than the level allows.")
                     .font(.caption).foregroundStyle(Theme.orange)
             }
-            Button(action: send) {
-                Text(store.psaBoxBlock ?? "Send the box to PSA").frame(maxWidth: .infinity)
+            Button { send(bulkReady) } label: {
+                Text("Send the box to a grader").frame(maxWidth: .infinity)
             }
             .primaryButton()
-            .disabled(store.psaBoxBlock != nil)
+            .disabled(box.isEmpty)
         }
     }
 }

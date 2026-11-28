@@ -98,7 +98,7 @@ struct StatusBox: View {
                 Text("In your storage unit. Drive to the unit to take it home.").font(.subheadline)
             case .inPsaBox:
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("In your PSA box · \(store.psaBox.count) card\(store.psaBox.count == 1 ? "" : "s") for the next Value Bulk order").font(.subheadline)
+                    Text("In your grading box · \(store.psaBox.count) card\(store.psaBox.count == 1 ? "" : "s") for the next grading order").font(.subheadline)
                     Button("Take it out") { store.removeFromPsaBox([id]) }
                         .buttonStyle(.bordered)
                 }

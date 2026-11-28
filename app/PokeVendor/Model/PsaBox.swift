@@ -1,9 +1,9 @@
 import Foundation
 
-// The PSA box (docs/10-grading.md, The PSA box). PSA's Value Bulk level needs 20 cards or more in one order. The player
-// sets cards aside in the box until it holds enough, then sends the box as one order. A card in the box stays home: it
-// has a status, so no sell, list, shelf, or trade path offers it. The hub shows each PSA bill to come, with the most
-// that the upcharges could add.
+// The grading box (docs/10-grading.md, The grading box). The player sets cards aside and sends them as one order, to
+// any grader at any level. PSA's Value Bulk level needs 20 cards or more in one order, so the box shows the progress
+// toward it. A card in the box stays home: it has a status, so no sell, list, shelf, or trade path offers it. The hub
+// shows each PSA bill to come, with the most that the upcharges could add.
 
 @MainActor
 extension GameStore {
@@ -29,7 +29,7 @@ extension GameStore {
             count += 1
         }
         guard count > 0 else { return }
-        log("Put \(count) card\(count == 1 ? "" : "s") in your PSA box. It holds \(psaBox.count).")
+        log("Put \(count) card\(count == 1 ? "" : "s") in your grading box. It holds \(psaBox.count).")
         save()
     }
 

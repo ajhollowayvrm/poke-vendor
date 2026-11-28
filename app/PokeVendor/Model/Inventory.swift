@@ -450,7 +450,7 @@ enum ItemStatus: Codable, Hashable {
         case .soldToViewer: "SOLD · SHIPS TO A VIEWER"
         case .openedAtShop: "OPENED · RIP IT"
         case .inStorage: "IN STORAGE"
-        case .inPsaBox: "IN YOUR PSA BOX"
+        case .inPsaBox: "IN YOUR GRADING BOX"
         }
     }
 }
