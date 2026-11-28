@@ -100,6 +100,24 @@ struct ShortsSection: View {
                 .tint(finale ? Theme.green : Theme.cyan)
                 .disabled(block != nil)
                 if let block, s.lastEpisodeDay != store.day { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
+            case .masterSet:
+                if let slug = s.setSlug {
+                    let p = store.masterSetProgress(slug)
+                    let added = max(0, p.have - (s.lastHave ?? p.have))
+                    ProgressView(value: Double(p.have), total: Double(max(1, p.total))).tint(Theme.green)
+                    Text("\(p.have) of \(p.total) · binder \(money(p.value))\(added > 0 ? " · +\(added) since the last episode" : "")")
+                        .font(.caption.monospaced()).foregroundStyle(Theme.muted)
+                }
+                let finale = store.masterSetFinaleReady(s)
+                let block = store.shortBlock(s, long: finale)
+                Button(finale ? "Post the finale" : "Post today's episode") {
+                    report(store.postMasterSetEpisode(sponsored: sponsored))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(finale ? Theme.green : .red)
+                .disabled(block != nil)
+                if let block, s.lastEpisodeDay != store.day { Text(block).font(.caption2).foregroundStyle(Theme.muted) }
+                if s.lastEpisodeDay == store.day { Text("Today's episode is up.").font(.caption).foregroundStyle(Theme.green) }
             case .vlog, .reveal:
                 Text("\(s.views.formatted()) views · \(s.followers >= 0 ? "+" : "")\(s.followers) followers")
                     .font(.caption.monospaced()).foregroundStyle(Theme.muted)
@@ -168,7 +186,7 @@ struct ShortsSection: View {
     }
 }
 
-/// Starts a daily series: Rip until I hit, or a P&L challenge.
+/// Starts a daily series: Rip until I hit, a P&L challenge, or a master set chase.
 struct StartSeriesSheet: View {
     @Environment(GameStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -177,6 +195,7 @@ struct StartSeriesSheet: View {
     @State private var start = 100.0
     @State private var goal = 5.0
     @State private var days = 30
+    @State private var chaseSlug: String?
 
     var body: some View {
         NavigationStack {
@@ -184,6 +203,7 @@ struct StartSeriesSheet: View {
                 Picker("Format", selection: $format) {
                     Text(SeriesFormat.ripUntil.label).tag(SeriesFormat.ripUntil)
                     Text(SeriesFormat.pnl.label).tag(SeriesFormat.pnl)
+                    Text("Master set").tag(SeriesFormat.masterSet)
                 }
                 .pickerStyle(.segmented)
                 switch format {
@@ -194,6 +214,21 @@ struct StartSeriesSheet: View {
                         }
                     } footer: {
                         Text("Each day, film a rip in Normal or Fast mode. The finale is the rip that pulls a card of the target value or more. You can give that card away for big follower and authenticity gains. After \(money(Balance.gamblingSpend)) spent with no hit, some viewers call it gambling.")
+                    }
+                case .masterSet:
+                    Section {
+                        let sets = store.chaseableMasterSets
+                        if sets.isEmpty {
+                            Text("Start a master set first: Inventory, Master sets.").foregroundStyle(Theme.orange)
+                        } else {
+                            Picker("Set", selection: Binding(get: { chaseSlug ?? sets.first?.slug }, set: { chaseSlug = $0 })) {
+                                ForEach(sets) { p in
+                                    Text("\(SetLibrary.set(p.slug).name) · \(p.have) of \(p.total)").tag(Optional(p.slug))
+                                }
+                            }
+                        }
+                    } footer: {
+                        Text("Post one episode a day on the binder. New cards since the last episode make a better episode, and so does a set close to done. The finale is the day the set is complete: a long video that reaches twice as far.")
                     }
                 default:
                     Section {
@@ -223,10 +258,14 @@ struct StartSeriesSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Start") {
-                        if format == .ripUntil { store.startRipSeries(target: target) } else { store.startPnL(start: start, goal: goal, days: days) }
+                        switch format {
+                        case .ripUntil: store.startRipSeries(target: target)
+                        case .masterSet: if let slug = chaseSlug ?? store.chaseableMasterSets.first?.slug { store.startMasterSetSeries(slug) }
+                        default: store.startPnL(start: start, goal: goal, days: days)
+                        }
                         dismiss()
                     }
-                    .disabled(store.seriesBlock(format) != nil)
+                    .disabled(store.seriesBlock(format) != nil || (format == .masterSet && store.chaseableMasterSets.isEmpty))
                 }
             }
         }

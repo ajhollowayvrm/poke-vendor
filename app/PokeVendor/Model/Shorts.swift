@@ -33,6 +33,10 @@ extension Balance {
     static let pnlGoals: [Double] = [2, 5, 10]
     static let pnlDayLimits = [14, 30, 60]
     static let pnlWinBonus = 1.0
+    /// Master set chase: quality for each new card since the last episode, for a set near done (at 100%), and the finale.
+    static let chaseCardStep = 0.15
+    static let chaseNearDone = 0.4
+    static let chaseFinaleBonus = 1.0
     static let revealDays = 7
     static let revealBigBatch = 10
     static let shortBurnout = 0.05
@@ -56,6 +60,8 @@ extension Balance {
 
 enum SeriesFormat: String, Codable, CaseIterable, Hashable {
     case ripUntil, pnl, vlog, reveal
+    /// Master set chase: a daily episode on the progress of one master set. The finale is the completed set.
+    case masterSet
 
     var label: String {
         switch self {
@@ -63,11 +69,12 @@ enum SeriesFormat: String, Codable, CaseIterable, Hashable {
         case .pnl: "P&L challenge"
         case .vlog: "Card show vlogs"
         case .reveal: "Grading reveals"
+        case .masterSet: "Master set chase"
         }
     }
 
     /// A daily format expects an episode each day. An event format posts when something happens.
-    var daily: Bool { self == .ripUntil || self == .pnl }
+    var daily: Bool { self == .ripUntil || self == .pnl || self == .masterSet }
 }
 
 struct ShortSeries: Codable, Identifiable, Hashable {
@@ -97,6 +104,11 @@ struct ShortSeries: Codable, Identifiable, Hashable {
     var lastValue: Double?
     /// The challenge items: cards, sealed products, and bulk groups, by ID.
     var items: [UUID] = []
+    // Master set chase. Optional, so old saves still load.
+    /// The set the series chases.
+    var setSlug: String?
+    /// The cards in the binder at the last episode, or at the start.
+    var lastHave: Int?
 
     /// The last day of a P&L challenge.
     var lastDay: Int { startDay + dayLimit - 1 }
@@ -189,6 +201,51 @@ extension GameStore {
         data.shorts.series.append(s)
         log("Started a P&L challenge: \(s.name).")
         save()
+    }
+
+    /// The sets a master set chase can start on: started in the Master sets tab, and not complete.
+    var chaseableMasterSets: [MasterSetProgress] { startedMasterSets.filter { !$0.complete } }
+
+    func startMasterSetSeries(_ slug: String) {
+        guard seriesBlock(.masterSet) == nil, chaseableMasterSets.contains(where: { $0.slug == slug }) else { return }
+        let progress = masterSetProgress(slug)
+        var s = ShortSeries(format: .masterSet, name: "Completing the \(SetLibrary.set(slug).name) master set", startDay: data.day)
+        s.setSlug = slug
+        s.lastHave = progress.have
+        s.lastValue = progress.value
+        data.shorts.series.append(s)
+        log("Started a series: \(s.name). \(progress.have) of \(progress.total) to start.")
+        save()
+    }
+
+    /// The master set chase's finale is ready when the set is complete.
+    func masterSetFinaleReady(_ s: ShortSeries) -> Bool { s.setSlug.map { masterSetProgress($0).complete } ?? false }
+
+    /// Posts today's master set episode. New cards since the last episode and their value make a better episode, and so
+    /// does a set that is close to done. The completed set is the finale, a long video, and the series ends.
+    @discardableResult
+    func postMasterSetEpisode(sponsored: Bool = false) -> SocialPost? {
+        guard let s = series(.masterSet), let slug = s.setSlug, let si = data.shorts.series.firstIndex(where: { $0.id == s.id }) else { return nil }
+        let finale = masterSetFinaleReady(s)
+        guard shortBlock(s, long: finale) == nil else { return nil }
+        let p = masterSetProgress(slug)
+        let added = max(0, p.have - (s.lastHave ?? p.have))
+        let addedValue = max(0, p.value - (s.lastValue ?? p.value))
+        let share = p.total > 0 ? Double(p.have) / Double(p.total) : 0
+        var quality = 0.5 + min(1.0, Double(added) * Balance.chaseCardStep) + min(0.6, log10(addedValue + 1) * 0.25) + share * Balance.chaseNearDone
+        if finale { quality += Balance.chaseFinaleBonus }
+        let day = data.day - s.startDay + 1
+        let subject = finale ? "\(s.name): complete, \(p.total) of \(p.total)"
+            : "\(s.name), day \(day): \(p.have) of \(p.total)\(added > 0 ? ", +\(added) card\(added == 1 ? "" : "s")" : ", no new cards")"
+        data.shorts.series[si].lastHave = p.have
+        data.shorts.series[si].lastValue = p.value
+        let post = postShort(seriesID: s.id, subject: subject, quality: quality, long: finale, finale: finale, sponsored: sponsored)
+        if post != nil, finale {
+            data.shorts.series.removeAll { $0.id == s.id }
+            log("The master set chase is over: the \(SetLibrary.set(slug).name) master set is complete.")
+            save()
+        }
+        return post
     }
 
     /// Ends a series. A daily series that ends before its finale costs authenticity.

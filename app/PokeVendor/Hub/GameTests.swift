@@ -55,6 +55,7 @@ final class GameTests {
         timed("package", packageOffer)
         timed("register", registerSales)
         timed("walletBills", walletBills)
+        timed("masterChase", masterSetChase)
         timed("collections", collections)
         timed("upgrades", upgrades)
         timed("editions", editions)
@@ -2545,6 +2546,28 @@ final class GameTests {
         check(store.card(cheap.id) == nil && store.data.raw.count == rawBefore && store.businessCash < business - 34.99,
               "a package at the seller's price did not trade the stock and the cash for the item")
         store.counterSession = nil
+    }
+
+    // MARK: - Master set chase (docs/32-short-form-video.md)
+
+    /// A master set chase posts one episode a day on the binder. New cards since the last episode show in it.
+    private func masterSetChase() {
+        fresh()
+        let slug = "prismatic-evolutions"
+        store.startMasterSet(slug)
+        let slots = MasterSet.slots(slug)
+        guard slots.count > 6 else { return check(false, "no master set for the chase test") }
+        for p in slots.prefix(2) { store.addTestCard(p, slug: slug) }
+        _ = store.addToMasterSet(Set(store.data.raw.suffix(2).map(\.id)))
+        store.startMasterSetSeries(slug)
+        guard let s = store.series(.masterSet) else { return check(false, "the master set chase did not start") }
+        check(s.lastHave == 2 && !store.masterSetFinaleReady(s), "the chase did not start from the binder")
+        for p in slots.dropFirst(2).prefix(3) { store.addTestCard(p, slug: slug) }
+        _ = store.addToMasterSet(Set(store.data.raw.suffix(3).map(\.id)))
+        let post = store.postMasterSetEpisode()
+        check(post?.subject?.contains("+3 cards") == true && store.series(.masterSet)?.lastHave == 5,
+              "the episode did not show the 3 new cards: \(post?.subject ?? "no post")")
+        check(store.postMasterSetEpisode() == nil, "the chase posted two episodes in one day")
     }
 
     // MARK: - Bills in the Wallet (Model/Bills.swift)

@@ -206,6 +206,22 @@ result each day.
   has normal quality, and no penalty. Ending early costs authenticity.
 - When the challenge ends, its items go back to normal Inventory.
 
+### Master set chase
+
+A daily format (AJ, 2026-11-27). The player starts it on a master set
+that is started and not complete (Inventory, Master sets).
+
+- One episode a day on the binder: "day 4: 37 of 102, +5 cards". A day
+  with no new card can still post, at a lower quality.
+- Quality: 0.5, plus 0.15 for each new card since the last episode (at
+  most 1.0), plus up to 0.6 for the value those cards added, plus up to
+  0.4 as the set nears complete.
+- The finale is the episode after the set is complete: a long video
+  that reaches 2 times as far, with a 1.0 quality bonus. The series then
+  ends. The completion reward of the set itself does not change.
+- It counts as one of the 2 daily series, and the missed-day rule
+  applies.
+
 ### Show vlogs
 
 - **After a show or a meet,** the summary has "Post a show vlog". A vlog
