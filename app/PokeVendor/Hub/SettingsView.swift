@@ -27,7 +27,6 @@ struct SettingsView: View {
             } footer: {
                 Text("The sounds follow the mute switch.")
             }
-            PaymentPolicySection()
             Section {
                 Picker("Rip mode", selection: Binding(get: { store.data.settings.ripMode }, set: { store.setRipMode($0) })) {
                     ForEach(RipMode.allCases, id: \.self) { Text($0.label).tag($0) }

@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Where the money went, and where it came from (docs/08-ui-direction.md, Wallet / cash ledger).
+/// Finances: every number about money in one place, and the money actions (docs/08-ui-direction.md, Finances). The
+/// struct keeps its old name, so the route and the links stay the same.
 struct WalletView: View {
     @Environment(GameStore.self) private var store
     @State private var month = false
@@ -19,14 +20,18 @@ struct WalletView: View {
         let spend = Dictionary(grouping: period.filter { $0.amount < 0 }, by: \.category)
             .map { ($0.key, $0.value.reduce(0) { $0 - $1.amount }) }
             .sorted { $0.1 > $1.1 }
+        let earned = Dictionary(grouping: period.filter { $0.amount > 0 }, by: \.category)
+            .map { ($0.key, $0.value.reduce(0) { $0 + $1.amount }) }
+            .sorted { $0.1 > $1.1 }
         ScrollView {
             VStack(spacing: 14) {
                 VStack(spacing: 4) {
-                    Text(showBusiness ? "BUSINESS ACCOUNT" : "CASH").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
+                    Text(showBusiness ? "BUSINESS ACCOUNT" : store.hasBusinessAccount ? "YOUR CASH" : "CASH").font(.system(size: 10, weight: .semibold)).kerning(0.8).foregroundStyle(Theme.muted)
                     Text(money(showBusiness ? store.businessCash : store.personalCash))
                         .font(.system(size: 34, weight: .semibold, design: .monospaced))
                         .foregroundStyle(showBusiness ? Theme.cyan : Theme.text)
                     if store.hasBusinessAccount {
+                        Text("Both accounts \(money(store.personalCash + store.businessCash))").font(.caption.monospaced()).foregroundStyle(Theme.muted)
                         Picker("Account", selection: $business) {
                             Text("Yours · \(money(store.personalCash))").tag(false)
                             Text("Business · \(money(store.businessCash))").tag(true)
@@ -48,6 +53,8 @@ struct WalletView: View {
                     .framed()
                 }
                 BillsBox()
+                NetWorthBox()
+                ComingInBox()
                 DetailBox(title: month ? "Last 4 weeks" : "Last 7 days") {
                     Picker("Period", selection: $month) {
                         Text("Week").tag(false)
@@ -59,6 +66,25 @@ struct WalletView: View {
                         StatCell(label: "Money out", value: money(moneyOut), color: Theme.orange)
                         StatCell(label: "Net", value: signedMoney(moneyIn - moneyOut),
                                  color: moneyIn >= moneyOut ? Theme.green : Theme.orange)
+                    }
+                    if !earned.isEmpty {
+                        Text("WHERE IT CAME FROM").font(.system(size: 10, weight: .semibold)).kerning(0.8)
+                            .foregroundStyle(Theme.muted).padding(.top, 6)
+                        ForEach(earned, id: \.0) { category, amount in
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    Text(category.rawValue).font(.caption)
+                                    Spacer()
+                                    Text(money(amount)).font(.caption.monospaced())
+                                }
+                                GeometryReader { geo in
+                                    Rectangle().fill(Theme.green.opacity(0.7))
+                                        .frame(width: geo.size.width * amount / max(moneyIn, 0.01))
+                                }
+                                .frame(height: 6)
+                                .background(Theme.line)
+                            }
+                        }
                     }
                     if !spend.isEmpty {
                         Text("WHERE IT WENT").font(.system(size: 10, weight: .semibold)).kerning(0.8)
@@ -81,9 +107,9 @@ struct WalletView: View {
                     }
                 }
                 TaxBox()
-                pendingRefundsBox
                 debtBox
                 insuranceBox
+                PaymentsBox()
                 DetailBox(title: "Ledger") {
                     ForEach(entries.reversed()) { entry in
                         HStack(alignment: .top) {
@@ -109,32 +135,12 @@ struct WalletView: View {
             .padding(.bottom, 24)
         }
         .background(Theme.background.ignoresSafeArea())
-        .navigationTitle("Wallet")
+        .navigationTitle("Finances")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 extension WalletView {
-    /// Distributor orders that never arrived. Each refund comes on its day.
-    @ViewBuilder
-    private var pendingRefundsBox: some View {
-        let lost = store.data.retail.missingShipments
-        if !lost.isEmpty {
-            DetailBox(title: "Pending refunds") {
-                ForEach(lost) { s in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(s.name).font(.subheadline).lineLimit(2)
-                            Text("refund on \(GameCalendar.date(s.refundDay).text)").font(.caption.monospaced()).foregroundStyle(Theme.muted)
-                        }
-                        Spacer()
-                        Text(money(s.refund)).font(.subheadline.monospaced())
-                    }
-                }
-            }
-        }
-    }
-
     /// Credit and debt, with the way into the Loans screen (docs/27-debt-and-loans.md).
     private var debtBox: some View {
         let debt = store.data.debt
@@ -142,7 +148,7 @@ extension WalletView {
             HStack(spacing: 0) {
                 StatCell(label: "Credit score", value: "\(store.creditScore)")
                 StatCell(label: "You owe", value: money(store.totalDebt), color: store.totalDebt > 0 ? Theme.orange : Theme.text)
-                StatCell(label: "Net worth", value: money(store.netWorth), color: store.netWorth >= 0 ? Theme.green : Theme.orange)
+                StatCell(label: "Pawned", value: money(store.pawnedValue))
             }
             if !debt.collections.isEmpty {
                 Text("A debt is in collections. The collector takes part of each paycheck.").font(.caption).foregroundStyle(Theme.orange)

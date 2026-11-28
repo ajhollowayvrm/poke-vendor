@@ -223,9 +223,17 @@ extension GameStore {
         data.auctionPayouts.reduce(0) { $0 + $1.amount } + data.machines.reduce(0) { $0 + $1.cashBox }
     }
 
-    /// Cash and stock, less every debt and the tax that the player owes.
+    /// Store credit the player holds at the game shops. It spends like cash there.
+    var shopCreditTotal: Double { data.shops.values.reduce(0) { $0 + $1.credit } }
+
+    /// The bills the player owes now, apart from debt and tax: unpaid PSA orders, the distributor's net-30 bills, and the
+    /// store credit that customers hold at the player's store.
+    var billsOwed: Double { unpaidGradingTotal + payablesTotal + storeCreditOwed }
+
+    /// Cash and stock, less every debt, bill, and tax that the player owes (docs/08-ui-direction.md, Finances).
     var netWorth: Double {
-        personalCash + businessCash + marketValue + pawnedValue + owedToPlayer - totalDebt - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
+        personalCash + businessCash + marketValue + pawnedValue + owedToPlayer + shopCreditTotal
+            - totalDebt - billsOwed - data.taxes.salesTaxOwed - data.taxes.incomeTaxOwed
     }
 
     /// The installment payments of every open loan, for 4 weeks.

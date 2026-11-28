@@ -79,7 +79,7 @@ struct WalletLinkRow: View {
     var body: some View {
         let short = store.businessBillsDue(within: 14) > store.businessCash + 0.001
         NavigationLink(value: AppRoute.wallet) {
-            ChevronRow(icon: "dollarsign.circle", title: "Wallet",
+            ChevronRow(icon: "dollarsign.circle", title: "Finances",
                        detail: "Business \(money(store.businessCash)) · yours \(money(store.personalCash))" + (short ? " · bills due soon" : ""),
                        accent: short)
                 .padding(12)

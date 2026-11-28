@@ -54,7 +54,7 @@ state and be the fastest way to get anywhere in the app.
 
 ## Destination screens
 
-### 1. Wallet / cash ledger
+### 1. Finances (formerly Wallet / cash ledger)
 
 The Cash tap target's destination. Answers one question: where did my
 money go, and where did it come from. It is also the place for the
@@ -66,6 +66,19 @@ loan payments, the insurance premium) with the account that pays each.
 A bill that waits for the player (a tax, a held PSA order, a
 distributor bill) has a Pay button, and a "Pay from" switch picks the
 account. These sit right under the balance, above the in/out summary.
+
+**Finances (AJ, 2026-11-27: "everything should be visible there").** The
+screen is named Finances. Top to bottom: the balances; the transfers and
+the store numbers link; Bills; **Net worth**, with what the player owns
+(cash, the business account, inventory, the collection, money owed to
+them, store credit at game shops, pawned items) and owes (debt, taxes,
+unpaid PSA orders, distributor bills, store credit that customers hold)
+and the credit score; **Coming in** (auction payouts, refunds, vending
+cash, game-shop credit, items listed, on consignment, or at an auction
+house); the in/out summary with where the money came from and where it
+went; taxes; debt and credit with the Loans link; insurance;
+**Payments** (the payment policy, moved from Settings, and the payment
+fees); and the ledger.
 
 **Layout, top to bottom:**
 

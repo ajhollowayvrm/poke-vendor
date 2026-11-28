@@ -283,7 +283,7 @@ extension GameStore {
                              detail: "\(money(lifetimeSales)) so far. Show that you can move product.",
                              met: lifetimeSales >= Balance.storeLifetimeSales),
             StoreRequirement(id: "permit", label: "A seller's permit",
-                             detail: hasSellerPermit ? "You have one." : "It costs \(money(Balance.sellerPermitFee)). Get it in the Wallet.",
+                             detail: hasSellerPermit ? "You have one." : "It costs \(money(Balance.sellerPermitFee)). Get it in Finances.",
                              met: hasSellerPermit),
         ]
     }

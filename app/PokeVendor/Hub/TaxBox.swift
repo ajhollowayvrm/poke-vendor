@@ -11,7 +11,8 @@ struct TaxBox: View {
             HStack(spacing: 0) {
                 StatCell(label: "Set aside", value: money(taxes.salesTaxOwed), color: Theme.cyan)
                 StatCell(label: "Income tax, so far", value: money(estimate), color: Theme.text)
-                StatCell(label: "Yours to spend", value: money(store.cash - taxes.salesTaxOwed - taxes.incomeTaxOwed))
+                // The business account pays the store's part of the sales tax, so only the rest comes out of your cash.
+                StatCell(label: "Yours to spend", value: money(store.personalCash - max(0, taxes.salesTaxOwed - (taxes.businessSalesTaxOwed ?? 0)) - taxes.incomeTaxOwed))
             }
             row("Sales tax", money(taxes.salesTaxOwed), due: store.daysUntilSalesTax,
                 note: "The buyers paid this at your store and your table. It is not your money.")

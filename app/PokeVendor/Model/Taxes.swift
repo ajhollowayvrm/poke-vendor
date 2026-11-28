@@ -130,7 +130,7 @@ extension GameStore {
         }
         let penalty = cents(owed * Balance.taxPenaltyRate)
         data.taxes.salesTaxOwed = owed + penalty
-        return "You could not pay the sales tax of \(money(owed)). A penalty of \(money(penalty)) is added. Pay it in the Wallet."
+        return "You could not pay the sales tax of \(money(owed)). A penalty of \(money(penalty)) is added. Pay it in Finances."
     }
 
     // MARK: - Income tax
@@ -174,7 +174,7 @@ extension GameStore {
         }
         let penalty = cents(owed * Balance.taxPenaltyRate)
         data.taxes.incomeTaxOwed = owed + penalty
-        return ["You could not pay the income tax of \(money(owed)). A penalty of \(money(penalty)) is added. Pay it in the Wallet."]
+        return ["You could not pay the income tax of \(money(owed)). A penalty of \(money(penalty)) is added. Pay it in Finances."]
     }
 
     /// The player pays what they owe now: the sales tax, or the income tax that came due and is unpaid.

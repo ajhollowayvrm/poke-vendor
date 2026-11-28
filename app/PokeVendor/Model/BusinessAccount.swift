@@ -126,12 +126,15 @@ extension GameStore {
         return result
     }
 
-    /// The bills that the business account pays in the next `days` days: rent with overhead, and distributor bills.
+    /// The bills that the business account pays in the next `days` days: rent with overhead, distributor bills, and the
+    /// staff's wages.
     func businessBillsDue(within days: Int) -> Double {
         guard let s = data.cardStore else { return 0 }
         var total = 0.0
         if let left = daysUntilStoreRent, left <= days { total += s.rent + storeOverhead(s).total }
         total += payables.filter { $0.dueDay - data.day <= days }.reduce(0) { $0 + $1.amount }
+        // The staff are paid each open day, at today's schedule and hours.
+        total += staffDailyWage * Double(days) * Double(s.openDays.count) / 7
         return total
     }
 

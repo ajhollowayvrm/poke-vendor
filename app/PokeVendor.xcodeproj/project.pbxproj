@@ -74,6 +74,7 @@
 		316BCD989D5985D20682BCED /* ShowSummaryStage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723EE92EBE2DE3D2DF2E53AF /* ShowSummaryStage.swift */; };
 		31B3A7F796244EB42A819F6D /* base-set-2.json in Resources */ = {isa = PBXBuildFile; fileRef = 71BFAA4A10360362D9BE2E1C /* base-set-2.json */; };
 		3209FBD08DDC8BAF97DF52E0 /* TaxBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5AB88AEE87E1970C61F07F /* TaxBox.swift */; };
+		9704465AA0F2F15DD94C99E8 /* FinanceViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 976B17A1631EF26A08E5F018 /* FinanceViews.swift */; };
 		32208ECC539710AD0EA71CAD /* Meets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B263211917DE478A8911439F /* Meets.swift */; };
 		331F96CAD287A16542AE8507 /* StoreStaff.swift in Sources */ = {isa = PBXBuildFile; fileRef = A57A043178AAD3F6388A8E3D /* StoreStaff.swift */; };
 		33231DFA7628DA76FB2F9107 /* supreme-victors.json in Resources */ = {isa = PBXBuildFile; fileRef = 3300530D0D241B426A6EF827 /* supreme-victors.json */; };
@@ -459,6 +460,7 @@
 		5BC5E06D2611E27D5195B7E9 /* Sales.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sales.swift; sourceTree = "<group>"; };
 		5D8AC9BA20E99FD7B453835C /* Showcase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Showcase.swift; sourceTree = "<group>"; };
 		5E5AB88AEE87E1970C61F07F /* TaxBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaxBox.swift; sourceTree = "<group>"; };
+		976B17A1631EF26A08E5F018 /* FinanceViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceViews.swift; sourceTree = "<group>"; };
 		5F38B7B3DE47AF76DF106787 /* stellar-crown.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "stellar-crown.json"; sourceTree = "<group>"; };
 		5F7DCA028A0E1F8B428A96D7 /* fates-collide.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "fates-collide.json"; sourceTree = "<group>"; };
 		617D61638A31A85F3BE630D9 /* rising-rivals.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "rising-rivals.json"; sourceTree = "<group>"; };
@@ -1053,6 +1055,7 @@
 				062B034B3D8890FD6A19F10F /* StoreGrowthViews.swift */,
 				7293221CD3CFD63E3473C7B6 /* StoreShelfControls.swift */,
 				5E5AB88AEE87E1970C61F07F /* TaxBox.swift */,
+				976B17A1631EF26A08E5F018 /* FinanceViews.swift */,
 				07BCE444E4AD984840D93FF6 /* UpgradesView.swift */,
 				9A433BDD5A3BD9A5C9E8F46A /* VendingViews.swift */,
 				50F97256E10C06386BD90E19 /* WalletView.swift */,
@@ -1498,6 +1501,7 @@
 				A6917D1EEE14A677B9EEE456 /* Support.swift in Sources */,
 				E3EB2628FB161B844BE56FE1 /* TableLayout.swift in Sources */,
 				3209FBD08DDC8BAF97DF52E0 /* TaxBox.swift in Sources */,
+				9704465AA0F2F15DD94C99E8 /* FinanceViews.swift in Sources */,
 				0995BCAC20317ADD99AB997E /* Taxes.swift in Sources */,
 				55DF9565657BEF05FD62398E /* UnboxView.swift in Sources */,
 				10FF285F3BF4A21924331909 /* Upgrades.swift in Sources */,
