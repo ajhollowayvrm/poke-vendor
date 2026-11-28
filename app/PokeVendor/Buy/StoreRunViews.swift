@@ -97,7 +97,7 @@ struct StoreRunPlanner: View {
                         .foregroundStyle(arrive >= slot.hour ? Theme.cyan : Theme.orange)
                 }
             }
-            Text("Chains with a vendor today come after your other known chains, by vendor hour, so you arrive late. Unknown chains come last.").font(.caption2).foregroundStyle(Theme.muted)
+            Text("Chains with a vendor today come after your other known chains, by vendor hour. Game shops fill the time before a vendor, so you arrive after it comes. Unknown chains come last.").font(.caption2).foregroundStyle(Theme.muted)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)

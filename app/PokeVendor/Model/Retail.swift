@@ -558,19 +558,30 @@ extension GameStore {
     }
 
     /// The stops in the order of a store run. Without the route planner, the order the player chose. With it, the chains
-    /// whose vendor is not today go first. Then come the chains whose vendor comes today, by vendor hour, so they arrive as
-    /// late as possible, after a vendor hour that the player knows. Last come the unknown chains. Each group keeps the
-    /// order the player chose, except the chains with a vendor today.
+    /// whose vendor is not today go first. Then come the chains whose vendor comes today, by vendor hour. Game shops have
+    /// no vendor, so they fill the time before a vendor chain until the player arrives after its vendor hour. The other
+    /// game shops come next, and the unknown chains last. Each group keeps the order the player chose.
     func plannedRoute(_ stops: [LocalStore]) -> [LocalStore] {
         guard hasUpgrade(.routePlanner) else { return stops }
         let today = data.day % 7
         let indexed = Array(stops.enumerated())
         let known = indexed.filter { vendorKnown($0.element) }
-        let early = known.filter { vendorSlot($0.element).weekday == today }
+        let vendorToday = known.filter { vendorSlot($0.element).weekday == today }
             .sorted { (vendorSlot($0.element).hour, $0.offset) < (vendorSlot($1.element).hour, $1.offset) }
         let later = known.filter { vendorSlot($0.element).weekday != today }
-        let unknown = indexed.filter { !vendorKnown($0.element) }
-        return (later + early + unknown).map(\.element)
+        var shops = indexed.filter { $0.element.isGameShop }
+        let unknown = indexed.filter { !vendorKnown($0.element) && !$0.element.isGameShop }
+        let step = storeStopHours
+        let start = slot(for: Double(stops.count) * step) ?? data.hour
+        var route = later.map(\.element)
+        for stop in vendorToday {
+            // A game shop before the chain moves the arrival later, until it is after the vendor hour.
+            while !shops.isEmpty, start + Double(route.count) * step < vendorSlot(stop.element).hour {
+                route.append(shops.removeFirst().element)
+            }
+            route.append(stop.element)
+        }
+        return route + shops.map(\.element) + unknown.map(\.element)
     }
 
     /// The hours to wait at a stop for the vendor: the stop is on the vendor day, before the vendor hour, within

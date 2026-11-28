@@ -4585,15 +4585,23 @@ final class GameTests {
         check(store.plannedRoute(chosen) == chosen, "the route changed with no planner")
         own(.routePlanner)
         let route = store.plannedRoute(chosen)
-        let hours = route.prefix(sameDay.count).map { store.vendorSlot($0).hour }
-        check(route.count == chosen.count && Set(route.prefix(sameDay.count)) == Set(sameDay) && zip(hours, hours.dropFirst()).allSatisfy { $0 <= $1 }
-              && Array(route.suffix(others.prefix(2).count + 1)) == [LocalStore.castle] + others.prefix(2), "the route is not in vendor order")
+        let vendorStops = route.filter { sameDay.contains($0) }
+        let hours = vendorStops.map { store.vendorSlot($0).hour }
+        check(route.count == chosen.count && vendorStops.count == sameDay.count && zip(hours, hours.dropFirst()).allSatisfy { $0 <= $1 }
+              && Array(route.suffix(others.prefix(2).count)) == Array(others.prefix(2)) && route.contains(.castle), "the route is not in vendor order")
         // A known chain whose vendor is not today comes before the chains with a vendor today.
         if let away = others.first {
             store.data.retail.seenSlot[away.rawValue] = store.vendorSlot(away).weekday
             let mixed = store.plannedRoute([LocalStore.castle] + sameDay + [away])
-            check(mixed.first == away && Set(mixed.dropFirst().prefix(sameDay.count)) == Set(sameDay) && mixed.last == LocalStore.castle,
+            check(mixed.first == away && mixed.filter { sameDay.contains($0) }.count == sameDay.count && mixed.contains(.castle),
                   "a known chain with a vendor on another day did not come first")
+            // A game shop fills the time before a vendor chain when the player would arrive before the vendor.
+            let step = store.storeStopHours
+            let start = store.slot(for: Double(mixed.count) * step) ?? store.data.hour
+            if let firstVendor = mixed.first(where: { sameDay.contains($0) }), let vi = mixed.firstIndex(of: firstVendor),
+               let ci = mixed.firstIndex(of: .castle), start + step < store.vendorSlot(firstVendor).hour {
+                check(ci < vi, "the game shop did not fill the time before the vendor")
+            }
             store.data.retail.seenSlot[away.rawValue] = nil
         }
 
